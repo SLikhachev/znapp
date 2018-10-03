@@ -5,6 +5,7 @@ DATABASES = {
         'NAME': 'vladzdrav_mos',
         'USER': 'vladzdrav',
         'PASSWORD': 'Gtu92E15rvl',
+        'HOST': 'postgresql-vladzdrav.alwaysdata.net'
     }
 }
 
