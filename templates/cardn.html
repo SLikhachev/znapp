@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title></title>
+    <link rel="stylesheet" href="font/css/font-awesome.css">
+    <link rel="stylesheet" href="css/pure-min.css">
+    <link rel="stylesheet" href="css/layouts/main.css">
+	<style>
+		form#card input, form#card select {background-color: #e1f5fe;/*#e3f2fd;*/ }
+		form#card legend { font-size: 1.2em; font-weight: 700; color: #1F8DD6}
+	</style>   
+</head>
+<body>
+
+<div id="header">
+<div id="menus">
+    <div class="apps-menu pure-menu pure-menu-horizontal">
+        <span class="pure-menu-heading">МО ДВО РАН</span>
+
+        <ul class="pure-menu-list">
+            <li class="pure-menu-item pure-menu-selected"><a href="clinic.html" class="pure-menu-link">Клиника</a></li>
+            <li class="pure-menu-item"><a href="#" class="pure-menu-link">Диспансер</a></li>
+            <li class="pure-menu-item"><a href="#" class="pure-menu-link">Отчеты</a></li>
+        </ul>
+    </div>
+    <div class="application-menu pure-menu pure-menu-horizontal">
+        <a class="pure-menu-heading" href=""><i class="fa fa-bars"></i></a>
+
+        <ul class="pure-menu-list">
+            <li class="pure-menu-item pure-menu-has-children pure-menu-allow-hover">
+                <a href="#" class="pure-menu-link">Карты</a>
+                <ul class="pure-menu-children">
+                    <li class="pure-menu-item"><a href="#" class="pure-menu-link">Все</a></li>
+                    <li class="pure-menu-item"><a href="#" class="pure-menu-link">Прикрепленные</a></li>
+                </ul>
+            </li>
+            
+            <li class="pure-menu-item pure-menu-has-children pure-menu-allow-hover">
+                <a href="#" class="pure-menu-link">Талоны</a>
+                <ul class="pure-menu-children">
+                    <li class="pure-menu-item"><a href="#!/" class="pure-menu-link">Все</a></li>
+                    <li class="pure-menu-item"><a href="#!/" class="pure-menu-link">Прикрепленные</a></li>
+                </ul>
+            </li>
+            <li class="pure-menu-item pure-menu-has-children pure-menu-allow-hover">
+                <a href="#" class="pure-menu-link">Справочники</a>
+                <ul class="pure-menu-children">
+                    <li class="pure-menu-item"><a href="#!/spec-list" class="pure-menu-link">Специальности</a></li>
+					<li class="pure-menu-item"><a href="#!/dist-list" class="pure-menu-link">Участки</a></li>
+                    <li class="pure-menu-item"><a href="#!/divs-list" class="pure-menu-link">Отделения</a></li>
+					<li class="pure-menu-item"><a href="#!/doc-list" class="pure-menu-link">Врачи</a></li>
+                </ul>
+
+            </li>
+        </ul>
+    </div>
+</div>
+</div>
+<div id="content" style="padding-left: 50px;">
+<form class="pure-form pure-form-aligned" style="font-size: 1.2em;" id="card">
+  <fieldset>
+    <legend>Карта пациента</legend>
+
+    <div class="pure-g">
+      <div class="pure-u-7-24 ">
+				<div class="pure-control-group">
+					<label for="code-num">Номер карты</label>
+					<input id="code-num" type="text">
+				</div>
+        <div class="pure-control-group">
+          <label for="doc-ser">Документ</label>
+          <input id="doc-ser" type="text" placeholder="Серия">
+        </div>	
+				<div class="pure-control-group">
+          <label for="doc-ser">&nbsp;</label>
+					<input id="doc-num" type="text" placeholder="Номер">
+				</div>		
+        <div class="pure-control-group">
+					<label for="doc-type">Тип документа</label>
+					<select id="doc-type">
+						<option>Паспорт</option>
+            <option>Военный билет</option>
+            <option>Студенческий билет</option>
+          </select>
+        </div>
+				<div class="pure-control-group">
+          <label for="fam">&nbsp;</label>
+          <input id="code-num" type="text" placeholder="Фамилия">
+				</div>	
+				<div class="pure-control-group">
+          <label for="doc-ser">&nbsp;</label>
+          <input id="doc-ser" type="text" placeholder="Имя">
+				</div>	
+				<div class="pure-control-group">
+          <label for="doc-ser">&nbsp;</label>
+					<input id="doc-num" type="text" placeholder="Отчество">
+				</div>		
+				<div class="pure-control-group">
+					<label for="-num">Дата рождения</label>
+          <input id="code-num" type="text">
+				</div>	
+				<div class="pure-control-group">
+					<label for="doc-type">Пол
+						<span style="line-height: 1em">М</span>
+						<input id="gm" type="radio" name="gmr" value="m">
+						<span>М</span>
+						<input id="gw" type="radio" name="gmr" value="w">
+					</label>
+				</div>
+			
+			</div><!-- u 1-3-->
+			
+			<div class="pure-u-8-24">
+			<legend>Мед страх</legend>
+			<div class="pure-control-group">
+				<label for="doc-ser">Полис</label>
+        <input id="doc-ser" class="pure-u-1-6" type="text" placeholder="Серия">	
+				<input id="doc-ser" class="pure-u-3-6" type="text" placeholder="Номер">
+			</div>
+			<div class="pure-control-group">
+				<label for="doc-type">Страховщик</label>
+        <select id="doc-type" class="pure-input-1-1">
+					<option>Страховщик</option>
+					<option>Паспорт</option>
+          <option>Военный билет</option>
+          <option>Студенческий билет</option>
+        </select>
+			</div>	
+			<div class="pure-control-group">
+        <label for="doc-type">Прикреплен к МО</label>
+				<input id="code-num" type="text" class="pure-u-1-6">
+			</div>
+		  <div class="pure-control-group">
+			  <label for="doc-type">Дата прикрепления</label>
+				<input id="code-num" class="pure-u-1-6" type="text">
+			</div>
+			<div class="pure-control-group">
+				<label for="doc-type">Участок</label>
+				<input id="code-num" class="pure-u-1-6" type="text">
+			</div>
+			<div class="pure-control-group">
+				<label for="doc-type">&nbsp;</label>
+				<button type="submit" class="pure-button pure-button-primary">Прикрепить</button>
+			</div>
+		</div><!-- u 1 4 -->
+
+				
+			<div class="pure-u-9-24">
+				<legend>Адрес</legend>
+				<div class="pure-control-group">
+					<!--label for="-num">Город</label-->
+          <input id="code-num" type="text" placeholder="Город">				
+				</div>
+				<div class="pure-control-group">
+					<!--label for="-num">Улица</label-->
+          <input id="code-num" type="text" placeholder="Улица">				
+				</div>
+				<div class="pure-control-group">
+          <input id="code-num" type="text" placeholder="Дом" class="pure-u-1-5" >				
+					<input id="code-num" type="text" placeholder="Кв" class="pure-u-1-6">			
+				</div>
+				<div class="pure-control-group">
+          <input id="code-num" type="text" placeholder="Мобильный тел">				
+				</div>
+				<div class="pure-control-group">
+          <input id="code-num" type="text" placeholder="Контактный тел">				
+				</div>
+				<div class="pure-control-group">
+					<label for="-num">Льготная кат</label-->
+          <select id="doc-type">
+            <option>1</option>
+            <option>2</option>
+            <option>3</option>
+          </select>				
+				</div>
+				<div class="pure-control-group">
+					<label for="-num">Соц статус</label-->
+          <select id="doc-type">
+            <option>1</option>
+            <option>2</option>
+            <option>3</option>
+          </select>				
+				</div>
+				<div class="pure-control-group">
+					<label for="terms" class="pure-checkbox">
+						Работает
+						<input id="terms" type="checkbox">
+					</label>
+				</div>
+				<div class="pure-control-group">
+					<label for="doc-type">Место работы</label>
+					<input id="code-num" type="text">
+				</div>
+		</div><!-- u 1 5 -->
+            
+	</fieldset>
+	<fieldset style="padding-left: 30%;">
+		<button type="submit" class="pure-button pure-button-primary" >Сохранить</button>
+	</fieldset>
+
+</form>	
+	
+</div>
+</body>
+</html>

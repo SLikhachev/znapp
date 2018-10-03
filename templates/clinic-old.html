@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title></title>
+    <link rel="stylesheet" href="font/css/font-awesome.css">
+    <link rel="stylesheet" href="css/pure-min.css">
+    <link rel="stylesheet" href="css/layouts/main.css">
+   
+</head>
+<body>
+
+<div id="header">
+<div id="menus">
+    <div class="apps-menu pure-menu pure-menu-horizontal">
+        <span class="pure-menu-heading">МО ДВО РАН</span>
+
+        <ul class="pure-menu-list">
+            <li class="pure-menu-item pure-menu-selected"><a href="clinic.html" class="pure-menu-link">Клиника</a></li>
+            <li class="pure-menu-item"><a href="#" class="pure-menu-link">Диспансер</a></li>
+            <li class="pure-menu-item"><a href="#" class="pure-menu-link">Отчеты</a></li>
+        </ul>
+    </div>
+    <div class="application-menu pure-menu pure-menu-horizontal">
+        <a class="pure-menu-heading" href=""><i class="fa fa-bars"></i></a>
+
+        <ul class="pure-menu-list">
+            <li class="pure-menu-item pure-menu-has-children pure-menu-allow-hover">
+                <a href="#" class="pure-menu-link">Карты</a>
+                <ul class="pure-menu-children">
+                    <li class="pure-menu-item"><a href="#" class="pure-menu-link">Все</a></li>
+                    <li class="pure-menu-item"><a href="#" class="pure-menu-link">Прикрепленные</a></li>
+                </ul>
+            </li>
+            
+            <li class="pure-menu-item pure-menu-has-children pure-menu-allow-hover">
+                <a href="#" class="pure-menu-link">Талоны</a>
+                <ul class="pure-menu-children">
+                    <li class="pure-menu-item"><a href="#!/" class="pure-menu-link">Все</a></li>
+                    <li class="pure-menu-item"><a href="#!/" class="pure-menu-link">Прикрепленные</a></li>
+                </ul>
+            </li>
+            <li class="pure-menu-item pure-menu-has-children pure-menu-allow-hover">
+                <a href="#" class="pure-menu-link">Справочники</a>
+                <ul class="pure-menu-children">
+                    <li class="pure-menu-item"><a href="#!/spec-list" class="pure-menu-link">Специальности</a></li>
+					<li class="pure-menu-item"><a href="#!/dist-list" class="pure-menu-link">Участки</a></li>
+                    <li class="pure-menu-item"><a href="#!/divs-list" class="pure-menu-link">Отделения</a></li>
+					<li class="pure-menu-item"><a href="#!/doc-list" class="pure-menu-link">Врачи</a></li>
+                </ul>
+
+            </li>
+        </ul>
+    </div>
+</div>
+</div>
+<div id="content"></div>
+<!--dialog id="dialog"></dialog-->
+<div class="but__up hvr" id="bup"></div>
+<script src="js/lib/lodash/lodash.min.js"></script>
+<script src="js/lib/jquery/jquery-1.11.2.min.js"></script>
+<script src="js/lib/form-validator/jquery.form-validator.min.js"></script>
+<script src="js/lib/mithril/mithril.min.js"></script>
+<script src="js/apps/clinic.pack.js"></script>
+<script>
+  $(document).ready(function() {
+
+	$(window).scroll( () => {
+	  if ($(window).scrollTop() > 300) {
+	    $('.but__up').fadeIn();
+	  } else {
+	    $('.but__up').fadeOut();
+	  }
+	});
+	$('.but__up').click( () => {
+	  $("html, body").animate({ scrollTop: 0 }, 600);
+	  return false;
+	});
+  });
+</script>
+</body>
+</html>

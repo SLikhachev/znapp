@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title></title>
+    <link rel="stylesheet" href="font/css/font-awesome.css">
+    <link rel="stylesheet" href="css/pure-min.css">
+    <link rel="stylesheet" href="css/layouts/main.css">
+	<style>
+		.box-1 { padding: 1em;}
+		.table-list-header { font-size: 2.3em;}
+		input.talon-find {background-color: #e1f5fe; font-size: 1.3em}
+		table.talon-list { width: 100%}
+		table.talon-list td { font-size: 1.2em; color: #000; }
+		a.tal-ref { color: #1F8DD6; text-decoration: none; }
+		a.tal-ref:hover { text-decoration: underline;}
+	</style>   
+</head>
+<body>
+
+<div id="header">
+<div id="menus">
+    <div class="apps-menu pure-menu pure-menu-horizontal">
+        <span class="pure-menu-heading">МО ДВО РАН</span>
+
+        <ul class="pure-menu-list">
+            <li class="pure-menu-item pure-menu-selected"><a href="clinic.html" class="pure-menu-link">Клиника</a></li>
+            <li class="pure-menu-item"><a href="#" class="pure-menu-link">Диспансер</a></li>
+            <li class="pure-menu-item"><a href="#" class="pure-menu-link">Отчеты</a></li>
+        </ul>
+    </div>
+    <div class="application-menu pure-menu pure-menu-horizontal">
+        <a class="pure-menu-heading" href=""><i class="fa fa-bars"></i></a>
+
+        <ul class="pure-menu-list">
+            <li class="pure-menu-item pure-menu-has-children pure-menu-allow-hover">
+                <a href="#" class="pure-menu-link">Карты</a>
+                <ul class="pure-menu-children">
+                    <li class="pure-menu-item"><a href="#" class="pure-menu-link">Все</a></li>
+                    <li class="pure-menu-item"><a href="#" class="pure-menu-link">Прикрепленные</a></li>
+                </ul>
+            </li>
+            
+            <li class="pure-menu-item pure-menu-has-children pure-menu-allow-hover">
+                <a href="#" class="pure-menu-link">Талоны</a>
+                <ul class="pure-menu-children">
+                    <li class="pure-menu-item"><a href="#!/" class="pure-menu-link">Все</a></li>
+                    <li class="pure-menu-item"><a href="#!/" class="pure-menu-link">Прикрепленные</a></li>
+                </ul>
+            </li>
+            <li class="pure-menu-item pure-menu-has-children pure-menu-allow-hover">
+                <a href="#" class="pure-menu-link">Справочники</a>
+                <ul class="pure-menu-children">
+                    <li class="pure-menu-item"><a href="#!/spec-list" class="pure-menu-link">Специальности</a></li>
+					<li class="pure-menu-item"><a href="#!/dist-list" class="pure-menu-link">Участки</a></li>
+                    <li class="pure-menu-item"><a href="#!/divs-list" class="pure-menu-link">Отделения</a></li>
+					<li class="pure-menu-item"><a href="#!/doc-list" class="pure-menu-link">Врачи</a></li>
+                </ul>
+
+            </li>
+        </ul>
+    </div>
+</div>
+</div>
+<div id="content" style="padding-left: 30px;">
+<div class="pure-g">
+	<div class="pure-u-1-3 box-1">
+		<span class="table-list-header">Талоны</span>
+	</div>
+</div>
+<div class="pure-g">
+  <div class="pure-u-1-1 box-1" >
+	
+	<form class="pure-form">
+	  <fieldset>
+	  <div class="pure-g">
+			<div class="pure-u-1-4">
+				<input id="tfind" class="talon-find pure-u" type="text" placeholder="номер талона">
+	    </div>
+			<div class="pure-u-1-4">
+				<input id="tfind" class="talon-find" type="text" placeholder="фамилия">
+			</div>
+			<div class="pure-u-1-4">
+				<input id="tfind" class="talon-find" type="text" placeholder="дата закрытия талона">
+			</div>
+			<div class="pure-u-1-4">
+				<button type="submit" class="pure-button pure-button-primary" style="font-size: 1.3em">
+				Добавить
+			</button>
+			</div>  
+	  </fieldset>
+	</form>
+  </div>
+</div>
+
+<table class="pure-table pure-table-bordered talon-list">
+    <thead>
+        <tr>
+            <th>Номер</th>
+            <th>ФИО</th>
+            <th>Открыт</th>
+            <th>Закрыт</th>
+			<th>Врач</th>
+			<th>Цель</th>
+			<th>Диагноз</th>
+			
+        </tr>
+    </thead>
+
+    <tbody>
+        <tr>
+            <td><a href="#" class="tal-ref">34576747</a></td>
+            <td>Петров В. А.</td>
+            <td>12.06.2017</td>
+            <td>15.06.2017</td>
+			<td>65 01</td>
+			<td>1</td>
+			<td>Z06.1</td>
+        </tr>
+
+        <tr>
+            <td>34576747</td>
+            <td>Петров В. А.</td>
+            <td>12.06.2017</td>
+            <td>15.06.2017</td>
+			<td>65 01</td>
+			<td>1</td>
+			<td>Z06.1</td>
+        </tr>
+
+        <tr>
+            <td>34576747</td>
+            <td>Петров В. А.</td>
+            <td>12.06.2017</td>
+            <td>15.06.2017</td>
+			<td>65 01</td>
+			<td>1</td>
+			<td>Z06.1</td>
+        </tr>
+    </tbody>
+</table>
+</div><!-- content -->
+</body>
+</html>

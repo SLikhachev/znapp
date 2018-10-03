@@ -1,0 +1,318 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title></title>
+    <link rel="stylesheet" href="../../static/font/css/font-awesome.css">
+    <link rel="stylesheet" href="../../static/css/pure-min.css">
+    <link rel="stylesheet" href="../../static/css/layouts/main.css">
+	<style>
+		div.legnd { font-size: 1.4em; font-weight: 700; color: #1F8DD6; margin-bottom: 1em;}
+		div.patz-data span { font-size: 1.4em; font-weight: 700; display: block; margin-bottom: 0.5em}
+		div.patz-data span.snamel { font-size: 1.5em; font-weight: 700; color: #000 }
+		table.tpara { margin-bottom: 1em;}
+		table.tpara caption { font-size: 1.3em; color: #1F8DD6;  font-style: normal; font-weight: 700}
+		table.tpara tr td { color: #000;}
+		.button-secondary { background: #bbdefb }
+
+		form#talon input, form#talon select {background-color: #e1f5fe;/*#e3f2fd;*/ }
+		form#talon legend, div.legend { font-size: 1.2em; font-weight: 700; color: #1F8DD6}
+		form#talon legend.leg-sec { font-size: 1em; font-weight: 600; color: #1F8DD6}
+		form#talon select#tal-mon { background-color: #ffcdd2; font-weight: 900; font-size: 1em; color: #000}
+		a.qhelp i {  color: #1F8DD6;}
+		.aquest {padding-top: 2.3em; }
+		a.pdelete i { color: red }
+		.qbutt { padding-top: 1.9em; }
+		a.qhelp { background-color: white}
+	</style>   
+</head>
+<body>
+
+<div id="header">
+<div id="menus">
+    <div class="apps-menu pure-menu pure-menu-horizontal">
+        <span class="pure-menu-heading">МО ДВО РАН</span>
+
+        <ul class="pure-menu-list">
+            <li class="pure-menu-item pure-menu-selected"><a href="clinic.html" class="pure-menu-link">Клиника</a></li>
+            <li class="pure-menu-item"><a href="#" class="pure-menu-link">Диспансер</a></li>
+            <li class="pure-menu-item"><a href="#" class="pure-menu-link">Отчеты</a></li>
+        </ul>
+    </div>
+    <div class="application-menu pure-menu pure-menu-horizontal">
+        <a class="pure-menu-heading" href=""><i class="fa fa-bars"></i></a>
+
+        <ul class="pure-menu-list">
+            <li class="pure-menu-item pure-menu-has-children pure-menu-allow-hover">
+                <a href="#" class="pure-menu-link">Карты</a>
+                <ul class="pure-menu-children">
+                    <li class="pure-menu-item"><a href="#" class="pure-menu-link">Все</a></li>
+                    <li class="pure-menu-item"><a href="#" class="pure-menu-link">Прикрепленные</a></li>
+                </ul>
+            </li>
+            
+            <li class="pure-menu-item pure-menu-has-children pure-menu-allow-hover">
+                <a href="#" class="pure-menu-link">Талоны</a>
+                <ul class="pure-menu-children">
+                    <li class="pure-menu-item"><a href="#!/" class="pure-menu-link">Все</a></li>
+                    <li class="pure-menu-item"><a href="#!/" class="pure-menu-link">Прикрепленные</a></li>
+                </ul>
+            </li>
+            <li class="pure-menu-item pure-menu-has-children pure-menu-allow-hover">
+                <a href="#" class="pure-menu-link">Справочники</a>
+                <ul class="pure-menu-children">
+                    <li class="pure-menu-item"><a href="#!/spec-list" class="pure-menu-link">Специальности</a></li>
+					<li class="pure-menu-item"><a href="#!/dist-list" class="pure-menu-link">Участки</a></li>
+                    <li class="pure-menu-item"><a href="#!/divs-list" class="pure-menu-link">Отделения</a></li>
+					<li class="pure-menu-item"><a href="#!/doc-list" class="pure-menu-link">Врачи</a></li>
+                </ul>
+
+            </li>
+        </ul>
+    </div>
+</div>
+</div>
+<div id="content" style="padding-left: 30px;">
+
+<div class="pure-g">
+	
+	<div class="pure-u-9-24 patz-data" style="overflow: hidden; padding-right: 1em">
+		<div class="legnd">Карта № 434525</div>
+		<span class="snamel">Салтыков-Щедрин Феликс Иннокентьевич</span>
+		<span>Род. 18.10.1968 М</span>
+		<span>Паспорт 09 67 234553</span>
+		<span>Полис № 43555367737</span>
+		<span>СМО: Спасские ворота.</span>
+		<!--span>СМО ОКАТО: 25011</span-->
+		<span>Прикреплен: МО ДВО РАН 29.09.2017</span>
+		<table class="pure-table pure-table-horizontal tpara">
+			<caption>Параклиника</caption>
+			<thead>
+        <tr>
+            <th>Код</th>
+            <th>Кол.</th>
+            <th>Дата</th>
+            <th>Наименование</th>
+						<th>Исп.</th>
+        </tr>
+			</thead>
+			<tbody>
+				<tr>
+          <td>A05.10.006
+					<a href="#" class="pdelete"><i class="fa fa-minus-circle"></i></a>
+					
+					</td>
+          <td>1</td>
+          <td>19.05.17</td>
+          <td>Регистрация электрокардиограммы</td>
+					<td>281 014</td>
+        </tr>
+				<tr>
+          <td>A05.10.006</td>
+          <td>1</td>
+          <td>19.05.17</td>
+          <td>Расшифровка описание интепретация электрокардиограммы</td>
+					<td>281 014</td>
+        </tr>
+			</tbody>
+		</table>			
+		<button type="submit" class="pure-button pure-button-primary" style="font-size: 1.1em">
+			Добавить</button>
+		<div style="margin-top: 1em; padding-top: 2em; border-top: 1px solid #ccc;">
+			<button type="submit" class="pure-button button-secondary" style="font-size: 1.1em">
+				Добавить
+			</button>
+			<button type="submit" class="pure-button" style="font-size: 1.1em">
+				Добавить
+			</button>
+		</div>
+	
+	</div>
+
+	<div class="pure-u-15-24">
+		
+		<!--div class="pure-g">
+		<div class="pure-u-23-24"-->	
+		
+		<form class="pure-form  pure-form-stacked" style="font-size: 1.2em;" id="talon">
+			<fieldset>
+			<legend>Талон № 43443553</legend>
+			<div class="pure-g">
+				<div class="pure-u-3-24">
+					<label for="tdo">Открыт</label>
+					<input id="tod" class="pure-u-22-24" type="text">	
+				</div>	
+				<div class="pure-u-3-24">
+					<label for="tdc">Закрыт</label>
+					<input id="tdc" class="pure-u-22-24" type="text">
+					<!--span class="pure-form-message">заполнить</span-->
+				</div>
+				<div class="pure-u-2-24">
+					<label for="tdc">Источник</label>
+					<input id="tdc" class="pure-u-22-24" type="text">
+				</div>
+				<!--div class="pure-u-1-24 qbutt">
+					<a class="pure-button qhelp pure-u-21-24" href="#" style="padding: 0.5em 0; border: 1px solid #ccc">
+						<i class="fa fa-question-circle fa-lg"></i>
+					</a>
+				</div-->
+				<div class="pure-u-1-24 aquest">
+					<a class="qhelp" href="#"><i class="fa fa-question-circle fa-lg"></i></a>
+				</div>
+				<div class="pure-u-2-24">
+					<label for="tdc">Цель</label>
+					<input id="tdc" class="pure-u-22-24" type="text">
+				</div>
+				<div class="pure-u-1-24 aquest">
+					<a class="qhelp" href="#"><i class="fa fa-question-circle fa-lg"></i></a>
+				</div>
+				<div class="pure-u-4-24">
+					<label for="doc-type" style="margin-bottom: 0.7em;">Cлучай</label>
+						<input id="gm" type="radio" name="gmr" value="m" checked>
+						<span style="line-height: 1em; padding-right: 2em;">Перв</span>
+						<input id="gw" type="radio" name="gmr" value="w">
+						<span >Втор</span>
+				</div>
+				<div class="pure-u-4-24">
+					<label for="terms" style="margin-bottom: 0.7em;">Неотложная</label>
+						<input id="terms" type="checkbox">
+				</div>
+			</div>
+			<div class="pure-g">
+				<div class="pure-u-2-24">
+					<label for="tdc">Врач</label>
+					<input id="tdc" class="pure-u-22-24" type="text" placeholder="Спец">
+				</div>
+				<div class="pure-u-2-24">
+					<label for="tdc">Код</label>
+					<input id="tdc" class="pure-u-22-24" type="text">
+				</div>
+				
+				<div class="pure-u-1-24 aquest">
+					<a class="qhelp" href="#"><i class="fa fa-question-circle fa-lg"></i></a>
+				</div>
+			</div>
+			<div class="pure-g">
+				<div class="pure-u-2-24">
+					<label for="tdc">Направление</label>
+					<input id="tdc" class="pure-u-22-24" type="text" placeholder="код МО">
+				</div>
+				<div class="pure-u-2-24">
+					<label for="tdc">&nbsp;</label>
+					<input id="tdc" class="pure-u-22-24" type="text" placeholder="Спец">
+				</div>
+				<div class="pure-u-5-24">
+					<label for="tdc">Номер направления</label>
+					<input id="tdc" class="pure-u-22-24" type="text">
+				</div>
+				<div class="pure-u-1-24 aquest">
+					<a class="qhelp" href="#"><i class="fa fa-question-circle fa-lg"></i></a>
+				</div>
+			</div>
+			<legend class="leg-sec">Дней</legend>
+			<div class="pure-g">
+				<div class="pure-u-3-24">
+					<label for="tdc">В поликлинике</label>
+					<input id="tdc" class="pure-u-22-24" type="text">
+				</div>
+				<div class="pure-u-3-24">
+					<label for="tdc">На дому</label>
+					<input id="tdc" class="pure-u-22-24" type="text">
+				</div>
+				<div class="pure-u-3-24">
+					<label for="tdc">Дн. стац</label>
+					<input id="tdc" class="pure-u-22-24" type="text">
+				</div>
+				<div class="pure-u-3-24">
+					<label for="tdc">Стац. на дому</label>
+					<input id="tdc" class="pure-u-22-24" type="text">
+				</div>
+			</div>
+			<legend class="leg-sec">Результат</legend>
+			<div class="pure-g">
+				<div class="pure-u-2-24">
+					<label for="tdc">Основной</label>
+					<input id="tdc" class="pure-u-22-24" type="text">
+				</div>
+				<div class="pure-u-2-24">
+					<label for="tdc">диагноз</label>
+					<input id="tdc" class="pure-u-16-24" type="text">
+				</div>
+				<div class="pure-u-1-24 aquest">
+					<a class="qhelp" href="#"><i class="fa fa-question-circle fa-lg"></i></a>
+				</div>
+				<div class="pure-u-2-24">
+					<label for="tdc">Характер</label>
+					<input id="tdc" class="pure-u-16-24" type="text">
+				</div>
+				<div class="pure-u-1-24 aquest">
+					<a class="qhelp" href="#"><i class="fa fa-question-circle fa-lg"></i></a>
+				</div>
+				<div class="pure-u-2-24">
+					<label for="tdc">Исход</label>
+					<input id="tdc" class="pure-u-16-24" type="text">
+				</div>
+				<div class="pure-u-1-24 aquest">
+					<a class="qhelp" href="#"><i class="fa fa-question-circle fa-lg"></i></a>
+				</div>
+				<div class="pure-u-2-24">
+					<label for="tdc">Законч</label>
+					<input id="tdc" class="pure-u-16-24" type="text">
+				</div>
+				<div class="pure-u-1-24 aquest">
+					<a class="qhelp" href="#"><i class="fa fa-question-circle fa-lg"></i></a>
+				</div>
+				<div class="pure-u-2-24">
+					<label for="tdc">Травма</label>
+					<input id="tdc" class="pure-u-16-24" type="text">
+				</div>
+				<div class="pure-u-1-24 aquest">
+					<a class="qhelp" href="#"><i class="fa fa-question-circle fa-lg"></i></a>
+				</div>
+			</div>
+			<div class="pure-g">
+				<div class="pure-u-2-24">
+					<label for="tdc">Диагноз</label>
+					<input id="tdc" class="pure-u-22-24" type="text">
+				</div>
+				<div class="pure-u-2-24">
+					<label for="tdc">&nbsp;</label>
+					<input id="tdc" class="pure-u-16-24" type="text">
+				</div>
+				<div class="pure-u-2-24">
+					<label for="tdc">Характер</label>
+					<input id="tdc" class="pure-u-16-24" type="text">
+				</div>
+			</div>	
+			</fieldset>
+
+
+			<fieldset style="padding-left: 0%;">
+				<legend class="leg-sec" style="color: red;">Месяц талона</legend>
+				<div class="pure-g">
+					<div class="pure-u-6-24">
+					<select id="tal-mon" class="pure-u-6-24">
+            <option>1</option>
+            <option>2</option>
+            <option>3</option>
+          </select>				
+				</div>
+				<div class="pure-u-3-24" style="margin-top: 5px;">
+					<button type="submit" class="pure-button pure-button-primary" style="font-size: 1.1em">Сохранить</button>
+				</div>
+			</div>
+			</fieldset>
+		
+		</form>	
+		
+		<!--/div><!-- 23-24 -->
+		
+		<!--div calss="pure-u-1-24"></div-->
+		<!--/div><!-- pure-g -->
+		</div><!-- 16-24 -->
+
+</div><!-- pure-g-->
+</div><!-- content -->
+</body>
+</html>

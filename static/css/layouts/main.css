@@ -1,0 +1,343 @@
+* {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+
+    }
+
+/*
+ * -- BASE STYLES --
+ * Most of these are inherited from Base, but I want to change a few.
+ */
+body {
+    line-height: 1.7em;
+    color: #7f8c8d;
+    font-size: 13px;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+label {
+    color: #34495e;
+}
+
+.left {float:left;}
+.right {float: right;}
+.red { color: red; }
+.pl10 {padding-left: 10px; cursor: pointer;}
+.ml10 { margin-left: 10px;}
+th.sortable {cursor: pointer; }
+.blue { color: #1F8DD6; }
+.deep-blue { background-color: #1565c0; }
+.fullwide { width: 99%; }
+.choice { cursor: pointer; }
+.choice:hover { text-decoration: underline; }
+
+/*
+ * -- PURE FORM STYLES --
+ * Style the form inputs and labels
+ */
+.input-error{
+    
+}
+.error-msg {
+    color: red;
+    font-size: 0.7em;
+    padding: 0 1em;
+}
+#srv-error {
+    color: #c00;
+    font-size: 1em;
+    padding: 0 1em;
+}
+.disable {
+  opacity: 0.4;
+  pointer-events: none;
+}
+.disable div,
+.disable textarea {
+  overflow: hidden;
+}
+.pure-form input,
+.pure-form select,
+.pure-form textarea {
+   background-color: #e1f5fe;
+}
+.pure-form input.fname {
+    width: 13em;
+}
+.pure-form input.fcode {
+    width: 4em;
+}
+.pure-form input.lcode {
+    width: 8em;
+}
+
+
+/*
+.pure-form label {
+    margin: 1em 0 0;
+    font-weight: bold;
+    font-size: 100%;
+}
+
+.pure-form input[type] {
+    border: 2px solid #ddd;
+    box-shadow: none;
+    font-size: 100%;
+    width: 100%;
+    margin-bottom: 1em;
+}
+*/
+/*
+ * -- PURE BUTTON STYLES --
+ * I want my pure-button elements to look a little different
+ */
+
+.pure-button-cust {
+    background-color: #1f8dd6;
+    color: white;
+    padding: 0.3em 1.0em;
+    border-radius: 5px;
+    border-width: 0px;
+}
+
+/*
+ * -- MENU STYLES --
+ * I want to customize how my .pure-menu looks at the top of the page
+ */
+ 
+ #header{
+     height: 100px;    
+     width: 100%;
+     z-index: 1;
+ }
+ #menus{
+     height: 100px;
+     position: fixed;
+     width: 100%;
+     z-index: 100;
+ }
+
+ 
+.apps-menu, .application-menu {
+    font-size: 1.2em;
+    font-weight: 600;
+}
+
+.apps-menu {
+    background-color: #fff;
+    color: #1f8dd6;
+}
+.application-menu {
+    background-color: #1f8dd6;
+    color: white;
+    padding: 0;
+}
+
+.application-menu .pure-menu-heading,
+.apps-menu .pure-menu-heading {
+    font-weight: 400;
+    font-size: 1.4em;
+}
+
+.apps-menu .pure-menu-selected a.pure-menu-link {
+    color: red;
+}
+.application-menu .pure-menu-selected a.pure-menu-link {
+}
+
+.pure-menu-list { line-height: 1.8em;}
+
+.apps-menu a,
+.pure-menu-children a.pure-menu-link
+ {
+    color: #1f8dd6;
+}
+.application-menu a {
+    color: white;
+}
+
+.apps-menu li a:hover,
+.apps-menu li a:focus {
+    background: none;
+    border: none;
+    color: #2962ff;
+    text-decoration: underline;
+}
+.application-menu li a:hover,
+.application-menu li a:focus,
+.application-menu li a.pointed
+{
+    background-color: #1565c0;
+    /* border: none; */
+    color: #fff;
+}
+
+a.side-menu {
+    display: block;
+    text-decoration: none;
+    font-size: 1.2em;
+}
+
+a.side-menu:hover {
+    text-decoration: underline;
+}
+
+/* We want to give the content area some more padding */
+#content {
+    padding: 1em 1em 3em;
+}
+.page-content {
+    padding-left: 5em;
+}
+
+.but__up {
+    position: fixed;
+    right: 10px;
+    bottom: 100px;
+    width: 40px;
+    height: 84px;
+    background: url(../../img/common/up.png) center no-repeat #1f8dd6;
+    box-shadow: 0 0 0 2px #fff;
+    border-radius: 20px;
+    display: none;
+    z-index: 1000;
+    cursor: pointer;
+}
+.hvr {
+    display: inline-block;
+    vertical-align: middle;
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+    box-shadow: 0 0 1px transparent;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    -moz-osx-font-smoothing: grayscale;
+}
+.error {
+    color: red;
+    font-weight: 400;
+    font-size: 1.4em;
+    padding: 1em;
+}
+
+.loading-icon {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  height: auto;
+  min-width: 50px;
+  padding: 5px;
+  transform: translateX(-50%) translateY(-50%);
+  -webkit-transform: translateX(-50%) translateY(-50%);
+}
+.choice {
+    cursor: pointer;
+}
+.choice:hover {
+    text-decoration: underline;
+}
+
+/*
+Dialog 
+*/
+dialog {
+   border: 1px solid rgba(0, 0, 0, 0.3);
+   border-radius: 6px;
+   box-shadow: 0 3px 7px rgba(0, 0, 0, 0.3);
+}
+dialog::backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.8);
+}
+.dialog-content {
+    padding: 5px;
+}
+.dheader {
+    display: block;
+    line-height: 1.3em;
+    font-size: 1.3em;
+    font-weight: 700;
+    margin-bottom: 1em;
+}
+.dclose {
+    cursor: pointer;
+    display: block;
+    line-height: 1.3em;
+    font-size: 1.3em;
+/*    font-weight: 300; */
+    color: #999;
+    margin-bottom: 1em;
+    float: right;
+}
+
+.panel{
+    display: flex;
+    flex-direction: row; 
+    justify-content: space-between; 
+    align-items: flex-start;
+}
+/*
+.panel{
+    float: right;
+}
+*/
+/* talon,  card form */
+form.tcard input,
+form.tcard select {
+    background-color: #e1f5fe; /*#e3f2fd;*/
+}
+
+form.tcard legend {
+    font-size: 1.2em;
+    font-weight: 700;
+    color: #1F8DD6
+}
+form.tcard input {
+  font-weight: 600;
+  color: black;
+ }
+div.legnd { font-size: 1.4em; font-weight: 700; color: #1F8DD6; margin-bottom: 1em;}
+div.patz-data span { font-size: 1.4em; font-weight: 700; display: block; margin-bottom: 0.5em}
+div.patz-data span.snamel { font-size: 1.5em; font-weight: 700; color: #000 }
+table.tpara { margin-bottom: 1em;}
+table.tpara caption { font-size: 1.3em; color: #1F8DD6;  font-style: normal; font-weight: 700}
+table.tpara tr td { color: #000;}
+.button-secondary { background: #bbdefb }
+
+form.card legend.leg-sec {
+  font-size: 1em;
+  font-weight: 600;
+  color: #1F8DD6
+}
+form.tcard input.tal_month {
+    background-color: #ffcdd2;
+    font-weight: 900;
+    font-size: 1em;
+    color: #000
+}
+a.qhelp i {
+  color: #1F8DD6;
+}
+.aquest {
+    padding-top: 2.3em;
+}
+	
+ a.pdelete {
+  /*display: inline-block; */
+  margin-right: 5px;
+ }
+  	a.pdelete i { color: red }
+	
+ .qbutt { padding-top: 1.9em; }
+	a.qhelp { background-color: white}
+
