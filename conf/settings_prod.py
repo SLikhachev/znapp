@@ -2,8 +2,10 @@
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'blog',
-        'USER': 'postgres',
-        'PASSWORD': 'boruh',
+        'NAME': 'vladzdrav_mos',
+        'USER': 'vladzdrav',
+        'PASSWORD': 'Gtu92E15rvl',
     }
 }
+
+ROOT_URLCONF = 'urls'

@@ -8,3 +8,6 @@ DATABASES = {
     }
 }
 
+
+ROOT_URLCONF = 'vladzdrav.webapp.urls'
+WSGI_APPLICATION = 'vladzdrav.webapp.wsgi.application'

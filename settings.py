@@ -51,8 +51,6 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'vladzdrav.webapp.urls'
-
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -68,8 +66,6 @@ TEMPLATES = [
         },
     },
 ]
-
-WSGI_APPLICATION = 'vladzdrav.webapp.wsgi.application'
 
 # Password validation
 # https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators
