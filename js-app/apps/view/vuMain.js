@@ -72,6 +72,7 @@ const vuMain = {
       $("html, body").animate({ scrollTop: 0 }, 600);
       return false;
     });
+    //console.log( $(window).localStorage); //.getItem('pg_rest') );
   },
 
   view: function(vnode) {

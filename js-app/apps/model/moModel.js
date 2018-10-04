@@ -1,9 +1,10 @@
 // src/apps/model/moModel.js
 
-import { schemaRest } from '../apiConf.js';
+//import { schemaRest } from '../apiConf.js';
 import { vuDialog } from '../view/vuDialog.js';
 
-const schema = schemaRest;
+const schema = window.localStorage.getItem('pg_rest'); //schemaRest;
+//console.log(schema);
 
 const moModel = {
   
@@ -40,11 +41,14 @@ const moModel = {
   // ret Promise
   getList (model) {
     // filed - sort by with SELECT, default 'id' field
+    //let schema = window.localStorage.getItem('pg_rest');
     let id = model.field ? model.field : 'id',
     order = `?order=${id}.asc`;
+    let url = schema + model.url + order;
+    console.log(url);
     return m.request({
       method: model.method,
-      url: schema + model.url + order
+      url: url
     }).then(function(res) {
       model.list = res; // list of objects
       model.order = true;
@@ -57,6 +61,7 @@ const moModel = {
   // return Promise all
   getData(model){
     if ( model.options === null ) return false;
+    //let schema = window.localStorage.getItem('pg_rest');
     let data = [],
     order = '?order=id.asc';
     model.options.forEach ( (t) => {
@@ -80,6 +85,7 @@ const moModel = {
   // :: Object -> String -> String -> Object -> Promise
   // return Promise
   getViewRpc (model, data, url=null, method=null) {
+    //let schema = window.localStorage.getItem('pg_rest');
     let _url = url ? url : model.url;
     let _method = method ? method : model.method;
     return m.request({
@@ -125,6 +131,7 @@ const moModel = {
   formSubmit (model, form) {  
     // form - jQuery object
     // model - model object 
+    //let schema = window.localStorage.getItem('pg_rest');
     let data = moModel.getFormData( form ),
     url = schema + model.url,
     method = data.method;

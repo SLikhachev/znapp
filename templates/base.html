@@ -10,6 +10,11 @@
    
 </head>
 <body id="{{ app_name }}">
+<span id="pg_rest" style="display: none;">{{ pg_rest }}</span>
+<script>
+  //window.localStorage.setItem('pg_rest', document.getElementById('pg_rest').innerHTML )
+  window.localStorage.setItem('pg_rest', "{{ pg_rest }}");
+</script>
 <script src="/static/js/lib/lodash/lodash.min.js"></script>
 <script src="/static/js/lib/jquery/jquery-1.11.2.min.js"></script>
 <script src="/static/js/lib/form-validator/jquery.form-validator.min.js"></script>

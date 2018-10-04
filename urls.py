@@ -17,7 +17,8 @@ from django.contrib import admin
 from django.urls import path
 from defapp import views
 urlpatterns = [
-    path('', views.home, name='home'),
+    #path('', views.home, name='home'),
+    path('', views.sprav, name='sprav'),
     path('sprav/', views.sprav, name='sprav'),
     path('admin/', admin.site.urls),
 ]

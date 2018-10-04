@@ -6,7 +6,7 @@ import socket
 
 ALLOWED_HOSTS = ['192.168.10.21', 'vladzdrav.alwaysdata.net']
 AHOST =  socket.gethostbyname ( socket.gethostname() )
-print (AHOST)
+#print (AHOST)
 DEVEL = AHOST.startswith(ALLOWED_HOSTS[0])
 
 #DEVEL=False
@@ -14,7 +14,7 @@ DEVEL = AHOST.startswith(ALLOWED_HOSTS[0])
 DEBUG = False
 if DEVEL:
     DEBUG = True
-
+DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 SITE_DIR = os.path.dirname(__file__)
@@ -49,22 +49,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-]
-
-TEMPLATES = [
-    {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': ['webapp/templates'],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.debug',
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
-            ],
-        },
-    },
 ]
 
 # Password validation
