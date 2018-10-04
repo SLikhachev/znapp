@@ -26,4 +26,4 @@ TEMPLATES = [
 ]
 
 ROOT_URLCONF = 'urls'
-PG_REST_URL='http://192.168.0.65:3000'
+PG_REST_URL='http://192.168.0.65:3000/'
