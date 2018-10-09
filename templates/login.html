@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block body %}
+<body>
+<dialog id="dauth">
+    <div class="dialog-content">
+      {% if form.errors %}
+        <h2 class="red">Код МО или пароль указаны неверно</h2>
+      {% endif %}
+       <!--i id="dclose" class="fa fa-times"></i-->
+       <span class="dheader blue">Авторизация</span>
+       <form class="pure-form pure-form-aligned" method="POST" action="{% url 'login' %}">
+            {% csrf_token %}
+            <fieldset>
+                <div class="pure-control-group">
+                    <label for="username">Код МО</label>
+                    <input id="username" name="username" type="text" placeholder="" required>
+                    <span class="pure-form-message-inline red" style="padding-bottom: 1.2em">*</span>
+                </div>
+
+                <div class="pure-control-group">
+                    <label for="password">Пароль</label>
+                    <input id="password" name="password" type="password" placeholder="" required>
+                    <span class="pure-form-message-inline red" style="padding-bottom: 1.2em">*</span>
+                </div>
+                <div class="pure-controls">
+                    <button type="submit" class="pure-button pure-button-primary">Отправить</button>
+                    <input type="hidden" name="next" value="{{ next }}">
+                </div>
+           </fieldset>
+        </form>
+    </div>
+</dialog>
+
+<script>
+  var dauth = document.getElementById("dauth");
+  dauth.showModal();
+</script>
+</body>
+{% endblock %}
