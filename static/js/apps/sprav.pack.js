@@ -1,12 +1,12 @@
 // apps/apiConf.js
 
-const moName = "Поликлиника №4";
-
-const appMenu = { // routing by Flask
+const appMenu = { // routing by Django
   clinic : { href: "#", name: "Клиника"},     
   sprav: { href: "/sprav", name: "Справочники"},
   reports: { href: "#", name: "Отчеты"}
 };
+
+//const moName = document.getElementsByTagName('title')[0].innerHTML;
 
 const vuSidebar = {
   view: function(vnode) {
@@ -27,18 +27,20 @@ const vuSidebar = {
     ];
   },
   subRoute: function(route) {
-    let rs = route.split("/"); // #!/catalog/doc-list/ => ['#!', 'catalog', 'doc-list', '']
+    //let rs = route.split("/"); // #!/catalog/doc-list/ => ['#!', 'catalog', 'doc-list', '']
     //console.log(rs);
   }
 };
 
 const vuMain = {
   
+  moName: null,
   app: null,
   subApp: null,
   
   oninit: function (vnode) {
     //console.log(vnode.attrs.subAppMenu)
+    vuMain.moName = document.getElementsByTagName('title')[0].innerHTML;
     vuMain.app = document.body.id;
     try {
       let mr =  m.route.get().split("/")[1];
@@ -86,7 +88,7 @@ const vuMain = {
       m('#header',
         m('#menus', [
           m('.apps-menu.pure-menu.pure-menu-horizontal', [
-            m('span.pure-menu-heading', moName),
+            m('span.pure-menu-heading', vuMain.moName),
             m('ul.pure-menu-list', [
               Object.keys(appMenu).map( (appName) => {
                 let s = appName == vuMain.app ? ".pure-menu-selected":"",
