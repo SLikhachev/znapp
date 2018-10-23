@@ -3,7 +3,7 @@
 const appMenu = { // routing by Django
   clinic : { href: "#", name: "Клиника"},     
   sprav: { href: "/sprav", name: "Справочники"},
-  reports: { href: "#", name: "Отчеты"}
+  reports: { href: "/report", name: "Отчеты"}
 };
 
 //const moName = document.getElementsByTagName('title')[0].innerHTML;

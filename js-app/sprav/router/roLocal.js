@@ -28,7 +28,7 @@ const roLocal = {
   [spravApi.mo_doct]: {
     render: function() {
       let view = m(vuDoctor, {
-        model: moModel.getModel(restApi.doctor), 
+        model: moModel.getModel(restApi.doctor),
         header: "Врачи",
         name: "Врач",
         find: 3, // search in the first 3 table columns

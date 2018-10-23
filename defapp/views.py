@@ -1,3 +1,4 @@
+from django.http import Http404
 from django.shortcuts import render
 from django.conf import settings
 from django.contrib.auth import authenticate, login, logout
@@ -27,9 +28,7 @@ def get_app(app_name, user):
     )
 
 @login_required
-def clinic(request):
-    return render(request, 'app.html', get_app( 'clinic', request.user.pk ) )
-
-@login_required
-def sprav(request):
-    return render(request, 'app.html', get_app( 'sprav', request.user.pk ))
+def view_app(request, app_name=None):
+    if app_name is None:
+        app_name='sprav' 
+    return render(request, 'app.html', get_app( app_name, request.user.pk ) )

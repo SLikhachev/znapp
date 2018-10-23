@@ -3,7 +3,7 @@
 //import { schemaRest } from '../apiConf.js';
 import { vuDialog } from '../view/vuDialog.js';
 
-const schema = window.localStorage.getItem('pg_rest'); //schemaRest;
+const pg_rest = window.localStorage.getItem('pg_rest'); //postgest schemaRest;
 //console.log(schema);
 
 const moModel = {
@@ -44,7 +44,7 @@ const moModel = {
     //let schema = window.localStorage.getItem('pg_rest');
     let id = model.field ? model.field : 'id',
     order = `?order=${id}.asc`;
-    let url = schema + model.url + order;
+    let url = pg_rest + model.url + order;
     console.log(url);
     return m.request({
       method: model.method,
@@ -67,7 +67,7 @@ const moModel = {
     model.options.forEach ( (t) => {
       let r = m.request({
         method: t.method ? t.method : "GET" ,
-        url: schema + t.url + order
+        url: pg_rest + t.url + order
       });
       data.push(r);
     });
@@ -91,7 +91,7 @@ const moModel = {
     return m.request({
       method: _method,
       data: data,
-      url: schema + _url
+      url: pg_rest + _url
     }).then(function(res) {
       model.list = res; // list of objects
       model.order = true;
@@ -133,7 +133,7 @@ const moModel = {
     // model - model object 
     //let schema = window.localStorage.getItem('pg_rest');
     let data = moModel.getFormData( form ),
-    url = schema + model.url,
+    url = pg_rest + model.url,
     method = data.method;
     //console.log ( data );
     //return false;

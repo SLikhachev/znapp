@@ -91,6 +91,7 @@ const vuMain = {
               Object.keys(appMenu).map( (appName) => {
                 let s = appName == vuMain.app ? ".pure-menu-selected":"",
                 li = "li.pure-menu-item" + s;
+                //console.log(appName, vuMain.app);
                 return m(li,
                   m('a.pure-menu-link', { href: appMenu[appName].href }, appMenu[appName].name)
                 );
