@@ -2,19 +2,19 @@
 
 import { vuTheader } from '../../apps/view/vuApp.js';
 import { restApi } from '../reportApi.js';
-import { moModel } from '../model/moModel.js';
+import { task_rest, moModel } from '../model/moModel.js';
 
 const fileForm = function(vnode) {
   
-  var model = vnode.attrs.model;
+  const model = vnode.attrs.model;
   //console.log(model);
   
-  var on_form_submit = function (event) {
+  const on_form_submit = function (event) {
     event.preventDefault();
-    return moModel.doUpload(event.target, model);
+    return moModel.doSubmit(event.target, model, "POST");
   };
   
-  var on_form_create = function (vnode) {
+  const on_form_create = function (vnode) {
     let inputs = vnode.dom.querySelectorAll('.inputfile');
     Array.prototype.forEach.call( inputs, ( input ) => {
       let label	 = input.nextElementSibling, labelVal = label.innerHTML;
@@ -34,28 +34,26 @@ const fileForm = function(vnode) {
     vnode.dom.addEventListener('submit', on_form_submit);
   };
   
-  var get_file_name = function(model) {
-    return model.file;
-    //return model.file.replace("\\", "\/").split('/').pop();
-  };
-  
-  var get_href = function(model) {
-    return model.rest_url + model.api_url + get_file_name(model);
+  const get_href = function(vnode, model) {
+    return task_rest + vnode.state.task_get_url + model.file;
   }
-  
   
   return {
   
   oninit(vnode) {
-    model.api_url = restApi.hosp.url;
+    vnode.state.task_get_url = restApi.hosp.get_url;
+    vnode.state.task_post_url = restApi.hosp.post_url;
   },
   
   view(vnode) {
     //console.log(model);
     return m('.pure-g', [
       m('.pure-u-1-3', [
-        m('form.pure-form.pure-form-stacked[action="/report/common/hosp/make_report"][method="POST"]',
-          { oncreate: on_form_create }, [
+        m('form.pure-form.pure-form-stacked', 
+            { action: vnode.state.task_post_url,
+              method: 'POST',
+              oncreate: on_form_create
+            }, [
           m('fieldset', [
             m('legend', "Отчет из файла ЕИР"),
             m('.pure-control-group', [
@@ -87,7 +85,7 @@ const fileForm = function(vnode) {
             model.done ? m('div', [
               m('h4.blue', model.message),
               m('span.blue', {style: "font-size: 1.2em"}, "Файл отчета: "),
-              m('a.pure-button', {href: get_href( model ), style: "font-size: 1.2 em"}, get_file_name( model ) ) 
+              m('a.pure-button', {href: get_href( vnode, model ), style: "font-size: 1.2 em"}, model.file ) 
            ]) : m('div', [
               m('h4.blue', model.message),
               m('span.blue', {style: "font-size: 1.2em"}, "Исходный файл: ", model.file )
