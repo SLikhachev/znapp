@@ -1,8 +1,13 @@
 // apps/apiConf.js
 
+//const moName = "Поликлиника №4";
+
 const appMenu = { // routing by Django
-  clinic : { href: "#", name: "Клиника"},     
+  clinic : { href: "#", name: "Клиника"},
+  travm: { href: "#", name: "Травма"},
+  stom: { href: "#", name: "Стоматолог"},
   sprav: { href: "/sprav", name: "Справочники"},
+  reestr: { href: "/reestr", name: "Реестры" },
   report: { href: "/report", name: "Отчеты"}
 };
 
@@ -176,39 +181,33 @@ const vuView = function(appMenu, view) {
   return m(vuMain, appMenu, view);
 };
 
-// src/report/reportApi.js
-
-const pgRest = {
-    volum: 'p146_report?insurer=eq.999&order=this_month.asc',
-};
-
 const restApi = {
     
-    hosp: {
-        post_url: "/report/common/hosp/make_report", //POST date, upload file
-        get_url: "/utils/file/hosp/report/", //GET report file
+    reestr_imp: {
+        post_url: "/reestr/import/", //POST date, upload file
     },
+    /*
     volum: {
         post_url: "/report/common/volum/make_report", //POST date
         get_url: "/utils/file/volum/report/" //GET report file
     },
-
+    */
 };
 
 const appApi = {
     root: "/",
-    surv: "/surv",
-    surv_hosp: "/surv/hosp",
-    surv_volum: "/surv/volum",
+    import: "/import",
+    reestr_imp: "/import/reestr",
+    //surv_volum: "/surv/volum",
 };
 
 const appMenu$1 = { subAppMenu: {
   
-  surv: {
-    nref: [`#!${appApi.surv}`, "Сводные"],
+  import: {
+    nref: [`#!${appApi.import}`, "Импорт"],
     items: [
-      [`#!${appApi.surv_hosp}`, "Госпитализация ЕИР"],
-      [`#!${appApi.surv_volum}`, "Объемы помощи"],
+      [`#!${appApi.reestr_imp}`, "Файлы реестров (DBF)"],
+      //[`#!${appApi.surv_volum}`, "Объемы помощи"],
       
     ]
   }
@@ -301,48 +300,7 @@ const moModel = {
 
 // src/report/model/moStruct.js
 
-// This object define how we shall render the particular table
-
-const moStruct = function() {
-  // every DBtable has id column is not showed in html table header
-  // Object.record:: Array(Name::String, Sortable::Bool (if any))
-  // record is String - name of table column -- property of DB record object
-  // every html table has last column to delete record purpose
-
-  var get_month = function (month) {
-    return [
-      "Январь",
-      "Февраль",
-      "Март",
-      "Апрель",
-      "Май",
-      "Июнь",
-      "Июль",
-      "Август",
-      "Сентябрь",
-      "Октябрь",
-      "Ноябрь",
-      "Декабрь"
-    ][ month-1 ];
-  };
-   
-   return {
-  // local 
-    p146_report: {
-      this_month: ["Месяц", get_month],    
-      pol_ambul_visits: ["Амбул визиты"],
-      pol_stac_visits: ["Стац визиты"],
-      pol_stom_uet: ["Стом УЕТ"],
-      pol_ambul_persons: ["Амбул персон"],
-      pol_stac_persons: ["Стац персон"],
-      pol_stom_persons: ["Стом персон"],
-      travma_ambul_visits: ["Травма визиты"],
-      travma_ambul_persons: ["Травма персон"],
-    },
-  };
-};
-
-// src/report/view/vuRdbf.js
+// src/reestr/view/vuRdbf.js
 
 const fileForm = function(vnode) {
   
@@ -373,16 +331,21 @@ const fileForm = function(vnode) {
     });
     vnode.dom.addEventListener('submit', on_form_submit);
   };
-  
-  const get_href = function(vnode, model) {
-    return task_rest + vnode.state.task_get_url + model.file;
-  };
-  
+
   return {
-  
+
   oninit(vnode) {
-    vnode.state.task_get_url = restApi.hosp.get_url;
-    vnode.state.task_post_url = restApi.hosp.post_url;
+    //vnode.state.task_get_url = restApi.hosp.get_url;
+    vnode.state.task_post_url = restApi.reestr_imp.post_url;
+    vnode.state.ftype = [
+      { id: 'rr', name: "Реестр", selected: true},
+      { id: 'rp', name: "Параклиника", selected: false},
+      { id: 'rs', name: "Стоматология", selected: false},
+    ];
+    vnode.state.month = () => {
+      let d = new Date(), y = d.getFullYear(), m = d.getMonth() + 1;
+        return `${y.toString()}-${m.toString()}`;
+    };
   },
   
   view(vnode) {
@@ -395,7 +358,7 @@ const fileForm = function(vnode) {
               oncreate: on_form_create
             }, [
           m('fieldset', [
-            m('legend', "Отчет из файла ЕИР"),
+            m('legend', "Импорт файлов реестров DBF"),
             m('.pure-control-group', [
             m('input.inputfile[type="file"][name="file"][id="file"]',
               {'data-multiple-caption': "{count} files selected", 'multiple':false }
@@ -404,7 +367,18 @@ const fileForm = function(vnode) {
             ]),
             m('.pure-control-group', [
               m('label[for=month]', 'Месяц'),
-              m('input.fname[id="month"][type="month"][name="month"][reqired=required]')
+              m('input.fname[id="month"][type="month"][name="month"][reqired=required]',
+                { value: vnode.state.month() }
+              )
+            ]),
+            m('.pure-control-group', [
+              m('label[for=ftype]', 'Тип файла'),
+              m('select[id=ftype][name=ftype]', [
+                vnode.state.ftype.map( type => m('option', {
+                  value: type.id,
+                  selected: type.selected ? true : false
+                }, type.name ) )
+              ])
             ]),
             m('.pure-controls', [
               m('label.pure-checkbox[for="test"]', [ 
@@ -414,7 +388,7 @@ const fileForm = function(vnode) {
             ]),
             m('.pure-controls', [
               m('button.pure-button pure-button-primary[type="submit"]',
-                { style: 'margin-top: 0.5em'}, "Загрузить")
+                { style: 'margin-top: 0.5em'}, "Импорт")
             ])  
           ])
         ])
@@ -422,16 +396,11 @@ const fileForm = function(vnode) {
       m('.pure-u-2-3', [
         model.error ? m('.error', model.error) :
           model.message ? m('.legend', ["Статус обработки", 
-            model.done ? m('div', [
-              m('h4.blue', model.message),
-              m('span.blue', {style: "font-size: 1.2em"}, "Файл отчета: "),
-              m('a.pure-button', {href: get_href( vnode, model ), style: "font-size: 1.2 em"}, model.file ) 
-           ]) : m('div', [
+            m('div', [
               m('h4.blue', model.message),
               m('span.blue', {style: "font-size: 1.2em"}, "Исходный файл: ", model.file )
-           ])
+            ])
           ]) : m('div')
-        
       ])
     ]);
   }
@@ -440,7 +409,7 @@ const fileForm = function(vnode) {
 
 
 // clojure
-const vuHosp = function (vnode) {
+const vuRdbf = function (vnode) {
     
   return {
   /*  
@@ -464,180 +433,26 @@ const vuHosp = function (vnode) {
   }; //return this object
 };
 
-// src/report/view/vuDataSheet.js
+// src/reestr/router/roImport.js
+//import { vuVolum } from '../view/vuRdbf.js';
 
-// clojure
-const vuDataSheet = function (vnode) {
-  
-  var modelObject = vnode.attrs.model, // model Object
-    structObject = vnode.attrs.struct, // the struct Object
-    headerString = vnode.attrs.header;
-  
-  return {
-    
-  oninit () {
-    moModel.getList( vnode.attrs.model );
-  },
-  /*
-  oncreate() {
-  },
-  
-  onupdate() {
-  },
-  */
-  listMap (s) {
-    //let id = s.code + ' ' + s.spec;
-    let first = true;
-    return m('tr', [
-      Object.keys(structObject).map( (column) => {
-        let field = structObject[column],
-        value = field[1] ? field[1]( s[column] ) : s[column]; // 2nd el is function if any
-        let td = first ? m('td.blue', {
-        }, value) : m('td', value);
-        first = false;
-        return td;
-      })
-    ]);
-  },
-
-  view (vnode) {
-    
-    //return m(tableView, {model: this.model , header: this.header }, [
-    return modelObject.error ? [ m(".error", modelObject.error) ] :
-      modelObject.list ? [
-        m(vuTheader, { header: headerString} ),
-        this.form ? m(this.form, {model:  vnode.attrs.model}) : '',
-        
-        
-        m('table.pure-table.pure-table-bordered[id=find_table]', [
-          m('thead', [
-            m('tr', [
-              Object.keys(structObject).map( (column) => {
-                let field = structObject[column];
-                return field[2] ? m('th.sortable', // 3rd el sortable bool
-                  { data: column, onclick: m.withAttr('data', modelObject.sort) },
-                  [field[0], m('i.fa.fa-sort.pl10')]
-                  ) : m('th', field[0]);
-              }),
-            ])
-          ]),
-          m('tbody', [modelObject.list.map( this.listMap )] )
-        ]),
-      ] : m(".loading-icon", [
-            m('.i.fa.fa-refresh.fa-spin.fa-3x.fa-fw'),
-            m('span.sr-only', 'Loading...')
-          ]); 
-  }
-  }; //return this object
-};
-
-// src/report/view/vuRdbf.js
-
-const Form = function(vnode) {
-  
-  const model = vnode.attrs.model;
-  //console.log(model);
-  
-  const update = function (event) {
-    //console.log('update');
-    event.preventDefault();
-    let form = document.getElementById("volume_form");
-    return moModel.doSubmit(form, model, "POST");
-  };
-  
-  const report = function (event) {
-    //console.log('report');
-    event.preventDefault();
-    let form = document.getElementById("volume_form");
-    return moModel.doSubmit(form, model, "GET");
-  };
-
-  const get_href = function(vnode, model) {
-    return task_rest + vnode.state.task_get_url + model.file;
-  };
-  
-  return {
-  
-  oninit(vnode) {
-    vnode.state.task_get_url = restApi.volum.get_url;
-    vnode.state.task_post_url = restApi.volum.post_url;
-  },
-  
-  view(vnode) {
-    //console.log(model);
-    return [ m('.pure-g', [
-      m('.pure-u-1-3', [
-        m('form.pure-form.pure-form-stacked[id="volume_form"]',
-            { action: vnode.state.task_post_url,
-            }, [
-          m('fieldset', [
-            m('legend', "Расчет объемов"),
-            m('.pure-control-group', [
-              m('label[for=month]', 'Месяц'),
-              m('input[id="month"][type="month"][name="month"][reqired=required]')
-            ]),
-            m('.pure-controls', [
-              m('label.pure-checkbox[for="test"]', [
-                m('input[id="test"][type="checkbox"][name="test"]'),
-                m('span', { style: "padding: 0px 5px 3px;"}, "Тест"),
-              ])
-            ]),
-            m('.pure-controls', [
-              m('button.pure-button[type="button"]',
-                { style: "font-size: 1.2em",
-                  onclick: update
-                }, "Обновить"),
-              m('button.pure-button.pure-button-primary[type="button"]',
-                { style: "font-size: 1.2em; margin-left: 2em;",
-                  onclick: report
-                }, "Отчет")
-            ])
-          ])
-        ])
-      ]),
-      m('.pure-u-2-3',
-        model.error ? m('.error', model.error) :
-        model.message ? m('.legend', ["Статус обработки",
-          model.done ? m('div', [
-            m('h4.blue', model.message),
-            m('span.blue', {style: "font-size: 1.2em"}, "Файл отчета: "),
-            m('a.pure-button', {href: get_href( vnode, model ), style: "font-size: 1.2 em"}, model.file ) 
-          ]) : m('div', m('h4.blue', model.message))
-        ]) : m('div')
-      )
-    ])
-  ];
-  }
-}  
-};
-
-
-// clojure
-const vuVolum = function (vnode) {
-  //console.log(vnode.attrs.model.pg_url);
-  let view = vuDataSheet(vnode);
-  view.form = Form;
-  return view;
-};
-
-// src/report/router/roImport.js
-
-const roSurvey = {
-  [appApi.surv]: {
+const roImport = {
+  [appApi.import]: {
     render: function() {
-      return vuView(appMenu$1, m(vuApp, { text: "Отчеты сводные" } ) );
+      return vuView(appMenu$1, m(vuApp, { text: "Импорт файлов" } ) );
     }
   },
-  [appApi.surv_hosp]: {
+  [appApi.reestr_imp]: {
     render: function() {
-      let view = m(vuHosp, {
-        header: "Госпитализация отчет из файда ЕИР",
+      let view = m(vuRdbf, {
+        header: "Импорт реестов DBF",
         model: moModel.getModel()
         
       });
       return vuView(appMenu$1, view);
     }
   },
+  /*
   [appApi.surv_volum]: {
     render: function() {
       //console.log(pgRest.volum);
@@ -647,23 +462,24 @@ const roSurvey = {
         struct: moStruct().p146_report,
         //form: true
       });
-      return vuView(appMenu$1, view);
+      return vuView(appMenu, view);
     }
   },
+  */
 };
 
-// src/report/router_report.js
+// src/reestr/router_reestr.js
 //import { roTfoms } from './router/roTfoms.js';
 //import { roOnko } from './router/roOnko.js';
 
-const reportRouter = { [appApi.root]: {
-    render: function() {
-       return vuView( appMenu$1,
-          m(vuApp, { text: "Медстатистика: Отчеты" }));
+const reestrRouter = { [appApi.root]: {
+    render: function () {
+        return vuView(appMenu$1,
+            m(vuApp, {text: "Медстатистика: Реестры ОМС"}));
     }
-  }
+}
 };
 
-Object.assign(reportRouter, roSurvey); //, roTfoms, roOnko);
+Object.assign(reestrRouter, roImport);
 
-m.route(document.body, "/", reportRouter);
+m.route(document.body, "/", reestrRouter);

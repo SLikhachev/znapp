@@ -1,24 +1,22 @@
 // src/reestr/router_reestr.js
 
-// common
-import { vuMain } from '../apps/view/vuMain.js';
-import { reestrApi, reestrMenu } from './resstrApi.js';
-import { vuReestr } from './view/vuReestr.js';
+import { vuApp, vuView } from '../apps/view/vuApp.js';
+//report
+import { appApi, appMenu } from './reestrApi.js';
+// routers
+import { roImport } from './router/roImport.js';
+//import { roTfoms } from './router/roTfoms.js';
+//import { roOnko } from './router/roOnko.js';
 
-import { vuImports } from './view/vuImports.js'
-
-m.route(document.body, "/", {
-  [reestrApi.root]: {
-    render: function() {
-      return m(vuMain, reestrMenu,
-        m(vuClinic, { text: "Медстатистика: Реестры ОМС" }));
+const reestrRouter = { [appApi.root]: {
+    render: function () {
+        return vuView(appMenu,
+            m(vuApp, {text: "Медстатистика: Реестры ОМС"}));
     }
-  },
-  [reestrApi.imports] : {
-    render : function() {
-        return m(vuMain, reestrMenu, m(vuImports) );
-      }
-  },
+}
+};
 
-})
+Object.assign(reestrRouter, roImport)
+
+m.route(document.body, "/", reestrRouter);
 
