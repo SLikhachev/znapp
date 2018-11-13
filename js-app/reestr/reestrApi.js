@@ -5,7 +5,7 @@ const pgRest = {
     //reestr: 'p146_report?insurer=eq.999&order=this_month.asc',
 }
 
-const restApi = {
+const taskApi = {
     
     reestr_imp: {
         post_url: "/reestr/import/reestr", //POST date, upload file
@@ -38,4 +38,4 @@ const appMenu = { subAppMenu: {
 }
 };
 
-export { pgRest, restApi, appApi, appMenu };
+export { pgRest, taskApi, appApi, appMenu };

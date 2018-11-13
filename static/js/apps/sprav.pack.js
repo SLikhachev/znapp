@@ -1,9 +1,14 @@
 // apps/apiConf.js
 
+//const moName = "Поликлиника №4";
+
 const appMenu = { // routing by Django
-  clinic : { href: "#", name: "Клиника"},     
+  clinic : { href: "#", name: "Клиника"},
+  travm: { href: "#", name: "Травма"},
+  stom: { href: "#", name: "Стоматолог"},
   sprav: { href: "/sprav", name: "Справочники"},
-  reports: { href: "/report", name: "Отчеты"}
+  reestr: { href: "/reestr", name: "Реестры" },
+  report: { href: "/report", name: "Отчеты"}
 };
 
 //const moName = document.getElementsByTagName('title')[0].innerHTML;
@@ -93,6 +98,7 @@ const vuMain = {
               Object.keys(appMenu).map( (appName) => {
                 let s = appName == vuMain.app ? ".pure-menu-selected":"",
                 li = "li.pure-menu-item" + s;
+                //console.log(appName, vuMain.app);
                 return m(li,
                   m('a.pure-menu-link', { href: appMenu[appName].href }, appMenu[appName].name)
                 );
@@ -262,22 +268,22 @@ const spravMenu = { subAppMenu: {
   onko: {
     nref: [`#!${spravApi.onko}`, "Онкология"],
     items: [
-      [`#!${spravApi.onko_n1}`, "Причины отказов"],
-      [`#!${spravApi.onko_n2}`, "Стадии"],
-      [`#!${spravApi.onko_n3}`, "Tumor"],
-      [`#!${spravApi.onko_n4}`, "Nodus"],
-      [`#!${spravApi.onko_n5}`, "Метазстазы"],
-      [`#!${spravApi.onko_n7}`, "Гистология"],
-      [`#!${spravApi.onko_n8}`, "Гистология результат"],
-      [`#!${spravApi.onko_n9}`, "Гистология диагноз"],
-      [`#!${spravApi.onko_n10}`, "Онкомаркеры"],
-      [`#!${spravApi.onko_n11}`, "Онкомаркеры значение"],
-      [`#!${spravApi.onko_n12}`, "Онкомаркеры диагноз"],
-      [`#!${spravApi.onko_n13}`, "Тип лечения"],
-      [`#!${spravApi.onko_n14}`, "Хирургическое лечение"],
-      [`#!${spravApi.onko_n15}`, "Лекарственные линии"],
-      [`#!${spravApi.onko_n16}`, "Лекарственные циклы"],
-      [`#!${spravApi.onko_n17}`, "Лучевая терапия"],
+      [`#!${spravApi.onko_n1}`, "1. Причины отказов"],
+      [`#!${spravApi.onko_n2}`, "2. Стадии"],
+      [`#!${spravApi.onko_n3}`, "3. Tumor"],
+      [`#!${spravApi.onko_n4}`, "4. Nodus"],
+      [`#!${spravApi.onko_n5}`, "5. Метазстазы"],
+      [`#!${spravApi.onko_n7}`, "7. Гистология"],
+      [`#!${spravApi.onko_n8}`, "8. Гистология результат"],
+      [`#!${spravApi.onko_n9}`, "9. Гистология диагноз"],
+      [`#!${spravApi.onko_n10}`, "10. Онкомаркеры"],
+      [`#!${spravApi.onko_n11}`, "11. Онкомаркеры значение"],
+      [`#!${spravApi.onko_n12}`, "12. Онкомаркеры диагноз"],
+      [`#!${spravApi.onko_n13}`, "13. Тип лечения"],
+      [`#!${spravApi.onko_n14}`, "14. Хирург лечение"],
+      [`#!${spravApi.onko_n15}`, "15. Лекарственные линии"],
+      [`#!${spravApi.onko_n16}`, "16. Лекарственные циклы"],
+      [`#!${spravApi.onko_n17}`, "17. Лучевая терапия"],
     ]
   },
   
@@ -297,7 +303,7 @@ const spravMenu = { subAppMenu: {
 
 // src/apps/model/moModel.js
 
-const schema = window.localStorage.getItem('pg_rest'); //schemaRest;
+const pg_rest = window.localStorage.getItem('pg_rest'); //postgest schemaRest;
 //console.log(schema);
 
 const moModel = {
@@ -338,7 +344,7 @@ const moModel = {
     //let schema = window.localStorage.getItem('pg_rest');
     let id = model.field ? model.field : 'id',
     order = `?order=${id}.asc`;
-    let url = schema + model.url + order;
+    let url = pg_rest + model.url + order;
     console.log(url);
     return m.request({
       method: model.method,
@@ -361,7 +367,7 @@ const moModel = {
     model.options.forEach ( (t) => {
       let r = m.request({
         method: t.method ? t.method : "GET" ,
-        url: schema + t.url + order
+        url: pg_rest + t.url + order
       });
       data.push(r);
     });
@@ -385,7 +391,7 @@ const moModel = {
     return m.request({
       method: _method,
       data: data,
-      url: schema + _url
+      url: pg_rest + _url
     }).then(function(res) {
       model.list = res; // list of objects
       model.order = true;
@@ -427,7 +433,7 @@ const moModel = {
     // model - model object 
     //let schema = window.localStorage.getItem('pg_rest');
     let data = moModel.getFormData( form ),
-    url = schema + model.url,
+    url = pg_rest + model.url,
     method = data.method;
     //console.log ( data );
     //return false;
@@ -1306,7 +1312,7 @@ const roLocal = {
   [spravApi.mo_doct]: {
     render: function() {
       let view = m(vuDoctor, {
-        model: moModel.getModel(restApi.doctor), 
+        model: moModel.getModel(restApi.doctor),
         header: "Врачи",
         name: "Врач",
         find: 3, // search in the first 3 table columns

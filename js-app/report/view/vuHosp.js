@@ -1,7 +1,7 @@
 // src/report/view/vuHosp.js
 
 import { vuTheader } from '../../apps/view/vuApp.js';
-import { restApi } from '../reportApi.js';
+import { taskApi } from '../reportApi.js';
 import { task_rest, moModel } from '../model/moModel.js';
 
 const fileForm = function(vnode) {
@@ -41,8 +41,12 @@ const fileForm = function(vnode) {
   return {
   
   oninit(vnode) {
-    vnode.state.task_get_url = restApi.hosp.get_url;
-    vnode.state.task_post_url = restApi.hosp.post_url;
+    vnode.state.task_get_url = taskApi.hosp.get_url;
+    vnode.state.task_post_url = taskApi.hosp.post_url;
+     vnode.state.month = () => {
+      let d = new Date(), y = d.getFullYear(), m = d.getMonth() + 1;
+        return `${y.toString()}-${m.toString()}`;
+    }
   },
   
   view(vnode) {
@@ -64,7 +68,9 @@ const fileForm = function(vnode) {
             ]),
             m('.pure-control-group', [
               m('label[for=month]', 'Месяц'),
-              m('input.fname[id="month"][type="month"][name="month"][reqired=required]')
+              m('input.fname[id="month"][type="month"][name="month"][reqired=required]',
+                 { value: vnode.state.month() }
+              )
             ]),
             m('.pure-controls', [
               m('label.pure-checkbox[for="test"]', [ 

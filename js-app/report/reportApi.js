@@ -5,7 +5,7 @@ const pgRest = {
     volum: 'p146_report?insurer=eq.999&order=this_month.asc',
 }
 
-const restApi = {
+const taskApi = {
     
     hosp: {
         post_url: "/report/common/hosp/make_report", //POST date, upload file
@@ -39,4 +39,4 @@ const appMenu = { subAppMenu: {
 }
 
 
-export { pgRest, restApi, appApi, appMenu };
+export { pgRest, taskApi, appApi, appMenu };

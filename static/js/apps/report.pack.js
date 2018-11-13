@@ -1,8 +1,13 @@
 // apps/apiConf.js
 
+//const moName = "Поликлиника №4";
+
 const appMenu = { // routing by Django
-  clinic : { href: "#", name: "Клиника"},     
+  clinic : { href: "#", name: "Клиника"},
+  travm: { href: "#", name: "Травма"},
+  stom: { href: "#", name: "Стоматолог"},
   sprav: { href: "/sprav", name: "Справочники"},
+  reestr: { href: "/reestr", name: "Реестры" },
   report: { href: "/report", name: "Отчеты"}
 };
 
@@ -182,7 +187,7 @@ const pgRest = {
     volum: 'p146_report?insurer=eq.999&order=this_month.asc',
 };
 
-const restApi = {
+const taskApi = {
     
     hosp: {
         post_url: "/report/common/hosp/make_report", //POST date, upload file
@@ -342,7 +347,7 @@ const moStruct = function() {
   };
 };
 
-// src/report/view/vuRdbf.js
+// src/report/view/vuHosp.js
 
 const fileForm = function(vnode) {
   
@@ -381,8 +386,12 @@ const fileForm = function(vnode) {
   return {
   
   oninit(vnode) {
-    vnode.state.task_get_url = restApi.hosp.get_url;
-    vnode.state.task_post_url = restApi.hosp.post_url;
+    vnode.state.task_get_url = taskApi.hosp.get_url;
+    vnode.state.task_post_url = taskApi.hosp.post_url;
+     vnode.state.month = () => {
+      let d = new Date(), y = d.getFullYear(), m = d.getMonth() + 1;
+        return `${y.toString()}-${m.toString()}`;
+    };
   },
   
   view(vnode) {
@@ -404,7 +413,9 @@ const fileForm = function(vnode) {
             ]),
             m('.pure-control-group', [
               m('label[for=month]', 'Месяц'),
-              m('input.fname[id="month"][type="month"][name="month"][reqired=required]')
+              m('input.fname[id="month"][type="month"][name="month"][reqired=required]',
+                 { value: vnode.state.month() }
+              )
             ]),
             m('.pure-controls', [
               m('label.pure-checkbox[for="test"]', [ 
@@ -531,7 +542,7 @@ const vuDataSheet = function (vnode) {
   }; //return this object
 };
 
-// src/report/view/vuRdbf.js
+// src/report/view/vuVolum.js
 
 const Form = function(vnode) {
   
@@ -559,8 +570,12 @@ const Form = function(vnode) {
   return {
   
   oninit(vnode) {
-    vnode.state.task_get_url = restApi.volum.get_url;
-    vnode.state.task_post_url = restApi.volum.post_url;
+    vnode.state.task_get_url = taskApi.volum.get_url;
+    vnode.state.task_post_url = taskApi.volum.post_url;
+    vnode.state.month = () => {
+      let d = new Date(), y = d.getFullYear(), m = d.getMonth() + 1;
+        return `${y.toString()}-${m.toString()}`;
+    };
   },
   
   view(vnode) {
@@ -574,7 +589,9 @@ const Form = function(vnode) {
             m('legend', "Расчет объемов"),
             m('.pure-control-group', [
               m('label[for=month]', 'Месяц'),
-              m('input[id="month"][type="month"][name="month"][reqired=required]')
+              m('input[id="month"][type="month"][name="month"][reqired=required]',
+                 { value: vnode.state.month() }
+              )
             ]),
             m('.pure-controls', [
               m('label.pure-checkbox[for="test"]', [
@@ -620,7 +637,7 @@ const vuVolum = function (vnode) {
   return view;
 };
 
-// src/report/router/roImport.js
+// src/report/router/roSurvey.js
 
 const roSurvey = {
   [appApi.surv]: {

@@ -17,6 +17,7 @@ const moModel = {
       list: null,
       error: null,
       message: null,
+      detail: null,
       file: null,
       done: false
     };  
@@ -67,11 +68,10 @@ const moModel = {
             url: task_rest + upurl + get_param,
             data: data,
         }).then((res) => {
-            if (res.file) {
-                model.file = res.file;
-            }
+            model.file = res.file ? res.file: null;
             model.message = res.message;
-            model.done = res.done;
+            model.detail = res.detail ? res.detail: null;
+            model.done = res.done ? res.done : null;
             //console.log(` msg: ${model.message}, file: ${model.file}, done: ${model.done}`);
             form.classList.remove('disable');
         }).catch((err) => {

@@ -1,7 +1,7 @@
 // src/reestr/view/vuRdbf.js
 
 import { vuTheader } from '../../apps/view/vuApp.js';
-import { restApi } from '../reestrApi.js';
+import { taskApi } from '../reestrApi.js';
 import { task_rest, moModel } from '../model/moModel.js';
 
 const fileForm = function(vnode) {
@@ -11,6 +11,7 @@ const fileForm = function(vnode) {
   
   const on_form_submit = function (event) {
     event.preventDefault();
+
     return moModel.doSubmit(event.target, model, "POST");
   };
   
@@ -38,12 +39,14 @@ const fileForm = function(vnode) {
 
   oninit(vnode) {
     //vnode.state.task_get_url = restApi.hosp.get_url;
-    vnode.state.task_post_url = restApi.reestr_imp.post_url;
+    vnode.state.task_post_url = taskApi.reestr_imp.post_url;
+    /*
     vnode.state.ftype = [
       { id: 'rr', name: "Реестр", selected: true},
       { id: 'rp', name: "Параклиника", selected: false},
       { id: 'rs', name: "Стоматология", selected: false},
     ]
+    */
     vnode.state.month = () => {
       let d = new Date(), y = d.getFullYear(), m = d.getMonth() + 1;
         return `${y.toString()}-${m.toString()}`;
@@ -73,6 +76,7 @@ const fileForm = function(vnode) {
                 { value: vnode.state.month() }
               )
             ]),
+            /*
             m('.pure-control-group', [
               m('label[for=ftype]', 'Тип файла'),
               m('select[id=ftype][name=ftype]', [
@@ -82,10 +86,11 @@ const fileForm = function(vnode) {
                 }, type.name ) )
               ])
             ]),
+            */
             m('.pure-controls', [
               m('label.pure-checkbox[for="test"]', [ 
                 m('input[id="test"][type="checkbox"][name="test"]'),
-                m('span', { style: "padding: 0px 5px 3px;"}, "Тестовый режим")
+                m('span', { style: "padding: 0px 5px 3px;"}, "Тест")
               ])
             ]),
             m('.pure-controls', [
@@ -99,8 +104,11 @@ const fileForm = function(vnode) {
         model.error ? m('.error', model.error) :
           model.message ? m('.legend', ["Статус обработки", 
             m('div', [
+
               m('h4.blue', model.message),
-              m('span.blue', {style: "font-size: 1.2em"}, "Исходный файл: ", model.file )
+              m('span.blue', {style: "font-size: 1.2em"}, "Исходный файл: ", model.file ),
+              model.detail ? m('h4.red', model.detail) : '',
+
             ])
           ]) : m('div')
       ])
