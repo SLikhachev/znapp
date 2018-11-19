@@ -181,12 +181,13 @@ restApi = {
     onko_n3: {url: 'n3_tumor'},
     onko_n4: {url: 'n4_nodus'},
     onko_n5: {url: 'n5_metastaz'},
+    onko_n6: {url: 'rpc/onko_tnm'},
     onko_n7: {url: 'n7_hystolog'},
-    onko_n8: {url: 'onko_hysto_n8'},
-    onko_n9: {url: 'onko_hysto_n9'},
+    onko_n8: {url: 'onko_hysto_n8'}, // pg base view
+    onko_n9: {url: 'onko_hysto_n9'}, // pg_base view
     onko_n10: {url: 'n10_mark'},
-    onko_n11: {url: 'onko_mark_n11'},
-    onko_n12: {url: 'onko_mark_n12'},
+    onko_n11: {url: 'onko_mark_n11'}, // pg base view
+    onko_n12: {url: 'onko_mark_n12'}, // pg base view
     onko_n13: {url: 'n13_lech_type'},
     onko_n14: {url: 'n14_hirlech_type'},
     onko_n15: {url: 'n15_leklech_line'},
@@ -221,6 +222,7 @@ const spravApi = {
     onko_n3: "/onko/n3",
     onko_n4: "/onko/n4",
     onko_n5: "/onko/n5",
+    onko_n6: "/onko/n6",
     onko_n7: "/onko/n7",
     onko_n8: "/onko/n8",
     onko_n9: "/onko/n9",
@@ -273,16 +275,17 @@ const spravMenu = { subAppMenu: {
       [`#!${spravApi.onko_n3}`, "3. Tumor"],
       [`#!${spravApi.onko_n4}`, "4. Nodus"],
       [`#!${spravApi.onko_n5}`, "5. Метазстазы"],
+      [`#!${spravApi.onko_n6}`, "6. DS TNM"],
       [`#!${spravApi.onko_n7}`, "7. Гистология"],
-      [`#!${spravApi.onko_n8}`, "8. Гистология результат"],
-      [`#!${spravApi.onko_n9}`, "9. Гистология диагноз"],
+      [`#!${spravApi.onko_n8}`, "8. Гистолог результ"],
+      [`#!${spravApi.onko_n9}`, "9. Гистолог диагноз"],
       [`#!${spravApi.onko_n10}`, "10. Онкомаркеры"],
-      [`#!${spravApi.onko_n11}`, "11. Онкомаркеры значение"],
-      [`#!${spravApi.onko_n12}`, "12. Онкомаркеры диагноз"],
+      [`#!${spravApi.onko_n11}`, "11. Онкомарк знач"],
+      [`#!${spravApi.onko_n12}`, "12. Онкомарк диаг"],
       [`#!${spravApi.onko_n13}`, "13. Тип лечения"],
       [`#!${spravApi.onko_n14}`, "14. Хирург лечение"],
-      [`#!${spravApi.onko_n15}`, "15. Лекарственные линии"],
-      [`#!${spravApi.onko_n16}`, "16. Лекарственные циклы"],
+      [`#!${spravApi.onko_n15}`, "15. Лекарств линии"],
+      [`#!${spravApi.onko_n16}`, "16. Лекарств циклы"],
       [`#!${spravApi.onko_n17}`, "17. Лучевая терапия"],
     ]
   },
@@ -402,7 +405,7 @@ const moModel = {
   },
   
   sort(model, id=null) {
-    console.log(id);
+    //console.log(id);
     let order = model.order ? 'desc' : 'asc';
     let field = id ? id : 'id'; 
     model.list = _.orderBy(model.list, [ field ], [ order ]);
@@ -869,6 +872,17 @@ const moStruct = {
   onko_n3: onko_(),
   onko_n4: onko_(),
   onko_n5: onko_(),
+  onko_n6: {
+    ds_code: ['Диагноз'],
+    stady_id: ['Код Стадия'],
+    //st_kod: ['Стадия'],
+    tumor_id: ['Код Tumor'],
+    //tm_kod: ['Tumor'],
+    nodus_id: ['Код Nodus'],
+    //nd_kod: ['Nodus'],
+    metas_id: ['Код Метастаз'],
+    //meta_kod:['Метастаз']
+  },
   onko_n8: {
     id: ["Индекс"], 
     hysto_name: ["Наименование гистологии"], 
@@ -1485,6 +1499,223 @@ const roTfoms = {
   },
 };
 
+// src/sprav/view/vuComboSheet.js
+
+// clojure
+const vuComboSheet = function (vnode) {
+  
+  let modelObject = vnode.attrs.model, // model Object
+    headerString = vnode.attrs.header, // String: page header 
+    listMap = vnode.attrs.listMap, // list mapping function
+    findForm = vnode.attrs.findForm, // form to find
+    //nameString = vnode.attrs.name, // String: models item name
+    filterForm = vnode.attrs.filter, //
+    structObject = vnode.attrs.struct; // the struct Object
+  let init = true;
+  return {
+    
+  oninit () {
+    //moModel.getList( vnode.attrs.model );
+    //moModel.getData( vnode.attrs.model );
+  },
+  /*
+  oncreate() {
+  },
+  */
+  onbeforeupdate(vnode) {
+    init = false;
+  },
+
+    view: function () {
+
+      //return m(tableView, {model: this.model , header: this.header }, [
+      return [
+        m(vuTheader, {header: headerString}),
+        m(findForm, {model: modelObject}),
+        init ? m('h1.blue', {style: "font-size: 1.2em;"}, 'Выбрать диагноз и стадию') :
+          modelObject.error ? [m(".error", modelObject.error)] :
+            modelObject.list ? [
+              modelObject.list[0] ? [
+                //m(vuFind, {cols: findInt} ),
+                m(filterForm),
+                m('table.pure-table.pure-table-bordered[id=find_table]', [
+                  m('thead', [
+                    m('tr', [
+                      Object.keys(structObject).map( (column) => {
+                        return m('th', structObject[column][0]);
+                        }
+                      ) // not sorted
+                    ]),
+                  ]),
+                  m('tbody', [modelObject.list.map(listMap)])
+                ])
+              ] : m('h1.blue', {style: "font-size: 1.2em;"}, "Нет таких записей")
+            ] : m(".loading-icon", [
+              m('.i.fa.fa-refresh.fa-spin.fa-3x.fa-fw'),
+              m('span.sr-only', 'Loading...')
+            ])
+        ];
+    }
+  }; //return this object
+};
+
+const dsFind = function (vnode) {
+
+  //let model = vnode.attrs.model;
+  let on_submit = function (event) {
+    // button FIND click event handler callback
+    event.preventDefault();
+    let data = moModel.getFormData( $('form#ds_find') );
+    //console.log ( data );
+    //return false;
+    //data.lim = 50;
+    //data.offs = 1;
+    moModel.getViewRpc(
+      vnode.attrs.model,
+      data
+    );
+    //m.redraw();
+    return false;
+  };
+
+  return {
+
+    oninit(vnode) {
+      vnode.attrs.model.method='POST';
+      vnode.attrs.model.url =restApi.onko_n6.url;
+    },
+
+    view(vnode) {
+
+      return m(".pure-g",
+        m(".pure-u-1-2",
+          m("form.pure-form[id=ds_find]",
+            m("fieldset",
+              m(".pure-g", [
+                m(".pure-u-1-5",
+                  m("input.input-find.pure-u-3-4[name=ds][type='search']",
+                    {
+                      placeholder: "Диагноз",
+                      //onkeyup: m.withAttr("value", (c => c.toUpperCase()) ),
+                      //value: vmFind.toFind
+                    }
+                  )
+                ),
+                m(".pure-u-1-5",
+                  m("input.input-find.pure-u-3-4[name=stady][type='search']",
+                    {placeholder: "Стадия (число)"}
+                  )
+                ),
+                m(".pure-u-1-5",
+                  m('button.pure-button.pure-button-primary[type="button"]', {
+                      //value: 0,
+                      onclick: on_submit
+                    },
+                    "Выбрать"
+                  )
+                ),
+              ])
+            )
+          )
+        )
+      );
+    }
+  }
+};
+
+
+const listTnm = function (s) {
+  let first = true;
+  return m('tr', [
+    Object.keys(moStruct.onko_n6).map( (column) => {
+      let cell;
+      switch (column) {
+        case 'ds_code': cell = s[column];
+          break;
+        case 'stady_id': cell = `${s['stady_id']}. ${s['st_kod']}`;
+          break;
+        case 'tumor_id': cell = `${s['tumor_id']}. ${s['tm_kod']}`;
+          break;
+        case 'nodus_id': cell = `${s['nodus_id']}. ${s['nd_kod']}`;
+          break;
+        case 'metas_id': cell = `${s['metas_id']}. ${s['meta_kod']}`;
+          break;
+        default: cell = 'NULL';
+      }
+      let td = first ? m('td.choice.blue', cell) : m('td', cell);
+      first = false;
+      return td;
+    })
+  ])
+};
+
+const vmFind$1 = {
+
+  toFind: "",
+  inCol: {tumor_id:3, nodus_id:4, metas_id: 5 },
+
+  find(event) {
+    let id = event.target.id;
+    vmFind$1.toFind = event.target.value.toLowerCase();
+    let col = vmFind$1.inCol [ id ];
+    $.each($('table#find_table tbody tr'), function (ind, tr) {
+      let subtr = $(tr).children().slice(col - 1, col);
+      //console.log( subtr );
+      if (subtr.text().toLowerCase().indexOf(vmFind$1.toFind) === -1) {
+        $(tr).hide();
+      } else {
+        $(tr).show();
+      }
+      m.redraw();
+    });
+  }
+};
+
+const tnmFilter = {
+
+  oninit(vnode) {
+    vmFind$1.toFind = "";
+  },
+
+  view (vnode) {
+    return m(".pure-g",
+      m(".pure-u-1-2", [
+        m('span.blue', {style: "font-size: 1em"}, "Найти в колонках "),
+        m("form.pure-form",
+          m("fieldset",
+            m(".pure-g", [
+              m(".pure-u-1-5",
+                m("input.input-find.pure-u-3-4[id='tumor_id'][type='search']",
+                  {placeholder: "Tumor",
+                  onkeyup: vmFind$1.find,
+                  //value: vmFind.toFind
+                  }
+                )
+              ),
+              m(".pure-u-1-5",
+                m("input.input-find.pure-u-3-4[id='nodus_id'][type='search']",
+                  {placeholder: "Nodus",
+                  onkeyup: vmFind$1.find,
+                  //value: vmFind.toFind
+                  }
+                )
+              ),
+              m(".pure-u-1-5",
+                m("input.input-find.pure-u-3-4[id='metas_id'][type='search']",
+                  {placeholder: "Метас",
+                  onkeyup: vmFind$1.find,
+                  //value: vmFind.toFind
+                  }
+                )
+              ),
+            ])
+          )
+        ),
+      ])
+    );
+  }
+};
+
 // src/sprav/router/roOnko.js
 
 const vuN1 = function(vnode){
@@ -1501,6 +1732,9 @@ const vuN4 = function(vnode){
 };
 const vuN5 = function(vnode){
   return vuDataSheet(vnode);
+};
+const vuN6 = function(vnode){
+  return vuComboSheet(vnode);
 };
 const vuN7 = function(vnode){
   return vuCatalog(vnode);
@@ -1597,6 +1831,21 @@ const roOnko = {
           name: "Метастазы",
           find: 2, // search in the first 1 table columns
           struct: moStruct.onko_n5
+      });
+      return vuView(view);
+    }
+  },
+  [spravApi.onko_n6]: {
+    render: function() {
+      let view = m(vuN6, {
+          model:  moModel.getModel( restApi.onko_n6 ),
+          header: "Сопоставление DS TNM",
+          findForm: dsFind,
+          listMap: listTnm,
+          filter: tnmFilter,
+        //name: "",
+
+          struct: moStruct.onko_n6
       });
       return vuView(view);
     }

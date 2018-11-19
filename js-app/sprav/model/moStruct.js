@@ -68,6 +68,17 @@ const moStruct = {
   onko_n3: onko_(),
   onko_n4: onko_(),
   onko_n5: onko_(),
+  onko_n6: {
+    ds_code: ['Диагноз'],
+    stady_id: ['Код Стадия'],
+    //st_kod: ['Стадия'],
+    tumor_id: ['Код Tumor'],
+    //tm_kod: ['Tumor'],
+    nodus_id: ['Код Nodus'],
+    //nd_kod: ['Nodus'],
+    metas_id: ['Код Метастаз'],
+    //meta_kod:['Метастаз']
+  },
   onko_n8: {
     id: ["Индекс"], 
     hysto_name: ["Наименование гистологии"], 

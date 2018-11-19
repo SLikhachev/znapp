@@ -102,7 +102,7 @@ const moModel = {
   },
   
   sort(model, id=null) {
-    console.log(id);
+    //console.log(id);
     let order = model.order ? 'desc' : 'asc';
     let field = id ? id : 'id'; 
     model.list = _.orderBy(model.list, [ field ], [ order ]);

@@ -9,6 +9,8 @@ import { moStruct } from '../model/moStruct.js';
 //
 import { vuCatalog } from '../view/vuCatalog.js';
 import { vuDataSheet } from '../view/vuDataSheet.js';
+import { vuComboSheet } from '../view/vuComboSheet.js';
+import { dsFind, listTnm, tnmFilter } from '../view/dsTNM.js'
 
 const vuN1 = function(vnode){
   return vuCatalog(vnode);
@@ -24,6 +26,9 @@ const vuN4 = function(vnode){
 }
 const vuN5 = function(vnode){
   return vuDataSheet(vnode);
+}
+const vuN6 = function(vnode){
+  return vuComboSheet(vnode);
 }
 const vuN7 = function(vnode){
   return vuCatalog(vnode);
@@ -120,6 +125,21 @@ const roOnko = {
           name: "Метастазы",
           find: 2, // search in the first 1 table columns
           struct: moStruct.onko_n5
+      });
+      return vuView(view);
+    }
+  },
+  [spravApi.onko_n6]: {
+    render: function() {
+      let view = m(vuN6, {
+          model:  moModel.getModel( restApi.onko_n6 ),
+          header: "Сопоставление DS TNM",
+          findForm: dsFind,
+          listMap: listTnm,
+          filter: tnmFilter,
+        //name: "",
+
+          struct: moStruct.onko_n6
       });
       return vuView(view);
     }
