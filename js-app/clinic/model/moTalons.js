@@ -1,13 +1,13 @@
 // src/apps/model/moTalons.js
 
-import { restApi } from '../clinicApi.js';
+import {restClinic } from '../clinicApi.js';
 import { moModel } from '../../apps/model/moModel.js';
 
 const moTalonsList = {
   
   model : {
-    url: restApi.talon_find.url,
-    method: restApi.talon_find.method,
+    url: restClinic.talon_find.url,
+    method: restClinic.talon_find.method,
     list: null, // main data list (showing in table page)
     error: null, // Promise all error
     order: true, // for list
@@ -53,8 +53,8 @@ const moTalonsList = {
 const moTalon = {
   
   model : {
-    url: restApi.get_talon.url,
-    method: restApi.get_talon.method,
+    url: restClinic.get_talon.url,
+    method: restClinic.get_talon.method,
     list: null, 
     error: null
   },

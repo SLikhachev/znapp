@@ -1,15 +1,9 @@
-// apps/apiConf.js
+// src/apps/view/vuMain.js
 
-//const moName = "Поликлиника №4";
+//import { moName, appMenu } from '../apiConf.js';
+//import { appMenu } from '../apiConf.js';
 
-const appMenu = { // routing by Django
-  clinic : { href: "#", name: "Клиника"},
-  travm: { href: "#", name: "Травма"},
-  stom: { href: "#", name: "Стоматолог"},
-  sprav: { href: "/sprav", name: "Справочники"},
-  reestr: { href: "/reestr", name: "Реестры" },
-  report: { href: "/report", name: "Отчеты"}
-};
+//const appMenu = JSON.parse( window.localStorage.getItem('apps') );
 
 //const moName = document.getElementsByTagName('title')[0].innerHTML;
 
@@ -40,6 +34,7 @@ const vuSidebar = {
 const vuMain = {
   
   moName: null,
+  appsBar: null,
   app: null,
   subApp: null,
   
@@ -47,6 +42,8 @@ const vuMain = {
     //console.log(vnode.attrs.subAppMenu)
     vuMain.moName = document.getElementsByTagName('title')[0].innerHTML;
     vuMain.app = document.body.id;
+    vuMain.appsBar = JSON.parse( window.localStorage.getItem('apps') );
+    //console.log('-- on init  --', vuMain.appsBar);
     try {
       let mr =  m.route.get().split("/")[1];
       vuMain.subApp = mr ? mr : null;
@@ -88,22 +85,23 @@ const vuMain = {
   },
 
   view: function(vnode) {
-    //console.log(' view --', vuMain.subApp);
+    //console.log(' view --', vuMain.appsBar);
     return [
       m('#header',
         m('#menus', [
           m('.apps-menu.pure-menu.pure-menu-horizontal', [
             m('span.pure-menu-heading', vuMain.moName),
             m('ul.pure-menu-list', [
-              Object.keys(appMenu).map( (appName) => {
+              Object.keys(vuMain.appsBar).map( (appName) => {
                 let s = appName == vuMain.app ? ".pure-menu-selected":"",
                 li = "li.pure-menu-item" + s;
-                //console.log(appName, vuMain.app);
+                //console.log(appName, vuMain.appsBar[appName].href);
                 return m(li,
-                  m('a.pure-menu-link', { href: appMenu[appName].href }, appMenu[appName].name)
+                  m('a.pure-menu-link', { href: vuMain.appsBar[appName].href }, vuMain.appsBar[appName].name)
                 );
               })
-            ])
+            ]),
+            m('a.pure-menu-link.right', {href: '/logout/?next=/'}, "Выход")
           ]),
           m('.application-menu.pure-menu.pure-menu-horizontal', [
             m('a.pure-menu-heading', { href: "" }, m('i.fa.fa-bars') ), //buter
@@ -207,7 +205,7 @@ const appApi = {
     surv_volum: "/surv/volum",
 };
 
-const appMenu$1 = { subAppMenu: {
+const appMenu = { subAppMenu: {
   
   surv: {
     nref: [`#!${appApi.surv}`, "Сводные"],
@@ -642,7 +640,7 @@ const vuVolum = function (vnode) {
 const roSurvey = {
   [appApi.surv]: {
     render: function() {
-      return vuView(appMenu$1, m(vuApp, { text: "Отчеты сводные" } ) );
+      return vuView(appMenu, m(vuApp, { text: "Отчеты сводные" } ) );
     }
   },
   [appApi.surv_hosp]: {
@@ -652,7 +650,7 @@ const roSurvey = {
         model: moModel.getModel()
         
       });
-      return vuView(appMenu$1, view);
+      return vuView(appMenu, view);
     }
   },
   [appApi.surv_volum]: {
@@ -664,7 +662,7 @@ const roSurvey = {
         struct: moStruct().p146_report,
         //form: true
       });
-      return vuView(appMenu$1, view);
+      return vuView(appMenu, view);
     }
   },
 };
@@ -675,7 +673,7 @@ const roSurvey = {
 
 const reportRouter = { [appApi.root]: {
     render: function() {
-       return vuView( appMenu$1,
+       return vuView( appMenu,
           m(vuApp, { text: "Медстатистика: Отчеты" }));
     }
   }

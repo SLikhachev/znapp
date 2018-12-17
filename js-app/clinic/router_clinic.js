@@ -31,6 +31,7 @@ m.route(document.body, "/", {
   [clinicApi.card_id] : {
     onmatch: function(args) {
       moCard.getCard(args);
+      moCard.getOptions();
       return vuCard;
     },
     render : function(vnode) {

@@ -1,14 +1,11 @@
-// apps/apiConf.js
+// src/apps/view/vuMain.js
 
-const moName = "Поликлиника №4";
+//import { moName, appMenu } from '../apiConf.js';
+//import { appMenu } from '../apiConf.js';
 
-const appMenu = { // routing by Flask
-  clinic : { href: "/clinic", name: "Клиника"},     
-  sprav: { href: "/sprav", name: "Справочники"},
-  reports: { href: "#", name: "Отчеты"}
-};
+//const appMenu = JSON.parse( window.localStorage.getItem('apps') );
 
-const schemaRest = 'http://localhost:3000/';
+//const moName = document.getElementsByTagName('title')[0].innerHTML;
 
 const vuSidebar = {
   view: function(vnode) {
@@ -20,7 +17,8 @@ const vuSidebar = {
       m('span.dheader.blue', mname),
       menu.map( item => {
         return m('a.side-menu.blue', {
-            href: mroot + item[0],
+            //href: mroot + item[0], // here only last path fragment
+            href: item[0], // here all path 
             //onclick: m.withAttr("href", vuSidebar.subRoute)
           },
           item[1] );
@@ -28,19 +26,24 @@ const vuSidebar = {
     ];
   },
   subRoute: function(route) {
-    let rs = route.split("/"); // #!/catalog/doc-list/ => ['#!', 'catalog', 'doc-list', '']
+    //let rs = route.split("/"); // #!/catalog/doc-list/ => ['#!', 'catalog', 'doc-list', '']
     //console.log(rs);
   }
 };
 
 const vuMain = {
   
+  moName: null,
+  appsBar: null,
   app: null,
   subApp: null,
   
   oninit: function (vnode) {
     //console.log(vnode.attrs.subAppMenu)
+    vuMain.moName = document.getElementsByTagName('title')[0].innerHTML;
     vuMain.app = document.body.id;
+    vuMain.appsBar = JSON.parse( window.localStorage.getItem('apps') );
+    //console.log('-- on init  --', vuMain.appsBar);
     try {
       let mr =  m.route.get().split("/")[1];
       vuMain.subApp = mr ? mr : null;
@@ -78,23 +81,29 @@ const vuMain = {
       $("html, body").animate({ scrollTop: 0 }, 600);
       return false;
     });
+    //console.log( $(window).localStorage); //.getItem('pg_rest') );
   },
 
   view: function(vnode) {
-    //console.log(' view --', vuMain.subApp);
+    //console.log(' view --', vuMain.appsBar);
     return [
       m('#header',
         m('#menus', [
           m('.apps-menu.pure-menu.pure-menu-horizontal', [
-            m('span.pure-menu-heading', moName),
+            m('span.pure-menu-heading', vuMain.moName),
             m('ul.pure-menu-list', [
-              Object.keys(appMenu).map( (appName) => {
+              Object.keys(vuMain.appsBar).map( (appName) => {
                 let s = appName == vuMain.app ? ".pure-menu-selected":"",
                 li = "li.pure-menu-item" + s;
+                //console.log(appName, vuMain.appsBar[appName].href);
                 return m(li,
-                  m('a.pure-menu-link', { href: appMenu[appName].href }, appMenu[appName].name)
+                  m('a.pure-menu-link', { href: vuMain.appsBar[appName].href }, vuMain.appsBar[appName].name)
                 );
               })
+            ]),
+            m('ul.pure-menu-list.right', [
+              m("li.pure-menu-item", m('a.pure-menu-link',
+              {href: '/logout/?next=/'}, "Выход") )
             ])
           ]),
           m('.application-menu.pure-menu.pure-menu-horizontal', [
@@ -149,11 +158,11 @@ const vuMain = {
 
 // src/clinic/clinicApi.js
 
-restApi = {
+restClinic = {
 
-    cards_cnt: { url:"get_cards_count", method:"GET" }, 
-    card_find: { url:"rpc/get_cards", method:"POST" },
-    get_card: { url:"rpc/get_card_by_num", method:"POST"},
+    cards_cnt: { url:"count_cards_clin", method:"GET" }, 
+    card_find: { url:"rpc/clin_cards", method:"POST" },
+    get_card: { url:"rpc/clin_card_by_num", method:"POST"},
     
     talons_cnt: { url:"get_talons_count", method:"GET" }, 
     talon_find: { url:"rpc/get_talons", method:"POST"},
@@ -200,6 +209,49 @@ const vuClinic = {
       m('h1.blue', {style: "font-size: 3em;"}, vnode.attrs.text)
     );
   }
+};
+
+// src/sparv/spravApi.js
+// here url is a table name
+restApi = {
+    // local
+    district: { url:"district"},
+    division: { url:"division"},
+    mo_local: { url:"mo_local"},
+    smo_local: { url:"smo_local"},
+    get doctor() {
+        return { url:"doctor", options: [ this.division, this.district ], sort_by: 'code' };
+    },
+    // tfoms
+    doc_spec : { url:"doc_spec"},
+    sp_podr: { url:"sp_podr", sort_by: 'mo_code' },
+    sp_para: { url:"sp_para"},
+    purp: { url: 'purpose'},
+    type: {url: 'spec_case'},
+    insur: {url: 'kategor'},
+    istfin: {url: 'ist_fin'},
+    errors: {url: 'errors_code'},
+    // onko
+    onko_n1: {url: 'n1_protkaz'},
+    onko_n2: {url: 'n2_stady'},
+    onko_n3: {url: 'n3_tumor'},
+    onko_n4: {url: 'n4_nodus'},
+    onko_n5: {url: 'n5_metastaz'},
+    onko_n6: {url: 'rpc/onko_tnm'},
+    onko_n7: {url: 'n7_hystolog'},
+    onko_n8: {url: 'onko_hysto_n8'}, // pg base view
+    onko_n9: {url: 'onko_hysto_n9'}, // pg_base view
+    onko_n10: {url: 'n10_mark'},
+    onko_n11: {url: 'onko_mark_n11'}, // pg base view
+    onko_n12: {url: 'onko_mark_n12'}, // pg base view
+    onko_n13: {url: 'n13_lech_type'},
+    onko_n14: {url: 'n14_hirlech_type'},
+    onko_n15: {url: 'n15_leklech_line'},
+    onko_n16: {url: 'n16_leklech_cycle'},
+    onko_n17: {url: 'n17_luchlech_type'},
+    // types
+    dul: {url: 'dul'},
+    
 };
 
 // src/apps/view/vuDialog.js
@@ -312,23 +364,27 @@ const vuDialog = {
 
 // src/apps/model/moModel.js
 
-const schema = schemaRest;
+//const pg_rest = window.localStorage.getItem('pg_rest'); //postgest schemaRest;
+//console.log(schema);
 
 const moModel = {
   
   // :: String -> Array -> String -> Object
   // ret models object (POJO)
-  getModel(url, method="GET", options=null, field=null) {
+  getModel( {url=null, method="GET", options=null, sort_by=null, editable=false } = {} ) {
     // url - string of model's REST url
     // method - string of model's REST method
     // options - array of strings of option tables names
     // need for form data select/option if any
     // field - string "sort by" with SELECT
+    // editable = bool defines is model could changed
     let model = {
       url: url,
       method: method,
-      field: field,
+      field: sort_by,
       options: options,
+      editable: editable,
+      
       list: null, // main data list (showing in table page)
       data: {}, // every idx corresponds with index of options array
       
@@ -339,22 +395,27 @@ const moModel = {
     model.sort = function(field) {
       return moModel.sort(model, field);
     };  
+    //console.log(model);
     return model;
   },
   // :: Object -> Promise
   // ret Promise
   getList (model) {
     // filed - sort by with SELECT, default 'id' field
+    //let schema = window.localStorage.getItem('pg_rest');
+    let pg_rest = window.localStorage.getItem('pg_rest');
     let id = model.field ? model.field : 'id',
     order = `?order=${id}.asc`;
+    let url = pg_rest + model.url + order;
+    console.log(url);
     return m.request({
       method: model.method,
-      url: schema + model.url + order
+      url: url
     }).then(function(res) {
       model.list = res; // list of objects
       model.order = true;
     }).catch(function(e) {
-      model.error = e.message;
+      model.error = e.message.message ? e.message.message : e.message;
       console.log(model.error);
     });
   },
@@ -362,12 +423,14 @@ const moModel = {
   // return Promise all
   getData(model){
     if ( model.options === null ) return false;
+    //let schema = window.localStorage.getItem('pg_rest');
+    let pg_rest = window.localStorage.getItem('pg_rest');
     let data = [],
     order = '?order=id.asc';
     model.options.forEach ( (t) => {
       let r = m.request({
-        method: t.method,
-        url: schema + t.url + order
+        method: t.method ? t.method : "GET" ,
+        url: pg_rest + t.url + order
       });
       data.push(r);
     });
@@ -385,23 +448,26 @@ const moModel = {
   // :: Object -> String -> String -> Object -> Promise
   // return Promise
   getViewRpc (model, data, url=null, method=null) {
+    //let schema = window.localStorage.getItem('pg_rest');
+    let pg_rest = window.localStorage.getItem('pg_rest');
     let _url = url ? url : model.url;
     let _method = method ? method : model.method;
     return m.request({
       method: _method,
       data: data,
-      url: schema + _url
+      url: pg_rest + _url
     }).then(function(res) {
       model.list = res; // list of objects
       model.order = true;
     }).catch(function(e) {
-      model.error = e.message;
-      console.log(model.error);
+      let err = JSON.parse(e.message);
+      model.error = err.message ? err.message : e.message;
+      console.log( err );
     });
   },
   
   sort(model, id=null) {
-    console.log(id);
+    //console.log(id);
     let order = model.order ? 'desc' : 'asc';
     let field = id ? id : 'id'; 
     model.list = _.orderBy(model.list, [ field ], [ order ]);
@@ -430,8 +496,10 @@ const moModel = {
   formSubmit (model, form) {  
     // form - jQuery object
     // model - model object 
+    //let schema = window.localStorage.getItem('pg_rest');
+    let pg_rest = window.localStorage.getItem('pg_rest');
     let data = moModel.getFormData( form ),
-    url = schema + model.url,
+    url = pg_rest + model.url,
     method = data.method;
     //console.log ( data );
     //return false;
@@ -456,15 +524,15 @@ const moModel = {
 
 };
 
-// src/apps/model/moCards.js
+// src/clinic/model/moCards.js
 
 //let schema = schemaRest;
 
 const moCardsList = {
   
   model : {
-    url: restApi.card_find.url,
-    method: restApi.card_find.method,
+    url: restClinic.card_find.url,
+    method: restClinic.card_find.method,
     list: null, // main data list (showing in table page)
     error: null, // Promise all error
     order: true, // for list
@@ -506,14 +574,21 @@ const moCardsList = {
 const moCard = {
   
   model : {
-    url: restApi.get_card.url,
-    method: restApi.get_card.method,
+    url: restClinic.get_card.url,
+    method: restClinic.get_card.method,
     list: null, 
+    options: [restApi.dul],
+    data: null, 
     error: null
   },
   
   getModel() {
     return this.model;
+  },
+  
+  getOptions() {
+    moModel.getData( moCard.getModel() );
+    console.log(this.model.data);
   },
   
   getCard(args) {
@@ -527,63 +602,92 @@ const moCard = {
 
 // src/clinic/view/vuCard.js
 
-// POJO
-const vuCard = {
-  
-  // String -> Undef
-  viewCard(crd_num) {
-    m.route.set(clinicApi.card_id, { id: crd_num } );
-  },
+const toFocus = function (vnode) {
+  vnode.dom.focus();
+};
+
+const setPale = function(e) {
+  e.target.setAttribute('style', 'opacity: 0.5');
+};
+
+const delPale = function(e) {
+  e.target.setAttribute('style', 'opacity: 1.0');
+};
+
+const forTabs = function(vnode) {
+  let inputs = vnode.dom.querySelectorAll("input,select,button");
+  for (let i = 0 ; i < inputs.length; i++) {
+    inputs[i].addEventListener("keypress", (e) => {
+      if (e.which == 13 || e.keyCode == 13) {
+        e.preventDefault();
+        let tabindex = parseInt(e.target.getAttribute('tabindex')) + 1;
+        let nextInput = vnode.dom.querySelectorAll(`[tabindex="${tabindex}"]`);
+        //console.log(nextInput[0]);
+        if (nextInput.length === 0) {
+          nextInput = vnode.dom.querySelectorAll('[tabindex="1"]');
+        }
+        nextInput[0].focus();
+      }
+    });
+  }
+};
+
+const crdMain = function(vnode) {
+  //console.log(vnode.attrs.data);
+
+  return {
     
-  oninit () {
-    this.model = moCard.getModel();
-  },
-  
-  view (vnode) {
-    
-    return this.model.error ? [ m(".error", this.model.error) ] :
-      this.model.list ? m('form.pure-form.pure-form-aligned.tcard', {style:"font-size: 1.2em;", id:"card" },
-      [ m('fieldset', [
-        m('legend', "Карта пациента"),
-        m(".pure-g", [
-          m(".pure-u-7-24 ", [
+    view(vnode) {
+      let card = vnode.attrs.item;
+       return m('form.tcard.pure-form.pure-form-aligned',
+         {style:"font-size: 1.2em;", id:"card", oncreate: forTabs },
+         [ m('fieldset', [
+          m('legend', "Карта пациента"),
+          m(".pure-g", [
+            m(".pure-u-7-24 ", [
             
-            m(".pure-control-group", [
-              m('label', { for: "crd_num" }, "Номер карты"),
-              m('input[name="crd_num"][type="text"]', {
-                value: this.model.list[0].crd_num
-              
-              })
-            ]),
+              m(".pure-control-group", [
+                m('label', { for: "crd_num" }, "Номер карты"),
+                m('input[name="crd_num"][type="text"]][required]', {
+                  value: card.crd_num,
+                  tabindex: "1",
+                  oncreate: toFocus
+
+                })
+              ]),
             
-            m(".pure-control-group", [
-              m('label', { for:"fam"} , " "),
-              m('input[name="fam"][type="text"]', {
-                placeholder: "Фамилия",
-                value: this.model.list[0].fam
-              })
-            ]),
+              m(".pure-control-group", [
+                m('label', { for:"fam"} , " "),
+                m('input[name="fam"][type="text"][required]', {
+                  placeholder: "Фамилия",
+                  value: card.fam,
+                  tabindex: "2",
+                })
+              ]),
             
-            m(".pure-control-group", [
-              m('label', { for: "im" }, " "),
-              m('input[name="im"][type="text"]', {
-                placeholder: "Имя",
-                value: this.model.list[0].im
-              })
-            ]),
+              m(".pure-control-group", [
+                m('label', { for: "im" }, " "),
+                m('input[name="im"][type="text"]', {
+                  placeholder: "Имя",
+                  value: card.im,
+                  tabindex: "3",
+                })
+              ]),
             
-            m('.pure-control-group', [
-              m('label', { for: "ot" }, " "),
-              m('input[name="ot"][type="text"]', {
-                placeholder: "Отчество",
-                value: this.model.list[0].ot
-              }) 
-            ]),
+              m('.pure-control-group', [
+                m('label', { for: "ot" }, " "),
+                m('input[name="ot"][type="text"]', {
+                  placeholder: "Отчество",
+                  value: card.ot,
+                  tabindex: "4",
+                }) 
+              ]),
           	
             m(".pure-control-group", [
               m('label', { for: "birth_date" }, "Дата рождения"),
-              m('input[name="birth_date"][type="date"]', {
-                value: this.model.list[0].birth_date  
+              m('input[name="birth_date"][type="date"][required]', {
+                value: card.birth_date,
+                tabindex: "5",
               })
             ]),
             
@@ -593,21 +697,21 @@ const vuCard = {
               m('input[name="gender"][type="radio"]', {
                 style: "margin: 0 14px 0 7px;",
                 value: 0,
-                checked: ['м', 'ж'].indexOf( this.model.list[0].gender.toLowerCase() ) == 0 ? true : false  
+                checked: ['м', 'ж'].indexOf( card.gender.toLowerCase() ) == 0 ? true : false  
               }),
               m('span', "Ж"),
               m('input[name="gender"][type="radio"]', {
                 style: "margin: 0 0 0 7px;",
                 value: 1,
-                checked: ['м', 'ж'].indexOf( this.model.list[0].gender.toLowerCase() ) == 1 ? true: false
+                checked: ['м', 'ж'].indexOf( card.gender.toLowerCase() ) == 1 ? true: false
                 })
-             //])
             ]),  
             
             m(".pure-control-group", [
               m('label', { for:"dul_type"}, "Тип документа"),
               m('input.pure-u-1-6[name="dul_type"][type="text"]', {
-                 value: this.model.list[0].dul_type  
+                 value: card.dul_type,
+                 tabindex: "6",
               })
             ]),
             
@@ -615,7 +719,8 @@ const vuCard = {
               m('label', { for: "dul_serial" }, "Документ"),
               m('input[name="dul_serial"][type="text"]', {
                 placeholder: "Серия",
-                value: this.model.list[0].dul_serial  
+                value: card.dul_serial,
+                tabindex: "7",
               })
             ]),
             
@@ -623,38 +728,43 @@ const vuCard = {
               m('label', { for:"dul_number" }, " "),
               m('input[name="dul_number"][type="text"]', {
                 placeholder: "Номер",
-                value: this.model.list[0].dul_number  
+                value: card.dul_number,
+                tabindex: "8",
               })
             ])
           
             
-          ]),
+          ]), // u-7-24
 			
           m(".pure-u-8-24", [
-            m('legend', "Мед страх"), 
+            m('legend', "ОМС"), 
             m(".pure-control-group", [
               m('label', { for: "polis_num" }, "Полис" ), 
               m('input.pure-u-1-6[name="polis_num"][type="text"]', {
                 placeholder:"Серия",
-                value: this.model.list[0].poilis_ser  
+                value: card.poilis_ser,
+                tabindex: "9",
               }), 	
               m('input.pure-u-3-6[name="polis_ser"][type="text"]', {
                 placeholder:"Номер",
-                value: this.model.list[0].polis_num    
+                value: card.polis_num,
+                tabindex: "10",
               }), 
             ]),
           
             m(".pure-control-group", [
               m('label', { for: "smo"}, "Страховщик"),
               m('input.pure-u-1-6[name="smo"][type="text"]', {
-                 value: this.model.list[0].smo
+                 value: card.smo,
+                 tabindex: "11",
               })
             ]),
         
             m(".pure-control-group", [
               m('label', { for: "mo_att"}, "Прикреплен к МО"),
               m('input.pure-u-1-6[name="mo_att"][type="text"]', {
-                 value: this.model.list[0].mo_att  
+                 value: card.mo_att,
+                 tabindex: "12",
               })
             ]),
           /*
@@ -662,61 +772,72 @@ const vuCard = {
               m('label', { for: "doc-type" }, "Дата прикрепления"),
               m('input.pure-u-1-6[name="code-num"][type="date"]')
             ]),
-          
+        
             m(".pure-control-group" , [
               m('label', { for: "district" } , "Участок"),
               m('input.pure-u-1-6[name="district"][type="text"]')
             ]),
-          */
+          
             m(".pure-control-group", [
               m('label', { for: "doc-type"}, " "),
               m('button.pure-button.pure-button-primary[type="button"]', "Прикрепление")
-            ])
-          ]),
-				
+            ]) */
+          ]), //u-8-24
+          // ADDRESS
           m(".pure-u-9-24", [
             m('legend', "Адрес"),
             m(".pure-control-group", [
               //<!--label for="-num">Город</label-->
-              m('input[name="city"][type="text"]', {
+              m('input[name="city_g"][type="text"]', {
                 placeholder: "Город",
-                value: this.model.list[0].city    
+                value: card.city_g,
+                tabindex: "13",
               })				
             ]),
           
             m(".pure-control-group", [
               //<!--label for="-num">Улица</label-->
-              m('input[name="street"][type="text"]',  {
+              m('input[name="street_g"][type="text"]',  {
                 placeholder: "Улица",
-                value: this.model.list[0].street
+                value: card.street_g,
+                tabindex: "14",
               }),				
             ]),
           
             m(".pure-control-group", [
-              m('input.pure-u-1-5[name="home"][type="text"]', {
+              m('input.pure-u-1-8[name="home_g"][type="text"]', {
                 placeholder: "Дом",
-                value: this.model.list[0].home    
+                value: card.home_g,
+                tabindex: "15",
               }),				
-              m('input.pure-u-1-6[name="flat"][type="text"]', {
+              m('input.pure-u-1-8[name="corp_g"][type="text"]', {
+                placeholder: "Корп",
+                value: card.corp_g,
+                tabindex: "16",
+              }),
+              m('input.pure-u-1-8[name="flat_g"][type="text"]', {
                 placeholder: "Кв",
-                value: this.model.list[0].flat    
+                value: card.flat_g,
+                tabindex: "17",
               })		
             ]),
           
             m(".pure-control-group", [
               m('input[name="phone_1"][type="text"]', {
                 placeholder: "Мобильный тел",
-                value: this.model.list[0].phone_1  
+                value: card.phone_wrk,
+                tabindex: "18",
               })				
             ]),
           
             m(".pure-control-group", [
               m('input[name="phone_2"][type="text"]', {
                 placeholder: "Контактный тел",
-                value: this.model.list[0].phone_2  
+                value: card.phone_hom,
+                tabindex: "19",
               })				
             ]),
-			
+        /*
           m(".pure-control-group", [
             m('label', { for: "lgota"}, "Льготная кат"),
             m('input.pure-u-1-6[name="lgota"][type="text"]', {
@@ -744,20 +865,119 @@ const vuCard = {
                value: this.model.list[0].wrk_org  
             })
           ])
-        ])
-            
+        */
+        ]) //u-9-24
+  
       ]) // pure-g
     ]), // fieldset
-    m('fieldset', { style: "padding-left: 30%;"}, 
-      m('button.pure-button.pure-button-primary[type="button"]', "Сохранить")
+    m('fieldset', { style: "padding-left: 66%;"}, 
+      m('button.pure-button.pure-button-primary[type="button"][tabindex="20"]',
+        { onfocus: setPale,
+          onblur: delPale
+        },
+        "Сохранить")
     )
   // form
-  ]) : m(".loading-icon", [
-            m('.i.fa.fa-refresh.fa-spin.fa-3x.fa-fw'),
-            m('span.sr-only', 'Loading...')
-          ]);  
+  ]);
+
+  }
+}
+};
+const crdOpt = function(vnode) {
+  return {
+    view(vnode) {
+       return m('h2', "Дополнительно");
+    }
+  }
+};
+const crdAtt = function(vnode) {
+  return {
+    view(vnode) {
+       return  m('h2', "Прикрепить");
+    }
+  }
+};
+const tabsView = function(vnode) {
+  
+  let item = vnode.attrs.item;
+  let tabs = [], tabs_cont=[];
+  let tab_names = vnode.attrs.tabs;  //Array.of('Карта', 'Дополнительно', 'Прикрепить');
+  let tab_contents = vnode.attrs.conts; //Array.of(crdMain, crdOpt, crdAtt);
+  //console.log(tab_names);
+  
+  const hideTabs = function(idx) {
+    for ( let id=idx; id < tabs.length; id++ ) {
+      tabs[id].classList.remove('active');
+      tabs_cont[id].classList.remove('show');
+      tabs_cont[id].classList.add('hide');
+    }
+  };
+  
+  const changeTab = function(event) {
+    let idx = parseInt (event.target.getAttribute('idx'));
+    if (tabs_cont[idx].classList.contains('hide')) {
+        hideTabs(0);
+        tabs[idx].classList.add('active');
+        tabs_cont[idx].classList.remove('hide');
+        tabs_cont[idx].classList.add('show');
+    }
+
+  };
+  return {
+    oncreate(vnode) {
+      //console.log(vnode.attrs.data);
+      tabs = document.getElementsByClassName('tab');
+      tabs_cont=document.getElementsByClassName('tab-content');
+      //console.log(tabs_cont);
+      tabs[0].classList.add('active');
+      tabs_cont[0].classList.add('show');
+      hideTabs(1); // other hide
+    },
     
+    view(vnode) {
+      let idx=0;
+      return m('div#tabs', [
+        tab_names.map( (name) => {
+          return m('.tab',
+              { idx: idx++,
+                onclick: changeTab
+              },  
+            name);
+        } ),
+        tab_contents.map( (cont) => {
+          return m('.tab-content',
+            //{ oncreate: (vnode => tabs_cont.push(vnode.dom)) },
+            m(cont, {item: vnode.attrs.item}) );
+        })
+      ]);
+  }
+}
+};
+const vuCard =function(vnode) {
+  
+  let model; //, card;
+  let tabs = ['Карта', 'Дополнительно', 'Прикрепить'];
+  let conts = [crdMain, crdOpt, crdAtt];
+  
+ 
+  return {  
+  oninit () {
+    model = moCard.getModel();
+    //card = model.list ? model.list[0] : null;
+    //console.log(model);
+  },
+  
+  view (vnode) {
+    
+    return model.error ? [ m(".error", model.error) ] :
+      model.list && model.data ? 
+        m(tabsView, {item: model.list[0], data: model.data, tabs: tabs, conts: conts})
+      : m(".loading-icon", [
+          m('.i.fa.fa-refresh.fa-spin.fa-3x.fa-fw'),
+          m('span.sr-only', 'Loading...')
+        ]);  
   } 
+}
 };
 
 // src/clinic/view/vuCardsList.js
@@ -846,12 +1066,18 @@ const vuCardsList = function (vnode) {
   let model = moCardsList.getModel();
   let table, table_id = 'cards_list';
   
+  let toCard = function (crd_num) {
+    m.route.set(clinicApi.card_id, { id: crd_num } );
+    return false;
+  };
+
+  
   return {
     
   oninit (vnode) {
     //this.model = moCardsList.getModel();
     //moCardsList.getList(model);
-    moModel.getViewRpc(model, {}, restApi.cards_cnt.url, restApi.cards_cnt.method );
+    moModel.getViewRpc(model, {}, restClinic.cards_cnt.url, restClinic.cards_cnt.method );
   },
   
   oncreate(vnode) {
@@ -872,7 +1098,7 @@ const vuCardsList = function (vnode) {
         let cell = column === 'fam' ? fio : s[column];
         let td = first ? m('td.choice.blue', {
           data:  cell,
-          onclick: m.withAttr( "data", vuCard.viewCard)
+          onclick: m.withAttr( "data", toCard)
         }, cell) : m('td', cell);
         first = false;
         return td;
@@ -933,8 +1159,8 @@ const vuCardsList = function (vnode) {
 const moTalonsList = {
   
   model : {
-    url: restApi.talon_find.url,
-    method: restApi.talon_find.method,
+    url: restClinic.talon_find.url,
+    method: restClinic.talon_find.method,
     list: null, // main data list (showing in table page)
     error: null, // Promise all error
     order: true, // for list
@@ -980,8 +1206,8 @@ const moTalonsList = {
 const moTalon = {
   
   model : {
-    url: restApi.get_talon.url,
-    method: restApi.get_talon.method,
+    url: restClinic.get_talon.url,
+    method: restClinic.get_talon.method,
     list: null, 
     error: null
   },
@@ -1467,7 +1693,7 @@ const vuTalonsList = function (vnode) {
   oninit () {
     //this.model = moCardsList.getModel();
     //moCardsList.getList(model);
-    moModel.getViewRpc(model, {}, restApi.talons_cnt.url, restApi.talons_cnt.method );
+    moModel.getViewRpc(model, {}, restClinic.talons_cnt.url, restClinic.talons_cnt.method );
   },
   /*
   oncreate() {
@@ -1560,6 +1786,7 @@ m.route(document.body, "/", {
   [clinicApi.card_id] : {
     onmatch: function(args) {
       moCard.getCard(args);
+      moCard.getOptions();
       return vuCard;
     },
     render : function(vnode) {

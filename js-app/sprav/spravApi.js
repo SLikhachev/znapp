@@ -37,7 +37,8 @@ restApi = {
     onko_n15: {url: 'n15_leklech_line'},
     onko_n16: {url: 'n16_leklech_cycle'},
     onko_n17: {url: 'n17_luchlech_type'},
-    
+    // types
+    dul: {url: 'dul'},
     
 }
 

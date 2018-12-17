@@ -1,15 +1,9 @@
-// apps/apiConf.js
+// src/apps/view/vuMain.js
 
-//const moName = "Поликлиника №4";
+//import { moName, appMenu } from '../apiConf.js';
+//import { appMenu } from '../apiConf.js';
 
-const appMenu = { // routing by Django
-  clinic : { href: "#", name: "Клиника"},
-  travm: { href: "#", name: "Травма"},
-  stom: { href: "#", name: "Стоматолог"},
-  sprav: { href: "/sprav", name: "Справочники"},
-  reestr: { href: "/reestr", name: "Реестры" },
-  report: { href: "/report", name: "Отчеты"}
-};
+//const appMenu = JSON.parse( window.localStorage.getItem('apps') );
 
 //const moName = document.getElementsByTagName('title')[0].innerHTML;
 
@@ -40,6 +34,7 @@ const vuSidebar = {
 const vuMain = {
   
   moName: null,
+  appsBar: null,
   app: null,
   subApp: null,
   
@@ -47,6 +42,8 @@ const vuMain = {
     //console.log(vnode.attrs.subAppMenu)
     vuMain.moName = document.getElementsByTagName('title')[0].innerHTML;
     vuMain.app = document.body.id;
+    vuMain.appsBar = JSON.parse( window.localStorage.getItem('apps') );
+    //console.log('-- on init  --', vuMain.appsBar);
     try {
       let mr =  m.route.get().split("/")[1];
       vuMain.subApp = mr ? mr : null;
@@ -88,21 +85,25 @@ const vuMain = {
   },
 
   view: function(vnode) {
-    //console.log(' view --', vuMain.subApp);
+    //console.log(' view --', vuMain.appsBar);
     return [
       m('#header',
         m('#menus', [
           m('.apps-menu.pure-menu.pure-menu-horizontal', [
             m('span.pure-menu-heading', vuMain.moName),
             m('ul.pure-menu-list', [
-              Object.keys(appMenu).map( (appName) => {
+              Object.keys(vuMain.appsBar).map( (appName) => {
                 let s = appName == vuMain.app ? ".pure-menu-selected":"",
                 li = "li.pure-menu-item" + s;
-                //console.log(appName, vuMain.app);
+                //console.log(appName, vuMain.appsBar[appName].href);
                 return m(li,
-                  m('a.pure-menu-link', { href: appMenu[appName].href }, appMenu[appName].name)
+                  m('a.pure-menu-link', { href: vuMain.appsBar[appName].href }, vuMain.appsBar[appName].name)
                 );
               })
+            ]),
+            m('ul.pure-menu-list.right', [
+              m("li.pure-menu-item", m('a.pure-menu-link',
+              {href: '/logout/?next=/'}, "Выход") )
             ])
           ]),
           m('.application-menu.pure-menu.pure-menu-horizontal', [
@@ -1986,107 +1987,3 @@ Object.assign(spravRouter, roLocal, roTfoms, roOnko);
 
 //m.route(document.getElementById('content'), "/", {})
 m.route(document.body, "/", spravRouter);
-
-  /*
-  "/reflocal/dul-list": {
-    render: function() {
-      return m(vuMain,
-        m(vuDul, {
-          model: moModel.getModel( 'dul'),
-          header: "Документы удостоверния личности",
-          name: "ДУЛ",
-          find: 2, // search in the first 2 table columns
-          struct: moStruct.dul
-        })
-      );
-    }
-  },
-   "/reflocal/categ-case": {
-    render: function() {
-      let cat = m(vuCateg, {
-          model: moModel.getModel( 'kategor' ),
-          header: "Категории ОМС",
-          name: "Категория"
-      });
-      return m(vuMain, cat);
-    }
-  },
-  "/reflocal/polis-type": {
-    render: function() {
-      let pol = m(vuPolis, {
-          model: moModel.getModel( 'polis_type' ),
-          header: "Полис ОМС",
-          name: "Полис"
-      });
-      return m(vuMain, pol);
-    }
-  },
-  "/reflocal/okato": {
-    render: function() {
-      return m(vuMain,
-        m(vuOkato, {
-          model: moModel.getModel( 'okato' ),
-          header: "ОКАТО",
-          name: "ОКАТО",
-          find: 3, // search in the first 3 table columns
-          struct: moStruct.okato
-        })
-      );
-    }
-  },
-  "/reflocal/invalid-type": {
-    render: function() {
-      let inv = m(vuInvalid, {
-          model: moModel.getModel( 'invalid_type' ),
-          header: "Инвалидность",
-          name: "Инвалидность"
-      });
-      return m(vuMain, inv);
-    }
-  },
-
-    "/refederal": {
-    render: function() {
-      return m(vuMain, m(vuRoot, { text: "Cправочники федеральные" } ));
-    }
-  },
-  
-  "/refederal/dul-list": {
-    render: function() {
-      return m(vuMain,
-        m(vuDul, {
-          model: moModel.getModel( 'dul'),
-          header: "Документы удостоверния личности",
-          name: "ДУЛ",
-          find: 2, // search in the first 2 table columns
-          struct: moStruct.dul
-        })
-      );
-    }
-  },
-
-  "/refederal/polis-type": {
-    render: function() {
-      let pol = m(vuPolis, {
-          model: moModel.getModel( 'polis_type' ),
-          header: "Полис ОМС",
-          name: "Полис"
-      });
-      return m(vuMain, pol);
-    }
-  },
-
-  "/refederal/okato": {
-    render: function() {
-      return m(vuMain,
-        m(vuOkato, {
-          model: moModel.getModel( 'okato' ),
-          header: "ОКАТО",
-          name: "ОКАТО",
-          find: 3, // search in the first 3 table columns
-          struct: moStruct.okato
-        })
-      );
-    }
-  },
-  */

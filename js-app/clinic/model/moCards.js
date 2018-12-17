@@ -1,7 +1,8 @@
-// src/apps/model/moCards.js
+// src/clinic/model/moCards.js
 
 //import { schemaRest } from '../../apps/apiConf.js';
-import { restApi } from '../clinicApi.js';
+import { restApi } from '../../sprav/spravApi.js';
+import { restClinic } from '../clinicApi.js';
 import { moModel } from '../../apps/model/moModel.js';
 
 //let schema = schemaRest;
@@ -9,8 +10,8 @@ import { moModel } from '../../apps/model/moModel.js';
 const moCardsList = {
   
   model : {
-    url: restApi.card_find.url,
-    method: restApi.card_find.method,
+    url: restClinic.card_find.url,
+    method: restClinic.card_find.method,
     list: null, // main data list (showing in table page)
     error: null, // Promise all error
     order: true, // for list
@@ -52,14 +53,21 @@ const moCardsList = {
 const moCard = {
   
   model : {
-    url: restApi.get_card.url,
-    method: restApi.get_card.method,
+    url: restClinic.get_card.url,
+    method: restClinic.get_card.method,
     list: null, 
+    options: [restApi.dul],
+    data: null, 
     error: null
   },
   
   getModel() {
     return this.model;
+  },
+  
+  getOptions() {
+    moModel.getData( moCard.getModel() );
+    console.log(this.model.data)
   },
   
   getCard(args) {

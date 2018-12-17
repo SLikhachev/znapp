@@ -3,7 +3,7 @@
 //import { schemaRest } from '../apiConf.js';
 import { vuDialog } from '../view/vuDialog.js';
 
-const pg_rest = window.localStorage.getItem('pg_rest'); //postgest schemaRest;
+//const pg_rest = window.localStorage.getItem('pg_rest'); //postgest schemaRest;
 //console.log(schema);
 
 const moModel = {
@@ -42,6 +42,7 @@ const moModel = {
   getList (model) {
     // filed - sort by with SELECT, default 'id' field
     //let schema = window.localStorage.getItem('pg_rest');
+    let pg_rest = window.localStorage.getItem('pg_rest');
     let id = model.field ? model.field : 'id',
     order = `?order=${id}.asc`;
     let url = pg_rest + model.url + order;
@@ -53,7 +54,7 @@ const moModel = {
       model.list = res; // list of objects
       model.order = true;
     }).catch(function(e) {
-      model.error = e.message;
+      model.error = e.message.message ? e.message.message : e.message;
       console.log(model.error);
     });
   },
@@ -62,6 +63,7 @@ const moModel = {
   getData(model){
     if ( model.options === null ) return false;
     //let schema = window.localStorage.getItem('pg_rest');
+    let pg_rest = window.localStorage.getItem('pg_rest');
     let data = [],
     order = '?order=id.asc';
     model.options.forEach ( (t) => {
@@ -86,6 +88,7 @@ const moModel = {
   // return Promise
   getViewRpc (model, data, url=null, method=null) {
     //let schema = window.localStorage.getItem('pg_rest');
+    let pg_rest = window.localStorage.getItem('pg_rest');
     let _url = url ? url : model.url;
     let _method = method ? method : model.method;
     return m.request({
@@ -96,8 +99,9 @@ const moModel = {
       model.list = res; // list of objects
       model.order = true;
     }).catch(function(e) {
-      model.error = e.message;
-      console.log(model.error);
+      let err = JSON.parse(e.message);
+      model.error = err.message ? err.message : e.message;
+      console.log( err );
     });
   },
   
@@ -132,6 +136,7 @@ const moModel = {
     // form - jQuery object
     // model - model object 
     //let schema = window.localStorage.getItem('pg_rest');
+    let pg_rest = window.localStorage.getItem('pg_rest');
     let data = moModel.getFormData( form ),
     url = pg_rest + model.url,
     method = data.method;

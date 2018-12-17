@@ -1,6 +1,6 @@
 // src/clinic/view/vuCardsList.js
 
-import { restApi } from '../clinicApi.js';
+import { restClinic, clinicApi } from '../clinicApi.js';
 import { moModel } from '../../apps/model/moModel.js';
 import { moCardsList } from '../model/moCards.js';
 import { vuCard } from './vuCard.js';
@@ -89,12 +89,18 @@ const vuCardsList = function (vnode) {
   let model = moCardsList.getModel();
   let table, table_id = 'cards_list';
   
+  let toCard = function (crd_num) {
+    m.route.set(clinicApi.card_id, { id: crd_num } );
+    return false;
+  };
+
+  
   return {
     
   oninit (vnode) {
     //this.model = moCardsList.getModel();
     //moCardsList.getList(model);
-    moModel.getViewRpc(model, {}, restApi.cards_cnt.url, restApi.cards_cnt.method );
+    moModel.getViewRpc(model, {}, restClinic.cards_cnt.url, restClinic.cards_cnt.method );
   },
   
   oncreate(vnode) {
@@ -115,7 +121,7 @@ const vuCardsList = function (vnode) {
         let cell = column === 'fam' ? fio : s[column];
         let td = first ? m('td.choice.blue', {
           data:  cell,
-          onclick: m.withAttr( "data", vuCard.viewCard)
+          onclick: m.withAttr( "data", toCard)
         }, cell) : m('td', cell);
         first = false;
         return td;

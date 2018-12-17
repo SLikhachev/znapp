@@ -114,13 +114,13 @@ th.sortable {cursor: pointer; }
  #header{
      height: 100px;    
      width: 100%;
-     z-index: 1;
+     z-index: 1000;
  }
  #menus{
      height: 100px;
      position: fixed;
      width: 100%;
-     z-index: 100;
+     z-index: 1100;
  }
 
  
@@ -207,7 +207,7 @@ a.side-menu:hover {
     box-shadow: 0 0 0 2px #fff;
     border-radius: 20px;
     display: none;
-    z-index: 1000;
+    z-index: 1200;
     cursor: pointer;
 }
 .hvr {
@@ -292,6 +292,52 @@ dialog::backdrop {
     float: right;
 }
 */
+
+/* tab bars */
+
+#tabs {
+    padding-left: 2em;
+}
+
+#tabs .tab {
+    display: inline-block; 
+    width: 150px;
+    height: 35px;
+    padding-top: 0.5em;
+    text-align: center;
+    cursor: pointer;
+    position: relative;
+    margin: 0, 10px;
+    z-index:55;
+    background-color: #e1f5fe;
+    font-size: 1.2em;
+    font-weight: 600;
+    line-height: 1em;
+    border: 1px solid #fff;
+    border-radius: 5px 5px 0  0;
+    
+}
+
+#tabs .tab.active {
+   background-color: #1f8dd6;
+   color: #fff
+}
+
+#tabs .tab-content {
+    border-top: 1px solid #1f8dd6;
+    position: relative;
+    /*top: -1px; */ 
+    z-index:50;
+    padding: 10px;
+}
+
+#tabs .hide {
+    display: none;
+}
+#tabs .show {
+    display: block;
+}    
+
 /* talon,  card form */
 form.tcard input,
 form.tcard select {
@@ -301,12 +347,17 @@ form.tcard select {
 form.tcard legend {
     font-size: 1.2em;
     font-weight: 700;
-    color: #1F8DD6
+    color: #1F8DD6;
 }
 form.tcard input {
   font-weight: 600;
   color: black;
- }
+}
+
+button.pure-button.pure-button-primary:hover {
+    background-color: #039be5;
+}
+
 div.legnd { font-size: 1.4em; font-weight: 700; color: #1F8DD6; margin-bottom: 1em;}
 div.patz-data span { font-size: 1.4em; font-weight: 700; display: block; margin-bottom: 0.5em}
 div.patz-data span.snamel { font-size: 1.5em; font-weight: 700; color: #000 }
@@ -315,7 +366,7 @@ table.tpara caption { font-size: 1.3em; color: #1F8DD6;  font-style: normal; fon
 table.tpara tr td { color: #000;}
 .button-secondary { background: #bbdefb }
 
-form.card legend.leg-sec {
+#tabs .tab-content form.card legend.leg-sec {
   font-size: 1em;
   font-weight: 600;
   color: #1F8DD6

@@ -1,6 +1,6 @@
 // src/clinic/view/vuTalonsList.js
 
-import { restApi } from '../clinicApi.js';
+import { restClinic } from '../clinicApi.js';
 import { moModel } from '../../apps/model/moModel.js';
 import { moTalonsList } from '../model/moTalons.js';
 import { vuCard } from './vuCard.js';
@@ -89,7 +89,7 @@ const vuTalonsList = function (vnode) {
   oninit () {
     //this.model = moCardsList.getModel();
     //moCardsList.getList(model);
-    moModel.getViewRpc(model, {}, restApi.talons_cnt.url, restApi.talons_cnt.method );
+    moModel.getViewRpc(model, {}, restClinic.talons_cnt.url, restClinic.talons_cnt.method );
   },
   /*
   oncreate() {

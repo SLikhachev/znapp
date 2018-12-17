@@ -1,11 +1,11 @@
 
 // src/clinic/clinicApi.js
 
-restApi = {
+restClinic = {
 
-    cards_cnt: { url:"get_cards_count", method:"GET" }, 
-    card_find: { url:"rpc/get_cards", method:"POST" },
-    get_card: { url:"rpc/get_card_by_num", method:"POST"},
+    cards_cnt: { url:"count_cards_clin", method:"GET" }, 
+    card_find: { url:"rpc/clin_cards", method:"POST" },
+    get_card: { url:"rpc/clin_card_by_num", method:"POST"},
     
     talons_cnt: { url:"get_talons_count", method:"GET" }, 
     talon_find: { url:"rpc/get_talons", method:"POST"},
@@ -32,4 +32,4 @@ const clinicMenu = { subAppMenu: {
 }
 }
 
-export { restApi, clinicApi, clinicMenu };
+export { restClinic, clinicApi, clinicMenu };

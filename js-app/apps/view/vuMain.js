@@ -2,7 +2,9 @@
 // src/apps/view/vuMain.js
 
 //import { moName, appMenu } from '../apiConf.js';
-import { appMenu } from '../apiConf.js';
+//import { appMenu } from '../apiConf.js';
+
+//const appMenu = JSON.parse( window.localStorage.getItem('apps') );
 
 //const moName = document.getElementsByTagName('title')[0].innerHTML;
 
@@ -33,6 +35,7 @@ const vuSidebar = {
 const vuMain = {
   
   moName: null,
+  appsBar: null,
   app: null,
   subApp: null,
   
@@ -40,6 +43,8 @@ const vuMain = {
     //console.log(vnode.attrs.subAppMenu)
     vuMain.moName = document.getElementsByTagName('title')[0].innerHTML;
     vuMain.app = document.body.id;
+    vuMain.appsBar = JSON.parse( window.localStorage.getItem('apps') );
+    //console.log('-- on init  --', vuMain.appsBar);
     try {
       let mr =  m.route.get().split("/")[1];
       vuMain.subApp = mr ? mr : null;
@@ -81,21 +86,25 @@ const vuMain = {
   },
 
   view: function(vnode) {
-    //console.log(' view --', vuMain.subApp);
+    //console.log(' view --', vuMain.appsBar);
     return [
       m('#header',
         m('#menus', [
           m('.apps-menu.pure-menu.pure-menu-horizontal', [
             m('span.pure-menu-heading', vuMain.moName),
             m('ul.pure-menu-list', [
-              Object.keys(appMenu).map( (appName) => {
+              Object.keys(vuMain.appsBar).map( (appName) => {
                 let s = appName == vuMain.app ? ".pure-menu-selected":"",
                 li = "li.pure-menu-item" + s;
-                //console.log(appName, vuMain.app);
+                //console.log(appName, vuMain.appsBar[appName].href);
                 return m(li,
-                  m('a.pure-menu-link', { href: appMenu[appName].href }, appMenu[appName].name)
+                  m('a.pure-menu-link', { href: vuMain.appsBar[appName].href }, vuMain.appsBar[appName].name)
                 );
               })
+            ]),
+            m('ul.pure-menu-list.right', [
+              m("li.pure-menu-item", m('a.pure-menu-link',
+              {href: '/logout/?next=/'}, "Выход") )
             ])
           ]),
           m('.application-menu.pure-menu.pure-menu-horizontal', [

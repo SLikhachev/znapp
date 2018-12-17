@@ -7,6 +7,9 @@
 <script>
   window.localStorage.setItem('pg_rest', "{{ pg_rest }}");
   window.localStorage.setItem('task_rest', "{{ task_rest }}");
+  window.localStorage.setItem('apps', '{{ apps|safe }}' );
+  //let apps = window.localStorage.getItem('apps');
+  //console.log( JSON.parse(apps) );
 </script>
 <script src="/static/js/lib/lodash/lodash.min.js"></script>
 <script src="/static/js/lib/jquery/jquery-1.11.2.min.js"></script>
