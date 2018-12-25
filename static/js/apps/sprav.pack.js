@@ -158,7 +158,7 @@ const vuMain = {
 
 // src/sparv/spravApi.js
 // here url is a table name
-restApi = {
+restSprav = {
     // local
     district: { url:"district"},
     division: { url:"division"},
@@ -182,7 +182,7 @@ restApi = {
     onko_n3: {url: 'n3_tumor'},
     onko_n4: {url: 'n4_nodus'},
     onko_n5: {url: 'n5_metastaz'},
-    onko_n6: {url: 'rpc/onko_tnm'},
+    onko_n6: {url: 'rpc/onko_tnm'}, //pg base proc
     onko_n7: {url: 'n7_hystolog'},
     onko_n8: {url: 'onko_hysto_n8'}, // pg base view
     onko_n9: {url: 'onko_hysto_n9'}, // pg_base view
@@ -194,7 +194,12 @@ restApi = {
     onko_n15: {url: 'n15_leklech_line'},
     onko_n16: {url: 'n16_leklech_cycle'},
     onko_n17: {url: 'n17_luchlech_type'},
-    
+    onko_n18: {url: 'n18_povod_obras'},
+    onko_n19: {url: 'n19_consil_cel'},
+    //onko_n21: {url: 'rpc/onko_lek_schema'}, //pg base proc
+
+    // types
+    dul: {url: 'dul'},
     
 };
 
@@ -223,7 +228,7 @@ const spravApi = {
     onko_n3: "/onko/n3",
     onko_n4: "/onko/n4",
     onko_n5: "/onko/n5",
-    onko_n6: "/onko/n6",
+    //onko_n6: "/onko/n6",
     onko_n7: "/onko/n7",
     onko_n8: "/onko/n8",
     onko_n9: "/onko/n9",
@@ -235,6 +240,9 @@ const spravApi = {
     onko_n15: "/onko/n15",
     onko_n16: "/onko/n16",
     onko_n17: "/onko/n17",
+    onko_n18: "/onko/n18",
+    onko_n19: "/onko/n19",
+    //onko_n21: "/onko/n21",
     /*
     spec: "/spec",
     other: "/other",
@@ -276,7 +284,7 @@ const spravMenu = { subAppMenu: {
       [`#!${spravApi.onko_n3}`, "3. Tumor"],
       [`#!${spravApi.onko_n4}`, "4. Nodus"],
       [`#!${spravApi.onko_n5}`, "5. Метазстазы"],
-      [`#!${spravApi.onko_n6}`, "6. DS TNM"],
+      //[`#!${spravApi.onko_n6}`, "6. DS TNM"],
       [`#!${spravApi.onko_n7}`, "7. Гистология"],
       [`#!${spravApi.onko_n8}`, "8. Гистолог результ"],
       [`#!${spravApi.onko_n9}`, "9. Гистолог диагноз"],
@@ -288,6 +296,9 @@ const spravMenu = { subAppMenu: {
       [`#!${spravApi.onko_n15}`, "15. Лекарств линии"],
       [`#!${spravApi.onko_n16}`, "16. Лекарств циклы"],
       [`#!${spravApi.onko_n17}`, "17. Лучевая терапия"],
+      [`#!${spravApi.onko_n18}`, "18. Повод обращения"],
+      [`#!${spravApi.onko_n19}`, "19. Цель консилиума"],
+      //[`#!${spravApi.onko_n21}`, "21. Схема терапии"],
     ]
   },
   
@@ -307,7 +318,7 @@ const spravMenu = { subAppMenu: {
 
 // src/apps/model/moModel.js
 
-const pg_rest = window.localStorage.getItem('pg_rest'); //postgest schemaRest;
+//const pg_rest = window.localStorage.getItem('pg_rest'); //postgest schemaRest;
 //console.log(schema);
 
 const moModel = {
@@ -346,6 +357,7 @@ const moModel = {
   getList (model) {
     // filed - sort by with SELECT, default 'id' field
     //let schema = window.localStorage.getItem('pg_rest');
+    let pg_rest = window.localStorage.getItem('pg_rest');
     let id = model.field ? model.field : 'id',
     order = `?order=${id}.asc`;
     let url = pg_rest + model.url + order;
@@ -357,7 +369,7 @@ const moModel = {
       model.list = res; // list of objects
       model.order = true;
     }).catch(function(e) {
-      model.error = e.message;
+      model.error = e.message.message ? e.message.message : e.message;
       console.log(model.error);
     });
   },
@@ -366,6 +378,7 @@ const moModel = {
   getData(model){
     if ( model.options === null ) return false;
     //let schema = window.localStorage.getItem('pg_rest');
+    let pg_rest = window.localStorage.getItem('pg_rest');
     let data = [],
     order = '?order=id.asc';
     model.options.forEach ( (t) => {
@@ -377,7 +390,12 @@ const moModel = {
     });
     // order should preserved
     Promise.all(data).then( (lists) => {
-      model.data = _.zipObject( model.options, lists);
+      model.data = new Map();
+      for ( let el of model.options.entries() ) {
+        model.data.set( el[1].url, lists[ el[0] ]);
+      }
+      //window.localStorage.setItem(model.opt_name, model.data);
+      //model.data = _.zipObject( model.options, lists);
       //console.log( model.list );
     }).catch(function(e) {
       //model.error = e.message;
@@ -390,6 +408,7 @@ const moModel = {
   // return Promise
   getViewRpc (model, data, url=null, method=null) {
     //let schema = window.localStorage.getItem('pg_rest');
+    let pg_rest = window.localStorage.getItem('pg_rest');
     let _url = url ? url : model.url;
     let _method = method ? method : model.method;
     return m.request({
@@ -400,8 +419,10 @@ const moModel = {
       model.list = res; // list of objects
       model.order = true;
     }).catch(function(e) {
-      model.error = e.message;
-      console.log(model.error);
+      console.log(e);
+      let err = JSON.parse(e.message);
+      model.error = err.message ? err.message : e.message;
+      console.log( err );
     });
   },
   
@@ -436,6 +457,7 @@ const moModel = {
     // form - jQuery object
     // model - model object 
     //let schema = window.localStorage.getItem('pg_rest');
+    let pg_rest = window.localStorage.getItem('pg_rest');
     let data = moModel.getFormData( form ),
     url = pg_rest + model.url,
     method = data.method;
@@ -1502,222 +1524,9 @@ const roTfoms = {
 
 // src/sprav/view/vuComboSheet.js
 
-// clojure
-const vuComboSheet = function (vnode) {
-  
-  let modelObject = vnode.attrs.model, // model Object
-    headerString = vnode.attrs.header, // String: page header 
-    listMap = vnode.attrs.listMap, // list mapping function
-    findForm = vnode.attrs.findForm, // form to find
-    //nameString = vnode.attrs.name, // String: models item name
-    filterForm = vnode.attrs.filter, //
-    structObject = vnode.attrs.struct; // the struct Object
-  let init = true;
-  return {
-    
-  oninit () {
-    //moModel.getList( vnode.attrs.model );
-    //moModel.getData( vnode.attrs.model );
-  },
-  /*
-  oncreate() {
-  },
-  */
-  onbeforeupdate(vnode) {
-    init = false;
-  },
-
-    view: function () {
-
-      //return m(tableView, {model: this.model , header: this.header }, [
-      return [
-        m(vuTheader, {header: headerString}),
-        m(findForm, {model: modelObject}),
-        init ? m('h1.blue', {style: "font-size: 1.2em;"}, 'Выбрать диагноз и стадию') :
-          modelObject.error ? [m(".error", modelObject.error)] :
-            modelObject.list ? [
-              modelObject.list[0] ? [
-                //m(vuFind, {cols: findInt} ),
-                m(filterForm),
-                m('table.pure-table.pure-table-bordered[id=find_table]', [
-                  m('thead', [
-                    m('tr', [
-                      Object.keys(structObject).map( (column) => {
-                        return m('th', structObject[column][0]);
-                        }
-                      ) // not sorted
-                    ]),
-                  ]),
-                  m('tbody', [modelObject.list.map(listMap)])
-                ])
-              ] : m('h1.blue', {style: "font-size: 1.2em;"}, "Нет таких записей")
-            ] : m(".loading-icon", [
-              m('.i.fa.fa-refresh.fa-spin.fa-3x.fa-fw'),
-              m('span.sr-only', 'Loading...')
-            ])
-        ];
-    }
-  }; //return this object
-};
-
-const dsFind = function (vnode) {
-
-  //let model = vnode.attrs.model;
-  let on_submit = function (event) {
-    // button FIND click event handler callback
-    event.preventDefault();
-    let data = moModel.getFormData( $('form#ds_find') );
-    //console.log ( data );
-    //return false;
-    //data.lim = 50;
-    //data.offs = 1;
-    moModel.getViewRpc(
-      vnode.attrs.model,
-      data
-    );
-    //m.redraw();
-    return false;
-  };
-
-  return {
-
-    oninit(vnode) {
-      vnode.attrs.model.method='POST';
-      vnode.attrs.model.url =restApi.onko_n6.url;
-    },
-
-    view(vnode) {
-
-      return m(".pure-g",
-        m(".pure-u-1-2",
-          m("form.pure-form[id=ds_find]",
-            m("fieldset",
-              m(".pure-g", [
-                m(".pure-u-1-5",
-                  m("input.input-find.pure-u-3-4[name=ds][type='search']",
-                    {
-                      placeholder: "Диагноз",
-                      //onkeyup: m.withAttr("value", (c => c.toUpperCase()) ),
-                      //value: vmFind.toFind
-                    }
-                  )
-                ),
-                m(".pure-u-1-5",
-                  m("input.input-find.pure-u-3-4[name=stady][type='search']",
-                    {placeholder: "Стадия (число)"}
-                  )
-                ),
-                m(".pure-u-1-5",
-                  m('button.pure-button.pure-button-primary[type="button"]', {
-                      //value: 0,
-                      onclick: on_submit
-                    },
-                    "Выбрать"
-                  )
-                ),
-              ])
-            )
-          )
-        )
-      );
-    }
-  }
-};
-
-
-const listTnm = function (s) {
-  let first = true;
-  return m('tr', [
-    Object.keys(moStruct.onko_n6).map( (column) => {
-      let cell;
-      switch (column) {
-        case 'ds_code': cell = s[column];
-          break;
-        case 'stady_id': cell = `${s['stady_id']}. ${s['st_kod']}`;
-          break;
-        case 'tumor_id': cell = `${s['tumor_id']}. ${s['tm_kod']}`;
-          break;
-        case 'nodus_id': cell = `${s['nodus_id']}. ${s['nd_kod']}`;
-          break;
-        case 'metas_id': cell = `${s['metas_id']}. ${s['meta_kod']}`;
-          break;
-        default: cell = 'NULL';
-      }
-      let td = first ? m('td.choice.blue', cell) : m('td', cell);
-      first = false;
-      return td;
-    })
-  ])
-};
-
-const vmFind$1 = {
-
-  toFind: "",
-  inCol: {tumor_id:3, nodus_id:4, metas_id: 5 },
-
-  find(event) {
-    let id = event.target.id;
-    vmFind$1.toFind = event.target.value.toLowerCase();
-    let col = vmFind$1.inCol [ id ];
-    $.each($('table#find_table tbody tr'), function (ind, tr) {
-      let subtr = $(tr).children().slice(col - 1, col);
-      //console.log( subtr );
-      if (subtr.text().toLowerCase().indexOf(vmFind$1.toFind) === -1) {
-        $(tr).hide();
-      } else {
-        $(tr).show();
-      }
-      m.redraw();
-    });
-  }
-};
-
-const tnmFilter = {
-
-  oninit(vnode) {
-    vmFind$1.toFind = "";
-  },
-
-  view (vnode) {
-    return m(".pure-g",
-      m(".pure-u-1-2", [
-        m('span.blue', {style: "font-size: 1em"}, "Найти в колонках "),
-        m("form.pure-form",
-          m("fieldset",
-            m(".pure-g", [
-              m(".pure-u-1-5",
-                m("input.input-find.pure-u-3-4[id='tumor_id'][type='search']",
-                  {placeholder: "Tumor",
-                  onkeyup: vmFind$1.find,
-                  //value: vmFind.toFind
-                  }
-                )
-              ),
-              m(".pure-u-1-5",
-                m("input.input-find.pure-u-3-4[id='nodus_id'][type='search']",
-                  {placeholder: "Nodus",
-                  onkeyup: vmFind$1.find,
-                  //value: vmFind.toFind
-                  }
-                )
-              ),
-              m(".pure-u-1-5",
-                m("input.input-find.pure-u-3-4[id='metas_id'][type='search']",
-                  {placeholder: "Метас",
-                  onkeyup: vmFind$1.find,
-                  //value: vmFind.toFind
-                  }
-                )
-              ),
-            ])
-          )
-        ),
-      ])
-    );
-  }
-};
-
 // src/sprav/router/roOnko.js
+//import { dsFind, listTnm, tnmFilter } from '../view/dsTNM.js'
+//import { sidFind, listSchema, schemaFilter } from '../view/lekSchema.js'
 
 const vuN1 = function(vnode){
   return vuCatalog(vnode);
@@ -1734,9 +1543,9 @@ const vuN4 = function(vnode){
 const vuN5 = function(vnode){
   return vuDataSheet(vnode);
 };
-const vuN6 = function(vnode){
-  return vuComboSheet(vnode);
-};
+//const vuN6 = function(vnode){
+//  return vuComboSheet(vnode);
+//}
 const vuN7 = function(vnode){
   return vuCatalog(vnode);
 };
@@ -1770,6 +1579,16 @@ const vuN16 = function(vnode){
 const vuN17 = function(vnode){
   return vuCatalog(vnode);
 };
+const vuN18 = function(vnode){
+  return vuCatalog(vnode);
+};
+const vuN19 = function(vnode){
+  return vuCatalog(vnode);
+};
+//const vuN21 = function(vnode){
+//  return vuComboSheet(vnode);
+//}
+
 
 const roOnko = {
   [spravApi.onko]: {
@@ -1781,7 +1600,7 @@ const roOnko = {
   [spravApi.onko_n1]: {
     render: function() {
       let view = m(vuN1, {
-          model:  moModel.getModel( restApi.onko_n1 ),
+          model:  moModel.getModel( restSprav.onko_n1 ),
           header: "Коды отказов",
           name: "Отказ"
       });
@@ -1791,7 +1610,7 @@ const roOnko = {
   [spravApi.onko_n2]: {
     render: function() {
       let view = m(vuN2, {
-          model: moModel.getModel( restApi.onko_n2 ),
+          model: moModel.getModel( restSprav.onko_n2 ),
           header: "Стадия заболевания",
           name: "Стадия",
           find: 2, // search in the first 1 table columns
@@ -1803,7 +1622,7 @@ const roOnko = {
   [spravApi.onko_n3]: {
     render: function() {
       let view = m(vuN3, {
-          model:  moModel.getModel( restApi.onko_n3),
+          model:  moModel.getModel( restSprav.onko_n3),
           header: "Tumor",
           name: "Tumor",
           find: 2, // search in the first 1 table columns
@@ -1815,7 +1634,7 @@ const roOnko = {
   [spravApi.onko_n4]: {
     render: function() {
       let view = m(vuN4, {
-          model:  moModel.getModel( restApi.onko_n4 ),
+          model:  moModel.getModel( restSprav.onko_n4 ),
           header: "Nodus",
           name: "Nodus",
           find: 2, // search in the first 1 table columns
@@ -1827,7 +1646,7 @@ const roOnko = {
   [spravApi.onko_n5]: {
     render: function() {
       let view = m(vuN5, {
-          model:  moModel.getModel( restApi.onko_n5 ),
+          model:  moModel.getModel( restSprav.onko_n5 ),
           header: "Метазтазы",
           name: "Метастазы",
           find: 2, // search in the first 1 table columns
@@ -1836,10 +1655,11 @@ const roOnko = {
       return vuView(view);
     }
   },
+  /*
   [spravApi.onko_n6]: {
     render: function() {
       let view = m(vuN6, {
-          model:  moModel.getModel( restApi.onko_n6 ),
+          model:  moModel.getModel( restSprav.onko_n6 ),
           header: "Сопоставление DS TNM",
           findForm: dsFind,
           listMap: listTnm,
@@ -1851,10 +1671,11 @@ const roOnko = {
       return vuView(view);
     }
   },
+  */
   [spravApi.onko_n7]: {
     render: function() {
       let view = m(vuN7, {
-          model:  moModel.getModel( restApi.onko_n7),
+          model:  moModel.getModel( restSprav.onko_n7),
           header: "Гистология",
           name: "Наименование"
       });
@@ -1864,7 +1685,7 @@ const roOnko = {
   [spravApi.onko_n8]: {
     render: function() {
       let view = m(vuN8, {
-          model:  moModel.getModel( restApi.onko_n8 ),
+          model:  moModel.getModel( restSprav.onko_n8 ),
           header: "Гистлогия результат",
           name: "Результат",
           find: 2, // search in the first 1 table columns
@@ -1876,7 +1697,7 @@ const roOnko = {
   [spravApi.onko_n9]: {
     render: function() {
       let view = m(vuN9, {
-          model:  moModel.getModel( restApi.onko_n9 ),
+          model:  moModel.getModel( restSprav.onko_n9 ),
           header: "Гистология диагноз",
           name: "Диагноз",
           find: 2, // search in the first 1 table columns
@@ -1888,7 +1709,7 @@ const roOnko = {
   [spravApi.onko_n10]: {
     render: function() {
       let view = m(vuN10, {
-          model:  moModel.getModel( restApi.onko_n10 ),
+          model:  moModel.getModel( restSprav.onko_n10 ),
           header: "Онкомаркеры",
           name: "Маркер",
           find: 2, // search in the first 1 table columns
@@ -1900,7 +1721,7 @@ const roOnko = {
   [spravApi.onko_n11]: {
     render: function() {
       let view = m(vuN11, {
-          model:  moModel.getModel( restApi.onko_n11 ),
+          model:  moModel.getModel( restSprav.onko_n11 ),
           header: "Онкомаркеры значение",
           name: "Маркер",
           find: 2, // search in the first 1 table columns
@@ -1912,7 +1733,7 @@ const roOnko = {
   [spravApi.onko_n12]: {
     render: function() {
       let view = m(vuN12, {
-          model:  moModel.getModel( restApi.onko_n12 ),
+          model:  moModel.getModel( restSprav.onko_n12 ),
           header: "Онкомаркеры диагноз",
           name: "Маркер",
           find: 2, // search in the first 1 table columns
@@ -1924,7 +1745,7 @@ const roOnko = {
   [spravApi.onko_n13]: {
     render: function() {
       let view = m(vuN13, {
-          model:  moModel.getModel( restApi.onko_n13 ),
+          model:  moModel.getModel( restSprav.onko_n13 ),
           header: "Тип лечения",
           name: "Тип",
       });
@@ -1934,7 +1755,7 @@ const roOnko = {
   [spravApi.onko_n14]: {
     render: function() {
       let view = m(vuN14, {
-          model:  moModel.getModel( restApi.onko_n14 ),
+          model:  moModel.getModel( restSprav.onko_n14 ),
           header: "Тип хирургического лечения",
           name: "Тип",
       });
@@ -1944,7 +1765,7 @@ const roOnko = {
   [spravApi.onko_n15]: {
     render: function() {
       let view = m(vuN15, {
-          model:  moModel.getModel( restApi.onko_n15),
+          model:  moModel.getModel( restSprav.onko_n15),
           header: "Линии лекрственной тераапии",
           name: "Линия",
       });
@@ -1954,7 +1775,7 @@ const roOnko = {
   [spravApi.onko_n16]: {
     render: function() {
       let view = m(vuN16, {
-          model:  moModel.getModel( restApi.onko_n16 ),
+          model:  moModel.getModel( restSprav.onko_n16 ),
           header: "Циклы лекарственной терапии",
           name: "Цикл",
       });
@@ -1964,13 +1785,50 @@ const roOnko = {
   [spravApi.onko_n17]: {
     render: function() {
       let view = m(vuN17, {
-          model:  moModel.getModel( restApi.onko_n17),
+          model:  moModel.getModel( restSprav.onko_n17),
           header: "Тип лучевой терапии",
           name: "Тип",
       });
       return vuView(view);
     }
   },
+   [spravApi.onko_n18]: {
+    render: function() {
+      let view = m(vuN18, {
+          model:  moModel.getModel( restSprav.onko_n18),
+          header: "Повод обращения",
+          name: "Повод",
+      });
+      return vuView(view);
+    }
+  },
+   [spravApi.onko_n19]: {
+    render: function() {
+      let view = m(vuN19, {
+          model:  moModel.getModel( restSprav.onko_n19),
+          header: "Цели консилиума",
+          name: "Цель",
+      });
+      return vuView(view);
+    }
+  },
+  /*
+  [spravApi.onko_n21]: {
+    render: function() {
+      let view = m(vuN21, {
+          model:  moModel.getModel( restSprav.onko_n21 ),
+          header: "Схемы лекарственной терапии",
+          findForm: sidFind,
+          listMap: listSchema,
+          filter: schemaFilter,
+        //name: "",
+
+          struct: moStruct.onko_n21
+      });
+      return vuView(view);
+    }
+  },
+  */
 };
 
 // src/sprav/router_sprav.js

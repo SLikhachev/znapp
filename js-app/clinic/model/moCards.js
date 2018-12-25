@@ -1,7 +1,7 @@
 // src/clinic/model/moCards.js
 
 //import { schemaRest } from '../../apps/apiConf.js';
-import { restApi } from '../../sprav/spravApi.js';
+import { restSprav } from '../../sprav/spravApi.js';
 import { restClinic } from '../clinicApi.js';
 import { moModel } from '../../apps/model/moModel.js';
 
@@ -57,7 +57,7 @@ const moCard = {
     method: restClinic.get_card.method,
     list: null, 
     opt_name: 'card_options',
-    options: [restApi.dul, restApi.smo_local],
+    options: [restSprav.dul, restSprav.smo_local],
     data: null, 
     error: null
   },

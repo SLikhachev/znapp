@@ -1,7 +1,7 @@
 
 // src/sparv/spravApi.js
 // here url is a table name
-restApi = {
+restSprav = {
     // local
     district: { url:"district"},
     division: { url:"division"},
@@ -25,7 +25,7 @@ restApi = {
     onko_n3: {url: 'n3_tumor'},
     onko_n4: {url: 'n4_nodus'},
     onko_n5: {url: 'n5_metastaz'},
-    onko_n6: {url: 'rpc/onko_tnm'},
+    onko_n6: {url: 'rpc/onko_tnm'}, //pg base proc
     onko_n7: {url: 'n7_hystolog'},
     onko_n8: {url: 'onko_hysto_n8'}, // pg base view
     onko_n9: {url: 'onko_hysto_n9'}, // pg_base view
@@ -37,6 +37,10 @@ restApi = {
     onko_n15: {url: 'n15_leklech_line'},
     onko_n16: {url: 'n16_leklech_cycle'},
     onko_n17: {url: 'n17_luchlech_type'},
+    onko_n18: {url: 'n18_povod_obras'},
+    onko_n19: {url: 'n19_consil_cel'},
+    //onko_n21: {url: 'rpc/onko_lek_schema'}, //pg base proc
+
     // types
     dul: {url: 'dul'},
     
@@ -67,7 +71,7 @@ const spravApi = {
     onko_n3: "/onko/n3",
     onko_n4: "/onko/n4",
     onko_n5: "/onko/n5",
-    onko_n6: "/onko/n6",
+    //onko_n6: "/onko/n6",
     onko_n7: "/onko/n7",
     onko_n8: "/onko/n8",
     onko_n9: "/onko/n9",
@@ -79,6 +83,9 @@ const spravApi = {
     onko_n15: "/onko/n15",
     onko_n16: "/onko/n16",
     onko_n17: "/onko/n17",
+    onko_n18: "/onko/n18",
+    onko_n19: "/onko/n19",
+    //onko_n21: "/onko/n21",
     /*
     spec: "/spec",
     other: "/other",
@@ -120,7 +127,7 @@ const spravMenu = { subAppMenu: {
       [`#!${spravApi.onko_n3}`, "3. Tumor"],
       [`#!${spravApi.onko_n4}`, "4. Nodus"],
       [`#!${spravApi.onko_n5}`, "5. Метазстазы"],
-      [`#!${spravApi.onko_n6}`, "6. DS TNM"],
+      //[`#!${spravApi.onko_n6}`, "6. DS TNM"],
       [`#!${spravApi.onko_n7}`, "7. Гистология"],
       [`#!${spravApi.onko_n8}`, "8. Гистолог результ"],
       [`#!${spravApi.onko_n9}`, "9. Гистолог диагноз"],
@@ -132,6 +139,9 @@ const spravMenu = { subAppMenu: {
       [`#!${spravApi.onko_n15}`, "15. Лекарств линии"],
       [`#!${spravApi.onko_n16}`, "16. Лекарств циклы"],
       [`#!${spravApi.onko_n17}`, "17. Лучевая терапия"],
+      [`#!${spravApi.onko_n18}`, "18. Повод обращения"],
+      [`#!${spravApi.onko_n19}`, "19. Цель консилиума"],
+      //[`#!${spravApi.onko_n21}`, "21. Схема терапии"],
     ]
   },
   
@@ -150,4 +160,4 @@ const spravMenu = { subAppMenu: {
 }
 
 
-export { restApi, spravApi, spravMenu };
+export { restSprav, spravApi, spravMenu };
