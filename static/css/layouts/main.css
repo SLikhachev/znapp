@@ -357,6 +357,9 @@ form.tcard input {
 button.pure-button.pure-button-primary:hover {
     background-color: #039be5;
 }
+form.tcard .item_name {
+    padding-left: 1em;
+}
 
 div.legnd { font-size: 1.4em; font-weight: 700; color: #1F8DD6; margin-bottom: 1em;}
 div.patz-data span { font-size: 1.4em; font-weight: 700; display: block; margin-bottom: 0.5em}

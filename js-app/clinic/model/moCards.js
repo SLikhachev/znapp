@@ -56,7 +56,8 @@ const moCard = {
     url: restClinic.get_card.url,
     method: restClinic.get_card.method,
     list: null, 
-    options: [restApi.dul],
+    opt_name: 'card_options',
+    options: [restApi.dul, restApi.smo_local],
     data: null, 
     error: null
   },
@@ -66,8 +67,8 @@ const moCard = {
   },
   
   getOptions() {
-    moModel.getData( moCard.getModel() );
-    console.log(this.model.data)
+    if (this.model.data && this.model.data.size && this.model.data.size !== 0) return;
+    moModel.getData( this.model );
   },
   
   getCard(args) {

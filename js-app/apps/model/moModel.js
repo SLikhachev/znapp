@@ -75,7 +75,12 @@ const moModel = {
     });
     // order should preserved
     Promise.all(data).then( (lists) => {
-      model.data = _.zipObject( model.options, lists);
+      model.data = new Map();
+      for ( let el of model.options.entries() ) {
+        model.data.set( el[1].url, lists[ el[0] ]);
+      }
+      //window.localStorage.setItem(model.opt_name, model.data);
+      //model.data = _.zipObject( model.options, lists);
       //console.log( model.list );
     }).catch(function(e) {
       //model.error = e.message;
@@ -99,6 +104,7 @@ const moModel = {
       model.list = res; // list of objects
       model.order = true;
     }).catch(function(e) {
+      console.log(e);
       let err = JSON.parse(e.message);
       model.error = err.message ? err.message : e.message;
       console.log( err );

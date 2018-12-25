@@ -34,12 +34,57 @@ const forTabs = function(vnode) {
 }
 
 const crdMain = function(vnode) {
+  let data = vnode.attrs.data;
+  let card = vnode.attrs.item;
   //console.log(vnode.attrs.data);
-
+  //
+  const set_data = function(node, key, ref) {
+   node.setAttribute('data', Array.from( data.get(key) ).find( item => item.short_name == node.value )[ref] );
+   //console.log(node.getAttribute('data'));
+   return false;
+  };
+  const set_name = function(node, key, ref, name, value=null) {
+    let val = value ? value : node.value;
+    
+    if ( !node.hasAttribute('required') && val === "") {
+      node.nextSibling.classList.remove('red');
+      node.nextSibling.innerText = "";
+      return node.value;
+    }
+    
+    let item = Array.from( data.get(key) ).find( item => item[ref].toString() == val );
+    if (item !== undefined) {
+      node.nextSibling.classList.remove('red');
+      node.nextSibling.innerText = item[name];
+    } else {
+      node.nextSibling.classList.add('red');
+      node.nextSibling.innerText = "Неверное значение";
+    }
+    return node.value;
+  };
+  const set_dul = function(e) {
+    card.dul_type = e.target.value;
+    return set_name(e.target, 'dul', 'code', 'short_name');
+  };
+  const set_smo = function(e) {
+    let val = "";
+    card.smo = null;
+    if (e.target.value !== "" ) {
+      val = parseInt ( e.target.value );
+      if ( !isNaN(val) ) {
+        val += 250000;
+        card.smo = val;
+      } else {
+        val = "";
+      }
+    }
+    return set_name(e.target, 'smo_local', 'code', 'short_name', val.toString());
+  };
+  
   return {
     
     view(vnode) {
-      let card = vnode.attrs.item;
+      
        return m('form.tcard.pure-form.pure-form-aligned',
          {style:"font-size: 1.2em;", id:"card", oncreate: forTabs },
          [ m('fieldset', [
@@ -50,7 +95,7 @@ const crdMain = function(vnode) {
               m(".pure-control-group", [
                 m('label', { for: "crd_num" }, "Номер карты"),
                 m('input[name="crd_num"][type="text"]][required]', {
-                  value: card.crd_num,
+                  value: card ? card.crd_num : '',
                   tabindex: "1",
                   oncreate: toFocus
 
@@ -61,7 +106,7 @@ const crdMain = function(vnode) {
                 m('label', { for:"fam"} , " "),
                 m('input[name="fam"][type="text"][required]', {
                   placeholder: "Фамилия",
-                  value: card.fam,
+                  value: card ? card.fam : '',
                   tabindex: "2",
                 })
               ]),
@@ -111,9 +156,15 @@ const crdMain = function(vnode) {
             m(".pure-control-group", [
               m('label', { for:"dul_type"}, "Тип документа"),
               m('input.pure-u-1-6[name="dul_type"][type="text"]', {
+                 //list: "type_dul",
                  value: card.dul_type,
                  tabindex: "6",
-              })
+                 onblur: set_dul
+              }),
+              m('span.item_name')
+              //m('datalist[id="type_dul"]', [
+              //  data.get('dul').map( dul => m('option', dul.short_name) )
+              //])
             ]),
             
             m(".pure-control-group", [
@@ -156,9 +207,15 @@ const crdMain = function(vnode) {
             m(".pure-control-group", [
               m('label', { for: "smo"}, "Страховщик"),
               m('input.pure-u-1-6[name="smo"][type="text"]', {
-                 value: card.smo,
+                 value: card.smo - 250000,
                  tabindex: "11",
-              })
+                 onblur: set_smo
+                 //list: "smo_name",
+               }),
+               m('span.item_name')
+              //m('datalist[id="smo_name"]', [
+              //  data.get('smo_local').map( smo => m('option', smo.short_name) )
+              //])
             ]),
         
             m(".pure-control-group", [
@@ -348,7 +405,7 @@ const tabsView = function(vnode) {
         tab_contents.map( (cont) => {
           return m('.tab-content',
             //{ oncreate: (vnode => tabs_cont.push(vnode.dom)) },
-            m(cont, {item: vnode.attrs.item}) );
+            m(cont, {item: vnode.attrs.item, data: vnode.attrs.data}) );
         })
       ]);
   }

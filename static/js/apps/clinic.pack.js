@@ -436,7 +436,12 @@ const moModel = {
     });
     // order should preserved
     Promise.all(data).then( (lists) => {
-      model.data = _.zipObject( model.options, lists);
+      model.data = new Map();
+      for ( let el of model.options.entries() ) {
+        model.data.set( el[1].url, lists[ el[0] ]);
+      }
+      //window.localStorage.setItem(model.opt_name, model.data);
+      //model.data = _.zipObject( model.options, lists);
       //console.log( model.list );
     }).catch(function(e) {
       //model.error = e.message;
@@ -460,6 +465,7 @@ const moModel = {
       model.list = res; // list of objects
       model.order = true;
     }).catch(function(e) {
+      console.log(e);
       let err = JSON.parse(e.message);
       model.error = err.message ? err.message : e.message;
       console.log( err );
@@ -577,7 +583,8 @@ const moCard = {
     url: restClinic.get_card.url,
     method: restClinic.get_card.method,
     list: null, 
-    options: [restApi.dul],
+    opt_name: 'card_options',
+    options: [restApi.dul, restApi.smo_local],
     data: null, 
     error: null
   },
@@ -587,8 +594,8 @@ const moCard = {
   },
   
   getOptions() {
-    moModel.getData( moCard.getModel() );
-    console.log(this.model.data);
+    if (this.model.data && this.model.data.size && this.model.data.size !== 0) return;
+    moModel.getData( this.model );
   },
   
   getCard(args) {
@@ -633,12 +640,50 @@ const forTabs = function(vnode) {
 };
 
 const crdMain = function(vnode) {
-  //console.log(vnode.attrs.data);
-
+  let data = vnode.attrs.data;
+  let card = vnode.attrs.item;
+  const set_name = function(node, key, ref, name, value=null) {
+    let val = value ? value : node.value;
+    
+    if ( !node.hasAttribute('required') && val === "") {
+      node.nextSibling.classList.remove('red');
+      node.nextSibling.innerText = "";
+      return node.value;
+    }
+    
+    let item = Array.from( data.get(key) ).find( item => item[ref].toString() == val );
+    if (item !== undefined) {
+      node.nextSibling.classList.remove('red');
+      node.nextSibling.innerText = item[name];
+    } else {
+      node.nextSibling.classList.add('red');
+      node.nextSibling.innerText = "Неверное значение";
+    }
+    return node.value;
+  };
+  const set_dul = function(e) {
+    card.dul_type = e.target.value;
+    return set_name(e.target, 'dul', 'code', 'short_name');
+  };
+  const set_smo = function(e) {
+    let val = "";
+    card.smo = null;
+    if (e.target.value !== "" ) {
+      val = parseInt ( e.target.value );
+      if ( !isNaN(val) ) {
+        val += 250000;
+        card.smo = val;
+      } else {
+        val = "";
+      }
+    }
+    return set_name(e.target, 'smo_local', 'code', 'short_name', val.toString());
+  };
+  
   return {
     
     view(vnode) {
-      let card = vnode.attrs.item;
+      
        return m('form.tcard.pure-form.pure-form-aligned',
          {style:"font-size: 1.2em;", id:"card", oncreate: forTabs },
          [ m('fieldset', [
@@ -710,9 +755,15 @@ const crdMain = function(vnode) {
             m(".pure-control-group", [
               m('label', { for:"dul_type"}, "Тип документа"),
               m('input.pure-u-1-6[name="dul_type"][type="text"]', {
+                 //list: "type_dul",
                  value: card.dul_type,
                  tabindex: "6",
-              })
+                 onblur: set_dul
+              }),
+              m('span.item_name')
+              //m('datalist[id="type_dul"]', [
+              //  data.get('dul').map( dul => m('option', dul.short_name) )
+              //])
             ]),
             
             m(".pure-control-group", [
@@ -755,9 +806,15 @@ const crdMain = function(vnode) {
             m(".pure-control-group", [
               m('label', { for: "smo"}, "Страховщик"),
               m('input.pure-u-1-6[name="smo"][type="text"]', {
-                 value: card.smo,
+                 value: card.smo - 250000,
                  tabindex: "11",
-              })
+                 onblur: set_smo
+                 //list: "smo_name",
+               }),
+               m('span.item_name')
+              //m('datalist[id="smo_name"]', [
+              //  data.get('smo_local').map( smo => m('option', smo.short_name) )
+              //])
             ]),
         
             m(".pure-control-group", [
@@ -947,7 +1004,7 @@ const tabsView = function(vnode) {
         tab_contents.map( (cont) => {
           return m('.tab-content',
             //{ oncreate: (vnode => tabs_cont.push(vnode.dom)) },
-            m(cont, {item: vnode.attrs.item}) );
+            m(cont, {item: vnode.attrs.item, data: vnode.attrs.data}) );
         })
       ]);
   }
