@@ -1,9 +1,9 @@
 // src/clinic/view/vuCardsList.js
 
+import { vuLoading } from '../../apps/view/vuApp.js';
 import { restClinic, clinicApi } from '../clinicApi.js';
 import { moModel } from '../../apps/model/moModel.js';
 import { moCardsList } from '../model/moCards.js';
-import { vuCard } from './vuCard.js';
 
 const cardFind = {
   
@@ -28,8 +28,10 @@ const cardFind = {
     //console.log(vnode.attrs);
     
     
-    return m(".pure-g",
-      m(".pure-u-1-1",
+    return m(".pure-g", [
+      //m(".pure-u-2-12", m('a.pure-button.pure-button-primary', { href: `#!${clinicApi.card_add}`}, "Добавить")),
+      m(".pure-u-18-24",
+
         m("form.pure-form[id=card_find]",
           m("fieldset",
             m(".pure-g", [
@@ -52,32 +54,31 @@ const cardFind = {
                 )
               ),
               m(".pure-u-1-5",
-                m('button.pure-button.pure-button-primary[type="button"]', {
+                m('button.pure-button[type="button"]', {
                     //value: 0,
                     onclick: moCardsList.cardsFind
-                  },
-                "Найти"
-                )
-              ), // to xls
-                /*
-                m(".pure-u-1-5",
-                  m('a.pure-button.pure-button-primary', {
-                    id: "to_xls",
-                    //onclick: moCardsList.cardsFind
-                    },
-                    "Excel"
-                  )
-                ) */
+                  }, "Найти" ),
+                m('a.pure-button.pure-button-primary', {
+                  href: [clinicApi.card_add],
+                  oncreate: m.route.link,
+                  style: "margin-left: 2em;"
+                  }, "Добавить" )
+              ),
             ])
           )
         )
-      )
-    );
+      ),
+    ]);
   }
 }
 
+export const toCard = function (crd_num) {
+    m.route.set(clinicApi.card_id, { id: crd_num } );
+    return false;
+}
+
 // clojure
-const vuCardsList = function (vnode) {
+export const vuCardsList = function (vnode) {
   
   let cardz_hdr = {
       crd_num: ['Карта'],
@@ -88,12 +89,12 @@ const vuCardsList = function (vnode) {
   
   let model = moCardsList.getModel();
   let table, table_id = 'cards_list';
-  
+  /*
   let toCard = function (crd_num) {
     m.route.set(clinicApi.card_id, { id: crd_num } );
     return false;
   };
-
+  */
   
   return {
     
@@ -120,8 +121,8 @@ const vuCardsList = function (vnode) {
       Object.keys(cardz_hdr).map( (column) => {
         let cell = column === 'fam' ? fio : s[column];
         let td = first ? m('td.choice.blue', {
-          data:  cell,
-          onclick: m.withAttr( "data", toCard)
+          //data:  cell,
+          onclick: e => { e.preventDefault(); toCard(cell); }
         }, cell) : m('td', cell);
         first = false;
         return td;
@@ -138,13 +139,21 @@ const vuCardsList = function (vnode) {
 
     //return m(tableView, {model: this.model , header: this.header }, [
     return model.error ? [ m(".error", model.error) ] :
-      model.list ? [
+      model.list ? m('div', { style: "padding-left: 2em"}, 
         //m(vuTheader, { header: headerString} ),
         m(cardFind, {table_id: table_id } ),
-        model.list[0] ? model.list[0].recount ?
+        model.list[0] ? model.list[0].recount ? m('div' , 
           m('h1.blue', {style: "font-size: 1.5em;"},
-            `${model.list[0].recount} записей в таблице`) : 
-        m('table.pure-table.pure-table-bordered', {id: table_id} , [
+            `${model.list[0].recount} записей в таблице`),
+          /*
+          m('a.pure-button.pure-button-primary',
+            { href: [clinicApi.card_add],
+              oncreate: m.route.link
+            
+            }, "Добавить"
+          )
+          */
+        ) : m('table.pure-table.pure-table-bordered', {id: table_id} , [
           m('thead', [
             m('tr', [
               Object.keys(cardz_hdr).map( (column) => {
@@ -169,12 +178,7 @@ const vuCardsList = function (vnode) {
              )
         )
         */
-      ] : m(".loading-icon", [
-            m('.i.fa.fa-refresh.fa-spin.fa-3x.fa-fw'),
-            m('span.sr-only', 'Loading...')
-          ]); 
+      ) : m(vuLoading); 
   }
   }; //return this object
 }
-
-export { vuCardsList };

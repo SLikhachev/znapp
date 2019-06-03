@@ -30,15 +30,22 @@ m.route(document.body, "/", {
   
   [clinicApi.card_id] : {
     onmatch: function(args) {
-      moCard.getCard(args);
-      moCard.getOptions();
+      
+      moCard.clear();
+      //actionsCard.clear({}): // initial state
+      let { id } = args;
+      // TODO card number may be not an Int but any string
+      if ( !isNaN(parseInt(id) ) )  moCard.getCard(args); //tionsCard.get(args); //
+      if ( !Boolean(moCard.data) ) moCard.getOptions();
+      //console.log(args);
       return vuCard;
     },
     render : function(vnode) {
+        //console.log(vnode.attrs);
         return m(vuMain, clinicMenu, vnode );
       }
   },
-  
+
   [clinicApi.talons] : {
     render : function() {
         return m(vuMain, clinicMenu, m(vuTalonsList) );
@@ -46,7 +53,9 @@ m.route(document.body, "/", {
   },
   [clinicApi.talon_id] : {
     onmatch: function(args) {
-      //moTalon.getTalon(args);
+      let { id } = args;
+      if ( !isNaN(parseInt(id) ) )  moTalon.getTalon(args);
+      if ( !Boolean(moTalon.data) ) moTalon.getOptions();
       return vuTalon;
     },
     render : function(vnode) {

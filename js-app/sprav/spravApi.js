@@ -41,8 +41,9 @@ restSprav = {
     onko_n19: {url: 'n19_consil_cel'},
     //onko_n21: {url: 'rpc/onko_lek_schema'}, //pg base proc
 
-    // types
+    // federal
     dul: {url: 'dul'},
+    okato: { url: 'okato'},
     
 }
 

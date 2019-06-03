@@ -97,9 +97,10 @@ const moModel = {
     let _url = url ? url : model.url;
     let _method = method ? method : model.method;
     return m.request({
+      url: pg_rest + _url,
       method: _method,
       data: data,
-      url: pg_rest + _url
+      
     }).then(function(res) {
       model.list = res; // list of objects
       model.order = true;

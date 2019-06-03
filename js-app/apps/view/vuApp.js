@@ -2,7 +2,7 @@
 
 import { vuMain } from './vuMain.js';
 
-const vuTheader = {
+export const vuTheader = {
   view (vnode) {
     return m(".pure-g",
       m(".pure-u-1-1.box-1",
@@ -12,7 +12,7 @@ const vuTheader = {
   }
 }
 
-const vuApp = {
+export const vuApp = {
   view: function(vnode) {
     return m('div', {
         style: "margin: 0 auto; padding-top: 5em; width: 50%;"
@@ -22,8 +22,14 @@ const vuApp = {
   }
 }
 
-const vuView = function(appMenu, view) {
+export const vuView = function(appMenu, view) {
   return m(vuMain, appMenu, view);
 }
-
-export { vuTheader, vuApp, vuView };
+export const vuLoading = {
+  view() { 
+    return m(".loading-icon", 
+      m('.i.fa.fa-refresh.fa-spin.fa-3x.fa-fw'),
+      m('span.sr-only', 'Loading...')
+    );
+  }
+}

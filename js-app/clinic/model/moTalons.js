@@ -3,7 +3,7 @@
 import {restClinic } from '../clinicApi.js';
 import { moModel } from '../../apps/model/moModel.js';
 
-const moTalonsList = {
+export const moTalonsList = {
   
   model : {
     url: restClinic.talon_find.url,
@@ -29,16 +29,16 @@ const moTalonsList = {
     //return false;
     if (data.q_tal == "")
       data.q_tal = 1;
-    if ( data.q_crd == "" && (data.q_date != "" || data.q_dcod != "" ) )
+    if ( data.q_crd == "" && (data.q_date != "" || data.q_dspec != "" ) )
       data.q_crd = ".*";
-    if (data.q_date == "" && data.q_dcod != "")
+    if (data.q_date == "" && data.q_dspec != "")
       data.q_date = '2010-01-01';
     data.q_date = data.q_date == "" ? null : data.q_date;
-    if (data.q_dcod == "")
-      data.q_dcod = null;
+    if (data.q_dspec == "")
+      data.q_dspec = null;
     data.lim = 50;
     data.offs = 0;
-    
+    //console.log ( data );
     
     moModel.getViewRpc(
       moTalonsList.getModel(),
@@ -50,15 +50,20 @@ const moTalonsList = {
   
 };
 
-const moTalon = {
+export const moTalon = {
   
   model : {
     url: restClinic.get_talon.url,
     method: restClinic.get_talon.method,
+    //card: null,
     list: null, 
-    error: null
+    opt_name: 'talon_options',
+    options: [], //[restSprav.dul, restSprav.smo_local, restSprav.mo_local, restSprav.okato],
+    data: null, 
+    error: null,
+    save: null
   },
-  
+ 
   getModel() {
     return this.model;
   },
@@ -66,10 +71,14 @@ const moTalon = {
   getTalon(args) {
     return moModel.getViewRpc(
       moTalon.getModel(),
-      { talon_num: args.id }
+      { tal_num: args.id }
     );
-  }
+  },
+  
+  getOptions() {
+    if (this.model.data && this.model.data.size && this.model.data.size !== 0) return;
+    moModel.getData( this.model );
+  },
   
 };
 
-export { moTalonsList, moTalon };

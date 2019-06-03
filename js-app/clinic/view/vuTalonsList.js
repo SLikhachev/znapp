@@ -1,9 +1,9 @@
 // src/clinic/view/vuTalonsList.js
 
-import { restClinic } from '../clinicApi.js';
+import { restClinic, clinicApi } from '../clinicApi.js';
 import { moModel } from '../../apps/model/moModel.js';
 import { moTalonsList } from '../model/moTalons.js';
-import { vuCard } from './vuCard.js';
+import { toCard } from './vuCardsList.js';
 import { vuTalon } from './vuTalon.js';
 
 const talonFind = {
@@ -21,8 +21,6 @@ const talonFind = {
               m(".pure-u-1-5",
                 m("input.input-find.pure-u-3-4[name=q_tal][type='search']",
                   {placeholder: "Номер талона",
-                  //onkeyup: m.withAttr("value", vmFind.setFind ),
-                  //value: vmFind.toFind
                   }
                 )
               ),
@@ -38,8 +36,8 @@ const talonFind = {
               ),
 
               m(".pure-u-1-5",
-                m("input.input-find.pure-u-2-3[name=q_dcod][type='search']",
-                  {placeholder:"Специалист"}
+                m("input.input-find.pure-u-2-3[name=q_dspec][type='search']",
+                  {placeholder:"Специалист (код)"}
                 )
               ),
               
@@ -66,9 +64,13 @@ const talonFind = {
   }
 }
 
+export const toTalon = function (tal_num) {
+    m.route.set(clinicApi.talon_id, { id: tal_num } );
+    return false;
+}
 
 // clojure
-const vuTalonsList = function (vnode) {
+export const vuTalonsList = function (vnode) {
   
   var talonz_hdr = {
       crd_num: ['Карта', 'link'],
@@ -77,9 +79,10 @@ const vuTalonsList = function (vnode) {
       open_date: ['Открыт'],
       close_date: ['Закрыт'],
       purp: ['Цель'],
+      ds1: ['Диагноз'],
       spec: ['Спец'],
       code: ['Код'],
-      family: ['Врач'],
+      family: ['Врач']
      
    };
   var model = moTalonsList.getModel();
@@ -105,10 +108,10 @@ const vuTalonsList = function (vnode) {
         //console.log(talonz_hdr[column]);
         let cell = column === 'fam' ? fio : s[column];
         let td = talonz_hdr[column].length == 2 ? m('td.choice.blue', {
-          data:  cell,
+          //data:  cell,
           onclick: column == "crd_num" ?
-            m.withAttr( "data", vuCard.viewCard) :
-            m.withAttr( "data", vuTalon.viewTalon)
+            e => { e.preventDefault(); toCard(cell); } :
+            e => { e.preventDefault(); toTalon(cell);}
         }, cell) : m('td', cell);
         return td;
       }),
@@ -162,5 +165,3 @@ const vuTalonsList = function (vnode) {
   }
   }; //return this object
 }
-
-export { vuTalonsList };

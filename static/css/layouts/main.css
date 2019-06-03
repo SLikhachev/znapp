@@ -362,7 +362,7 @@ form.tcard .item_name {
 }
 
 div.legnd { font-size: 1.4em; font-weight: 700; color: #1F8DD6; margin-bottom: 1em;}
-div.patz-data span { font-size: 1.4em; font-weight: 700; display: block; margin-bottom: 0.5em}
+div.patz-data span { font-size: 1.1em; font-weight: 500; display: block; margin-bottom: 0.5em}
 div.patz-data span.snamel { font-size: 1.5em; font-weight: 700; color: #000 }
 table.tpara { margin-bottom: 1em;}
 table.tpara caption { font-size: 1.3em; color: #1F8DD6;  font-style: normal; font-weight: 700}
