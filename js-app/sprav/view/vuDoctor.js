@@ -102,10 +102,8 @@ const itemForm = {
   },
 }
 // clojure
-const vuDoctor = function (vnode) {
+export const vuDoctor = function (vnode) {
   let view = vuDataSheet(vnode);
   view.itemForm = itemForm;
   return view;
 }
-
-export { vuDoctor };
