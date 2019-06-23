@@ -1,24 +1,35 @@
 
 // src/sparv/spravApi.js
 // here url is a table name
-restSprav = {
+
+// editable - array of bools as [ add, edit, del ]
+
+export const restApi = {
     // local
+    get doctor() {
+        return { url:"doctor", options: [ this.division, this.district ], sort_by: 'code',
+        editable: [true, true, true] };
+    },
     district: { url:"district"},
     division: { url:"division"},
-    mo_local: { url:"mo_local"},
-    smo_local: { url:"smo_local"},
-    get doctor() {
-        return { url:"doctor", options: [ this.division, this.district ], sort_by: 'code' };
-    },
-    // tfoms
-    doc_spec : { url:"doc_spec"},
     sp_podr: { url:"sp_podr", sort_by: 'mo_code' },
     sp_para: { url:"sp_para"},
     purp: { url: 'purpose'},
+    mo_local: { url:"mo_local"},
+    smo_local: { url:"smo_local"},
+    // prof
+    doc_spec : { url:"spec_prvs"}, // view name
+    prof: { url: 'profil' },
+    prvs: { url: 'prvs' },
+    vidpom: { url: 'vidpom' },
+    pmu: { url: 'pmu', editable: [false, true, false] },
+    pmu_grup: { url: 'pmu_grup' },
+    mkb: { url: 'mkb10'},
     type: {url: 'spec_case'},
     insur: {url: 'kategor'},
     istfin: {url: 'ist_fin'},
     errors: {url: 'errors_code'},
+    
     // onko
     onko_n1: {url: 'n1_protkaz'},
     onko_n2: {url: 'n2_stady'},
@@ -41,30 +52,37 @@ restSprav = {
     onko_n19: {url: 'n19_consil_cel'},
     //onko_n21: {url: 'rpc/onko_lek_schema'}, //pg base proc
 
-    // federal
+    // common
     dul: {url: 'dul'},
     okato: { url: 'okato'},
     
-}
+};
 
-const spravApi = {
+export const spravApi = {
     root: "/",
     mo: "/mo",
-    mo_doct: "/mo/doct-list",
-    mo_dist:  "/mo/dist-list",
-    mo_divs: "/mo/divs-list",
-    mo_local: "/mo/mo-local",
-    mo_smo: "/mo/smo-local",
+    mo_doct: "/mo/doct",
+    //mo_dist:  "/mo/dist-list", // участки
+    //mo_divs: "/mo/divs-list", //отделения
+    //mo_podr: "mo/podr", //подразделения
+    //mo_sp_podr: "mo/sp_podr", //вспомогательные
+    mo_sp_para: "mo/sp_para", // paraclin
+    mo_local: "/mo/mo_local",
+    mo_smo: "/mo/smo_local",
+    //mo_org: "/mo/org," //ораганизации (договоры, профосмотьры)
     //
-    tfoms: "/tfoms",
-    tfoms_spec: "/tfoms/spec",
-    tfoms_podr: "/tfoms/podr",
-    tfoms_para_podr: "/tfoms/para_podr",
-    tfoms_purp: "/tfoms/purp",
-    tfoms_type: "/tfoms/type",
-    tfoms_insur: "/tfoms/insur",
-    tfoms_istfin: "/tfoms/istfin",
-    tfoms_errors: "/tfoms/errors",
+    prof: "/prof",
+    prof_spec: "/prof/spec", //специальности првс профиль
+    prof_prof: "/prof/prof", //профили с кодами услуг
+    prof_prvs: "/prof/prvs", //првс
+    prof_vidpom: "/prof/vidpom",
+    prof_pmu: "/prof/pmu",
+    prof_mkb: "/prof/mkb",
+    //prof_purp: "/prof/purp",
+    //prof_type: "/prof/type",
+    //prof_insur: "/prof/insur",
+    //prof_istfin: "/prof/istfin",
+    //prof_errors: "/prof/errors",
     //
     onko: "/onko",
     onko_n1: "/onko/n1",
@@ -87,37 +105,43 @@ const spravApi = {
     onko_n18: "/onko/n18",
     onko_n19: "/onko/n19",
     //onko_n21: "/onko/n21",
-    /*
-    spec: "/spec",
-    other: "/other",
-    tarif: "tarif",
-   
-    */
-}
+    
+    // common sprav
+    com: "/com",
+    com_dul: "/com/dul",
+    com_okato: "/com/okato"
+    
+};
 
-const spravMenu = { subAppMenu: {
+export const spravMenu = { subAppMenu: {
   
   mo: {
     nref: [`#!${spravApi.mo}`, "Локальные"],
     items: [
       [`#!${spravApi.mo_doct}`, "Врачи"],
-      [`#!${spravApi.mo_dist}`, "Участки"],
-      [`#!${spravApi.mo_divs}`, "Отделения"],
+      //[`#!${spravApi.mo_dist}`, "Участки"],
+      //[`#!${spravApi.mo_divs}`, "Отделения"],
+      [`#!${spravApi.mo_sp_para}`, "Диагност. подр."],
       [`#!${spravApi.mo_local}`, "МО локальные"],
       [`#!${spravApi.mo_smo}`, "СМО локальные"],
     ]
   },
-  tfoms: {
-    nref: [`#!${spravApi.tfoms}`, "ТФОМС"],
+  prof: {
+    nref: [`#!${spravApi.prof}`, "Профильные"],
     items: [
-      [`#!${spravApi.tfoms_spec}`, "Специальности"],
-      [`#!${spravApi.tfoms_podr}`, "Подразделения"],
-      [`#!${spravApi.tfoms_para_podr}`, "Доп. службы"],
-      [`#!${spravApi.tfoms_purp}`, "Цель обращения"],
-      [`#!${spravApi.tfoms_type}`, "Особый случай"],
-      [`#!${spravApi.tfoms_insur}`, "Категория ОМС"],
-      [`#!${spravApi.tfoms_istfin}`, "Фин. источник"],
-      [`#!${spravApi.tfoms_errors}`, "Причины отказов"],
+      [`#!${spravApi.prof_spec}`, "Специальности"],
+      [`#!${spravApi.prof_prof}`, "Профили"],
+      [`#!${spravApi.prof_prvs}`, "PRVS"],
+      [`#!${spravApi.prof_vidpom}`, "Вид помощи"],
+      [`#!${spravApi.prof_pmu}`, "ПМУ"],
+      [`#!${spravApi.prof_mkb}`, "МКБ-10"],
+      //[`#!${spravApi.tfoms_podr}`, "Подразделения"],
+      //[`#!${spravApi.tfoms_para_podr}`, "Доп. службы"],
+      //[`#!${spravApi.tfoms_purp}`, "Цель обращения"],
+      //[`#!${spravApi.tfoms_type}`, "Особый случай"],
+      //[`#!${spravApi.tfoms_insur}`, "Категория ОМС"],
+      //[`#!${spravApi.tfoms_istfin}`, "Фин. источник"],
+      //[`#!${spravApi.tfoms_errors}`, "Причины отказов"],
     ]
   },
   onko: {
@@ -145,20 +169,12 @@ const spravMenu = { subAppMenu: {
       //[`#!${spravApi.onko_n21}`, "21. Схема терапии"],
     ]
   },
-  
-  /*
-  spec: {
-    nref: [`#!${spravApi.foms}`, "Врачебные"],
+  com: {
+    nref: [`#!${spravApi.com}`, "Общие"],
     items: [
-      [`#!${spravApi.foms_mo}`, "МО Приморский край"],
-      [`#!${spravApi.mo_dist}`, "Участки"],
-      [`#!${spravApi.mo_divs}`, "Отделения"]
+      [`#!${spravApi.com_dul}`, "ДУЛ"],
+      [`#!${spravApi.com_okato}`, "ОКАТО"],
     ]
   },
-  
-  */
-  }
 }
-
-
-export { restSprav, spravApi, spravMenu };
+}

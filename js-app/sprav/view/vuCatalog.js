@@ -1,75 +1,74 @@
 // src/sprav/view/vuCatalog.js
 
+import { vuLoading } from '../../apps/view/vuApp.js';
 import { moModel } from '../../apps/model/moModel.js';
 import { vuDialog } from '../../apps/view/vuDialog.js';
-import { vuTheader, vuFind, vuForm } from './vuSprav.js';
+import { change, vuTheader, vuFind, vuForm } from './vuSprav.js';
 
-const itemForm = {
-
-  view(vnode) {
-    let item = vnode.attrs.item,
-    ro = vnode.attrs.method === 'DELETE' ? true : false;
-    
-    return m('fieldset', [
-      m('.pure-control-group', [
-        m('label[for=code]', 'Код'),
-        m('input.fcode[id=code][type=text][name=id]', {
-          value: item ? item.id : '',
-          readonly: item ? true : false,
-          'data-validation': 'number',
-          'data-validation-error-msg': 'целое число'
-        } ),
-        item ? m('span.pure-form-message-inline', 'Поле не редактируется.') : ''
-      ]),
-      m('.pure-control-group', [
-        m('label[for=desc]', this.name),
-        m('textarea[id=desc][name=name][cols=40]',
-          {readonly: ro},
-          item ? item.name : '')
-      ])
-    ]);
-  },
+const itemForm = function(vnode) {
+  let item; // = vnode.attrs.item;
   
+  return {
+    view(vnode) {
+      item = vnode.attrs.item;
+      //ro = vnode.attrs.method === 'DELETE' ? true : false;
+    
+      return m('fieldset', [
+        m('.pure-control-group', [
+          m('label[for=code]', 'Код'),
+          m('input.fcode[id=code][type=number][name=id]', {
+            value: item.id ? item.id : '',
+            readonly: item.id ? true : false, //id is auto
+          }),
+          item.id ? m('span.pure-form-message-inline', 'Поле не редактируется.') : ''
+        ]),
+        m('.pure-control-group', [
+          m('label[for=desc]', this.name),
+          m('textarea[id=desc][name=name][cols=40]',
+            item.name ? item.name : '')
+        ])
+      ]);
+    },
+  };
 }
 
 // clojure
-const vuCatalog = function(vnode) {
+export const vuCatalog = function(vnode) {
   
-  var model = vnode.attrs.model,
+  let model = vnode.attrs.model,
   header = vnode.attrs.header,
   name = vnode.attrs.name;
   
+  const edit= function(e) {
+    return change(e, model, 'PATCH', 'Изменить');
+  };
+  const ddel= function(e) {
+    return change(e, model, 'DELETE', 'Удалить');
+  };
+  const sort=  e=> {
+    e.preventDefault();
+    return model.sort(e.target.getAttribute('data'));
+  };
+  
   return {
   
-  oninit () {
-   moModel.getList( model );
+    oninit () {
+     moModel.getList( model );
    //console.log(name);
-  },
-
-  oncreate() {
-    //m.redraw();
-  },
+    },
   
-  onupdate() {
-    //m.redraw();
-    //this.model = vnode.attrs.model;
-    //moModel.getList( vnode.attrs.model );
-    //this.header = vnode.attrs.header;
-    //this.name = vnode.attrs.name;         
-  },
-  
-  listMap (s) {
-    return m('tr', [
-      m('td.choice.blue', {
-          data: s.id,
-          onclick: model.editable ? m.withAttr( "data", vuForm.dput) : ''
+    listMap (s) {
+      return m('tr', [
+        m('td.choice.blue', {
+            data: s.id,
+            onclick: model.editable ? edit : ''
         }, s.id),
       m('td', s.name),
       model.editable ? 
       m('td', 
         m('i.fa.fa-minus-circle.choice.red', {
           data: s.id,
-          onclick: m.withAttr( "data", vuForm.ddel)
+          onclick: ddel
         })
       ) : ''
     ]);
@@ -79,11 +78,12 @@ const vuCatalog = function(vnode) {
     return model.error ? [ m(".error", model.error) ] :
       model.list ? [
         m(vuTheader, { header: header} ),
-        m(vuFind, { cols: 2, addButton: model.editable} ),
+        m(vuFind, {cols: 2, model: modelObject} ),
+        //
         m('table.pure-table.pure-table-bordered[id="find_table"]', [
           m('thead', [
             m('tr', [
-              m('th.choice', {data: "id", onclick: m.withAttr( "data", model.sort) },
+              m('th.choice', {data: "id", onclick: sort },
                 ["Код", m('i.fa.fa-sort.pl10')] ),
               m('th', name),
               model.editable ? m('th', "Удалить") : '',
@@ -94,16 +94,11 @@ const vuCatalog = function(vnode) {
         model.editable ? 
           m(vuDialog, { header: header, word: vuForm.word },
             m(vuForm, { model: model, name: name },
-              m(itemForm, { item: vuForm.item, method: vuForm.method  } )
-            )
-          ) : []
-      ] : m(".loading-icon", [
-          m('.i.fa.fa-refresh.fa-spin.fa-3x.fa-fw'),
-          m('span.sr-only', 'Loading...')
-      ]);
-  }
-  
-  }
+              m(itemForm, { model: model, method: vuForm.method  } )
+            ) 
+          ) : ''
+      ] : m(vuLoading);
+    },
+  };
 }
 // 
-export { vuCatalog };

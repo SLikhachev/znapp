@@ -33,10 +33,11 @@ m.route(document.body, "/", {
       
       moCard.clear();
       //actionsCard.clear({}): // initial state
-      let { id } = args;
+      //let { crd } = args;
       // TODO card number may be not an Int but any string
-      if ( !isNaN(parseInt(id) ) )  moCard.getCard(args); //tionsCard.get(args); //
+      //if ( !isNaN(parseInt(id) ) )  moCard.getCard(args); //tionsCard.get(args); //
       if ( !Boolean(moCard.data) ) moCard.getOptions();
+      moCard.getCard(args);
       //console.log(args);
       return vuCard;
     },
@@ -53,9 +54,12 @@ m.route(document.body, "/", {
   },
   [clinicApi.talon_id] : {
     onmatch: function(args) {
-      let { id } = args;
-      if ( !isNaN(parseInt(id) ) )  moTalon.getTalon(args);
+      moTalon.clear();
+      //console.log(args);
+      //let { tal, crd } = args;
+      //if ( !isNaN(parseInt(id) ) )  moTalon.getTalon(args);
       if ( !Boolean(moTalon.data) ) moTalon.getOptions();
+      moTalon.getTalon(args);
       return vuTalon;
     },
     render : function(vnode) {
@@ -63,5 +67,5 @@ m.route(document.body, "/", {
       }
   },
   
-})
+});
 

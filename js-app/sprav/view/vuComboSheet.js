@@ -4,6 +4,8 @@
 //import { vuDialog } from '../../apps/view/vuDialog.js';
 import { vuTheader } from './vuSprav.js';
 
+// this for onko 
+
 // clojure
 const vuComboSheet = function (vnode) {
   
@@ -14,6 +16,7 @@ const vuComboSheet = function (vnode) {
     //nameString = vnode.attrs.name, // String: models item name
     filterForm = vnode.attrs.filter, //
     structObject = vnode.attrs.struct; // the struct Object
+  // init - show form initially
   let init = true;
   return {
     
@@ -26,7 +29,7 @@ const vuComboSheet = function (vnode) {
   },
   */
   onbeforeupdate(vnode) {
-    init = false;
+    init = false; 
   },
 
     view: function () {

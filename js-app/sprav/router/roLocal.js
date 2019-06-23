@@ -3,7 +3,7 @@
 // common
 import { moModel } from '../../apps/model/moModel.js';
 // sprav
-import { spravApi } from '../spravApi.js';
+import { restApi, spravApi } from '../spravApi.js';
 import { vuSprav, vuView } from '../view/vuSprav.js';
 import { moStruct } from '../model/moStruct.js';
 //
@@ -11,15 +11,22 @@ import { vuCatalog } from '../view/vuCatalog.js';
 import { vuDoctor } from '../view/vuDoctor.js';
 import { vuMoLocal } from '../view/vuMoLocal.js';
 import { vuSmoLocal } from '../view/vuSmoLocal.js';
-
+/*
 const vuDist = function(vnode){
   return vuCatalog(vnode);
 }
 const vuDivs = function(vnode){
   return vuCatalog(vnode);
 }
+const vuSpPodr = function(vnode){
+  return vuDataSheet(vnode);
+}
+*/
+const vuSpPara = function(vnode){
+  return vuCatalog(vnode);
+};
 
-const roLocal = {
+export const roLocal = {
   [spravApi.mo]: {
     render: function() {
       return vuView( m(vuSprav, { text: "Cправочники локальные" } ) );
@@ -37,6 +44,7 @@ const roLocal = {
       return vuView(view);
     }
   },
+  /*
   [spravApi.mo_dist]: {
     render: function() {
       let view = m(vuDist, {
@@ -57,6 +65,30 @@ const roLocal = {
       return vuView(view);
     }
   },
+  [spravApi.mo_podr]: {
+    render: function() {
+      let view = m(vuSpPodr, {
+          model: moModel.getModel( restApi.sp_podr ),
+          header: "Отдеделения МО ПК",
+          name: "Отделение",
+          find: 2, // search in the first 1 table columns
+          struct: moStruct.spPodr
+        });
+      return vuView(view);
+    }
+  },
+  */
+  [spravApi.mo_sp_para]: {
+    render: function() {
+      let view = m(vuSpPara, {
+          model:  moModel.getModel( restApi.sp_para),
+          header: "Коды диагностических подразделений",
+          name: "Подазделение"
+      });
+      return vuView(view);
+    }
+  },
+  
   [spravApi.mo_local]: {
     render: function() {
       let view = m(vuMoLocal, {
@@ -82,5 +114,3 @@ const roLocal = {
     }
   },
 }
-
-export { roLocal };

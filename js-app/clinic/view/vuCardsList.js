@@ -36,7 +36,7 @@ const cardFind = {
           m("fieldset",
             m(".pure-g", [
               m(".pure-u-1-5",
-                m("input.input-find.pure-u-3-4[name=q_crd][type='search']",
+                m("input.input-find.pure-u-3-4[name=q_crd][type='text']",
                   {placeholder: "Номер карты",
                   //onkeyup: m.withAttr("value", vmFind.setFind ),
                   //value: vmFind.toFind
@@ -44,12 +44,12 @@ const cardFind = {
                 )
               ),
               m(".pure-u-1-5",
-                m("input.input-find.pure-u-2-3[name=q_fam][type='search']",
+                m("input.input-find.pure-u-2-3[name=q_fam][type='text']",
                   {placeholder:"Фамилия"}
                 )
               ),
               m(".pure-u-1-5",
-                m("input.input-find.pure-u-2-3[name=q_im][type='search']",
+                m("input.input-find.pure-u-2-3[name=q_im][type='text']",
                   {placeholder:"Имя"}
                 )
               ),
@@ -73,9 +73,9 @@ const cardFind = {
 }
 
 export const toCard = function (crd_num) {
-    m.route.set(clinicApi.card_id, { id: crd_num } );
+    m.route.set(clinicApi.card_id, { crd: crd_num } );
     return false;
-}
+};
 
 // clojure
 export const vuCardsList = function (vnode) {
@@ -95,7 +95,14 @@ export const vuCardsList = function (vnode) {
     return false;
   };
   */
-  
+  let newTalon = (e) => {
+    e.preventDefault();
+    let crd= e.target.getAttribute('data');
+    m.route.set(clinicApi.talon_id, { tal: 0, crd: crd} );
+    return false;
+    //return false;
+  };
+
   return {
     
   oninit (vnode) {
@@ -110,7 +117,7 @@ export const vuCardsList = function (vnode) {
   },
   
   onupdate(vnode) {
-    table = document.getElementById(table_id);
+    //table = document.getElementById(table_id);
     //console.log(table);
   },
   
@@ -120,19 +127,22 @@ export const vuCardsList = function (vnode) {
     return m('tr', [
       Object.keys(cardz_hdr).map( (column) => {
         let cell = column === 'fam' ? fio : s[column];
-        let td = first ? m('td.choice.blue', {
+        let td = first ? m('td.choice.blue', m ('a', {
+          href: `${clinicApi.cards}/${cell}`,
+          oncreate: m.route.link
           //data:  cell,
-          onclick: e => { e.preventDefault(); toCard(cell); }
-        }, cell) : m('td', cell);
+          //onclick: e => { e.preventDefault(); toCard(cell); }
+        }, cell)) : m('td', cell);
         first = false;
         return td;
       }),
       
-      m('td', m('i.fa.fa-minus-circle.choice.red', {
+      m('td', m('i.fa.fa-plus-circle.choice', {
+        style: "color: green; font-size: 1.7em; underline: none",
         data: s['crd_num'],
-        //onclick: m.withAttr( "data", vuForm.ddel)
-      }) )
-    ]);
+        onclick: newTalon
+        }) )
+      ]);
   },
 
   view (vnode) {
@@ -163,7 +173,7 @@ export const vuCardsList = function (vnode) {
                   [field[0], m('i.fa.fa-sort.pl10')]
                   ) : m('th', field[0]);
               }),
-              m('th', "Удалить")
+              m('th', "Новый талон")
             ])
           ]),
           m('tbody', [model.list.map( this.listMap )] )

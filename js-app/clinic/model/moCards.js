@@ -56,19 +56,21 @@ const testCase = function(time, test) {
       if (test) res("Test passed");
       else rej("Test not passed");
     }, time);
-  })
+  });
 }
 
 export const moCard = {
   
   model : {
-    url: restClinic.get_card.url,
-    method: restClinic.get_card.method,
+    url: [restClinic.get_card.url, restClinic.get_crd_talons.url],
+    method: [restClinic.get_card.method, restClinic.get_crd_talons.method],
+    map_keys: ['card', 'talons'],
+    //map_data: new Map(),
     card: null,
-    list: null,
+    talons: null,
     opt_name: 'card_options',
     options: [restSprav.dul, restSprav.smo_local, restSprav.mo_local, restSprav.okato],
-    data: null, 
+    data: new Map(),
     error: null,
     save: null
   },
@@ -83,9 +85,11 @@ export const moCard = {
   },
   
   getCard(args) {
-    return moModel.getViewRpc(
+    if ( this.model.card ) this.clear();
+    return moModel.getViewRpcMap(
       moCard.getModel(),
-      { crd_num: args.id }
+      { crd_num: args.crd }
+      //console.log()
     );
   },
   /*
@@ -115,7 +119,7 @@ export const moCard = {
   
   clear() {
     this.model.card = null;
-    this.model.list = null;
+    this.model.talons = null;
     this.model.error = null;
     this.model.save = null;
     //console.log(this.model);

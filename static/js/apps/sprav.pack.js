@@ -158,24 +158,35 @@ const vuMain = {
 
 // src/sparv/spravApi.js
 // here url is a table name
-restSprav = {
+
+// editable - array of bools as [ add, edit, del ]
+
+const restApi$1 = {
     // local
+    get doctor() {
+        return { url:"doctor", options: [ this.division, this.district ], sort_by: 'code',
+        editable: [true, true, true] };
+    },
     district: { url:"district"},
     division: { url:"division"},
-    mo_local: { url:"mo_local"},
-    smo_local: { url:"smo_local"},
-    get doctor() {
-        return { url:"doctor", options: [ this.division, this.district ], sort_by: 'code' };
-    },
-    // tfoms
-    doc_spec : { url:"doc_spec"},
     sp_podr: { url:"sp_podr", sort_by: 'mo_code' },
     sp_para: { url:"sp_para"},
     purp: { url: 'purpose'},
+    mo_local: { url:"mo_local"},
+    smo_local: { url:"smo_local"},
+    // prof
+    doc_spec : { url:"spec_prvs"}, // view name
+    prof: { url: 'profil' },
+    prvs: { url: 'prvs' },
+    vidpom: { url: 'vidpom' },
+    pmu: { url: 'pmu', editable: [false, true, false] },
+    pmu_grup: { url: 'pmu_grup' },
+    mkb: { url: 'mkb10'},
     type: {url: 'spec_case'},
     insur: {url: 'kategor'},
     istfin: {url: 'ist_fin'},
     errors: {url: 'errors_code'},
+    
     // onko
     onko_n1: {url: 'n1_protkaz'},
     onko_n2: {url: 'n2_stady'},
@@ -198,29 +209,37 @@ restSprav = {
     onko_n19: {url: 'n19_consil_cel'},
     //onko_n21: {url: 'rpc/onko_lek_schema'}, //pg base proc
 
-    // types
+    // common
     dul: {url: 'dul'},
+    okato: { url: 'okato'},
     
 };
 
 const spravApi = {
     root: "/",
     mo: "/mo",
-    mo_doct: "/mo/doct-list",
-    mo_dist:  "/mo/dist-list",
-    mo_divs: "/mo/divs-list",
-    mo_local: "/mo/mo-local",
-    mo_smo: "/mo/smo-local",
+    mo_doct: "/mo/doct",
+    //mo_dist:  "/mo/dist-list", // участки
+    //mo_divs: "/mo/divs-list", //отделения
+    //mo_podr: "mo/podr", //подразделения
+    //mo_sp_podr: "mo/sp_podr", //вспомогательные
+    mo_sp_para: "mo/sp_para", // paraclin
+    mo_local: "/mo/mo_local",
+    mo_smo: "/mo/smo_local",
+    //mo_org: "/mo/org," //ораганизации (договоры, профосмотьры)
     //
-    tfoms: "/tfoms",
-    tfoms_spec: "/tfoms/spec",
-    tfoms_podr: "/tfoms/podr",
-    tfoms_para_podr: "/tfoms/para_podr",
-    tfoms_purp: "/tfoms/purp",
-    tfoms_type: "/tfoms/type",
-    tfoms_insur: "/tfoms/insur",
-    tfoms_istfin: "/tfoms/istfin",
-    tfoms_errors: "/tfoms/errors",
+    prof: "/prof",
+    prof_spec: "/prof/spec", //специальности првс профиль
+    prof_prof: "/prof/prof", //профили с кодами услуг
+    prof_prvs: "/prof/prvs", //првс
+    prof_vidpom: "/prof/vidpom",
+    prof_pmu: "/prof/pmu",
+    prof_mkb: "/prof/mkb",
+    //prof_purp: "/prof/purp",
+    //prof_type: "/prof/type",
+    //prof_insur: "/prof/insur",
+    //prof_istfin: "/prof/istfin",
+    //prof_errors: "/prof/errors",
     //
     onko: "/onko",
     onko_n1: "/onko/n1",
@@ -243,12 +262,12 @@ const spravApi = {
     onko_n18: "/onko/n18",
     onko_n19: "/onko/n19",
     //onko_n21: "/onko/n21",
-    /*
-    spec: "/spec",
-    other: "/other",
-    tarif: "tarif",
-   
-    */
+    
+    // common sprav
+    com: "/com",
+    com_dul: "/com/dul",
+    com_okato: "/com/okato"
+    
 };
 
 const spravMenu = { subAppMenu: {
@@ -257,23 +276,29 @@ const spravMenu = { subAppMenu: {
     nref: [`#!${spravApi.mo}`, "Локальные"],
     items: [
       [`#!${spravApi.mo_doct}`, "Врачи"],
-      [`#!${spravApi.mo_dist}`, "Участки"],
-      [`#!${spravApi.mo_divs}`, "Отделения"],
+      //[`#!${spravApi.mo_dist}`, "Участки"],
+      //[`#!${spravApi.mo_divs}`, "Отделения"],
+      [`#!${spravApi.mo_sp_para}`, "Диагност. подр."],
       [`#!${spravApi.mo_local}`, "МО локальные"],
       [`#!${spravApi.mo_smo}`, "СМО локальные"],
     ]
   },
-  tfoms: {
-    nref: [`#!${spravApi.tfoms}`, "ТФОМС"],
+  prof: {
+    nref: [`#!${spravApi.prof}`, "Профильные"],
     items: [
-      [`#!${spravApi.tfoms_spec}`, "Специальности"],
-      [`#!${spravApi.tfoms_podr}`, "Подразделения"],
-      [`#!${spravApi.tfoms_para_podr}`, "Доп. службы"],
-      [`#!${spravApi.tfoms_purp}`, "Цель обращения"],
-      [`#!${spravApi.tfoms_type}`, "Особый случай"],
-      [`#!${spravApi.tfoms_insur}`, "Категория ОМС"],
-      [`#!${spravApi.tfoms_istfin}`, "Фин. источник"],
-      [`#!${spravApi.tfoms_errors}`, "Причины отказов"],
+      [`#!${spravApi.prof_spec}`, "Специальности"],
+      [`#!${spravApi.prof_prof}`, "Профили"],
+      [`#!${spravApi.prof_prvs}`, "PRVS"],
+      [`#!${spravApi.prof_vidpom}`, "Вид помощи"],
+      [`#!${spravApi.prof_pmu}`, "ПМУ"],
+      [`#!${spravApi.prof_mkb}`, "МКБ-10"],
+      //[`#!${spravApi.tfoms_podr}`, "Подразделения"],
+      //[`#!${spravApi.tfoms_para_podr}`, "Доп. службы"],
+      //[`#!${spravApi.tfoms_purp}`, "Цель обращения"],
+      //[`#!${spravApi.tfoms_type}`, "Особый случай"],
+      //[`#!${spravApi.tfoms_insur}`, "Категория ОМС"],
+      //[`#!${spravApi.tfoms_istfin}`, "Фин. источник"],
+      //[`#!${spravApi.tfoms_errors}`, "Причины отказов"],
     ]
   },
   onko: {
@@ -301,19 +326,58 @@ const spravMenu = { subAppMenu: {
       //[`#!${spravApi.onko_n21}`, "21. Схема терапии"],
     ]
   },
-  
-  /*
-  spec: {
-    nref: [`#!${spravApi.foms}`, "Врачебные"],
+  com: {
+    nref: [`#!${spravApi.com}`, "Общие"],
     items: [
-      [`#!${spravApi.foms_mo}`, "МО Приморский край"],
-      [`#!${spravApi.mo_dist}`, "Участки"],
-      [`#!${spravApi.mo_divs}`, "Отделения"]
+      [`#!${spravApi.com_dul}`, "ДУЛ"],
+      [`#!${spravApi.com_okato}`, "ОКАТО"],
     ]
   },
+}
+};
+
+// src/apps/view/vuDialog.js
+
+// https://github.com/GoogleChrome/dialog-polyfill
+// https://html5test.com/
+// Fifix since 53 about:config
+// dom.dialog_element.enabled
+
+//import { moModel } from '../model/moModel.js';
+
+const vuDialog = {
   
-  */
-  }
+  dialog: null,
+  //dialog: document.getElementById('dialog'),
+  
+  oncreate(vnode) {
+      vuDialog.dialog = vnode.dom;
+      //console.log(dialogView.dialog);
+  },
+  
+  view(vnode) {
+    return m('dialog#dialog', m('.dialog-content', [
+      m('i.fa fa-times.dclose', { onclick: vuDialog.close }),
+        m('span.dheader', `${vnode.attrs.header} (${vnode.attrs.word})`),
+          vnode.children
+        ])
+    );
+  },
+  
+  open (vnode=null) {
+    vuDialog.dialog.showModal();
+    return false;
+  },
+  
+  close (reload=false) { //e - EventObject
+    //let srverr = document.getElementById('srv-error');
+    //let srverr = vuDialog.dialog.querySelector('#srv-error');
+    //if ( !!srverr ) srverr.parentNode.removeChild(srverr);
+    vuDialog.dialog.querySelector('form').reset();
+    vuDialog.dialog.close();
+    if ( reload ) m.redraw();
+    return false;
+  },
 };
 
 // src/apps/model/moModel.js
@@ -325,7 +389,7 @@ const moModel = {
   
   // :: String -> Array -> String -> Object
   // ret models object (POJO)
-  getModel( {url=null, method="GET", options=null, sort_by=null, editable=false } = {} ) {
+  getModel( {url=null, method="GET", options=null, sort_by=null, editable=null } = {} ) {
     // url - string of model's REST url
     // method - string of model's REST method
     // options - array of strings of option tables names
@@ -337,29 +401,47 @@ const moModel = {
       method: method,
       field: sort_by,
       options: options,
-      editable: editable,
+      //editable: editable,
       
       list: null, // main data list (showing in table page)
-      data: {}, // every idx corresponds with index of options array
-      
+      data: new Map(), // every idx corresponds with index of options array
+      item: null,
       error: null, // Promise all error
       order: true, // for list
-      sort: null // for list
+      sort: null, // for list
+      save: null,
     };  
-    model.sort = function(field) {
-      return moModel.sort(model, field);
-    };  
-    //console.log(model);
+    if ( Boolean( editable ) && editable instanceof Array) {
+      for (let [idx, val] of ['add', 'edit', 'del'].entries() ) {
+        if (Boolean( editable[idx] )) model[val] = true;
+      }
+    }
+    model.sort= field => moModel.sort(model, field);
+    model.getItem= id => {
+      model.item= {};
+      if (id === null) return false; 
+      for ( let it of model.list ) {
+        if (it.id == id) {
+          model.item= Object.assign({}, it);
+          break;
+        }
+      }
+      return false;
+    };
+    
     return model;
   },
   // :: Object -> Promise
   // ret Promise
+  // model = {field, url, method,  }
   getList (model) {
+    model.list= null;
     // filed - sort by with SELECT, default 'id' field
     //let schema = window.localStorage.getItem('pg_rest');
     let pg_rest = window.localStorage.getItem('pg_rest');
     let id = model.field ? model.field : 'id',
-    order = `?order=${id}.asc`;
+    sign= model.url.includes('?') ? '&': '?';
+    order = `${sign}order=${id}.asc`;
     let url = pg_rest + model.url + order;
     console.log(url);
     return m.request({
@@ -368,9 +450,12 @@ const moModel = {
     }).then(function(res) {
       model.list = res; // list of objects
       model.order = true;
+      return true;
     }).catch(function(e) {
-      model.error = e.message.message ? e.message.message : e.message;
-      console.log(model.error);
+      //console.log(e);
+      let err = JSON.parse(e.message);
+      model.error = err.message ? err.message : e.message;
+      console.log( err );
     });
   },
   // :: Object -> undef
@@ -389,8 +474,8 @@ const moModel = {
       data.push(r);
     });
     // order should preserved
-    Promise.all(data).then( (lists) => {
-      model.data = new Map();
+    return Promise.all(data).then( (lists) => {
+      model.data.clear(); // = new Map();
       for ( let el of model.options.entries() ) {
         model.data.set( el[1].url, lists[ el[0] ]);
       }
@@ -400,6 +485,7 @@ const moModel = {
     }).catch(function(e) {
       //model.error = e.message;
       console.log(e.message);
+      alert(e.message);
     });
     
   },
@@ -412,9 +498,10 @@ const moModel = {
     let _url = url ? url : model.url;
     let _method = method ? method : model.method;
     return m.request({
+      url: pg_rest + _url,
       method: _method,
       data: data,
-      url: pg_rest + _url
+      
     }).then(function(res) {
       model.list = res; // list of objects
       model.order = true;
@@ -425,7 +512,35 @@ const moModel = {
       console.log( err );
     });
   },
-  
+
+  getViewRpcMap (model, data) {
+    let pg_rest = window.localStorage.getItem('pg_rest');
+    let reqs = [];
+    for (let [idx, url] of model.url.entries()) {
+      let r = m.request({
+        method: model.method[idx],
+        url: pg_rest + url,
+        data: data
+      });
+      reqs.push(r);
+    }
+    // order should preserved
+    return Promise.all(reqs).then( (lists) => {
+      // map data must be Map
+      //model.map_data.clear(); // = new Map();
+      for ( let [idx, key] of model.map_keys.entries() ) {
+        //model.map_data.set( name, lists[ idx ]);
+        model[key] = lists[idx];
+      } 
+      return true;
+      return Promise.resolve(true);
+    }).catch(function (e) {
+      console.log(e);
+      let err = JSON.parse(e.message);
+      model.error = err.message ? err.message : e.message;
+    });
+  },
+
   sort(model, id=null) {
     //console.log(id);
     let order = model.order ? 'desc' : 'asc';
@@ -437,6 +552,7 @@ const moModel = {
   /** getFormData
     return item's data object 
   */
+  /*
   getFormData(form, isSetOnly=false) {
     // form - dom form
     // isSetOnly - set out only
@@ -449,10 +565,42 @@ const moModel = {
     } );
     return data;
   },
-  
+  */
   /** formSubmit
     return false    
   */
+  dialogFormSubmit(event, model, method) {
+    event.target.parentNode.classList.add('disable');
+    let pg_rest = window.localStorage.getItem('pg_rest');
+    let url = pg_rest + model.url;
+    if ( method == 'DELETE' || method == 'PATCH' )
+      url += '?' + 'id=eq.' + model.item.id;
+    let data= Object.assign({}, model.item);
+    
+    for ( let k of Object.keys(data) ){
+      if ( data[k] === '' ) data[k] = null;
+    }
+    
+    return m.request({
+      url: url,
+      method: method,
+      data: data,
+      async: false
+    }).then( res => {
+      model.save = { err: false, msg: res };
+      event.target.parentNode.classList.remove('disable');
+      moModel.getList( model );
+      vuDialog.close();
+    }).catch( err => {
+      let e = JSON.parse(err.message);
+      model.save = { err: true, msg: e.message ? e.message : err.message };
+      event.target.parentNode.classList.remove('disable');
+      //console.log(model.save);
+    });
+    
+    return false;
+  }
+/*
   formSubmit (model, form) {  
     // form - jQuery object
     // model - model object 
@@ -481,122 +629,21 @@ const moModel = {
     });
     return false;
   }
-
-};
-
-// src/apps/view/vuDialog.js
-
-const vuDialog = {
-  
-  dialog: null,
-  form: null,
-  model: null,
-  //dialog: document.getElementById('dialog'),
-  
-  oncreate(vnode) {
-    vuDialog.dialog = vnode.dom;
-    //console.log(dialogView.dialog);
-  },
-  
-  view(vnode) {
-    return m('dialog#dialog', [
-      m('.dialog-content', 
-        [
-          m('i.fa fa-times.dclose', { onclick: vuDialog.close }),
-          m('span.dheader', `${vnode.attrs.header} (${vnode.attrs.word})`),
-          vnode.children
-        ])
-      ]);
-  },
-  
-  open (vnode=null) {
-    //m.render(dialogView.dialog, vnode);
-    vuDialog.dialog.showModal();
-    return false;
-  },
-  
-  close (e, reload=false) { //e - EventObject
-    //let srverr = document.getElementById('srv-error');
-    let srverr = vuDialog.dialog.querySelector('#srv-error');
-    if ( !!srverr ) srverr.parentNode.removeChild(srverr);
-    //$('dialog div.dialog-content').remove('#srv-error');
-    vuDialog.dialog.querySelector('form').reset();
-    vuDialog.dialog.close();
-    //m.route.set('/spec-list');
-    //console.log (reload);
-    if ( reload ) m.redraw();
-    //if ( reload ) window.location.reload();
-    return false;
-  },
-  
-  fvalid(vnode) {
-    
-    vnode.dom.addEventListener('submit', (e) => {e.preventDefault(); } );
-    
-    //console.log(form.method.value);
-    //console.log(form.code.value, form.desc.value);
-    //console.log(vnode.attrs['id']);
-    
-    $.validate({
-        form: '#' + vnode.attrs.id,
-        dateFormat: 'dd-mm-yyyy',
-        errorElementClass: 'input-error',
-        errorMessageClass: 'error-msg',
-        onError: ($form) => {
-          console.log('form not valid error');
-        },
-        onSuccess: ($form) => {
-          if (vuDialog.model !== null ) {
-            return moModel.formSubmit( vuDialog.model, $form );
-          }
-            return false;
-        }
-    });
-    //console.log (vnode.attrs)
-  },
-  
-  offForm () { vuDialog.form.parent().addClass('disable'); },
-  onForm () { vuDialog.form.parent().removeClass('disable'); },
-  
-  sErr (form, err) {
-    let s = `<span id="srv-error">Ошибка базы данных:<br>
-    ${err.details}<br>
-    ${err.message}
-    </span>`;
-    form.append(s);
-  },
-
-  xError (xhr, err) {
-    let rsp = xhr.responseText;
-    console.log (`error status -- ${xhr.status} text -- ${rsp}`);
-    vuDialog.onForm();
-    if ( xhr.status < 400 ) {
-      moModel.getList( vuDialog.model );
-      vuDialog.close(null, true );
-      return;
-    }
-    //console.log ('error', err);
-    let d = {};
-    try {
-      d = JSON.parse(rsp);
-    } catch (err) {
-      d.details = "Не удалось выполнить запрос";
-      d.message = "";
-    }
-    vuDialog.sErr(vuDialog.form, d);
-  },
-    
-  xSuccess (data, code) {
-    console.log (`success data ${data}, code ${code}`);
-    vuDialog.onForm();
-    moModel.getList( vuDialog.model );
-    vuDialog.close(null, true );
-  } 
-
+*/
 };
 
 // src/sprav/view/vuSprav.js
-//import { moModel } from '../model/moModel.js';
+
+const change= function(e, model, method, word) {
+    //console.log(word);
+    e.preventDefault();
+    item_id= e.target.getAttribute('data');
+    vuForm.method= method;
+    vuForm.word= word;
+    model.getItem(item_id);
+    vuDialog.open();
+    return false;
+  };
 
 // Forms in dialog window for catalogs 
 const vuForm = {
@@ -607,90 +654,40 @@ const vuForm = {
   model: null,
   name: "",
   
+  onSubmit(e) {
+    e.preventDefault();
+    if (vuForm.model !== null && vuForm.model.item !== null) {
+      moModel.dialogFormSubmit(e, vuForm.model, vuForm.method);
+    }
+    //vuDialog.close();
+    return false;
+  },
+  
   oninit(vnode) {
-    vuDialog.model = vnode.attrs.model;
+    //vuDialog.model = vnode.attrs.model;
     vuForm.model = vnode.attrs.model;
     vuForm.name = vnode.attrs.name;
   },
     
   view(vnode) {
-    //let item = vuForm.item,
-    let method = vuForm.method,
-    word = vuForm.word;
-    
-    return m('form.pure-form.pure-form-aligned',
-      { id: 'moform',
-        oncreate: vuDialog.fvalid //, 
-      }, [
+    return [m('form.pure-form.pure-form-aligned',
+      { id: 'moform', onsubmit: vuForm.onSubmit }, [
         vnode.children,
         m('.pure-controls', [
-            m('input[type=hidden][name=method]', {value: method} ),
-            m('button.pure-button[type=submit]', word),
+            //m('input[type=hidden][name=method]', {value: method} ),
+            m('button.pure-button[type=submit]', vuForm.word),
         ])
-      ] );
+      ]), // form
+      vuForm.model.save && vuForm.model.save.err ?
+        [m('br'), m('span.red', 'Ошибка базы данных:'),
+        m('br'), m('span.red', `${vuForm.model.save.msg}`)] : ''
+    ]; // return
   },
-  getItem(id) {
-    let list = this.model.list;
-    return id ? _.find( list, (i) => { return i.id == id; } ) : null;
-  }, 
-    
-  dput (id) { // add or edit item
-    if ( id == "0" ) { // new item add
-      vuForm.method = "POST";
-      vuForm.word = "Добавить";
-      vuForm.item = null;
-    } else {  // edit item
-      vuForm.method = "PATCH";
-      vuForm.word = "Изменить";
-      vuForm.item = vuForm.getItem(id);
-    }  
-    vuDialog.open();
-    return false;
-  },
-  
-  ddel(id) { // delete item
-    vuForm.method = "DELETE";
-    vuForm.word = "Удалить";
-    vuForm.item = vuForm.getItem(id);
-    vuDialog.open();
-    return false;
-  },
-  
-  types() { // debug output
-    console.log(this.item);
-    console.log(this.method);
-    console.log(this.word);
-  }
 };
-/*
-const vuPanel = {
-    
-  view (vnode) {
-    return m('.panel', [
-      m('div', m('span.dheader', vnode.attrs.header )),
-      m('div', m('button.pure-button-cust', {
-          value: 0,
-          onclick: m.withAttr( "value", vuForm.dput)
-        }, 'Добавить')
-      ),
-      m('div', m('form.pure-form', [
-          m('input[type=text].pure-input', {placeholder: 'Поиск'}),
-          m('select.ml10', [
-            m('option[value=0]', 'На этой странице'),
-            m('option[value=1]', 'В базе данных')
-          ]),
-          m('button.pure-button.ml10', 'Найти')
-        ])
-      )
-    ]);
-  },
-  
-}
-*/
+
 const vuTheader = {
   view (vnode) {
-    return m(".pure-g",
-      m(".pure-u-1-1.box-1",
+    return m(".pure-g", m(".pure-u-1-1.box-1",
         m('span.dheader', vnode.attrs.header )
       )
     );
@@ -701,7 +698,8 @@ const vmFind = {
   
   trCols: 2, // how many tr childern (table columns) get to find 
   toFind: "",
-  setFind: function(str) {
+  setFind: function(e) {
+    let str = e.target.value; 
     vmFind.toFind = str.toLowerCase();
     $.each( $('table#find_table tbody tr'), function(ind, tr) {
       let subtr = $(tr).children().slice(0,vmFind.trCols);
@@ -715,11 +713,23 @@ const vmFind = {
     });
   }
   
-}; 
+};
 
 const vuFind = {
   
+  model: null,
+  
+  addItem(e) {
+    e.preventDefault();
+    vuForm.method= 'POST';
+    vuForm.word= 'Добавить';
+    vuFind.model.getItem(null);
+    vuDialog.open();
+    return false;
+  },
+  
   oninit(vnode) {
+    vuFind.model= vnode.attrs.model;
     vmFind.trCols = vnode.attrs.cols ? vnode.attrs.cols : 2;
     vmFind.toFind = "";
   },
@@ -733,7 +743,7 @@ const vuFind = {
               m(".pure-u-1-5",
                 m("input.input-find.pure-u-3-4[id='to-find'][type='search']",
                   {placeholder: "найти число, слово",
-                  onkeyup: m.withAttr("value", vmFind.setFind ),
+                  onkeyup: vmFind.setFind,
                   value: vmFind.toFind
                   }
                 )
@@ -746,10 +756,9 @@ const vuFind = {
               ),
               */
               m(".pure-u-1-5",
-                vnode.attrs.addButton ? 
+                vnode.attrs.model.add ? 
                 m('button.pure-button.pure-button-primary[type="button"]', {
-                    value: 0,
-                    onclick: m.withAttr( "value", vuForm.dput)
+                    onclick: vuFind.addItem
                   },
                 "Добавить"
                 ) : ''
@@ -761,61 +770,11 @@ const vuFind = {
     );
   }
 };
-/*
-const vuLoading = {
- 
-    oninit: function (vnode) {
-      console.log(vnode.attrs.model);
-    },
-    
-    view: function (vnode) {
-      console.log(vnode.attrs.model);
-      return m('div', "HER");
-      
-      return vnode.attrs.model.error ? [ m(".error", vnode.attrs.model.error) ] :
-        vnode.attrs.model.list ? [ vnode.children ] : m(".loading-icon", [
-          m('.i.fa.fa-refresh.fa-spin.fa-3x.fa-fw'),
-          m('span.sr-only', 'Loading...')
-        ]);
-      
-    }
-  
-}
-*/
-/*
-const vuTable = {
-  
-  view (vnode) {
-    //let model = vnode.attrs.model;
-    //console.log(model);
-    return vnode.attrs.model.error ? [ m(".error", vnode.attrs.model.error) ] :
-      vnode.attrs.model.list ? [
-        m(vuPanel, { header: vnode.attrs.header } ),
-        vnode.children
-      ] : m(".loading-icon", [
-            m('.i.fa.fa-refresh.fa-spin.fa-3x.fa-fw'),
-            m('span.sr-only', 'Loading...')
-      ]);
-  }
-}
-*/
+
 const vuSprav = {
   view: function(vnode) {
-    return m('div', {
-        style: "margin: 0 auto; padding-top: 5em; width: 50%;"
-      },
-      /*
-      m(".pure-g", [
-        m(".pure-u-1-6",
-          m("a.pure-button.pure-button-primary",
-            { href: "#!/new-card", style: "font-size: 1.2em; font-weight: 600" }, "Карта"),
-        ),
-        m(".pure-u-1-6",
-          m('a.pure-button.pure-button-primary',
-            { href: "#!/new-talon", style: "font-size: 1.2em; font-weight: 600" }, "Талон"),
-        )
-      ]),
-      */
+    return m('div',
+      { style: "margin: 0 auto; padding-top: 5em; width: 50%;" },
       m('h1.blue', {style: "font-size: 3em;"}, vnode.attrs.text)
     );
   }
@@ -842,7 +801,7 @@ const moStruct = {
   // every DBtable has id column is not showed in html table header
   // Object.record:: Array(Name::String, Sortable::Bool (if any))
   // record is String - name of table column -- property of DB record object
-  // every html table has last column to delete record purpose
+  // every html table has last column to delete record purpose if it possible
   
   // local 
   doctor: {
@@ -864,6 +823,13 @@ const moStruct = {
     code: ["Код", true],     
     okato: ["ОКАТО", true],
     name: ["Наименование"]
+  },
+  
+  pmu: {
+    code_usl: ['Код услуги'],
+    name: ['Наименование'],
+    code_podr: ['Подразд.'],
+    code_spec: ['Спец.']
   },
   
   // tfoms
@@ -941,74 +907,82 @@ const moStruct = {
   
 };
 
+// src/apps/view/vuApp.js
+const vuLoading = {
+  view() { 
+    return m(".loading-icon", 
+      m('.i.fa.fa-refresh.fa-spin.fa-3x.fa-fw'),
+      m('span.sr-only', 'Loading...')
+    );
+  }
+};
+
 // src/sprav/view/vuCatalog.js
 
-const itemForm = {
-
-  view(vnode) {
-    let item = vnode.attrs.item,
-    ro = vnode.attrs.method === 'DELETE' ? true : false;
-    
-    return m('fieldset', [
-      m('.pure-control-group', [
-        m('label[for=code]', 'Код'),
-        m('input.fcode[id=code][type=text][name=id]', {
-          value: item ? item.id : '',
-          readonly: item ? true : false,
-          'data-validation': 'number',
-          'data-validation-error-msg': 'целое число'
-        } ),
-        item ? m('span.pure-form-message-inline', 'Поле не редактируется.') : ''
-      ]),
-      m('.pure-control-group', [
-        m('label[for=desc]', this.name),
-        m('textarea[id=desc][name=name][cols=40]',
-          {readonly: ro},
-          item ? item.name : '')
-      ])
-    ]);
-  },
+const itemForm = function(vnode) {
+  let item; // = vnode.attrs.item;
   
+  return {
+    view(vnode) {
+      item = vnode.attrs.item;
+      //ro = vnode.attrs.method === 'DELETE' ? true : false;
+    
+      return m('fieldset', [
+        m('.pure-control-group', [
+          m('label[for=code]', 'Код'),
+          m('input.fcode[id=code][type=number][name=id]', {
+            value: item.id ? item.id : '',
+            readonly: item.id ? true : false, //id is auto
+          }),
+          item.id ? m('span.pure-form-message-inline', 'Поле не редактируется.') : ''
+        ]),
+        m('.pure-control-group', [
+          m('label[for=desc]', this.name),
+          m('textarea[id=desc][name=name][cols=40]',
+            item.name ? item.name : '')
+        ])
+      ]);
+    },
+  };
 };
 
 // clojure
 const vuCatalog = function(vnode) {
   
-  var model = vnode.attrs.model,
+  let model = vnode.attrs.model,
   header = vnode.attrs.header,
   name = vnode.attrs.name;
   
+  const edit= function(e) {
+    return change(e, model, 'PATCH', 'Изменить');
+  };
+  const ddel= function(e) {
+    return change(e, model, 'DELETE', 'Удалить');
+  };
+  const sort=  e=> {
+    e.preventDefault();
+    return model.sort(e.target.getAttribute('data'));
+  };
+  
   return {
   
-  oninit () {
-   moModel.getList( model );
+    oninit () {
+     moModel.getList( model );
    //console.log(name);
-  },
-
-  oncreate() {
-    //m.redraw();
-  },
+    },
   
-  onupdate() {
-    //m.redraw();
-    //this.model = vnode.attrs.model;
-    //moModel.getList( vnode.attrs.model );
-    //this.header = vnode.attrs.header;
-    //this.name = vnode.attrs.name;         
-  },
-  
-  listMap (s) {
-    return m('tr', [
-      m('td.choice.blue', {
-          data: s.id,
-          onclick: model.editable ? m.withAttr( "data", vuForm.dput) : ''
+    listMap (s) {
+      return m('tr', [
+        m('td.choice.blue', {
+            data: s.id,
+            onclick: model.editable ? edit : ''
         }, s.id),
       m('td', s.name),
       model.editable ? 
       m('td', 
         m('i.fa.fa-minus-circle.choice.red', {
           data: s.id,
-          onclick: m.withAttr( "data", vuForm.ddel)
+          onclick: ddel
         })
       ) : ''
     ]);
@@ -1018,11 +992,12 @@ const vuCatalog = function(vnode) {
     return model.error ? [ m(".error", model.error) ] :
       model.list ? [
         m(vuTheader, { header: header} ),
-        m(vuFind, { cols: 2, addButton: model.editable} ),
+        m(vuFind, {cols: 2, model: modelObject} ),
+        //
         m('table.pure-table.pure-table-bordered[id="find_table"]', [
           m('thead', [
             m('tr', [
-              m('th.choice', {data: "id", onclick: m.withAttr( "data", model.sort) },
+              m('th.choice', {data: "id", onclick: sort },
                 ["Код", m('i.fa.fa-sort.pl10')] ),
               m('th', name),
               model.editable ? m('th', "Удалить") : '',
@@ -1033,202 +1008,205 @@ const vuCatalog = function(vnode) {
         model.editable ? 
           m(vuDialog, { header: header, word: vuForm.word },
             m(vuForm, { model: model, name: name },
-              m(itemForm, { item: vuForm.item, method: vuForm.method  } )
-            )
-          ) : []
-      ] : m(".loading-icon", [
-          m('.i.fa.fa-refresh.fa-spin.fa-3x.fa-fw'),
-          m('span.sr-only', 'Loading...')
-      ]);
+              m(itemForm, { model: model, method: vuForm.method  } )
+            ) 
+          ) : ''
+      ] : m(vuLoading);
+    },
+  };
+};
+//
+
+const fieldFrom = function (fromObj, field, data, to_attrs={}) {
+  //console.log(fromObj);
+  // fromObj - object with form fields (label, input) description
+  // field - fromObj attribute name for form field (form input tag name is equal  to attr name)
+  // data - object gets actual data from (model field)
+  // to_attrs = additional attrs to be set to input tag
+
+ // this is standard onblur function
+  const fblur = e => data[field] = e.target.value;
+  const fval = v => v ? v : '';
+
+  let { label,  input } = fromObj[field];
+  let { tag, attrs={} } = input;
+  let t = tag[2] ? `[tabindex=${tag[2]}]`: '';
+  let r = tag[3] ? '[required]' : '';
+  let tg = `input${tag[0]}[name=${field}][type=${tag[1]}]${t}${r}`;
+
+  attrs.value = attrs.fval === undefined ? fval( data[field] ) : attrs.fval(data[field]);
+  attrs.onblur = attrs.fblur === undefined ? fblur: null;
+  attrs = Object.assign (attrs, to_attrs);
+
+  let lt;
+  if (label.length > 0 ) {
+    lt = `label${label[0]}[for=${field}]`;
+    // third elem only for checkbox
+    if (label.length > 2) {
+      attrs.checked = attrs.checked ? attrs.checked :
+        attrs.fcheck ? attrs.fcheck(data[field]) : data[field] === 0;
+      return m(lt, m(tg, attrs), label[1]);
+    }
+    return [ m(lt, label[1]),  m(tg, attrs)];
   }
-  
-  }
+  return [m(tg, attrs)];
+
 };
 
 // src/sprav/view/vuDataSheet.js
 
+// DataSheet view: assumes model is not a simple list of records
+// { id, name }, but has definitely struct defined in Struct module 
 // clojure
 const vuDataSheet = function (vnode) {
   
-  var modelObject = vnode.attrs.model, // model Object
+  let modelObject = vnode.attrs.model, // model Object
     headerString = vnode.attrs.header, // String: page header 
     nameString = vnode.attrs.name, // String: models item name 
     findInt = vnode.attrs.find, // Int: how many cols include in find function
     structObject = vnode.attrs.struct; // the struct Object
-    
+  
+  //let item, method;
+  
+  const edit= function(e) {
+    return change(e, modelObject, 'PATCH', 'Изменить');
+  };
+  const ddel= function(e) {
+    return change(e, modelObject, 'DELETE', 'Удалить');
+  };
+  
+  const sort=  e=> {
+    e.preventDefault();
+    return modelObject.sort(e.target.getAttribute('data'));
+  };
+  
   return {
     
-  oninit () {
-    moModel.getList( vnode.attrs.model );
-    moModel.getData( vnode.attrs.model );
-  },
-  /*
-  oncreate() {
-  },
-  
-  onupdate() {
-  },
-  */
-  listMap (s) {
-    //let id = s.code + ' ' + s.spec;
-    let first = true;
-    return m('tr', [
-      Object.keys(structObject).map( (column) => {
-        let td = first ? m('td.choice.blue', {
-          data:  s.id,
-          onclick: modelObject.editable ? m.withAttr( "data", vuForm.dput) : ''
-        }, s[column]) : m('td', s[column]);
-        first = false;
-        return td;
-      }),
-      modelObject.editable ? 
-      m('td', m('i.fa.fa-minus-circle.choice.red', {
-        data: s.id,
-        onclick: m.withAttr( "data", vuForm.ddel)
-      }) ) : ''
-    ]);
-  },
+    oninit () {
+      moModel.getList( modelObject );
+      moModel.getData( modelObject );
+    },
+    //onbeforeupdate() {
+      //moModel.getList( modelObject );
+      //moModel.getData( modelObject );
+    //},
+    listMap (s) {
+      //let id = s.code + ' ' + s.spec;
+      let first = true;
+      return m('tr', [
+        Object.keys(structObject).map( (column) => {
+          let td = first ? m('td.choice.blue', {
+            data:  s.id, // every item must have id attr
+            onclick: modelObject.edit ? edit : ''
+          }, s[column]) : m('td', s[column]);
+          first = false;
+          return td;
+        }),
+        modelObject.del ? 
+        m('td', m('i.fa.fa-minus-circle.choice.red', {
+          data: s.id,
+          onclick: ddel
+        }) ) : ''
+      ]);
+    },
 
-  view () {
-    
-    //return m(tableView, {model: this.model , header: this.header }, [
-    return modelObject.error ? [ m(".error", modelObject.error) ] :
-      modelObject.list ? [
-        m(vuTheader, { header: headerString} ),
-        m(vuFind, {cols: findInt} ),
+    view () {
+      return modelObject.error ? [ m(".error", modelObject.error) ] :
+        modelObject.list ? [
+          m(vuTheader, { header: headerString} ),
+          m(vuFind, {cols: findInt, model: modelObject} ),
         
-        m('table.pure-table.pure-table-bordered[id=find_table]', [
-          m('thead', [
-            m('tr', [
-              Object.keys(structObject).map( (column) => {
-                let field = structObject[column];
-                return field.length > 1 ? m('th.sortable',
-                  { data: column, onclick: m.withAttr('data', modelObject.sort) },
-                  [field[0], m('i.fa.fa-sort.pl10')]
-                  ) : m('th', field[0]);
-              }),
-              modelObject.editable ? m('th', "Удалить") : ''
-            ])
+          m('table.pure-table.pure-table-bordered[id=find_table]', [
+            m('thead', [
+              m('tr', [
+                Object.keys(structObject).map( (column) => {
+                  let field = structObject[column];
+                  return field.length > 1 ? m('th.sortable',
+                    { data: column, onclick: sort },
+                    [field[0], m('i.fa.fa-sort.pl10')]
+                    ) : m('th', field[0]);
+                }),
+                modelObject.del ? m('th', "Удалить") : ''
+              ])
+            ]),
+            m('tbody', [modelObject.list.map( this.listMap )] )
           ]),
-          m('tbody', [modelObject.list.map( this.listMap )] )
-        ]),
-        modelObject.editable ? this.itemForm ? 
-        m(vuDialog,
-          { header: headerString,
-            word: vuForm.word
-          }, m(vuForm, { model: modelObject, name: nameString },
-              m(this.itemForm, { item: vuForm.item, data: modelObject.data, method: vuForm.method } )
+          modelObject.edit ? this.itemForm ? // set in parent view if any
+          m(vuDialog,
+            { header: headerString,
+              word: vuForm.word
+            }, m(vuForm, { model: modelObject, name: nameString },
+                m(this.itemForm, { model: modelObject, method: vuForm.method } )
              )
-        ) : m('h2', 'Не определена форма редактирования объекта') : ''
+          ) : m('h2', 'Не определена форма редактирования объекта') : ''
         
-      ] : m(".loading-icon", [
-            m('.i.fa.fa-refresh.fa-spin.fa-3x.fa-fw'),
-            m('span.sr-only', 'Loading...')
-          ]); 
-  }
+        ] : m(vuLoading);
+    }
   }; //return this object
 };
 
 // src/sprav/view/vuDoctor.js
 
-//POJO
-const itemForm$1 = {
-    
-  view(vnode) {
-    let item = vnode.attrs.item,
-    ro = vnode.attrs.method === 'DELETE' ? true : false;
-    return m('fieldset', [      
-      m('input[type=hidden][name=id]', {value: item ? item.id : '' } ),
-      m('.pure-control-group', [
-        m('label[for=family]', 'Фамилия'),
-        m('input.fname[id=family][type=text][name=family]', {
-          value: item ? item.family : '',
-          readonly: ro,
-          'data-validation': 'required',
-          'data-validation-error-msg': 'заполнить'
-        } ),
-        //item ? m('span.pure-form-message-inline', 'Поле не редактируется.') : ''
-      ] ),
-      m('.pure-control-group', [
-        m('label[for=name]', 'Имя'),
-        m('input.fname[id=name][type=text][name=name]', {
-          value: item ? item.name : '',
-          readonly: ro,
-          //'data-validation': 'required',
-          //'data-validation-error-msg': 'заполнить'
-        } ),
-        //item ? m('span.pure-form-message-inline', 'Поле не редактируется.') : ''
-      ] ),
-      m('.pure-control-group', [
-        m('label[for=sname]', 'Отчество'),
-        m('input.fname[id=sname][type=text][name=sname]', {
-          value: item ? item.sname : '',
-          readonly: ro,
-          //'data-validation': 'required',
-          //'data-validation-error-msg': 'заполнить'
-        } ),
-        //item ? m('span.pure-form-message-inline', 'Поле не редактируется.') : ''
-      ] ),
-      m('.pure-control-group', [
-        m('label[for=snils]', 'СНИЛС'),
-        m('input.fname[id=snils][type=text][name=snils]', {
-          value: item ? item.snils : '',
-          readonly: ro
-        } ),
-      ] ),
-      m('.pure-control-group', [
-        m('label[for=code]', 'Код'),
-        m('input.fcode[id=code][type=text][name=code]', {
-          value: item ? item.code : '',
-          readonly: ro,
-          'data-validation': 'number',
-          'data-validation-error-msg': 'целое число'
-        } ),
-      ] ),
-      m('.pure-control-group', [
-        m('label[for=spec]', 'Специальнсть'),
-        m('input.fcode[id=spec][type=text][name=spec]', {
-          value: item ? item.spec : '',
-          readonly: ro,
-          'data-validation': 'number',
-          'data-validation-error-msg': 'целое число'
-        } ),
-      ] ),
-      m('.pure-control-group', [
-        m('label[for=div]', 'Отделение'),
-        vnode.attrs.data.division ? m('select[id=div][name=division]',
-          vnode.attrs.data.division.map( d => m('option', {
-            value: d.id,
-            selected: item && item.division == d.id ? true : false
-          }, d.name ) )
-        ) : m('input.fcode[id=div][type=text][name=division]', {
-          value: item ? item.division : 1,
-          readonly: ro,
-          'data-validation': 'number',
-          'data-validation-error-msg': 'целое число'
-        }),
-      ] ),
-      m('.pure-control-group', [
-        m('label[for=dist]', 'Участок'),
-        vnode.attrs.data.district ? m('select[id=dist][name=district]',
-          vnode.attrs.data.district.map( d => m('option', {
-            value: d.id,
-            selected: item && item.district == d.id ? true : false
-          }, d.name ) )
-        ) : m('input.fcode[id=dist][type=text][name=district]', {
-             value: item ? item.district : 0,
-             readonly: ro
-        } ),
-      ] ),
-      m('.pure-control-group', [
-          m('label[for=tabid]', 'Таб. номер'),
-          m('input.fname[id=tabid][type=text][name=tabid]', {
-            value: item ? item.tabid : '',
-            readonly: ro
-          } ),
-      ] ),
-    ]);
+// label = [class, text], if null no label
+// input = tag = [class, type, tabindex (int), required(bool)]
+const Item = {
+  family: { label: ['', "Фамилия"], input: {
+      tag: ['', "text", 1, true],
+      attrs: { autofocus: true }
+    }
   },
+  name: { label: ['', 'Имя'], input: {
+      tag: ['.fname', 'text', 2],
+    }
+  },
+  sname: { label: ['', 'Отчество'], input: {
+      tag: ['.fname', 'text', 3],
+    }
+  },
+  snils: { label: ['', 'СНИЛС'], input: {
+      tag: ['.fname', 'text', 4, true],
+    }
+  },
+  code: { label: ['', 'Код'], input: {
+      tag: ['.lcode', 'number', 5, true],
+    }
+  },
+  spec: { label: ['', 'Специальность'], input: {
+      tag: ['.lcode', 'number', 6, true],
+    }
+  },
+  division:  { label: ['', 'Отделение'], input: {
+      tag: ['.lcode', 'number', 7],
+    }
+  },
+  district: { label: ['', 'Участок'], input: {
+      tag: ['.lcode', 'number', 8],
+    }
+  },
+  tabid: { label: ['', 'Таб. номер'], input: {
+      tag: ['.fname', 'number', 9],
+    }
+  }
+};
+const itf = function(f, d, a={}) { return fieldFrom(Item, f, d, a); };
+
+const itemForm$1 = function(vnode){
+  let item; //= vnode.attrs.item;
+ 
+  //ro = vnode.attrs.method === 'DELETE' ? true : false;
+  let fld = ['family', 'name', 'sname', 'snils', 'code', 'spec', 'division', 'district', 'tabid'];
+  return {  
+    onbeforeupdate(vnode) {
+      item= vnode.attrs.model.item;
+    },
+    view(vnode) {
+      //item= vnode.attrs.model.item;
+      //console.log(item);
+      return m('fieldset', [
+        item ? fld.map( f => m('.pure-control-group', itf(f, item)) ): ''
+      ]);
+    },
+  };
 };
 // clojure
 const vuDoctor = function (vnode) {
@@ -1332,11 +1310,18 @@ const vuSmoLocal = function (vnode) {
 };
 
 // src/sprav/router.moRouter.js
-
+/*
 const vuDist = function(vnode){
   return vuCatalog(vnode);
-};
+}
 const vuDivs = function(vnode){
+  return vuCatalog(vnode);
+}
+const vuSpPodr = function(vnode){
+  return vuDataSheet(vnode);
+}
+*/
+const vuSpPara = function(vnode){
   return vuCatalog(vnode);
 };
 
@@ -1349,7 +1334,7 @@ const roLocal = {
   [spravApi.mo_doct]: {
     render: function() {
       let view = m(vuDoctor, {
-        model: moModel.getModel(restApi.doctor),
+        model: moModel.getModel(restApi$1.doctor),
         header: "Врачи",
         name: "Врач",
         find: 3, // search in the first 3 table columns
@@ -1358,6 +1343,7 @@ const roLocal = {
       return vuView(view);
     }
   },
+  /*
   [spravApi.mo_dist]: {
     render: function() {
       let view = m(vuDist, {
@@ -1378,77 +1364,7 @@ const roLocal = {
       return vuView(view);
     }
   },
-  [spravApi.mo_local]: {
-    render: function() {
-      let view = m(vuMoLocal, {
-          model: moModel.getModel( restApi.mo_local ),
-          header: "МО Приморского края",
-          name: "МО",
-          find: 3, // search in the first 3 table columns
-          struct: moStruct.moLocal
-        });
-        return vuView(view);
-      }
-  },
-  [spravApi.mo_smo]: {
-    render: function() {
-      let view = m(vuSmoLocal, {
-        model: moModel.getModel( restApi.smo_local ),
-        header: "СМО Приморского края",
-        name: "СМО",
-        find: 2, // search in the first 3 table columns
-        struct: moStruct.smoLocal
-      });
-      return vuView(view);
-    }
-  },
-};
-
-// src/sprav/router/tfomsRouter.js
-
-const vuSpec = function(vnode){
-  return vuCatalog(vnode);
-};
-const vuSpPodr = function(vnode){
-  return vuDataSheet(vnode);
-};
-const vuSpPara = function(vnode){
-  return vuCatalog(vnode);
-};
-const vuPurp = function(vnode){
-  return vuCatalog(vnode);
-};
-const vuType = function(vnode){
-  return vuCatalog(vnode);
-};
-const vuCateg = function(vnode){
-  return vuCatalog(vnode);
-};
-const vuIstfin = function(vnode){
-  return vuCatalog(vnode);
-};
-const vuErrors = function(vnode){
-  return vuCatalog(vnode);
-};
-
-const roTfoms = {
-  [spravApi.tfoms]: {
-    render: function() {
-      return vuView( m(vuSprav, { text: "Cправочники ТФОМС" } ) );
-    }
-  },
-  
-  [spravApi.tfoms_spec]: {
-    render: function() {
-      let view = m(vuSpec, {
-          model:  moModel.getModel( restApi.doc_spec ),
-          header: "Коды врачебных специальностей",
-          name: "Специальность"
-      });
-      return vuView(view);
-    }
-  },
-  [spravApi.tfoms_podr]: {
+  [spravApi.mo_podr]: {
     render: function() {
       let view = m(vuSpPodr, {
           model: moModel.getModel( restApi.sp_podr ),
@@ -1460,16 +1376,274 @@ const roTfoms = {
       return vuView(view);
     }
   },
-  [spravApi.tfoms_para_podr]: {
+  */
+  [spravApi.mo_sp_para]: {
     render: function() {
       let view = m(vuSpPara, {
-          model:  moModel.getModel( restApi.sp_para),
+          model:  moModel.getModel( restApi$1.sp_para),
           header: "Коды диагностических подразделений",
-          name: "Плдазделение"
+          name: "Подазделение"
       });
       return vuView(view);
     }
   },
+  
+  [spravApi.mo_local]: {
+    render: function() {
+      let view = m(vuMoLocal, {
+          model: moModel.getModel( restApi$1.mo_local ),
+          header: "МО Приморского края",
+          name: "МО",
+          find: 3, // search in the first 3 table columns
+          struct: moStruct.moLocal
+        });
+        return vuView(view);
+      }
+  },
+  [spravApi.mo_smo]: {
+    render: function() {
+      let view = m(vuSmoLocal, {
+        model: moModel.getModel( restApi$1.smo_local ),
+        header: "СМО Приморского края",
+        name: "СМО",
+        find: 2, // search in the first 3 table columns
+        struct: moStruct.smoLocal
+      });
+      return vuView(view);
+    }
+  },
+};
+
+// src/sprav/view/vuComboSheet.js
+
+// this for pmu yet
+
+// clojure
+const vuItemSheet = function (vnode) {
+  
+  let modelObject = vnode.attrs.model, // model Object
+    headerString = vnode.attrs.header, // String: page header 
+    //findString= vnode.attrs.findstr, // find help string
+    //listMap = vnode.attrs.listMap, // list mapping function
+    findForm = vnode.attrs.findForm, // form to find
+    //nameString = vnode.attrs.name, // String: models item name
+    filterForm = vnode.attrs.filter, //
+    structObject = vnode.attrs.struct; // the struct Object
+  // init - show only find form initially
+  let load = false;
+  
+  const edit= function(e) {
+    return change(e, modelObject, 'PATCH', 'Изменить');
+  };
+  
+  let listMap= function(s) {
+    let first = true;
+    return m('tr', [
+      Object.keys(structObject).map( (column) => {
+        let td = first ? m('td.choice.blue', {
+          data:  s.id, // every item must have id attr
+          onclick: modelObject.edit ? edit : ''
+        }, s[column]) : m('td', s[column]);
+        first = false;
+        return td;
+      })
+    ]);
+  };
+  
+  return {
+    
+    oninit () {
+      //moModel.getList( vnode.attrs.model );
+      //moModel.getData( vnode.attrs.model );
+    },
+    onupdate() {
+      load = true; 
+    },
+
+    view: function () {
+     
+      return [
+        m(vuTheader, {header: headerString}),
+        m(findForm, {model: modelObject}),
+//        init ? m('h1.blue', {style: "font-size: 1.2em;"}, `${findString}`) :
+          modelObject.error ? [m(".error", modelObject.error)] :
+            modelObject.list ? [
+              filterForm ? m(filterForm): '' ,
+              m('table.pure-table.pure-table-bordered[id=find_table]', [
+                m('thead', m('tr',
+                  Object.keys(structObject).map( (column) => {
+                    return m('th', structObject[column][0]);
+                  })  // not sorted
+                )),
+                m('tbody', [modelObject.list.map(listMap)])
+              ])
+            ] : load ? m(vuLoading): ''
+        ];
+    }
+  }; //return this object
+};
+
+const pmuFind = function (vnode) {
+  
+  let model=vnode.attrs.model, data={};
+  
+  let on_submit = function (event) {
+    // button FIND click event handler callback
+    event.preventDefault();
+    let cu= data.code_usl;
+    if (cu.length < 3) return false;
+    model.url=restApi$1.pmu.url + `?code_usl=ilike.${cu}*&limit=20`;
+    return moModel.getList(model);
+    //m.redraw();
+    //return false;
+  };
+
+  return {
+
+    oninit(vnode) {
+      //vnode.attrs.model.method='POST';
+      //vnode.attrs.model.url =restApi.onko_n6.url;
+    },
+
+    view(vnode) {
+
+      return m(".pure-g",
+        m(".pure-u-1-2",
+          m("form.pure-form", { onsubmit: on_submit },
+            m("fieldset", m(".pure-g", [
+              m(".pure-u-1-5",
+                m("input.input-find.pure-u-3-4[name=code_usl][type='text']",
+                  { placeholder: "Код услуги",
+                    onkeyup: e=> data.code_usl= e.target.value,
+                    value: data.code_usl
+                })
+              ),
+              /*
+              m(".pure-u-1-5",
+                m("input.input-find.pure-u-3-4[name=stady][type='search']",
+                  {placeholder: "Стадия (число)"}
+                )
+              ),
+              */
+              m(".pure-u-1-5",
+                m('button.pure-button.pure-button-primary[type="submit"]', "Выбрать")
+              )
+            ]))
+          ) //form
+        ) // u-1-2
+      ); // g return
+    }// view
+  }; //this object
+}; //func
+
+// src/sprav/router/profRouter.js
+
+const vuSpec = function(vnode){
+  return vuCatalog(vnode);
+};
+const vuProf = function(vnode){
+  return vuDataSheet(vnode);
+};
+const vuPrvs = function(vnode){
+  return vuDataSheet(vnode);
+};
+const vuVidpom = function(vnode){
+  return vuDataSheet(vnode);
+};
+const vuPmu = function(vnode){
+  return vuItemSheet(vnode);
+};
+const vuMkb = function(vnode){
+  return vuDataSheet(vnode);
+};
+/*
+const vuPurp = function(vnode){
+  return vuCatalog(vnode);
+}
+const vuType = function(vnode){
+  return vuCatalog(vnode);
+}
+const vuCateg = function(vnode){
+  return vuCatalog(vnode);
+}
+const vuIstfin = function(vnode){
+  return vuCatalog(vnode);
+}
+const vuErrors = function(vnode){
+  return vuCatalog(vnode);
+}
+*/
+const roProf = {
+  [spravApi.prof]: {
+    render: function() {
+      return vuView( m(vuSprav, { text: "Профильные справочники" } ) );
+    }
+  },
+  
+  [spravApi.prof_spec]: {
+    render: function() {
+      let view = m(vuSpec, {
+          model:  moModel.getModel( restApi$1.doc_spec ),
+          header: "Коды врачебных специальностей",
+          name: "Специальность"
+      });
+      return vuView(view);
+    }
+  },
+  [spravApi.prof_prof]: {
+    render: function() {
+      let view = m(vuProf, {
+          model:  moModel.getModel( restApi$1.prof),
+          header: "Профили помощи",
+          name: "Профиль"
+      });
+      return vuView(view);
+    }
+  },
+  [spravApi.prof_prvs]: {
+    render: function() {
+      let view = m(vuPrvs, {
+          model:  moModel.getModel( restApi$1.prvs),
+          header: "Специальности V021",
+          name: "Специальность"
+      });
+      return vuView(view);
+    }
+  },
+  [spravApi.prof_vidpom]: {
+    render: function() {
+      let view = m(vuVidpom, {
+          model:  moModel.getModel( restApi$1.vidpom),
+          header: "Вид помощи",
+          name: "Вид"
+      });
+      return vuView(view);
+    }
+  },
+  [spravApi.prof_pmu]: {
+    render: function() {
+      let view = m(vuPmu, {
+          model:  moModel.getModel( restApi$1.pmu),
+          header: "Простые мед. усдуги",
+          //name: "Услуга",
+          findForm: pmuFind,
+          struct: moStruct.pmu
+          
+      });
+      return vuView(view);
+    }
+  },
+  [spravApi.prof_mkb]: {
+    render: function() {
+      let view = m(vuMkb, {
+          model:  moModel.getModel( restApi$1.mkb),
+          header: "МКБ - 10",
+          name: "Диагноз"
+      });
+      return vuView(view);
+    }
+  },
+  /*
   [spravApi.tfoms_purp]: {
     render: function() {
       let view = m(vuPurp, {
@@ -1520,318 +1694,50 @@ const roTfoms = {
       return vuView(view);
     }
   },
+  */
 };
 
-// src/sprav/view/vuComboSheet.js
+// src/sprav/router/profRouter.js
 
-// src/sprav/router/roOnko.js
-//import { dsFind, listTnm, tnmFilter } from '../view/dsTNM.js'
-//import { sidFind, listSchema, schemaFilter } from '../view/lekSchema.js'
+const vuDul = function(vnode){
+  return vuCatalog(vnode);
+};
+const vuOkato = function(vnode){
+  return vuCatalog(vnode);
+};
 
-const vuN1 = function(vnode){
-  return vuCatalog(vnode);
-};
-const vuN2 = function(vnode){
-  return vuDataSheet(vnode);
-};
-const vuN3 = function(vnode){
-  return vuDataSheet(vnode);
-};
-const vuN4 = function(vnode){
-  return vuDataSheet(vnode);
-};
-const vuN5 = function(vnode){
-  return vuDataSheet(vnode);
-};
-//const vuN6 = function(vnode){
-//  return vuComboSheet(vnode);
-//}
-const vuN7 = function(vnode){
-  return vuCatalog(vnode);
-};
-const vuN8 = function(vnode){
-  return vuDataSheet(vnode);
-};
-const vuN9 = function(vnode){
-  return vuDataSheet(vnode);
-};
-const vuN10 = function(vnode){
-  return vuDataSheet(vnode);
-};
-const vuN11 = function(vnode){
-  return vuDataSheet(vnode);
-};
-const vuN12 = function(vnode){
-  return vuDataSheet(vnode);
-};
-const vuN13 = function(vnode){
-  return vuCatalog(vnode);
-};
-const vuN14 = function(vnode){
-  return vuCatalog(vnode);
-};
-const vuN15 = function(vnode){
-  return vuCatalog(vnode);
-};
-const vuN16 = function(vnode){
-  return vuCatalog(vnode);
-};
-const vuN17 = function(vnode){
-  return vuCatalog(vnode);
-};
-const vuN18 = function(vnode){
-  return vuCatalog(vnode);
-};
-const vuN19 = function(vnode){
-  return vuCatalog(vnode);
-};
-//const vuN21 = function(vnode){
-//  return vuComboSheet(vnode);
-//}
-
-
-const roOnko = {
-  [spravApi.onko]: {
+const roCom = {
+  [spravApi.com]: {
     render: function() {
-      return vuView( m(vuSprav, { text: "Cправочники по онкологии" } ) );
+      return vuView( m(vuSprav, { text: "Общие справочники" } ) );
     }
   },
   
-  [spravApi.onko_n1]: {
+  [spravApi.com_dul]: {
     render: function() {
-      let view = m(vuN1, {
-          model:  moModel.getModel( restSprav.onko_n1 ),
-          header: "Коды отказов",
-          name: "Отказ"
+      let view = m(vuDul, {
+          model:  moModel.getModel( restApi.dul ),
+          header: "Документ удостоверяющий личнось",
+          name: "Документ"
       });
       return vuView(view);
     }
   },
-  [spravApi.onko_n2]: {
+  [spravApi.com_okato]: {
     render: function() {
-      let view = m(vuN2, {
-          model: moModel.getModel( restSprav.onko_n2 ),
-          header: "Стадия заболевания",
-          name: "Стадия",
-          find: 2, // search in the first 1 table columns
-          struct: moStruct.onko_n2
-        });
-      return vuView(view);
-    }
-  },
-  [spravApi.onko_n3]: {
-    render: function() {
-      let view = m(vuN3, {
-          model:  moModel.getModel( restSprav.onko_n3),
-          header: "Tumor",
-          name: "Tumor",
-          find: 2, // search in the first 1 table columns
-          struct: moStruct.onko_n3
+      let view = m(vuOkato, {
+          model:  moModel.getModel( restApi.okato),
+          header: "ОКАТО",
+          name: "ОКАТО"
       });
       return vuView(view);
     }
   },
-  [spravApi.onko_n4]: {
-    render: function() {
-      let view = m(vuN4, {
-          model:  moModel.getModel( restSprav.onko_n4 ),
-          header: "Nodus",
-          name: "Nodus",
-          find: 2, // search in the first 1 table columns
-          struct: moStruct.onko_n4
-      });
-      return vuView(view);
-    }
-  },
-  [spravApi.onko_n5]: {
-    render: function() {
-      let view = m(vuN5, {
-          model:  moModel.getModel( restSprav.onko_n5 ),
-          header: "Метазтазы",
-          name: "Метастазы",
-          find: 2, // search in the first 1 table columns
-          struct: moStruct.onko_n5
-      });
-      return vuView(view);
-    }
-  },
-  /*
-  [spravApi.onko_n6]: {
-    render: function() {
-      let view = m(vuN6, {
-          model:  moModel.getModel( restSprav.onko_n6 ),
-          header: "Сопоставление DS TNM",
-          findForm: dsFind,
-          listMap: listTnm,
-          filter: tnmFilter,
-        //name: "",
 
-          struct: moStruct.onko_n6
-      });
-      return vuView(view);
-    }
-  },
-  */
-  [spravApi.onko_n7]: {
-    render: function() {
-      let view = m(vuN7, {
-          model:  moModel.getModel( restSprav.onko_n7),
-          header: "Гистология",
-          name: "Наименование"
-      });
-      return vuView(view);
-    }
-  },
-  [spravApi.onko_n8]: {
-    render: function() {
-      let view = m(vuN8, {
-          model:  moModel.getModel( restSprav.onko_n8 ),
-          header: "Гистлогия результат",
-          name: "Результат",
-          find: 2, // search in the first 1 table columns
-          struct: moStruct.onko_n8
-      });
-      return vuView(view);
-    }
-  },
-  [spravApi.onko_n9]: {
-    render: function() {
-      let view = m(vuN9, {
-          model:  moModel.getModel( restSprav.onko_n9 ),
-          header: "Гистология диагноз",
-          name: "Диагноз",
-          find: 2, // search in the first 1 table columns
-          struct: moStruct.onko_n9
-      });
-      return vuView(view);
-    }
-  },
-  [spravApi.onko_n10]: {
-    render: function() {
-      let view = m(vuN10, {
-          model:  moModel.getModel( restSprav.onko_n10 ),
-          header: "Онкомаркеры",
-          name: "Маркер",
-          find: 2, // search in the first 1 table columns
-          struct: moStruct.onko_n10
-      });
-      return vuView(view);
-    }
-  },
-  [spravApi.onko_n11]: {
-    render: function() {
-      let view = m(vuN11, {
-          model:  moModel.getModel( restSprav.onko_n11 ),
-          header: "Онкомаркеры значение",
-          name: "Маркер",
-          find: 2, // search in the first 1 table columns
-          struct: moStruct.onko_n11
-      });
-      return vuView(view);
-    }
-  },
-  [spravApi.onko_n12]: {
-    render: function() {
-      let view = m(vuN12, {
-          model:  moModel.getModel( restSprav.onko_n12 ),
-          header: "Онкомаркеры диагноз",
-          name: "Маркер",
-          find: 2, // search in the first 1 table columns
-          struct: moStruct.onko_n12
-      });
-      return vuView(view);
-    }
-  },
-  [spravApi.onko_n13]: {
-    render: function() {
-      let view = m(vuN13, {
-          model:  moModel.getModel( restSprav.onko_n13 ),
-          header: "Тип лечения",
-          name: "Тип",
-      });
-      return vuView(view);
-    }
-  },
-  [spravApi.onko_n14]: {
-    render: function() {
-      let view = m(vuN14, {
-          model:  moModel.getModel( restSprav.onko_n14 ),
-          header: "Тип хирургического лечения",
-          name: "Тип",
-      });
-      return vuView(view);
-    }
-  },
-  [spravApi.onko_n15]: {
-    render: function() {
-      let view = m(vuN15, {
-          model:  moModel.getModel( restSprav.onko_n15),
-          header: "Линии лекрственной тераапии",
-          name: "Линия",
-      });
-      return vuView(view);
-    }
-  },
-  [spravApi.onko_n16]: {
-    render: function() {
-      let view = m(vuN16, {
-          model:  moModel.getModel( restSprav.onko_n16 ),
-          header: "Циклы лекарственной терапии",
-          name: "Цикл",
-      });
-      return vuView(view);
-    }
-  },
-  [spravApi.onko_n17]: {
-    render: function() {
-      let view = m(vuN17, {
-          model:  moModel.getModel( restSprav.onko_n17),
-          header: "Тип лучевой терапии",
-          name: "Тип",
-      });
-      return vuView(view);
-    }
-  },
-   [spravApi.onko_n18]: {
-    render: function() {
-      let view = m(vuN18, {
-          model:  moModel.getModel( restSprav.onko_n18),
-          header: "Повод обращения",
-          name: "Повод",
-      });
-      return vuView(view);
-    }
-  },
-   [spravApi.onko_n19]: {
-    render: function() {
-      let view = m(vuN19, {
-          model:  moModel.getModel( restSprav.onko_n19),
-          header: "Цели консилиума",
-          name: "Цель",
-      });
-      return vuView(view);
-    }
-  },
-  /*
-  [spravApi.onko_n21]: {
-    render: function() {
-      let view = m(vuN21, {
-          model:  moModel.getModel( restSprav.onko_n21 ),
-          header: "Схемы лекарственной терапии",
-          findForm: sidFind,
-          listMap: listSchema,
-          filter: schemaFilter,
-        //name: "",
-
-          struct: moStruct.onko_n21
-      });
-      return vuView(view);
-    }
-  },
-  */
 };
 
 // src/sprav/router_sprav.js
+//import { roOnko } from './router/roOnko.js';
 
 const spravRouter = { [spravApi.root]: {
     render: function() {
@@ -1841,7 +1747,7 @@ const spravRouter = { [spravApi.root]: {
   }
 };
 
-Object.assign(spravRouter, roLocal, roTfoms, roOnko);
+Object.assign(spravRouter, roLocal, roProf, roCom); //roOnko);
 
 //m.route(document.getElementById('content'), "/", {})
 m.route(document.body, "/", spravRouter);

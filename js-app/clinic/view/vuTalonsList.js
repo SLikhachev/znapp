@@ -19,8 +19,9 @@ const talonFind = {
           m("fieldset",
             m(".pure-g", [
               m(".pure-u-1-5",
-                m("input.input-find.pure-u-3-4[name=q_tal][type='search']",
-                  {placeholder: "Номер талона",
+                m("input.input-find.pure-u-3-4[name=q_tal][type='number']",
+                  { placeholder: "Номер талона",
+                    onupdate: v => v.dom.value = '' 
                   }
                 )
               ),
@@ -36,7 +37,7 @@ const talonFind = {
               ),
 
               m(".pure-u-1-5",
-                m("input.input-find.pure-u-2-3[name=q_dspec][type='search']",
+                m("input.input-find.pure-u-2-3[name=q_dspec][type='number']",
                   {placeholder:"Специалист (код)"}
                 )
               ),
@@ -64,8 +65,9 @@ const talonFind = {
   }
 }
 
-export const toTalon = function (tal_num) {
-    m.route.set(clinicApi.talon_id, { id: tal_num } );
+export const toTalon = function (tal, crd) {
+    console.log(tal, crd);
+    m.route.set(clinicApi.talon_id, { tal: tal, crd: crd } );
     return false;
 }
 
@@ -103,16 +105,23 @@ export const vuTalonsList = function (vnode) {
   */
   listMap (s) {
     let fio = `${s['fam']} ${s['im']} ${s['ot']}`
+    let tal= s.tal_num, crd= s.crd_num;
     return m('tr', [
       Object.keys(talonz_hdr).map( (column) => {
         //console.log(talonz_hdr[column]);
         let cell = column === 'fam' ? fio : s[column];
-        let td = talonz_hdr[column].length == 2 ? m('td.choice.blue', {
+        let td = talonz_hdr[column].length === 2 ?
+        /*
+        m('td.choice.blue', {
           //data:  cell,
           onclick: column == "crd_num" ?
-            e => { e.preventDefault(); toCard(cell); } :
-            e => { e.preventDefault(); toTalon(cell);}
-        }, cell) : m('td', cell);
+            e => { e.preventDefault(); toCard(crd); } :
+            e => { e.preventDefault(); toTalon(tal, crd);}
+        }, cell) */
+        m('td.choice.blue', m('a', {
+          href: column == 'crd_num' ? `${clinicApi.cards}/${crd}`: `${clinicApi.talons}/${tal}/${crd}`,
+          oncreate: m.route.link
+        }, cell)) : m('td', cell);
         return td;
       }),
       
