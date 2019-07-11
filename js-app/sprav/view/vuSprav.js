@@ -7,13 +7,13 @@ import { moModel } from '../../apps/model/moModel.js';
 
 export const change= function(e, model, method, word) {
     //console.log(word);
-    e.preventDefault();
+    //e.preventDefault();
     item_id= e.target.getAttribute('data');
     vuForm.method= method;
     vuForm.word= word;
     model.getItem(item_id);
     vuDialog.open();
-    return false;
+    return true;
   };
 
 // Forms in dialog window for catalogs 
@@ -26,12 +26,13 @@ export const vuForm = {
   name: "",
   
   onSubmit(e) {
-    e.preventDefault();
+    e.preventDefault(); // if not then in route we will see wrong path (method GET + all form fields)
     if (vuForm.model !== null && vuForm.model.item !== null) {
-      moModel.dialogFormSubmit(e, vuForm.model, vuForm.method);
+      moModel.formSubmit(e, vuForm.model, vuForm.method);
     }
     //vuDialog.close();
-    return false;
+    //moModel.getList(vuForm.model);
+    return true;
   },
   
   oninit(vnode) {
@@ -65,17 +66,17 @@ export const vuTheader = {
   }
 };
 
-const vmFind = {
+export const vmFilter = {
   
-  trCols: 2, // how many tr childern (table columns) get to find 
-  toFind: "",
-  setFind: function(e) {
+  tr_cols: 2, // how many tr childern (table columns) get to find 
+  to_find: "",
+  setFilter: function(e) {
     let str = e.target.value; 
-    vmFind.toFind = str.toLowerCase();
-    $.each( $('table#find_table tbody tr'), function(ind, tr) {
-      let subtr = $(tr).children().slice(0,vmFind.trCols);
+    vmFilter.to_find = str.toLowerCase();
+    $.each( $('table#list_table tbody tr'), function(ind, tr) {
+      let subtr = $(tr).children().slice(0,vmFilter.tr_cols);
       //console.log( subtr );
-      if (subtr.text().toLowerCase().indexOf(vmFind.toFind) === -1) {
+      if (subtr.text().toLowerCase().indexOf(vmFilter.to_find) === -1) {
         $(tr).hide();
       } else {
         $(tr).show();
@@ -86,23 +87,26 @@ const vmFind = {
   
 };
 
-export const vuFind = {
+export const vuFilter = {
   
   model: null,
+  add: false,
   
   addItem(e) {
-    e.preventDefault();
+    //e.preventDefault();
     vuForm.method= 'POST';
     vuForm.word= 'Добавить';
-    vuFind.model.getItem(null);
+    vuFilter.model.getItem(null);
     vuDialog.open();
-    return false;
+    //return false;
   },
   
   oninit(vnode) {
-    vuFind.model= vnode.attrs.model;
-    vmFind.trCols = vnode.attrs.cols ? vnode.attrs.cols : 2;
-    vmFind.toFind = "";
+    vuFilter.model= vnode.attrs.model;
+    vuFilter.add= vnode.attrs.add; 
+    vmFilter.tr_cols = vnode.attrs.cols ? vnode.attrs.cols : 2;
+    vmFilter.to_find = "";
+    
   },
   
   view (vnode) {
@@ -114,8 +118,8 @@ export const vuFind = {
               m(".pure-u-1-5",
                 m("input.input-find.pure-u-3-4[id='to-find'][type='search']",
                   {placeholder: "найти число, слово",
-                  onkeyup: vmFind.setFind,
-                  value: vmFind.toFind
+                  onkeyup: vmFilter.setFilter,
+                  value: vmFilter.to_find
                   }
                 )
               ),
@@ -127,11 +131,11 @@ export const vuFind = {
               ),
               */
               m(".pure-u-1-5",
-                vnode.attrs.model.add ? 
-                m('button.pure-button.pure-button-primary[type="button"]', {
-                    onclick: vuFind.addItem
+                vuFilter.add ? 
+                  m('button.pure-button.pure-button-primary[type="button"]', {
+                    onclick: vuFilter.addItem
                   },
-                "Добавить"
+                  "Добавить"
                 ) : ''
               )
             ])
