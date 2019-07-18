@@ -142,6 +142,7 @@ export const moModel = {
       if (res.length && res.length > 0) {
         model.list= Array.from( res ); // list of objects
         model.order = true;
+        return true;
       } else
         model.list= [];
         return true;

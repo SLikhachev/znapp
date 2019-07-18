@@ -443,6 +443,7 @@ const moModel = {
       if (res.length && res.length > 0) {
         model.list= Array.from( res ); // list of objects
         model.order = true;
+        return true;
       } else
         model.list= [];
         return true;
@@ -2142,7 +2143,7 @@ const pmuForm = function (vnode) {
     }
     _pmu.url= `${restSprav.pmu.url}?${q}=eq.${_pmu[q]}`;
     
-    moModel.getList( _pmu ).then( t=>{
+    return moModel.getList( _pmu ).then( t=>{
       // anyway returns Promise
       if (_pmu.list.length === 0) return Promise.reject('Нет таких ПМУ');
       md.item= preparePara( _pmu.list[0] );
@@ -2155,10 +2156,13 @@ const pmuForm = function (vnode) {
     // add this item to model.pmu
     }).then( res=>{
       if (res.length && res.length > 0) {
-        console.log(res);
-        pmu= [...pmu, res[0] ];
-        m.redraw();
-        console.log(pmu);
+        //console.log(res);
+        res[0].name= _pmu.list[0].name;
+        res[0].ccode= _pmu.list[0].ccode;
+        pmu.push( res[0] );
+        //pmu= [...pmu, res[0] ];
+        //console.log(pmu);
+        //return true;
       } else
         return Promise.reject('Empty response after PMU POST ');
     }).catch( err => {
@@ -2200,7 +2204,7 @@ const talPmu = function(vnode) {
   //tal_num int, date_usl date, code_usl varchar, kol_usl smallint,
   //exec_spec int, exec_doc int, exec_podr int, name varchar
   let pmu_hdr = {
-      num_usl: ['Номер'],
+      ccode: ['Номер'],
       code_usl: ['Код услуги'],
       kol_usl: ['Кол-во'],
       name: ['Наименование'],
@@ -2219,20 +2223,27 @@ const talPmu = function(vnode) {
   
   const add_kol_usl= e=> {
     let { p, url } = kol_usl(e);
-    p.kol_usl += 1;
     let md= {};
-    moModel.getViewRpc( md, { kol_usl: p.kol_usl }, url, 'PATCH' );
-    return false;    
+    return moModel.getViewRpc( md, { kol_usl: p.kol_usl }, url, 'PATCH' ).then( t=> {
+       p.kol_usl += 1;
+       return true;
+    });
+    //return false;    
   };
   const del_kol_usl= e=> {
     let { p, url } = kol_usl(e);
     let md= {};
     if (p.kol_usl == 1) {
-      pmu= pmu.filter( el=> el.id != p.id );
-      moModel.getViewRpc( md, {}, url, 'DELETE' );
+      return moModel.getViewRpc( md, {}, url, 'DELETE' ).then( t => {
+        //pmu= pmu.filter( el=> el.id != p.id );
+        p.kol_usl=0;
+        return true;
+      });
     } else {
-       p.kol_usl -= 1;
-       moModel.getViewRpc( md, { kol_usl: p.kol_usl }, url, 'PATCH' );
+      return moModel.getViewRpc( md, { kol_usl: p.kol_usl }, url, 'PATCH' ).then( t=> {
+         p.kol_usl -= 1;
+         return true;
+      });
     }
     return false;    
   };
@@ -2245,7 +2256,7 @@ const talPmu = function(vnode) {
     ]);
   };
   const listMap= function (s) {
-      return m('tr', { key: s.id } , [
+      return s.kol_usl > 0 ? m('tr', { key: s.id }, [
         Object.keys(pmu_hdr).map( (column) => m('td', s[column])),
         m('td', m('i.fa.fa-plus-circle.choice', {
           style: "color: green;",
@@ -2256,7 +2267,7 @@ const talPmu = function(vnode) {
           data: s.id,
           onclick: del_kol_usl
         }) )
-      ]);
+      ]) : '';
   };
   
   return {
