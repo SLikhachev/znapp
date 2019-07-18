@@ -2,29 +2,32 @@
 // src/sparv/spravApi.js
 // here url is a table name
 
-// editable - array of bools as [ add, edit, del ]
-
-export const restApi = {
+// editable - array of string as [ 'add', 'edit', 'del' ]
+// change - editable fields names if any else all fields exclude id
+export const restSprav = {
     // local
     get doctor() {
-        return { url:"doctor", options: [ this.division, this.district ], sort_by: 'code',
-        editable: [true, true, true] };
+        return { url:"doctor", options: [ this.division, this.district ], order_by: 'code',
+        editable: ['add', 'edit', 'del'] };
     },
     district: { url:"district"},
     division: { url:"division"},
-    sp_podr: { url:"sp_podr", sort_by: 'mo_code' },
+    sp_podr: { url:"sp_podr", order_by: 'mo_code' },
     sp_para: { url:"sp_para"},
     purp: { url: 'purpose'},
     mo_local: { url:"mo_local"},
     smo_local: { url:"smo_local"},
     // prof
-    doc_spec : { url:"spec_prvs"}, // view name
+    doc_spec : { url:"spec_prvs_profil"}, // view name
     prof: { url: 'profil' },
     prvs: { url: 'prvs' },
     vidpom: { url: 'vidpom' },
-    pmu: { url: 'pmu', editable: [false, true, false] },
-    pmu_grup: { url: 'pmu_grup' },
-    mkb: { url: 'mkb10'},
+    pmu: { url: 'pmu', editable: ['edit'], change: ['ccode', 'code_podr', 'code_spec'], key: 'code_usl' },
+    pgr: { url: 'pmu_grup_code' },
+    pgc: { url: 'rpc/get_pgc', },
+    pmu_grup: { url: 'pmu_grup', editable: ['add'] },
+    grc: { url: 'rpc/get_grc'},
+    mkb: { url: 'mkb10', order_by: 'code'},
     type: {url: 'spec_case'},
     insur: {url: 'kategor'},
     istfin: {url: 'ist_fin'},
@@ -66,7 +69,7 @@ export const spravApi = {
     //mo_divs: "/mo/divs-list", //отделения
     //mo_podr: "mo/podr", //подразделения
     //mo_sp_podr: "mo/sp_podr", //вспомогательные
-    mo_sp_para: "mo/sp_para", // paraclin
+    mo_sp_para: "/mo/sp_para", // paraclin
     mo_local: "/mo/mo_local",
     mo_smo: "/mo/smo_local",
     //mo_org: "/mo/org," //ораганизации (договоры, профосмотьры)
@@ -76,7 +79,11 @@ export const spravApi = {
     prof_prof: "/prof/prof", //профили с кодами услуг
     prof_prvs: "/prof/prvs", //првс
     prof_vidpom: "/prof/vidpom",
-    prof_pmu: "/prof/pmu",
+    prof_pmus: "/prof/pmu",
+    prof_pmu_code: "/prof/pmu/:code",
+    prof_pgrup: "/prof/pgrup",
+    prof_pmu_grup: "/prof/pgrup/:grup",
+    
     prof_mkb: "/prof/mkb",
     //prof_purp: "/prof/purp",
     //prof_type: "/prof/type",
@@ -133,7 +140,8 @@ export const spravMenu = { subAppMenu: {
       [`#!${spravApi.prof_prof}`, "Профили"],
       [`#!${spravApi.prof_prvs}`, "PRVS"],
       [`#!${spravApi.prof_vidpom}`, "Вид помощи"],
-      [`#!${spravApi.prof_pmu}`, "ПМУ"],
+      [`#!${spravApi.prof_pmus}`, "ПМУ"],
+      [`#!${spravApi.prof_pgrup}`, "Группы ПМУ"],
       [`#!${spravApi.prof_mkb}`, "МКБ-10"],
       //[`#!${spravApi.tfoms_podr}`, "Подразделения"],
       //[`#!${spravApi.tfoms_para_podr}`, "Доп. службы"],

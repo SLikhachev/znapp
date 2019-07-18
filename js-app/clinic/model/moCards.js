@@ -3,25 +3,22 @@
 //import { schemaRest } from '../../apps/apiConf.js';
 import { restSprav } from '../../sprav/spravApi.js';
 import { restClinic } from '../clinicApi.js';
-import { moModel } from '../../apps/model/moModel.js';
+import { moModel, errMsg } from '../../apps/model/moModel.js';
 
 //let schema = schemaRest;
 
 export const moCardsList = {
-  
-  model : {
-    url: restClinic.card_find.url,
-    method: restClinic.card_find.method,
-    list: null, // main data list (showing in table page)
-    error: null, // Promise all error
-    order: true, // for list
-    sort: null // for list
-  },
-  
-  // :: Object
-  // return model object (POJO)
+  // return model object 
   getModel() {
-    return moCardsList.model;
+    const model = {
+      url: restClinic.card_find.url,
+      method: restClinic.card_find.method,
+      list: null, // main data list (showing in table page)
+      error: null, // Promise all error
+      order: true, // for list
+      sort: null // for list
+    };
+    return model;
   },
   
   sort(model, id=null) {
@@ -31,23 +28,6 @@ export const moCardsList = {
     model.list = _.orderBy(model.list, [ field ], [ order ]);
     model.order = !model.order;
   },
-    
-  cardsFind(event) {  
-    // button FIND click event handler callback 
-    event.preventDefault();
-    let data = moModel.getFormData( $('form#card_find') );
-    //console.log ( data );
-    //return false;
-    data.lim = 50;
-    data.offs = 1;
-    moModel.getViewRpc(
-      moCardsList.getModel(),
-      data
-    );
-    //m.redraw();
-    return false;
-  }
-  
 };
 
 const testCase = function(time, test) {
@@ -59,75 +39,43 @@ const testCase = function(time, test) {
   });
 }
 
-export const moCard = {
-  
-  model : {
-    url: [restClinic.get_card.url, restClinic.get_crd_talons.url],
-    method: [restClinic.get_card.method, restClinic.get_crd_talons.method],
-    map_keys: ['card', 'talons'],
-    //map_data: new Map(),
-    card: null,
-    talons: null,
-    opt_name: 'card_options',
-    options: [restSprav.dul, restSprav.smo_local, restSprav.mo_local, restSprav.okato],
-    data: new Map(),
-    error: null,
-    save: null
-  },
-  
-  getModel() {
-    return this.model;
-  },
-  
+export const cardOpt= {
+  options: [restSprav.dul, restSprav.smo_local, restSprav.mo_local, restSprav.okato],
+  data: new Map(),
+  error: null,
   getOptions() {
-    if (this.model.data && this.model.data.size && this.model.data.size !== 0) return;
-    moModel.getData( this.model );
+    if (this.data && this.data.size && this.data.size !== 0) return;
+    moModel.getData( cardOpt );
+  }
+}
+
+export const moCard = {
+
+  getModel() {
+    const model= {
+      url: [restClinic.get_card.url, restClinic.get_crd_talons.url],
+      method: [restClinic.get_card.method, restClinic.get_crd_talons.method],
+      map_keys: ['card', 'talons'],
+      //map_data: new Map(),
+      card: null,
+      talons: null,
+      error: null,
+      save: null
+    };
+    return model;
   },
   
-  getCard(args) {
-    if ( this.model.card ) this.clear();
+  getCard(model, crd) {
+    let c= { crd_num: String(crd) };
+    //console.log(crd);
     return moModel.getViewRpcMap(
-      moCard.getModel(),
-      { crd_num: args.crd }
-      //console.log()
+      model, [c, c]
     );
   },
-  /*
-  actions(update) {
-    return {
-      get(data) {
-        let d = moCard.getCard(data);
-        d.then( (res) => update(Object.assign({}, { card: res[0]} ) ) ).catch( (e) =>{
-            let err = JSON.parse(e.message);
-            let msg = err.message ? err.message : e.message;
-            update( Object.assign({}, { error:msg} ) );
-          }
-        );
-      },
-      set(data) { update( Object.assign({}, data) ); },
-      change(data) { update(data); },
-      clear(data) { update( Object.assign(data, {card: null, list: null, error: null, save: null}) ); }
-    }
-  },
-  */
-  setCard(card) {
-    //console.log(card);
-    moCard.model.card = Object.assign({}, card);
-    //console.log(moCard.model.card);
-    return true;
-  },
   
-  clear() {
-    this.model.card = null;
-    this.model.talons = null;
-    this.model.error = null;
-    this.model.save = null;
-    //console.log(this.model);
-  },
-  
-  save(event) {
-    event.preventDefault();
+  saveCard(event, card, model, method) {
     event.target.parentNode.classList.add('disable');
+    model.card = Object.assign(model.card, card);
     //console.log(moCard.model.card);
     /*
     testCase(2000, true).then( (res) => {
@@ -143,39 +91,22 @@ export const moCard = {
     });
     */
     let pg_rest = window.localStorage.getItem('pg_rest');
-    let method = event.target.getAttribute('method');
-    let { id } = moCard.model.card;
+    //let method = event.target.getAttribute('method');
+    let { crd_num } = card;
     let table = `${pg_rest}cardz_clin`;
-    let url = id ? `${table}?id=eq.${id}`: table; 
-    if ( Boolean(id) ) delete moCard.model.card.id;
+    let url = crd_num ? `${table}?crd_num=eq.${crd_num}`: table;
+    if ( Boolean(crd_num) ) delete card.crd_num;
     
     m.request({
       url: url,
       method: method,
-      data: moCard.model.card
+      data: card
     }).then( res => {
-      moCard.model.save = { ok: false, msg: res };
       event.target.parentNode.classList.remove('disable');
     }).catch( err => {
-      let e = JSON.parse(err.message);
-      moCard.model.save = { ok: false, msg: e.message ? e.message : err.message };
+      model.save = { err: true, msg: errMsg(err) };
       event.target.parentNode.classList.remove('disable');
     });
     return false;
   }
 };
-/*
-export const appCard = {
-  initalalState: Object.assign({}, moCard.model.card),
-  actions(update) => Object.assign({}, moCard.actions(update) ) 
-}
-
-export const updateCrad = m.stream();
-export const statesCard = m.stream().scan(Object.assign, appCard.initialState, update);
-export const actionsCard = appCard.actions(update);
-*/
-/*
-states.map(function(state) {
-  m.request;
-});
-*/

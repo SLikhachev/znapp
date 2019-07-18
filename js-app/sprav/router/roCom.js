@@ -3,7 +3,7 @@
 // common
 import { moModel } from '../../apps/model/moModel.js';
 // sprav
-import { spravApi } from '../spravApi.js';
+import { restSprav, spravApi } from '../spravApi.js';
 import { vuSprav, vuView } from '../view/vuSprav.js';
 import { moStruct } from '../model/moStruct.js';
 //
@@ -27,7 +27,7 @@ export const roCom = {
   [spravApi.com_dul]: {
     render: function() {
       let view = m(vuDul, {
-          model:  moModel.getModel( restApi.dul ),
+          model:  moModel.getModel( restSprav.dul ),
           header: "Документ удостоверяющий личнось",
           name: "Документ"
       });
@@ -37,7 +37,7 @@ export const roCom = {
   [spravApi.com_okato]: {
     render: function() {
       let view = m(vuOkato, {
-          model:  moModel.getModel( restApi.okato),
+          model:  moModel.getModel( restSprav.okato),
           header: "ОКАТО",
           name: "ОКАТО"
       });

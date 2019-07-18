@@ -1,6 +1,6 @@
 
-import { fieldForm } from '../../apps/form/foForm.js';
-import { talonField } from './foTalon.js';
+import { fieldFrom } from '../../apps/form/foForm.js';
+import { talonField, pmuAdd } from './foTalon.js';
 import { cardField, talCard } from './foCard.js';
 
 // label = [class, text]
@@ -16,4 +16,8 @@ export const cof = function(field, data, to_attrs={}) {
 
 export const ctf = function(field, data, to_attrs={}) {
   return fieldFrom(talCard, field, data, to_attrs);
+}
+
+export const ptf = function(field, data, to_attrs={}) {
+  return fieldFrom(pmuAdd, field, data, to_attrs);
 }

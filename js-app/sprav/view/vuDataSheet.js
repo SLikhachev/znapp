@@ -4,7 +4,7 @@
 import { moModel } from '../../apps/model/moModel.js';
 import { vuLoading } from '../../apps/view/vuApp.js';
 import { vuDialog } from '../../apps/view/vuDialog.js';
-import { change, vuTheader, vuFind, vuForm } from './vuSprav.js';
+import { change, vuTheader, vuFilter, vuForm } from './vuSprav.js';
 
 // DataSheet view: assumes model is not a simple list of records
 // { id, name }, but has definitely struct defined in Struct module 
@@ -65,7 +65,7 @@ export const vuDataSheet = function (vnode) {
       return modelObject.error ? [ m(".error", modelObject.error) ] :
         modelObject.list ? [
           m(vuTheader, { header: headerString} ),
-          m(vuFind, {cols: findInt, model: modelObject} ),
+          m(vuFilter, {cols: findInt, model: modelObject, add: false} ),
         
           m('table.pure-table.pure-table-bordered[id=find_table]', [
             m('thead', [

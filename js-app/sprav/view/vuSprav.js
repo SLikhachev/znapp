@@ -5,6 +5,26 @@ import { vuDialog } from '../../apps/view/vuDialog.js';
 import { spravMenu } from '../spravApi.js';
 import { moModel } from '../../apps/model/moModel.js';
 
+export const fetchForm= function( attrs ){
+  //console.log(attrs)
+  let { on_submit, data, flds, ffunc } = attrs;
+    return m(".pure-g",
+      m(".pure-u-1-2",
+        m("form.pure-form", { onsubmit: on_submit },
+          m("fieldset", m(".pure-g", [
+            flds.map( f=> m(".pure-u-1-4", ffunc(f, data)) ),
+            m(".pure-u-1-5",
+                m('button.pure-button.pure-button-primary[type="submit"]',
+                  {style:'margin-top: 1.7em'} ,
+                 "Выбрать")
+            )
+          ]))
+        ) //form
+      ) // u-1-2
+    ); // g return
+}; //func
+
+
 export const change= function(e, model, method, word) {
     //console.log(word);
     //e.preventDefault();

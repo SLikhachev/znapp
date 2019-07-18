@@ -94,4 +94,22 @@ export const talonField = {
 
 };
 
+export const pmuAdd = {
+  code_usl: { label: ['', 'Код ПМУ'], input: {
+      tag: ['.input-find.pure-u-3-4', "text"],
+      //attrs: { placeholder: 'Номер' }
+    }
+  },
+  ccode: { label: ['', 'Номер ПМУ'], input: {
+      tag: ['.input-find.pure-u-3-4', "number"],
+      //attrs: { placeholder: 'Номер' }
+    }
+  },
+  grup: { label: ['', 'Группа ПМУ'], input: {
+      tag: ['.input-find.pure-u-3-4', "number"],
+      //attrs: { placeholder: 'Номер' }
+    }
+  },
+  
+};
 

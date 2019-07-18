@@ -11,6 +11,11 @@ const onko_ = function() {
   };
 };
 
+export const idName= {
+  id: ["Код", true],     
+  name: ["Описаение", true],
+}
+
 export const moStruct = {
   // every DBtable has id column is not showed in html table header
   // Object.record:: Array(Name::String, Sortable::Bool (if any))
@@ -38,14 +43,21 @@ export const moStruct = {
     okato: ["ОКАТО", true],
     name: ["Наименование"]
   },
-  
+  // prof
   pmu: {
     code_usl: ['Код услуги'],
+    ccode: ['Номер'],
     name: ['Наименование'],
     code_podr: ['Подразд.'],
     code_spec: ['Спец.']
   },
   
+  mkb: {
+    code:  [ 'Код', true ],
+    name: [ 'Описание'],
+    oms: ['ОМС'],
+    oms_ds: ['ОМС ДС']
+  },
   // tfoms
   spPodr: {
     mo_code: ["Код", true],     

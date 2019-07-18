@@ -8,8 +8,8 @@ export const vuClinic = function(vnode) {
   return {
     oninit: function(vnode) {
       // init optons data
-      if ( !Boolean(moCard.data) ) moCard.getOptions();
-      if ( !Boolean(moTalon.data) ) moTalon.getOptions();
+      //if ( !Boolean(moCard.data) ) moCard.getOptions();
+      //if ( !Boolean(moTalon.data) ) moTalon.getOptions();
     },
     view: function(vnode) {
       return m('div', {

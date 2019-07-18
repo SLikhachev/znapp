@@ -19,12 +19,22 @@ export const vuDialogForm= function(data){
 
 // clojure
 export const vuSheet = function (vnode) {
+  // model,
+  // header,
+  // name,
+  // struct,
+  // filter,
+  // href,
+  // itemForm,
+  // fetchForm
+  
  
   let {
     model, header, name, struct, filter=0, //filter int of fields to order
-    href='', itemForm
+    href='', itemForm=null, fetchForm=null
   }= vnode.attrs;
-  
+  //console.log( typeof fetchForm );
+  //console.log(href);
   const edit= e => change(e, model, 'PATCH', 'Изменить');
   const ddel= e => change(e, model, 'DELETE', 'Удалить');
   const edialog={}; 
@@ -38,28 +48,38 @@ export const vuSheet = function (vnode) {
   const dialog= edialog.add || edialog.edit || edialog.ddel;
   const sort=  e=> model.sort(e.target.getAttribute('data'));   
   //const table= {struct, edialog, href, sort};
-
+  
+  if (href) delete edialog.edit; 
+  
+  if ( fetchForm === null ) {
+    moModel.getList( model );
+    moModel.getData( model );
+  } else {
+    model.getItem(null);
+  }
+  
   return {
     
     oninit () {
-      moModel.getList( model );
-      moModel.getData( model );
     },
     view () {
       //console.log(itemForm);
-      return model.error ? [ m(".error", model.error) ] :
-        model.list ? [
-          m(vuTheader, { header: header} ),
-          filter ? m(vuFilter, {cols: filter, model: model, add: edialog.add} ) : '',
-          m(vuListTable, {struct: struct, edialog: edialog, href: href, sort: sort, model: model} ),
-          dialog ? itemForm ? // set in parent view if any
-            m(vuDialog, { header: header, word: vuForm.word },
-              m(vuForm, { model: model, name: name },
-                m(itemForm, { model: model, method: vuForm.method } )
-              )
-            ) : m('h2', 'Не определена форма редактирования объекта')
-          : '' // not editable
-        ] : m(vuLoading);
+      return [
+        header ? m(vuTheader, {header: header}) : '',
+        fetchForm ? fetchForm( model ) : '',
+        model.error ? m(".error", model.error) :
+          model.list ? [
+            filter ? m(vuFilter, {cols: filter, model: model, add: edialog.add} ) : '',
+            m(vuListTable, {struct: struct, edialog: edialog, href: href, sort: sort, model: model} ),
+            dialog ? itemForm ? // set in parent view if any
+              m(vuDialog, { header: header, word: vuForm.word },
+                m(vuForm, { model: model, name: name },
+                  m(itemForm, { model: model, method: vuForm.method } )
+                )
+              ) : '' //m('h2', 'Не определена форма редактирования объекта')
+            : '' // not editable
+          ] : m(vuLoading)
+      ];
     }
   }; //return this object
 }

@@ -54,7 +54,7 @@ export const vuTableRow= function(vnode) {
 // clojure
 export const vuPmuList = function (vnode) {
   
-  let model= vnode.attrs.model, // model Object
+  let model= vnode.attrs.model, 
     header= vnode.attrs.header, // String: page header 
     //findString= vnode.attrs.findstr, // find help string
     //findForm = vnode.attrs.findForm, // form to find
@@ -74,7 +74,7 @@ export const vuPmuList = function (vnode) {
       load = true;
     },
 
-    view: function () {
+    view() {
      
       return [
         header ? m(vuTheader, {header: header}): '',
@@ -96,8 +96,3 @@ export const vuPmuList = function (vnode) {
   }; //return this object
 }
 
-export const vuDoctor = function (vnode) {
-  vnode.attrs.itemForm= itemForm;
-  let view= vuSheet(vnode);
-  return view
-}

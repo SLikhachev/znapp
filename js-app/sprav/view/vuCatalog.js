@@ -1,9 +1,10 @@
 // src/sprav/view/vuCatalog.js
 
-import { vuLoading } from '../../apps/view/vuApp.js';
-import { moModel } from '../../apps/model/moModel.js';
-import { vuDialog } from '../../apps/view/vuDialog.js';
-import { change, vuTheader, vuFind, vuForm } from './vuSprav.js';
+//import { vuLoading } from '../../apps/view/vuApp.js';
+//import { moModel } from '../../apps/model/moModel.js';
+//import { vuDialog } from '../../apps/view/vuDialog.js';
+//import { change, vuTheader, vuFind, vuForm } from './vuSprav.js';
+import { vuSheet } from './vuSheet';
 
 const itemForm = function(vnode) {
   let item; // = vnode.attrs.item;
@@ -34,6 +35,12 @@ const itemForm = function(vnode) {
 
 // clojure
 export const vuCatalog = function(vnode) {
+  let view = vuSheet(vnode);
+  view.itemForm = itemForm;
+  return view;
+}
+
+const vuCat = function(vnode) {  
   
   let model = vnode.attrs.model,
   header = vnode.attrs.header,

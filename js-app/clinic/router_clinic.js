@@ -6,11 +6,11 @@ import { clinicApi, clinicMenu } from './clinicApi.js';
 import { vuClinic } from './view/vuClinic.js';
 
 // cards
-import { moCard } from './model/moCards.js';
+import { moCard, cardOpt } from './model/moCards.js';
 import { vuCardsList } from './view/vuCardsList.js';
 import { vuCard } from './view/vuCard.js';
 // talons
-import { moTalon } from './model/moTalons.js';
+import { moTalon, talonOpt } from './model/moTalons.js';
 import { vuTalonsList } from './view/vuTalonsList.js';
 import { vuTalon } from './view/vuTalon.js';
 
@@ -30,15 +30,7 @@ m.route(document.body, "/", {
   
   [clinicApi.card_id] : {
     onmatch: function(args) {
-      
-      moCard.clear();
-      //actionsCard.clear({}): // initial state
-      //let { crd } = args;
-      // TODO card number may be not an Int but any string
-      //if ( !isNaN(parseInt(id) ) )  moCard.getCard(args); //tionsCard.get(args); //
-      if ( !Boolean(moCard.data) ) moCard.getOptions();
-      moCard.getCard(args);
-      //console.log(args);
+      if ( cardOpt.data.size === 0 ) cardOpt.getOptions();
       return vuCard;
     },
     render : function(vnode) {
@@ -54,12 +46,8 @@ m.route(document.body, "/", {
   },
   [clinicApi.talon_id] : {
     onmatch: function(args) {
-      moTalon.clear();
-      //console.log(args);
-      //let { tal, crd } = args;
-      //if ( !isNaN(parseInt(id) ) )  moTalon.getTalon(args);
-      if ( !Boolean(moTalon.data) ) moTalon.getOptions();
-      moTalon.getTalon(args);
+      if ( talonOpt.data.size === 0 ) talonOpt.getOptions();
+      //moTalon.getTalon(args);
       return vuTalon;
     },
     render : function(vnode) {

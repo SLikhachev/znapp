@@ -1,7 +1,8 @@
 // src/sprav/view/vuDoctor.js
 
 import { fieldFrom } from '../../apps/form/foForm';
-import { vuDataSheet } from './vuDataSheet';
+import { itForm } from '../form/foItem';
+import { vuSheet } from './vuSheet';
 
 // label = [class, text], if null no label
 // input = tag = [class, type, tabindex (int), required(bool)]
@@ -44,9 +45,15 @@ const Item = {
     }
   }
 }
-const itf = function(f, d, a={}) { return fieldFrom(Item, f, d, a); };
 
-const itemForm = function(vnode){
+
+const itemForm= function(vnode){
+  let fld= ['family', 'name', 'sname', 'snils', 'code', 'spec', 'division', 'district', 'tabid'];
+  const itf = function(f, d, a={}) { return fieldFrom(Item, f, d, a); };
+  return itForm( fld, itf , vnode);
+}
+
+const _Form = function(vnode){
   let item; //= vnode.attrs.item;
  
   //ro = vnode.attrs.method === 'DELETE' ? true : false;
@@ -66,7 +73,7 @@ const itemForm = function(vnode){
 }
 // clojure
 export const vuDoctor = function (vnode) {
-  let view = vuDataSheet(vnode);
-  view.itemForm = itemForm;
-  return view;
+  vnode.attrs.itemForm= itemForm;
+  let view= vuSheet(vnode);
+  return view
 }

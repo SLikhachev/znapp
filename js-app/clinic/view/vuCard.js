@@ -1,25 +1,19 @@
 // src/clinic/view/vuCard.js
 
 import { vuLoading } from '../../apps/view/vuApp.js';
-import { moCard } from '../model/moCards.js';
+import { moCard, cardOpt } from '../model/moCards.js';
 import { clinicApi } from '../clinicApi.js';
 import { tabsView, forTabs } from './vuTabs.js';
 import { cof } from '../form/foForm.js';
 
 const crdMain = function(vnode) {
-  //console.log(vnode.attrs);
+
+  let { model, method }= vnode.attrs;
+  const data= cardOpt.data;
+  const card = model.card ? Object.assign({}, model.card[0]) : {};
   
-  //const model = vnode.attrs.model;
-  //const data = model.data;
-  //const card = model.list ? model.list[0] : {};
-  //const method = vnode.attrs.method;
-  let model, data, card, method;
-  let attrs = vnode.attrs;
-  
-  //console.log(card);
-  //
-  
-  const cardSave = function(e) {
+  const cardSave= function(e) {
+    e.preventDefault();
     // form send with forTabs onCreate function
     //console.log(card);
     // check dul type
@@ -29,14 +23,15 @@ const crdMain = function(vnode) {
     if (s=== 0 && n=== 0) {
       card.dul_type= null;
     }
-    return moCard.setCard(card);
+    return moCard.saveCard(e, card, model, method);
     //return true;
   };
-
+  
+  // gender
   const gnd = function(c){
     return ['м', 'ж'].indexOf( c.gender.toLowerCase() );
   };
-
+  // polis num digits
   const num_digits = function(card) {
     let s= card.polis_ser, n= card.polis_num;
     s= s ? s.toString().length: 0;
@@ -60,11 +55,13 @@ const crdMain = function(vnode) {
       return m('span.red', "Тип полиса неизвестен");
     }
   };
+  // set smo
   const set_smo = function(e) {
      let smo = parseInt(e.target.value);
      if ( isNaN(smo) ) card.smo = 250000; //this value subtracts from code in input
      else card.smo = smo + 250000;
   };
+  // smo OKATO
   const set_smo_okato = function(e) {
     if ( Boolean(card.smo) ) {
       let smo = Array.from( data.get('smo_local') ).find( item => item.code == card.smo );
@@ -95,20 +92,20 @@ const crdMain = function(vnode) {
   
   return {
     oninit() {
-      model = attrs.model;
-      data = model.data;
+      //model = attrs.model;
+      //data = model.data;
       //console.log(model.data);
       //console.log(model.map_data);
       // will be locale object yet
-      card = model.card ? Object.assign({}, model.card[0]) : {};
-      method = attrs.method;
+      //card = model.card ? Object.assign({}, model.card[0]) : {};
+      //method = attrs.method;
       //console.log(card);
     },
 
     view: function () {
       //console.log(method);
       return m('form.tcard.pure-form.pure-form-aligned',
-        {style: "font-size: 1.2em;", id: "card", oncreate: forTabs, method: method},
+        {style: "font-size: 1.2em;", id: "card", oncreate: forTabs, onsubmit: cardSave},
         [m('fieldset', [m('legend', "Карта пациента"),
           m(".pure-g", [
             m(".pure-u-7-24", [
@@ -201,7 +198,8 @@ const crdMain = function(vnode) {
 // ============================
           m(".pure-g", [
             m(".pure-u-10-24 ", [
-              m('span#card_message', model.save ? model.save.ok ? model.save.msg : m('span.red', model.save.msg) : '')
+              m('span#card_message',
+                model.save ? model.save.ok ? model.save.msg : m('span.red', model.save.msg) : '')
             ]),
             m(".pure-u-14-24 ", [
               m('button.pure-button.pure-button-primary[type="submit"]',
@@ -224,8 +222,9 @@ const crdMain = function(vnode) {
   }; // return
 }; //func
 const crdViz = function(vnode) {
+
   let crd = vnode.attrs.model.card[0].crd_num;
-  console.log(crd);
+  //console.log(crd);
   let tal = vnode.attrs.model.talons ? vnode.attrs.model.talons: [];
   // tal_num int, open_date date, close_date date, purp smallint,
   //doc_spec int , doc_code int, family varchar,  ds1 varchar
@@ -278,7 +277,7 @@ const crdViz = function(vnode) {
     } // view
   }; // return
 };
-const crdOpt = function(vnode) {
+const crdExt = function(vnode) {
   return {
     view(vnode) {
        return m('h2', "Дополнительно");
@@ -302,36 +301,29 @@ const crdDel = function (vnode) {
 export const vuCard = function(vnode) {
   //console.log(vnode.attrs);
   
-  let model; //, card;
   let tabs = ['Карта', 'Визиты', 'Дополнительно', 'Прикрепить', 'Удалить'];
-  let conts = [crdMain, crdViz, crdOpt, crdAtt, crdDel];
-  let crd = parseInt(vnode.attrs.crd);
-
-  return {  
-  oninit () {
-    model = moCard.getModel();
-    //card = model.list ? model.list[0] : null;
-    //console.log(model);
-  },
-  onbeforeupdate() {
-    //console.log('update');
-    model = moCard.getModel();
-  },
+  let conts = [crdMain, crdViz, crdExt, crdAtt, crdDel];
+  const crd = parseInt(vnode.attrs.crd);
+  const model= moCard.getModel();
+  moCard.getCard( model, crd );
+  const method = isNaN(crd) || crd === 0 ? "POST": "PATCH";
   
-  view () {
-/*
-    if ( id == 'add' ) {
-      //console.log(id);
-      return model.data ?
-        m(tabsView, {model: model, tabs: tabs, conts: conts, method: 'POST'})
-      : m(vuLoading);
-    }
-*/
-    let method = isNaN(crd) || crd === 0 ? "POST": "PATCH";
-    return model.error ? [ m(".error", model.error) ] :
-      model.card && model.data.size > 0 ?
-        m(tabsView, {model: model, tabs: tabs, conts: conts, method: method})
-      : m(vuLoading);
-  } 
-}
+  return {  
+    oninit () {
+      //model = moCard.getModel();
+      //card = model.list ? model.list[0] : null;
+      //console.log(model);
+    },
+    onbeforeupdate() {
+      //console.log('update');
+      //model = moCard.getModel();
+    },
+  
+    view () {
+      return model.error ? [ m(".error", model.error) ] :
+        cardOpt.data.size > 0 && model.card ? 
+          m(tabsView, {model: model, tabs: tabs, conts: conts, method: method})
+        : m(vuLoading);
+    } 
+  };
 };

@@ -79,6 +79,7 @@ export const tabsView = function(vnode) {
 
 export const forTabs = function(vnode) {
   //vnode.dom.reset();
+  /*
   let id = vnode.dom.getAttribute('id');
   if ( id == 'card') {
     vnode.dom.addEventListener('submit', moCard.save);
@@ -89,6 +90,7 @@ export const forTabs = function(vnode) {
     //console.log(id);
   }
   //console.log(id);
+  */
   let inputs = vnode.dom.querySelectorAll("input,select,button");
   for (let i = 0 ; i < inputs.length; i++) {
     inputs[i].addEventListener("keypress", (e) => {

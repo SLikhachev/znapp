@@ -2,7 +2,7 @@
 // src/sprav/view/dsTNM.js
 
 import { moModel } from '../../apps/model/moModel.js';
-import { restApi } from '../spravApi.js';
+import { restSprav } from '../spravApi.js';
 import { moStruct } from '../model/moStruct.js';
 
 const dsFind = function (vnode) {
@@ -28,7 +28,7 @@ const dsFind = function (vnode) {
 
     oninit(vnode) {
       vnode.attrs.model.method='POST';
-      vnode.attrs.model.url =restApi.onko_n6.url;
+      vnode.attrs.model.url =restSprav.onko_n6.url;
     },
 
     view(vnode) {

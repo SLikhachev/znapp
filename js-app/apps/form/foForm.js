@@ -10,7 +10,7 @@ export const fieldFrom = function (fromObj, field, data, to_attrs={}) {
  // this is standard onblur function
   const fblur = e => data[field] = e.target.value;
   const fval = v => v ? v : '';
-
+  
   let { label,  input } = fromObj[field];
   let { tag, attrs={} } = input;
   let t = tag[2] ? `[tabindex=${tag[2]}]`: '';
@@ -18,9 +18,11 @@ export const fieldFrom = function (fromObj, field, data, to_attrs={}) {
   let tg = `input${tag[0]}[name=${field}][type=${tag[1]}]${t}${r}`;
 
   attrs.value = attrs.fval === undefined ? fval( data[field] ) : attrs.fval(data[field]);
+  //attrs.value= data[field] ? data[field] : '';
   attrs.onblur = attrs.fblur === undefined ? fblur: null;
+  //attrs
   attrs = Object.assign (attrs, to_attrs);
-
+  //console.log(attrs);
   let lt;
   if (label.length > 0 ) {
     lt = `label${label[0]}[for=${field}]`;

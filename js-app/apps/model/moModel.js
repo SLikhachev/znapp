@@ -6,24 +6,37 @@ import { vuDialog } from '../view/vuDialog.js';
 //const pg_rest = window.localStorage.getItem('pg_rest'); //postgest schemaRest;
 //console.log(schema);
 
+export const errMsg= function(error){
+  console.log(error);
+  let e = JSON.parse(error.message);
+  let m= e.details ? e.details : e.message ? e.message: error.message;
+  console.log(m);
+  return m;
+}
+
 export const moModel = {
   
   // :: String -> Array -> String -> Object
   // ret models object (POJO)
-  getModel( {url=null, method="GET", options=null, sort_by=null, editable=null } = {} ) {
-    // url - string of model's REST url
+  getModel(
+    {url=null, method="GET", options=null, order_by='id', editable=null, change=null, key='id' } = {}
+  ) {
+    // url - string of model's REST API url
     // method - string of model's REST method
     // options - array of strings of option tables names
     // need for form data select/option if any
-    // field - string "sort by" with SELECT
-    // editable = bool defines is model could changed
+    // order_by - string "order by" with initially SELECT 
+    // editable - array defines is model could changed
+    // change - array editable fields names
+    // key - primary key for sql model table dafault id
     let model = {
       url: url,
       method: method,
-      field: sort_by,
+      order_by: order_by,
       options: options,
-      //editable: editable,
-      
+      editable: editable,
+      change: change,
+      key: key,
       list: null, // main data list (showing in table page)
       data: new Map(), // every idx corresponds with index of options array
       item: null,
@@ -32,17 +45,13 @@ export const moModel = {
       sort: null, // for list
       save: null,
     };  
-    if ( Boolean( editable ) && editable instanceof Array) {
-      for (let [idx, val] of ['add', 'edit', 'del'].entries() ) {
-        if (Boolean( editable[idx] )) model[val] = true;
-      }
-    }
     model.sort= field => moModel.sort(model, field);
     model.getItem= id => {
       model.item= {};
       if (id === null) return false; 
+      let key= model.key;
       for ( let it of model.list ) {
-        if (it.id == id) {
+        if (it[key] == id) {
           model.item= Object.assign({}, it);
           break;
         }
@@ -57,26 +66,28 @@ export const moModel = {
   // model = {field, url, method,  }
   getList (model) {
     model.list= null;
+    let method= model.method ? model.method : 'GET';
     // filed - sort by with SELECT, default 'id' field
     //let schema = window.localStorage.getItem('pg_rest');
     let pg_rest = window.localStorage.getItem('pg_rest');
-    let id = model.field ? model.field : 'id',
+    let id = model.order_by ? model.order_by : 'id',
     sign= model.url.includes('?') ? '&': '?';
     order = `${sign}order=${id}.asc`;
     let url = pg_rest + model.url + order;
     console.log(url);
     return m.request({
-      method: model.method,
+      method: method,
       url: url
     }).then(function(res) {
-      model.list = res; // list of objects
-      model.order = true;
+      if ( ! Boolean(res) ) return false;
+      if (res.length && res.length > 0) {
+        model.list = Array.from( res ); // list of objects
+        model.order = true;
+      } else
+        model.list= []; 
       return true;
-    }).catch(function(e) {
-      //console.log(e);
-      let err = JSON.parse(e.message);
-      model.error = err.message ? err.message : e.message;
-      console.log( err );
+    }).catch(function(err) { 
+      model.error = errMsg(err);
     });
   },
   // :: Object -> undef
@@ -85,9 +96,12 @@ export const moModel = {
     if ( model.options === null ) return false;
     //let schema = window.localStorage.getItem('pg_rest');
     let pg_rest = window.localStorage.getItem('pg_rest');
-    let data = [],
-    order = '?order=id.asc';
-    model.options.forEach ( (t) => {
+    let data = [];
+    //morder= model.order ? model.order : 'id';
+    //order= `?order=${morder}.asc`;
+    model.options.forEach ( t => {
+      let morder= t.order_by ? t.order_by : 'id';
+      let order= `?order=${morder}.asc`;
       let r = m.request({
         method: t.method ? t.method : "GET" ,
         url: pg_rest + t.url + order
@@ -97,16 +111,16 @@ export const moModel = {
     // order should preserved
     return Promise.all(data).then( (lists) => {
       model.data.clear(); // = new Map();
+      
       for ( let el of model.options.entries() ) {
+        if ( ! Boolean( lists[ el[0] ] ) ) continue;
         model.data.set( el[1].url, lists[ el[0] ]);
       }
       //window.localStorage.setItem(model.opt_name, model.data);
       //model.data = _.zipObject( model.options, lists);
       //console.log( model.list );
-    }).catch(function(e) {
-      //model.error = e.message;
-      console.log(e.message);
-      alert(e.message);
+    }).catch(function(err) {
+      model.error = errMsg(err);
     });
     
   },
@@ -123,14 +137,16 @@ export const moModel = {
       method: _method,
       data: data,
       
-    }).then(function(res) {
-      model.list = res; // list of objects
-      model.order = true;
-    }).catch(function(e) {
-      console.log(e);
-      let err = JSON.parse(e.message);
-      model.error = err.message ? err.message : e.message;
-      console.log( err );
+    }).then( res=> {
+      if ( ! Boolean(res) ) return false;
+      if (res.length && res.length > 0) {
+        model.list= Array.from( res ); // list of objects
+        model.order = true;
+      } else
+        model.list= [];
+        return true;
+    }).catch( err=> {
+      model.error= errMsg(err);
     });
   },
 
@@ -141,7 +157,7 @@ export const moModel = {
       let r = m.request({
         method: model.method[idx],
         url: pg_rest + url,
-        data: data
+        data: data[idx]
       });
       reqs.push(r);
     }
@@ -151,14 +167,18 @@ export const moModel = {
       //model.map_data.clear(); // = new Map();
       for ( let [idx, key] of model.map_keys.entries() ) {
         //model.map_data.set( name, lists[ idx ]);
-        model[key] = lists[idx];
+        if ( ! Boolean( lists[idx] ) ) continue;
+        if (lists[idx].length && lists[idx].length > 0) {
+          //model[key]= lists[ idx ];
+          model[key] = Array.from( lists[idx] );
+          //console.log(lists[idx]);
+        } else
+          model[key]= [];
       } 
       return true;
       return Promise.resolve(true);
-    }).catch(function (e) {
-      console.log(e);
-      let err = JSON.parse(e.message);
-      model.error = err.message ? err.message : e.message;
+    }).catch(function (err) {
+      model.error = errMsg(err);
     });
   },
 
@@ -167,13 +187,14 @@ export const moModel = {
     let order = model.order ? 'desc' : 'asc';
     let field = id ? id : 'id'; 
     model.list = _.orderBy(model.list, [ field ], [ order ]);
+    //console.log(model.list);
     model.order = !model.order;
   },
   
   /** getFormData
     return item's data object 
   */
-  /*
+  
   getFormData(form, isSetOnly=false) {
     // form - dom form
     // isSetOnly - set out only
@@ -186,39 +207,49 @@ export const moModel = {
     } );
     return data;
   },
-  */
+  
   /** formSubmit
     return false    
   */
-  dialogFormSubmit(event, model, method) {
+  
+  formSubmit(event, model, method) {
+    //console.log(model);
     event.target.parentNode.classList.add('disable');
     let pg_rest = window.localStorage.getItem('pg_rest');
     let url = pg_rest + model.url;
-    if ( method == 'DELETE' || method == 'PATCH' )
-      url += '?' + 'id=eq.' + model.item.id;
+    let key= model.key ? model.key : 'id';
     let data= Object.assign({}, model.item);
-    
-    for ( let k of Object.keys(data) ){
-      if ( data[k] === '' ) data[k] = null;
+    let sign= model.url.includes('?') ? '&': '?';
+    if ( method == 'DELETE' || method == 'PATCH' ) {
+      url += `${sign}${key}=eq.${data[key]}`; 
+      if (data[key]) delete data[key];
     }
-    
+    for ( let k of Object.keys(data) ){
+      if (model.change && model.change.indexOf(k) < 0) {
+        delete data[k];
+        continue;
+      }
+      if ( data[k] === '' ) delete data[k];  //data[k] = null;
+    }
+    model.save = { err: false, msg: '' };
     return m.request({
       url: url,
       method: method,
       data: data,
-      async: false
+      async: false,
+      headers: model.headers
     }).then( res => {
-      model.save = { err: false, msg: res };
       event.target.parentNode.classList.remove('disable');
-      moModel.getList( model );
-      vuDialog.close();
+      if (model.list) moModel.getList(model);
+      if ( vuDialog.dialog && vuDialog.dialog.open) vuDialog.close();
+      return res; 
     }).catch( err => {
-      let e = JSON.parse(err.message);
-      model.save = { err: true, msg: e.message ? e.message : err.message };
+      let msg= errMsg(err);
+      model.save = { err: true, msg: msg };
       event.target.parentNode.classList.remove('disable');
-      //console.log(model.save);
+      return Promise.reject(msg);
     });
-    
+    //m.redraw();
     return false;
   }
 /*
