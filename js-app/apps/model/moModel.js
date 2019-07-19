@@ -132,11 +132,12 @@ export const moModel = {
     let pg_rest = window.localStorage.getItem('pg_rest');
     let _url = url ? url : model.url;
     let _method = method ? method : model.method;
+    let headers= model.headers ? model.headers : null;
     return m.request({
       url: pg_rest + _url,
       method: _method,
       data: data,
-      
+      headers: headers
     }).then( res=> {
       if ( ! Boolean(res) ) return false;
       if (res.length && res.length > 0) {
@@ -145,9 +146,11 @@ export const moModel = {
         return true;
       } else
         model.list= [];
-        return true;
+        return false;
     }).catch( err=> {
-      model.error= errMsg(err);
+      let msg=  errMsg(err);
+      model.error= msg;
+      return Promise.reject(msg);
     });
   },
 

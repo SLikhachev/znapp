@@ -433,11 +433,12 @@ const moModel = {
     let pg_rest = window.localStorage.getItem('pg_rest');
     let _url = url ? url : model.url;
     let _method = method ? method : model.method;
+    let headers= model.headers ? model.headers : null;
     return m.request({
       url: pg_rest + _url,
       method: _method,
       data: data,
-      
+      headers: headers
     }).then( res=> {
       if ( ! Boolean(res) ) return false;
       if (res.length && res.length > 0) {
@@ -446,9 +447,11 @@ const moModel = {
         return true;
       } else
         model.list= [];
-        return true;
+        return false;
     }).catch( err=> {
-      model.error= errMsg(err);
+      let msg=  errMsg(err);
+      model.error= msg;
+      return Promise.reject(msg);
     });
   },
 
@@ -2087,6 +2090,8 @@ const talNap = function(vnode) {
 };
 
 
+
+
 const pmuForm = function (vnode) {
   
   let { talon, pmu }= vnode.attrs.model;
@@ -2138,9 +2143,43 @@ const pmuForm = function (vnode) {
     else
       q= q[0];
     
+    let errors={};
     if ( q == 'grup' ) {
-      return false;
+      _pmu.url= restSprav.grc.url;
+      _pmu.method= 'POST';
+      return moModel.getViewRpc(_pmu, { grup: _pmu[q] } ).then(t=> {
+        if (_pmu.list.length === 0) return Promise.reject('Нет такой группы');
+       
+        let items= [];
+        for ( let it of _pmu.list.values() ){
+          let item= preparePara(it);
+          if ( item.error ) {
+            errors[item.error]= errors[item.error] ? errors[item.error] + 1 :  1; 
+            continue;
+          }
+          delete item.error;
+          items.push(item);
+        }        if (items.length === 0) return Promise.reject('Плохая группа ');
+        // bulk insert
+        md.headers= {Prefer: 'return=representation'};
+        return moModel.getViewRpc(md, items);
+      }).then(t=> {
+        if ( ! Boolean(md.list) ) return Promise.reject('Empty response after PMU GRUP POST ');
+        //let list= Arroy.from(md.list);
+        for (let [idx, it] of md.list.entries() ){
+          it.name= _pmu.list[idx].name;
+          it.ccode= _pmu.list[idx].ccode;
+          console.log(it);
+          pmu.push( it );
+        }
+      }).catch( err=> {
+         _pmu.error= err;
+         Object.keys(errors).map( e=> {
+           _pmu.error= _pmu.error + ` ${e}: ${errors[e]}`; 
+         });
+      });
     }
+    
     _pmu.url= `${restSprav.pmu.url}?${q}=eq.${_pmu[q]}`;
     
     return moModel.getList( _pmu ).then( t=>{
@@ -2164,7 +2203,7 @@ const pmuForm = function (vnode) {
         //console.log(pmu);
         //return true;
       } else
-        return Promise.reject('Empty response after PMU POST ');
+        return Promise.reject('Empty response after PMU ITEM POST ');
     }).catch( err => {
     // process error
       _pmu.error= err;
