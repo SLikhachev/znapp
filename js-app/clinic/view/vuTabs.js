@@ -66,8 +66,10 @@ export const tabsView = function(vnode) {
             name);
         } ),
         tab_contents.map( (cont) => {
+          //console.log(cont);
           return m('.tab-content',
             //{ oncreate: (vnode => tabs_cont.push(vnode.dom)) },
+            
             m(cont, {model: vnode.attrs.model, method: vnode.attrs.method}) );
         })
       ]);
@@ -77,14 +79,22 @@ export const tabsView = function(vnode) {
 
 export const forTabs = function(vnode) {
   //vnode.dom.reset();
-  let submit = vnode.dom.getAttribute('id');
-  if ( submit == 'card') vnode.dom.addEventListener('submit', moCard.save);
-  else vnode.dom.addEventListener('submit', moTalon.save);
-  
+  /*
+  let id = vnode.dom.getAttribute('id');
+  if ( id == 'card') {
+    vnode.dom.addEventListener('submit', moCard.save);
+    //console.log(id);
+  }
+  else {
+    vnode.dom.addEventListener('submit', moTalon.save);
+    //console.log(id);
+  }
+  //console.log(id);
+  */
   let inputs = vnode.dom.querySelectorAll("input,select,button");
   for (let i = 0 ; i < inputs.length; i++) {
     inputs[i].addEventListener("keypress", (e) => {
-      if (e.which == 13 || e.keyCode == 13) {
+      if (e.which === 13 || e.keyCode === 13) {
         e.preventDefault();
         let tabindex = parseInt(e.target.getAttribute('tabindex')) + 1;
         let nextInput = vnode.dom.querySelectorAll(`[tabindex="${tabindex}"]`);

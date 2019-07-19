@@ -101,7 +101,10 @@ const vuMain = {
                 );
               })
             ]),
-            m('a.pure-menu-link.right', {href: '/logout/?next=/'}, "Выход")
+            m('ul.pure-menu-list.right', [
+              m("li.pure-menu-item", m('a.pure-menu-link',
+              {href: '/logout/?next=/'}, "Выход") )
+            ])
           ]),
           m('.application-menu.pure-menu.pure-menu-horizontal', [
             m('a.pure-menu-heading', { href: "" }, m('i.fa.fa-bars') ), //buter
@@ -182,7 +185,7 @@ const vuView = function(appMenu, view) {
 // src/report/reportApi.js
 
 const pgRest = {
-    volum: 'p146_report?insurer=eq.999&order=this_month.asc',
+    volum: 'p146_report?insurer=eq.999&this_year=eq.2019&order=this_month.asc',
 };
 
 const taskApi = {
@@ -334,9 +337,11 @@ const moStruct = function() {
     p146_report: {
       this_month: ["Месяц", get_month],    
       pol_ambul_visits: ["Амбул визиты"],
+      pol_prof_visits: ["Проф визиты"],
       pol_stac_visits: ["Стац визиты"],
       pol_stom_uet: ["Стом УЕТ"],
       pol_ambul_persons: ["Амбул персон"],
+      pol_prof_persons: ["Проф персон"],
       pol_stac_persons: ["Стац персон"],
       pol_stom_persons: ["Стом персон"],
       travma_ambul_visits: ["Травма визиты"],

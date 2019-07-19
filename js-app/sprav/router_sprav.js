@@ -6,8 +6,9 @@ import { spravApi, spravMenu } from './spravApi.js';
 import { vuSprav } from './view/vuSprav.js';
 // routers
 import { roLocal } from './router/roLocal.js';
-import { roTfoms } from './router/roTfoms.js';
-import { roOnko } from './router/roOnko.js';
+import { roProf } from './router/roProf.js';
+import { roCom } from './router/roCom.js';
+//import { roOnko } from './router/roOnko.js';
 
 const spravRouter = { [spravApi.root]: {
     render: function() {
@@ -15,9 +16,9 @@ const spravRouter = { [spravApi.root]: {
           m(vuSprav, { text: "Медстатистика: Справочники" }));
     }
   }
-}
+};
 
-Object.assign(spravRouter, roLocal, roTfoms, roOnko);
+Object.assign(spravRouter, roLocal, roProf, roCom); //roOnko);
 
 //m.route(document.getElementById('content'), "/", {})
 m.route(document.body, "/", spravRouter);

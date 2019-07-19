@@ -1,11 +1,20 @@
 
 // src/clinic/view/vuClinic.js
 
-const vuClinic = {
-  view: function(vnode) {
-    return m('div', {
-        style: "margin: 0 auto; padding-top: 5em; width: 50%;"
-      },
+import { moCard } from '../model/moCards.js';
+import { moTalon } from '../model/moTalons.js';
+
+export const vuClinic = function(vnode) {
+  return {
+    oninit: function(vnode) {
+      // init optons data
+      //if ( !Boolean(moCard.data) ) moCard.getOptions();
+      //if ( !Boolean(moTalon.data) ) moTalon.getOptions();
+    },
+    view: function(vnode) {
+      return m('div', {
+          style: "margin: 0 auto; padding-top: 5em; width: 50%;"
+        },
       /*
       m(".pure-g", [
         m(".pure-u-1-6",
@@ -18,9 +27,8 @@ const vuClinic = {
         )
       ]),
       */
-      m('h1.blue', {style: "font-size: 3em;"}, vnode.attrs.text)
-    );
+        m('h1.blue', {style: "font-size: 3em;"}, vnode.attrs.text)
+      );
+    }
   }
 }
-
-export { vuClinic }

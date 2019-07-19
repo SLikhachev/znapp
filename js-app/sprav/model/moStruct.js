@@ -9,13 +9,18 @@ const onko_ = function() {
     kod: ["Код", true],
     name: ["Наименование"]
   };
+};
+
+export const idName= {
+  id: ["Код", true],     
+  name: ["Описаение", true],
 }
 
-const moStruct = {
+export const moStruct = {
   // every DBtable has id column is not showed in html table header
   // Object.record:: Array(Name::String, Sortable::Bool (if any))
   // record is String - name of table column -- property of DB record object
-  // every html table has last column to delete record purpose
+  // every html table has last column to delete record purpose if it possible
   
   // local 
   doctor: {
@@ -38,7 +43,21 @@ const moStruct = {
     okato: ["ОКАТО", true],
     name: ["Наименование"]
   },
+  // prof
+  pmu: {
+    code_usl: ['Код услуги'],
+    ccode: ['Номер'],
+    name: ['Наименование'],
+    code_podr: ['Подразд.'],
+    code_spec: ['Спец.']
+  },
   
+  mkb: {
+    code:  [ 'Код', true ],
+    name: [ 'Описание'],
+    oms: ['ОМС'],
+    oms_ds: ['ОМС ДС']
+  },
   // tfoms
   spPodr: {
     mo_code: ["Код", true],     
@@ -114,4 +133,3 @@ const moStruct = {
   
 };
 
-export { moStruct };

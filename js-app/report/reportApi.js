@@ -2,7 +2,7 @@
 // src/report/reportApi.js
 
 const pgRest = {
-    volum: 'p146_report?insurer=eq.999&order=this_month.asc',
+    volum: 'p146_report?insurer=eq.999&this_year=eq.2019&order=this_month.asc',
 }
 
 const taskApi = {

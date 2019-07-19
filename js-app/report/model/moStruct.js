@@ -30,9 +30,11 @@ const moStruct = function() {
     p146_report: {
       this_month: ["Месяц", get_month],    
       pol_ambul_visits: ["Амбул визиты"],
+      pol_prof_visits: ["Проф визиты"],
       pol_stac_visits: ["Стац визиты"],
       pol_stom_uet: ["Стом УЕТ"],
       pol_ambul_persons: ["Амбул персон"],
+      pol_prof_persons: ["Проф персон"],
       pol_stac_persons: ["Стац персон"],
       pol_stom_persons: ["Стом персон"],
       travma_ambul_visits: ["Травма визиты"],
