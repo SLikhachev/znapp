@@ -2,13 +2,13 @@
 
 // This object define how we shall render the particular table
 
-const moStruct = function() {
+export const moStruct = function() {
   // every DBtable has id column is not showed in html table header
   // Object.record:: Array(Name::String, Sortable::Bool (if any))
   // record is String - name of table column -- property of DB record object
   // every html table has last column to delete record purpose
 
-  var get_month = function (month) {
+  const get_month = function (month) {
     return [
       "Январь",
       "Февраль",
@@ -40,5 +40,3 @@ const moStruct = function() {
     },
   };
 };
-
-export { moStruct };

@@ -7,20 +7,19 @@ import { moStruct } from '../model/moStruct.js';
 //reestr
 import { reestrApi, reestrMenu } from '../reestrApi.js';
 // import
-import { vuRdbf } from '../view/vuRdbf.js';
-//import { vuVolum } from '../view/vuRdbf.js';
+import { vuReestr } from '../view/vuReestr.js';
 
-export const roImport = {
-  [reestrApi._import]: {
+export const roReestr = {
+  [reestrApi.reestr]: {
     render: function() {
-      return vuView(reestrMenu, m(vuApp, { text: "Импорт файлов" } ) );
+      return vuView(reestrMenu, m(vuApp, { text: "Пакеты ФОМС" } ) );
     }
   },
-  [reestrApi.dbf_imp]: {
+  [reestrApi.resstr_xml]: {
     render: function() {
-      let view = m(vuRdbf, {
-        header: "Импорт реестов DBF",
-        model: moModel.getModel()
+      let view = m(vuReestr, {
+        header: "Формируем XML пакет для ФОМС",
+       //model: moModel.getModel()
         
       });
       return vuView(reestrMenu, view);
