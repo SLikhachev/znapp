@@ -26,7 +26,7 @@ const Form = function(vnode) {
 
   const get_href = function(vnode, model) {
     return task_rest + vnode.state.task_get_url + model.file;
-  }
+  };
   
   return {
   
@@ -36,7 +36,7 @@ const Form = function(vnode) {
     vnode.state.month = () => {
       let d = new Date(), y = d.getFullYear(), m = d.getMonth() + 1;
         return `${y.toString()}-${m.toString()}`;
-    }
+    };
   },
   
   view(vnode) {

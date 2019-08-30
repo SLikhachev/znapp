@@ -38,5 +38,14 @@ export const moStruct = function() {
       travma_ambul_visits: ["Травма визиты"],
       travma_ambul_persons: ["Травма персон"],
     },
+    vmx_last: {
+      tal_num: ['Талон'],
+      crd_num: ['Карта'],
+      fam: ['Фамилия'],
+      open_date: ['Открыт'],
+      close_date: ['Закрыт'],
+      error: ['Номер ошибки'],
+      cmt: ['Текст ошибки']
+    }
   };
 };

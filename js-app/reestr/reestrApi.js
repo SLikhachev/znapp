@@ -2,46 +2,73 @@
 // src/reestr/reestrApi.js
 
 export const taskReestr = {
-    
-    dbf: {
-        post_url: "/reestr/import/reestr", //POST date, upload file
+    // POST request for calculat, GET for download files
+    impo_dbf: {
+        post_url: "/reestr/import/dbf", //POST date, upload file
     },
-    invoice: {},
+    pack: { post_url: "/reestr/xml/pack" },
+    vmx: {
+      post_url: "/reestr/xml/vmx",
+      get_url: "/utils/file/reestr/vmx/", //GET report file  
+    },
+    invoice: {
+      post_url: "/reestr/inv/impex",
+      get_url: "/utils/file/reestr/inv/" //GET reestr file  
+    },
 
 }
+
+export const restReestr = {
+    vmx: { url:"vmx_errors", params: { limit: 50 } }
+}
+   
 
 export const reestrApi = {
     root: "/",
     
-    reestr: "/reestr",
-    reestr_xml: "/reestr/xml",
+    pack: "/pack",
+    pack_xml: "/pack/xml",
+    
+    vmxl: "/vmxl",
+    vmxl_imp: "/vmxl/imp",
+    vmxl_last: "/vmxl/last",
     
     invoice: "/invoice",
-    invoice_exp: "/invoice/exp",
+    inv_impex: "/invoice/impex",
+    inv_calc: "/invoice/calc",
     
-    _import: "/import",
-    dbf_imp: "/import/dbf",
+    impo: "/impo",
+    impo_dbf: "/impo/dbf",
 
 };
 
 export const reestrMenu = { subAppMenu: {
   
-  reestr: {
-    nref: [`#!${reestrApi.reestr}`, "Пакеты"],
+  pack: {
+    nref: [`#!${reestrApi.pack}`, "Пакеты"],
     items: [
-      [`#!${reestrApi.reestr_xml}`, "XML для ФОМС"],
+      [`#!${reestrApi.pack_xml}`, "Сформировать"],
     ]
   },
+  vmxl: {
+    nref: [`#!${reestrApi.vmxl}`, "Ошибки"],
+    items: [
+      [`#!${reestrApi.vmxl_imp}`, "Импорт ошибок"],
+      [`#!${reestrApi.vmxl_last}`, "Показать последние"],
+    ]
+  },
+  
   invoice: {
     nref: [`#!${reestrApi.invoice}`, "Счета"],
     items: [
-      [`#!${reestrApi.invoice_exp}`, "XML в XLSX"],
+      [`#!${reestrApi.inv_impex}`, "Реестр в СМО"],
+      [`#!${reestrApi.inv_calc}`, "Рассчеты"],
     ]
   },
-  _import: {
-    nref: [`#!${reestrApi._import}`, "Импорт"],
+  impo: {
+    nref: [`#!${reestrApi.impo}`, "Импорт"],
     items: [
-      [`#!${reestrApi.dbf_imp}`, "Файлы реестров (DBF)"],
+      [`#!${reestrApi.impo_dbf}`, "Файлы реестров (DBF)"],
     ]
   }
 }

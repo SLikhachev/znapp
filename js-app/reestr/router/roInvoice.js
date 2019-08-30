@@ -3,22 +3,33 @@
 // common
 import { vuApp, vuView } from '../../apps/view/vuApp.js';
 import { moModel } from '../model/moModel.js';
-import { moStruct } from '../model/moStruct.js';
+//import { moStruct } from '../model/moStruct.js';
 //reestr
-import { reestrApi, reestrMenu } from '../reestrApi.js';
+import { taskReestr, reestrApi, reestrMenu } from '../reestrApi.js';
 // import
-import { vuInvoce } from '../view/vuInvoice.js';
+import { vuInvimp } from '../view/vuInvimp.js';
+import { vuInvcalc } from '../view/vuInvcalc.js';
 
-export const roReestr = {
+export const roInvoice = {
   [reestrApi.invoice]: {
     render: function() {
       return vuView(reestrMenu, m(vuApp, { text: "Счета и реестры для СМО и ФОМС" } ) );
     }
   },
-  [reestrApi.invoice_exp]: {
+  [reestrApi.inv_impex]: {
     render: function() {
-      let view = m(vuInvoice, {
-        header: "Формируем XLSX файл реестра пролеченных из XML счета",
+      let view = m(vuInvimp, {
+        header: "Реестр в СМО из ZIP файла счета БАРС",
+        model: moModel.getModel( taskReestr.invoice.post_url )
+        
+      });
+      return vuView(reestrMenu, view);
+    }
+  },
+  [reestrApi.inv_calc]: {
+    render: function() {
+      let view = m(vuInvcalc, {
+        header: "Собственные рассчеты",
        //model: moModel.getModel()
         
       });

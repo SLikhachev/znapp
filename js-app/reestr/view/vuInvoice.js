@@ -1,8 +1,8 @@
 // src/reestr/view/vuRdbf.js
 
 import { vuTheader } from '../../apps/view/vuApp.js';
-import { taskReestr } from '../reestrApi.js';
-import { task_rest, moModel } from '../model/moModel.js';
+//import { taskReestr } from '../reestrApi.js';
+//import { task_rest, moModel } from '../model/moModel.js';
 
 const fileForm = function(vnode) {
   
@@ -119,7 +119,7 @@ const fileForm = function(vnode) {
 
 
 // clojure
-const vuRdbf = function (vnode) {
+export const vuInvoice = function (vnode) {
     
   return {
   /*  
@@ -132,16 +132,14 @@ const vuRdbf = function (vnode) {
   onupdate() {
   },
   */
-  view (vnode) {
+  view () {
     
     return [
         m(vuTheader, { header: vnode.attrs.header } ),
-        m(fileForm, { model: vnode.attrs.model } )
+        //m(fileForm, { model: vnode.attrs.model } )
     ];
   }    
         
   }; //return this object
 }
-
-export { vuRdbf };
 

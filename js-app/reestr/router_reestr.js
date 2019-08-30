@@ -5,6 +5,7 @@ import { vuApp, vuView } from '../apps/view/vuApp.js';
 import { reestrApi, reestrMenu } from './reestrApi.js';
 // routers
 import { roReestr } from './router/roReestr.js';
+import { roErrors } from './router/roErrors.js';
 import { roInvoice } from './router/roInvoice.js';
 import { roImport } from './router/roImport.js';
 
@@ -16,7 +17,7 @@ const reestrRouter = { [reestrApi.root]: {
 }
 };
 
-Object.assign(reestrRouter, roReestr, roInvoice, roImport);
+Object.assign(reestrRouter, roReestr, roErrors, roInvoice, roImport);
 
 m.route(document.body, "/", reestrRouter);
 
