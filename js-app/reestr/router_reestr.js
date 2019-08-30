@@ -2,21 +2,22 @@
 
 import { vuApp, vuView } from '../apps/view/vuApp.js';
 //report
-import { appApi, appMenu } from './reestrApi.js';
+import { reestrApi, reestrMenu } from './reestrApi.js';
 // routers
+import { roReestr } from './router/roReestr.js';
+import { roErrors } from './router/roErrors.js';
+import { roInvoice } from './router/roInvoice.js';
 import { roImport } from './router/roImport.js';
-//import { roTfoms } from './router/roTfoms.js';
-//import { roOnko } from './router/roOnko.js';
 
-const reestrRouter = { [appApi.root]: {
+const reestrRouter = { [reestrApi.root]: {
     render: function () {
-        return vuView(appMenu,
+        return vuView(reestrMenu,
             m(vuApp, {text: "Медстатистика: Реестры ОМС"}));
     }
 }
 };
 
-Object.assign(reestrRouter, roImport)
+Object.assign(reestrRouter, roReestr, roErrors, roInvoice, roImport);
 
 m.route(document.body, "/", reestrRouter);
 

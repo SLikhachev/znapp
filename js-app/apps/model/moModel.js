@@ -14,6 +14,20 @@ export const errMsg= function(error){
   return m;
 }
 
+// return date in yyyy-mm format
+export const _month= () => {
+    let d = new Date(), y = d.getFullYear(), m = d.getMonth() + 1;
+    m= m < 10 ? `0${m}`: `${m}`;
+    return `${y}-${m}`;
+  };
+
+// return posgrest url if pg_rest else task url
+export const _schema= type=> {
+  if (type === 'task')
+    return window.localStorage.getItem('task_rest');
+  return window.localStorage.getItem('pg_rest');
+}
+
 export const moModel = {
   
   // :: String -> Array -> String -> Object

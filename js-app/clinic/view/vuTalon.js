@@ -20,7 +20,7 @@ const talForm = function (vnode) {
   
   let { model, method }= vnode.attrs;
   let tal= model.talon;
-  const tal_num= tal.tal_num ? tal.tal_num: 'Новый';
+  const tal_num= tal.tal_num; //? tal.tal_num: 'Новый';
   const data= talonOpt.data;
   const doc_fam= () => {
     let doc= Array.from(data.get('doctor')).find( d=> d.spec == tal.doc_spec && d.code == tal.doc_code );
@@ -154,6 +154,8 @@ const talMain = function (vnode) {
     }
   }
 };
+
+
 const talNap = function(vnode) {
   let tal= vnode.attrs.model.talon;
 
@@ -219,8 +221,6 @@ const talNap = function(vnode) {
 };
 
 
-
-
 const pmuForm = function (vnode) {
   
   let { talon, pmu }= vnode.attrs.model;
@@ -233,6 +233,7 @@ const pmuForm = function (vnode) {
   
   const get_doc= spec=> {
     // if talon to this doctor spec then this doctor code
+    if ( !talon.doc_spec || !talon.doc_code) return 0;
     if ( talon.doc_spec == spec) return talon.doc_code;
     // else first doc with this spec from all doctors
     let doc= Array.from(data.get('doctor')).find( d=> d.spec == spec);

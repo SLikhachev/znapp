@@ -1,41 +1,75 @@
 
 // src/reestr/reestrApi.js
 
-const pgRest = {
-    //reestr: 'p146_report?insurer=eq.999&order=this_month.asc',
+export const taskReestr = {
+    // POST request for calculat, GET for download files
+    impo_dbf: {
+        post_url: "/reestr/import/dbf", //POST date, upload file
+    },
+    pack: { post_url: "/reestr/xml/pack" },
+    vmx: {
+      post_url: "/reestr/xml/vmx",
+      get_url: "/utils/file/reestr/vmx/", //GET report file  
+    },
+    invoice: {
+      post_url: "/reestr/inv/impex",
+      get_url: "/utils/file/reestr/inv/" //GET reestr file  
+    },
+
 }
 
-const taskApi = {
-    
-    reestr_imp: {
-        post_url: "/reestr/import/reestr", //POST date, upload file
-    },
-    /*
-    volum: {
-        post_url: "/report/common/volum/make_report", //POST date
-        get_url: "/utils/file/volum/report/" //GET report file
-    },
-    */
+export const restReestr = {
+    vmx: { url:"vmx_errors", params: { limit: 50 } }
 }
+   
 
-const appApi = {
+export const reestrApi = {
     root: "/",
-    import: "/import",
-    reestr_imp: "/import/reestr",
-    //surv_volum: "/surv/volum",
+    
+    pack: "/pack",
+    pack_xml: "/pack/xml",
+    
+    vmxl: "/vmxl",
+    vmxl_imp: "/vmxl/imp",
+    vmxl_last: "/vmxl/last",
+    
+    invoice: "/invoice",
+    inv_impex: "/invoice/impex",
+    inv_calc: "/invoice/calc",
+    
+    impo: "/impo",
+    impo_dbf: "/impo/dbf",
+
 };
 
-const appMenu = { subAppMenu: {
+export const reestrMenu = { subAppMenu: {
   
-  import: {
-    nref: [`#!${appApi.import}`, "Импорт"],
+  pack: {
+    nref: [`#!${reestrApi.pack}`, "Пакеты"],
     items: [
-      [`#!${appApi.reestr_imp}`, "Файлы реестров (DBF)"],
-      //[`#!${appApi.surv_volum}`, "Объемы помощи"],
-      
+      [`#!${reestrApi.pack_xml}`, "Сформировать"],
+    ]
+  },
+  vmxl: {
+    nref: [`#!${reestrApi.vmxl}`, "Ошибки"],
+    items: [
+      [`#!${reestrApi.vmxl_imp}`, "Импорт ошибок"],
+      [`#!${reestrApi.vmxl_last}`, "Показать последние"],
+    ]
+  },
+  
+  invoice: {
+    nref: [`#!${reestrApi.invoice}`, "Счета"],
+    items: [
+      [`#!${reestrApi.inv_impex}`, "Реестр в СМО"],
+      [`#!${reestrApi.inv_calc}`, "Рассчеты"],
+    ]
+  },
+  impo: {
+    nref: [`#!${reestrApi.impo}`, "Импорт"],
+    items: [
+      [`#!${reestrApi.impo_dbf}`, "Файлы реестров (DBF)"],
     ]
   }
 }
 };
-
-export { pgRest, taskApi, appApi, appMenu };

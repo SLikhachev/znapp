@@ -1,0 +1,81 @@
+// src/reestr/view/vuInvimp.js
+
+import { vuTheader, foResp } from '../../apps/view/vuApp.js';
+import { file_field, form_file_dom } from '../../apps/form/customFields.js';
+import { _month, _schema, moModel } from '../model/moModel.js';
+import { taskReestr } from '../reestrApi.js';
+
+const Form = function(vnode) {
+  
+  const model= vnode.attrs.model;
+  const data= { type: 1 };
+  //const schema= _schema('task');  
+  const get_type= el=> el.options[ el.selectedIndex].value;
+  model.href= taskReestr.invoice.get_url;
+  const download= event=> {
+    //console.log('report');
+    event.preventDefault();
+    let imp= document.getElementById('imp');
+    imp.classList.add('disable');
+    //console.log(resp.getAttribute('display'));
+    moModel.formSubmit(event, _schema('task'), model, "POST").then((t) => {
+      //console.log(imp);
+      imp.classList.remove('disable');
+    });
+  };
+  
+  return {
+    view() {
+      return m('div#imp.pure-g', { style: "margin-bottom: 1.3em;" }, [
+        m('.pure-u-1-3', [
+          m('form.pure-form.pure-form-stacked',
+            { onsubmit: download, oncreate: form_file_dom }, [
+            m('fieldset', [
+              m('legend', "Файл счета БАРС"),
+              m('.pure-control-group', file_field(data) ),
+              /*
+              m('.pure-control-group', [
+                m('label[for=month]', 'Месяц'),
+                m('input.fname[id="month"][type="month"][name="month"][reqired=required]',
+                  { value: data.month, onblur: e=> data.month = e.target.value }
+                )
+              ]),
+              */
+              m('.pure-control-group', [
+                m('label[for=type]', 'Тип счета'),
+                m('select.ml10[name=type]',
+                  { onblur: e=> data.type= get_type(e.target) }, [
+                  m('option[value=1][selected]', 'Амбулаторный'),
+                  m('option[value=2]', 'Онкология'),
+                  m('option[value=3]', 'Дневной стационар'),
+                  m('option[value=4]', 'Инокраевые'),
+                ]),
+              ]),
+              m('.pure-controls', [
+                m('button.pure-button pure-button-primary[type="submit"]',
+                  { style: 'margin-top: 0.5em'}, "Импорт")
+              ])  
+            ])
+          ])
+        ]),
+        m('.pure-u-2-3',  foResp(model) )
+      ]);
+    }
+  };
+}
+
+
+// clojure
+export const vuInvimp = function (vnode) {
+  
+  return {
+    view () {
+      return [
+        m(vuTheader, { header: vnode.attrs.header } ),
+        m(Form, { model: vnode.attrs.model } )
+      ];
+    }    
+        
+  }; //return this object
+}
+
