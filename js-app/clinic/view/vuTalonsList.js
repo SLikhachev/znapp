@@ -130,9 +130,9 @@ export const vuTalonsList = function (vnode) {
             e => { e.preventDefault(); toCard(crd); } :
             e => { e.preventDefault(); toTalon(tal, crd);}
         }, cell) */
-        m('td.choice.blue', m('a', {
+        m('td.choice.blue', m(m.route.Link, {
           href: column == 'crd_num' ? `${clinicApi.cards}/${crd}`: `${clinicApi.talons}/${tal}/${crd}`,
-          oncreate: m.route.link
+          //oncreate: m.route.link
         }, cell)) : m('td', cell);
         return td;
       }),

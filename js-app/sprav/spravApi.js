@@ -17,8 +17,9 @@ export const restSprav = {
     purp: { url: 'purpose'},
     mo_local: { url:"mo_local"},
     smo_local: { url:"smo_local"},
+    
     // prof
-    doc_spec : { url:"spec_prvs_profil"}, // view name
+    doc_spec : { url:"spec_prvs_profil", order_by: 'spec', key: 'spec'}, 
     prof: { url: 'profil' },
     prvs: { url: 'prvs' },
     vidpom: { url: 'vidpom' },

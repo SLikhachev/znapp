@@ -66,6 +66,16 @@ export const moStruct = {
     profil: ['Код профиля'],
     prof_name: ['Наименвание профиля']
   },
+  doc_spec: {
+    spec: ["Код", true],
+    name: ["Специальность"],
+    prvs: ["Код PRVS V021" ],
+    profil: ["Профиль"],
+    prof_k: ["Профиль койки"],
+    det: ["Детский"] 
+  },
+  
+  
   dul: {
     code: ["Код", true],     
     name: ["Наименование"],

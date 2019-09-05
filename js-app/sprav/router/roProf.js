@@ -65,7 +65,8 @@ export const roProf = {
       let view = m(vuSpec, {
           model:  moModel.getModel( restSprav.doc_spec ),
           header: "Коды врачебных специальностей",
-          name: "Специальность"
+          name: "Специальность",
+          struct: moStruct.doc_spec
       });
       return vuView(view);
     }

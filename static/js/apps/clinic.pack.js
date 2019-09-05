@@ -437,7 +437,7 @@ const moModel = {
     return m.request({
       url: pg_rest + _url,
       method: _method,
-      data: data,
+      body: data,
       headers: headers
     }).then( res=> {
       if ( ! Boolean(res) ) return false;
@@ -462,7 +462,7 @@ const moModel = {
       let r = m.request({
         method: model.method[idx],
         url: pg_rest + url,
-        data: data[idx]
+        body: data[idx]
       });
       reqs.push(r);
     }
@@ -540,7 +540,7 @@ const moModel = {
     return m.request({
       url: url,
       method: method,
-      data: data,
+      body: data,
       async: false,
       headers: model.headers
     }).then( res => {
@@ -677,7 +677,7 @@ const moCard = {
     m.request({
       url: url,
       method: method,
-      data: card
+      body: card
     }).then( res => {
       event.target.parentNode.classList.remove('disable');
     }).catch( err => {
@@ -800,7 +800,7 @@ const moTalon = {
     m.request({
       url: url,
       method: method,
-      data: tal
+      body: tal
     }).then( res => {
       event.target.parentNode.classList.remove('disable');
     }).catch( err => {
@@ -841,6 +841,7 @@ const vuClinic = function(vnode) {
 };
 
 // src/apps/view/vuApp.js
+
 const vuLoading = {
   view() { 
     return m(".loading-icon", 
@@ -958,9 +959,9 @@ const vuCardsList = function (vnode) {
     return m('tr', [
       Object.keys(cardz_hdr).map( (column) => {
         let cell = column === 'fam' ? fio : s[column];
-        let td = first ? m('td.choice.blue', m ('a', {
+        let td = first ? m('td.choice.blue', m(m.route.Link, {
           href: `${clinicApi.cards}/${cell}`,
-          oncreate: m.route.link
+          //oncreate: m.route.link
         }, cell)) : m('td', cell);
         first = false;
         return td;
@@ -1630,9 +1631,9 @@ const crdViz = function(vnode) {
       return m('tr', [
         Object.keys(tal_hdr).map( column => {
           let td = tal_hdr[column].length === 2 ?
-            m('td.choice.blue', m('a', {
+            m('td.choice.blue', m(m.route.Link, {
               href: `${clinicApi.talons}/${s[column]}/${crd}`,
-              oncreate: m.route.link
+              //oncreate: m.route.link
             }, s[column])) : m('td', s[column]);
           return td;
         })
@@ -1650,9 +1651,9 @@ const crdViz = function(vnode) {
           m('tbody', [tal.map( this.listMap )] )
         ]) )),
         m('.pure-g', m('.pure-u-1-3',
-          m('a.pure-button.pure-button-primary', {
+          m(m.route.Link, { selector: 'a.pure-button.pure-button-primary', 
             href: `${[clinicApi.talon_add]}${crd}`,
-            oncreate: m.route.link,
+            //oncreate: m.route.link,
             //onclick: (e) => m.route.set('/cards/0/'),
             style: "float: right; margin-top: 2em; font-size: 1.3 em"
             }, "Добавить талон")
@@ -1840,9 +1841,9 @@ const vuTalonsList = function (vnode) {
             e => { e.preventDefault(); toCard(crd); } :
             e => { e.preventDefault(); toTalon(tal, crd);}
         }, cell) */
-        m('td.choice.blue', m('a', {
+        m('td.choice.blue', m(m.route.Link, {
           href: column == 'crd_num' ? `${clinicApi.cards}/${crd}`: `${clinicApi.talons}/${tal}/${crd}`,
-          oncreate: m.route.link
+          //oncreate: m.route.link
         }, cell)) : m('td', cell);
         return td;
       }),
@@ -1891,7 +1892,7 @@ const talForm = function (vnode) {
   
   let { model, method }= vnode.attrs;
   let tal= model.talon;
-  const tal_num= tal.tal_num ? tal.tal_num: 'Новый';
+  const tal_num= tal.tal_num; //? tal.tal_num: 'Новый';
   const data= talonOpt.data;
   const doc_fam= () => {
     let doc= Array.from(data.get('doctor')).find( d=> d.spec == tal.doc_spec && d.code == tal.doc_code );
@@ -1998,9 +1999,9 @@ const crdForm = function (vnode) {
             { //onclick: e => cardSave
           }, "Сохранить"),
         
-       m('a.pure-button.', {
+       m(m.route.Link, { selector: 'a.pure-button.',
             href: `${clinicApi.cards}/${card.crd_num}`,
-            oncreate: m.route.link,
+            //oncreate: m.route.link,
             //onclick: (e) => m.route.set('/crads/add/'),
             style: "margin-left: 2em;"
             }, "Открыть карту" )
@@ -2025,6 +2026,8 @@ const talMain = function (vnode) {
     }
   }
 };
+
+
 const talNap = function(vnode) {
   let tal= vnode.attrs.model.talon;
 
@@ -2090,8 +2093,6 @@ const talNap = function(vnode) {
 };
 
 
-
-
 const pmuForm = function (vnode) {
   
   let { talon, pmu }= vnode.attrs.model;
@@ -2104,6 +2105,7 @@ const pmuForm = function (vnode) {
   
   const get_doc= spec=> {
     // if talon to this doctor spec then this doctor code
+    if ( !talon.doc_spec || !talon.doc_code) return 0;
     if ( talon.doc_spec == spec) return talon.doc_code;
     // else first doc with this spec from all doctors
     let doc= Array.from(data.get('doctor')).find( d=> d.spec == spec);
@@ -2169,7 +2171,7 @@ const pmuForm = function (vnode) {
         for (let [idx, it] of md.list.entries() ){
           it.name= _pmu.list[idx].name;
           it.ccode= _pmu.list[idx].ccode;
-          console.log(it);
+          //console.log(it);
           pmu.push( it );
         }
       }).catch( err=> {

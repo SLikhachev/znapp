@@ -150,7 +150,7 @@ export const moModel = {
     return m.request({
       url: pg_rest + _url,
       method: _method,
-      data: data,
+      body: data,
       headers: headers
     }).then( res=> {
       if ( ! Boolean(res) ) return false;
@@ -175,7 +175,7 @@ export const moModel = {
       let r = m.request({
         method: model.method[idx],
         url: pg_rest + url,
-        data: data[idx]
+        body: data[idx]
       });
       reqs.push(r);
     }
@@ -253,7 +253,7 @@ export const moModel = {
     return m.request({
       url: url,
       method: method,
-      data: data,
+      body: data,
       async: false,
       headers: model.headers
     }).then( res => {

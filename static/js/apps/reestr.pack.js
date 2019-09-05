@@ -160,6 +160,13 @@ const vuMain = {
 
 // src/apps/model/moModel.js
 
+// return date in yyyy-mm format
+const _month= () => {
+    let d = new Date(), y = d.getFullYear(), m = d.getMonth() + 1;
+    m= m < 10 ? `0${m}`: `${m}`;
+    return `${y}-${m}`;
+  };
+
 // return posgrest url if pg_rest else task url
 const _schema= type=> {
   if (type === 'task')
@@ -187,14 +194,14 @@ const foResp= model=> m('#resp',
     model.message ? m('.legend', ["Статус обработки",
       model.done ? m('div', [
         m('h4.blue', model.message),
-        m('span.blue', {style: "font-size: 1.2em"}, "Файл: "),
+        m('span.blue', {style: "font-size: 1.2em"}, "Результат, Файл : "),
         model.route ? get_route(model) : model.href ? get_href(model) :
           m('span.blue', {style: "font-size: 1.2em"}, model.file)
       ]) : m('div', m('h4.blue', model.message))
     ]) : ''
   );
 
-const vuTheader$1 = {
+const vuTheader = {
   view (vnode) {
     return m(".pure-g",
       m(".pure-u-1-1.box-1",
@@ -234,7 +241,10 @@ const taskReestr = {
     impo_dbf: {
         post_url: "/reestr/import/dbf", //POST date, upload file
     },
-    pack: { post_url: "/reestr/xml/pack" },
+    pack: {
+      post_url: "/reestr/xml/pack",
+      get_url: ""
+    },
     vmx: {
       post_url: "/reestr/xml/vmx",
       get_url: "/utils/file/reestr/vmx/", //GET report file  
@@ -243,6 +253,10 @@ const taskReestr = {
       post_url: "/reestr/inv/impex",
       get_url: "/utils/file/reestr/inv/" //GET reestr file  
     },
+    calc:{
+        post_url: "/reestr/inv/calc",
+        get_url: "/utils/file/reestr/inv/" //GET reestr file  
+    }
 
 };
 
@@ -262,8 +276,8 @@ const reestrApi = {
     vmxl_last: "/vmxl/last",
     
     invoice: "/invoice",
-    invoice_imp: "/invoice/imp",
-    invoice_exp: "/invoice/exp",
+    inv_impex: "/invoice/impex",
+    inv_calc: "/invoice/calc",
     
     impo: "/impo",
     impo_dbf: "/impo/dbf",
@@ -289,8 +303,8 @@ const reestrMenu = { subAppMenu: {
   invoice: {
     nref: [`#!${reestrApi.invoice}`, "Счета"],
     items: [
-      [`#!${reestrApi.invoice_imp}`, "Импорт счета"],
-      [`#!${reestrApi.invoice_exp}`, "Экспорт счета"],
+      [`#!${reestrApi.inv_impex}`, "Реестр в СМО"],
+      [`#!${reestrApi.inv_calc}`, "Рассчеты"],
     ]
   },
   impo: {
@@ -378,7 +392,7 @@ const moModel$1 = {
     return m.request({
       url: url,
       method: method,
-      data: data,
+      body: data,
       timeout: 0
     }).then((res) => {
       model.file = res.file ? res.file: null;
@@ -394,7 +408,6 @@ const moModel$1 = {
       form.classList.remove('disable');
       return false;
     });
-    return false;
   },
   
   // submit with simple / preflight CORS request   
@@ -414,7 +427,7 @@ const moModel$1 = {
     return m.request({
       url: url,
       method: method,
-      data: fdata,
+      body: fdata,
       timeout: 0
     }).then((res) => {
       model.file = res.file ? res.file: null;
@@ -429,32 +442,32 @@ const moModel$1 = {
       event.target.parentNode.classList.remove('disable');
       return false;
     });
-    return false;
   }
 
 };
 
 // src/reestr/view/vuReestr.js
-//import { taskReestr } from '../reestrApi.js';
 //import { task_rest, moModel } from '../model/moModel.js';
 
-const reestrForm = function(vnode) {
+const Form = function(vnode) {
   
   const model= vnode.attrs.model;
+  model.href= taskReestr.pack.get_url;
   const data= { month: _month$1(), pack: 1 };
-  const schema= _schema$1('task');  
+  const schema= _schema$1('task');
   
   const on_submit = event=> {
-    //console.log(data);
     event.preventDefault();
-    //console.log(data);
-    //return false;
-    return moModel$1.doSubmit(event, schema, 'simple', model, data, "POST");
+    let imp= document.getElementById('imp');
+    imp.classList.add('disable');
+    return moModel$1.doSubmit(event, schema, 'simple', model, data, "POST").then((t) => {
+      imp.classList.remove('disable');
+    });
   };
   
   return {
     view() {
-      return m('.pure-g', [
+      return m('div#imp.pure-g', [
         m('.pure-u-1-3', [
           m('form.pure-form.pure-form-stacked', { onsubmit: on_submit }, [
             m('fieldset', [
@@ -486,18 +499,7 @@ const reestrForm = function(vnode) {
             ])
           ])
         ]),
-        m('.pure-u-2-3', [
-          model.error ? m('.error', model.error) :
-            model.message ? m('.legend', ["Статус обработки", 
-              m('div', [
-
-                m('h4.blue', model.message),
-                m('span.blue', {style: "font-size: 1.2em"}, "Файл пакета: ", model.file ),
-                model.detail ? m('h4.red', model.detail) : '',
-
-              ])
-            ]) : m('div')
-        ])
+        m('.pure-u-2-3', foResp(model) )
       ]);
     }
   };
@@ -510,8 +512,8 @@ const vuReestr = function (vnode) {
   return {
     view () {
       return [
-        m(vuTheader$1, { header: vnode.attrs.header } ),
-        m(reestrForm, { model: vnode.attrs.model } )
+        m(vuTheader, { header: vnode.attrs.header } ),
+        m(Form, { model: vnode.attrs.model } )
       ];
     }    
         
@@ -685,7 +687,7 @@ const vuVmxlimp = function (vnode) {
   return {
     view () {
       return [
-        m(vuTheader$1, { header: vnode.attrs.header } ),
+        m(vuTheader, { header: vnode.attrs.header } ),
         m(errorsForm, { model: vnode.attrs.model } )
       ];
     }    
@@ -735,7 +737,7 @@ const vuDataSheet = function (vnode) {
     //return m(tableView, {model: this.model , header: this.header }, [
     return model.error ? [ m(".error", model.error) ] :
       model.list ? [
-        m(vuTheader$1, { header: header} ),
+        m(vuTheader, { header: header} ),
         this.form ? m(this.form, {model:  model}) : '',
         m('table.pure-table.pure-table-bordered[id=find_table]', [
           m('thead', [
@@ -759,7 +761,7 @@ const vuDataSheet = function (vnode) {
 // src/report/view/vuVmxlast.js
 
 
-const Form = function(vnode) {
+const Form$1 = function(vnode) {
   
   const model = vnode.attrs.model;
   //console.log(model);
@@ -828,7 +830,7 @@ const vuVmxlast = function (vnode) {
   
   const view = vuDataSheet(vnode);
   const v= Object.assign( view, { listMap: listMap } );
-  v.form = Form;
+  v.form = Form$1;
   return v;
 };
 
@@ -865,7 +867,7 @@ const roErrors = {
 
 // src/reestr/view/vuInvimp.js
 
-const Form$1 = function(vnode) {
+const Form$2 = function(vnode) {
   
   const model= vnode.attrs.model;
   const data= { type: 1 };
@@ -879,7 +881,7 @@ const Form$1 = function(vnode) {
     imp.classList.add('disable');
     //console.log(resp.getAttribute('display'));
     moModel$1.formSubmit(event, _schema$1('task'), model, "POST").then((t) => {
-      //console.log(imp);
+      //console.log(model);
       imp.classList.remove('disable');
     });
   };
@@ -908,7 +910,8 @@ const Form$1 = function(vnode) {
                   m('option[value=1][selected]', 'Амбулаторный'),
                   m('option[value=2]', 'Онкология'),
                   m('option[value=3]', 'Дневной стационар'),
-                  m('option[value=4]', 'Инокраевые'),
+                  m('option[value=4]', 'Профосмотр'),
+                  m('option[value=5]', 'Инокраевые'),
                 ]),
               ]),
               m('.pure-controls', [
@@ -931,8 +934,8 @@ const vuInvimp = function (vnode) {
   return {
     view () {
       return [
-        m(vuTheader$1, { header: vnode.attrs.header } ),
-        m(Form$1, { model: vnode.attrs.model } )
+        m(vuTheader, { header: vnode.attrs.header } ),
+        m(Form$2, { model: vnode.attrs.model } )
       ];
     }    
         
@@ -942,19 +945,23 @@ const vuInvimp = function (vnode) {
 // src/report/view/vuInvexp.js
 
 
-const Form$2 = function(vnode) {
+const Form$3 = function(vnode) {
   
   const model = vnode.attrs.model;
   //console.log(model);
-  const md= { url: taskReestr.vmx.post_url, href: taskReestr.vmx.get_url };
-  const upload= event=> {
+  const data= {  month: _month(), typ: 1 };
+  //const schema= _schema('task');  
+  const get_type= el=> el.options[ el.selectedIndex].value;
+  model.href= taskReestr.calc.get_url;
+  const on_submit= event=> {
     //console.log('report');
     event.preventDefault();
-    let resp= document.getElementById('resp');
-    resp.setAttribute('display', 'none');
-    return moModel$1.formSubmit(event, _schema('task'), md, "GET").then((t) => {
-      //console.log(r);
-      resp.setAttribute('display', 'block');
+    let imp= document.getElementById('imp');
+    imp.classList.add('disable');
+    //console.log(resp.getAttribute('display'));
+    moModel$1.formSubmit(event, _schema('task'), model, "POST").then((t) => {
+      //console.log(model);
+      imp.classList.remove('disable');
     });
   };
   
@@ -962,34 +969,60 @@ const Form$2 = function(vnode) {
   
     view() {
       //console.log(model);
-      return [ m('.pure-g', { style: "margin-bottom: 1.3em;" }, [
+      return m('div#imp.pure-g', { style: "margin-bottom: 1.3em;" }, [
         m('.pure-u-1-3', [
-        m('form.pure-form.pure-form-stacked', {onsubmit: upload},
+        m('form.pure-form.pure-form-stacked', {onsubmit: on_submit},
           m('fieldset', [
-            m('legend', "Выгрузить в CSV файл"),
+            m('legend', "Сформировать XLSX файл"),
+            m('.pure-control-group', [
+              m('label[for=month]', 'Месяц'),
+              m('input.fname[id="month"][type="month"][name="month"][reqired=required]',
+                { value: data.month, onblur: e=> data.month = e.target.value }
+              )
+            ]),
+            m('.pure-control-group', [
+              m('label[for=typ]', 'Тип реестра'),
+              m('select.ml10[name=typ]',
+                { onblur: e=> data.typ= get_type(e.target) }, [
+                m('option[value=1][selected]', 'Амбулаторный'),
+                m('option[value=2]', 'Онкология'),
+                m('option[value=3]', 'Дневной стационар'),
+                m('option[value=4]', 'Профосмотр'),
+                m('option[value=5]', 'МТР ТФОМС'),
+                m('option[value=6]', 'Тарифы ПМУ'),
+              ]),
+            ]),
+            m('.pure-control-group', [
+              m('label[for=smo]', 'Страховщик'),
+              m('select.ml10[name=smo]',
+                { onblur: e=> data.smo= get_type(e.target) }, [
+                m('option[value=11][selected]', 'ВСА'),
+                m('option[value=16]', 'СВ Приморье'),
+                m('option[value=0]', 'ТФОМС'),
+              ]),
+            ]),
             m('.pure-controls', [
               m('button.pure-button.pure-button-primary[type="submit"]',
-                { style: "font-size: 1.2em; margin-left: 2em;",
+                { style: "font-size: 1.2em; margin-top: 1em;",
                   //onclick: upload
-                }, "Выгрузить")
+                }, "Сформировать")
             ])
           ])
         )
       ]),
-      m('.pure-u-2-3', foResp(md) )
-    ])
-  ];
+      m('.pure-u-2-3', foResp(model) )
+    ]);
   }
 };  
 };
 
-const vuInvexp = function (vnode) {
+const vuInvcalc = function (vnode) {
   //card_id: "/cards/:crd",
   return {
     view () {
       return [
         m(vuTheader, { header: vnode.attrs.header } ),
-        m(Form$2, { model: vnode.attrs.model } )
+        m(Form$3, { model: vnode.attrs.model } )
       ];
     }    
         
@@ -1004,21 +1037,21 @@ const roInvoice = {
       return vuView(reestrMenu, m(vuApp, { text: "Счета и реестры для СМО и ФОМС" } ) );
     }
   },
-  [reestrApi.invoice_imp]: {
+  [reestrApi.inv_impex]: {
     render: function() {
       let view = m(vuInvimp, {
-        header: "Имопрт ZIP файла счета",
+        header: "Реестр в СМО из ZIP файла счета БАРС",
         model: moModel$1.getModel( taskReestr.invoice.post_url )
         
       });
       return vuView(reestrMenu, view);
     }
   },
-  [reestrApi.invoice_exp]: {
+  [reestrApi.inv_calc]: {
     render: function() {
-      let view = m(vuInvexp, {
-        header: "Формируем XLSX файл реестра пролеченных из XML счета",
-       //model: moModel.getModel()
+      let view = m(vuInvcalc, {
+        header: "Считаем сами, формируем реестры и взаиморасчеты cами",
+        model: moModel$1.getModel( taskReestr.calc.post_url )
         
       });
       return vuView(reestrMenu, view);
@@ -1095,7 +1128,7 @@ const vuRdbf = function (vnode) {
   return {
     view () {
       return [
-        m(vuTheader$1, { header: vnode.attrs.header } ),
+        m(vuTheader, { header: vnode.attrs.header } ),
         m(importForm, { model: vnode.attrs.model } )
       ];
     }    
