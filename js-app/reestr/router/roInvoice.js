@@ -29,8 +29,8 @@ export const roInvoice = {
   [reestrApi.inv_calc]: {
     render: function() {
       let view = m(vuInvcalc, {
-        header: "Собственные рассчеты",
-       //model: moModel.getModel()
+        header: "Считаем сами, формируем реестры и взаиморасчеты cами",
+        model: moModel.getModel( taskReestr.calc.post_url )
         
       });
       return vuView(reestrMenu, view);

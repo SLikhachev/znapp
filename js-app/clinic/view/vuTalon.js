@@ -127,9 +127,9 @@ const crdForm = function (vnode) {
             { //onclick: e => cardSave
           }, "Сохранить"),
         
-       m('a.pure-button.', {
+       m(m.route.Link, { selector: 'a.pure-button.',
             href: `${clinicApi.cards}/${card.crd_num}`,
-            oncreate: m.route.link,
+            //oncreate: m.route.link,
             //onclick: (e) => m.route.set('/crads/add/'),
             style: "margin-left: 2em;"
             }, "Открыть карту" )

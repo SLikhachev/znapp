@@ -5,7 +5,7 @@ import { moModel } from '../../apps/model/moModel.js';
 // sprav
 import { restSprav, spravApi } from '../spravApi.js';
 import { vuSprav, vuView } from '../view/vuSprav.js';
-import { moStruct } from '../model/moStruct.js';
+import { idName, moStruct } from '../model/moStruct.js';
 //
 import { vuSheet } from '../view/vuSheet.js';
 import { vuDoctor } from '../view/vuDoctor.js';
@@ -21,11 +21,11 @@ const vuDivs = function(vnode){
 const vuSpPodr = function(vnode){
   return vuDataSheet(vnode);
 }
-
-const vuSpPara = function(vnode){
-  return vuCatalog(vnode);
-};
 */
+const vuSpPara = function(vnode){
+  return vuSheet(vnode);
+};
+
 export const roLocal = {
   [spravApi.mo]: {
     render: function() {
@@ -83,7 +83,8 @@ export const roLocal = {
       let view = m(vuSpPara, {
           model:  moModel.getModel( restSprav.sp_para),
           header: "Коды диагностических подразделений",
-          name: "Подазделение"
+          name: "Подазделение",
+          struct: idName
       });
       return vuView(view);
     }

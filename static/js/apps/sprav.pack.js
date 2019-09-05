@@ -161,7 +161,7 @@ const vuMain = {
 
 // editable - array of string as [ 'add', 'edit', 'del' ]
 // change - editable fields names if any else all fields exclude id
-const restApi$1 = {
+const restSprav = {
     // local
     get doctor() {
         return { url:"doctor", options: [ this.division, this.district ], order_by: 'code',
@@ -174,8 +174,9 @@ const restApi$1 = {
     purp: { url: 'purpose'},
     mo_local: { url:"mo_local"},
     smo_local: { url:"smo_local"},
+    
     // prof
-    doc_spec : { url:"spec_prvs_profil"}, // view name
+    doc_spec : { url:"spec_prvs_profil", order_by: 'spec', key: 'spec'}, 
     prof: { url: 'profil' },
     prvs: { url: 'prvs' },
     vidpom: { url: 'vidpom' },
@@ -393,6 +394,14 @@ const vuDialog$1 = {
 //const pg_rest = window.localStorage.getItem('pg_rest'); //postgest schemaRest;
 //console.log(schema);
 
+const errMsg= function(error){
+  console.log(error);
+  let e = JSON.parse(error.message);
+  let m= e.details ? e.details : e.message ? e.message: error.message;
+  console.log(m);
+  return m;
+};
+
 const moModel$1 = {
   
   // :: String -> Array -> String -> Object
@@ -445,6 +454,7 @@ const moModel$1 = {
   // model = {field, url, method,  }
   getList (model) {
     model.list= null;
+    let method= model.method ? model.method : 'GET';
     // filed - sort by with SELECT, default 'id' field
     //let schema = window.localStorage.getItem('pg_rest');
     let pg_rest = window.localStorage.getItem('pg_rest');
@@ -454,17 +464,18 @@ const moModel$1 = {
     let url = pg_rest + model.url + order;
     console.log(url);
     return m.request({
-      method: model.method,
+      method: method,
       url: url
     }).then(function(res) {
-      model.list = res; // list of objects
-      model.order = true;
+      if ( ! Boolean(res) ) return false;
+      if (res.length && res.length > 0) {
+        model.list = Array.from( res ); // list of objects
+        model.order = true;
+      } else
+        model.list= []; 
       return true;
-    }).catch(function(e) {
-      //console.log(e);
-      let err = JSON.parse(e.message);
-      model.error = err.message ? err.message : e.message;
-      console.log( err );
+    }).catch(function(err) { 
+      model.error = errMsg(err);
     });
   },
   // :: Object -> undef
@@ -488,16 +499,16 @@ const moModel$1 = {
     // order should preserved
     return Promise.all(data).then( (lists) => {
       model.data.clear(); // = new Map();
+      
       for ( let el of model.options.entries() ) {
+        if ( ! Boolean( lists[ el[0] ] ) ) continue;
         model.data.set( el[1].url, lists[ el[0] ]);
       }
       //window.localStorage.setItem(model.opt_name, model.data);
       //model.data = _.zipObject( model.options, lists);
       //console.log( model.list );
-    }).catch(function(e) {
-      //model.error = e.message;
-      console.log(e.message);
-      alert(e.message);
+    }).catch(function(err) {
+      model.error = errMsg(err);
     });
     
   },
@@ -509,19 +520,25 @@ const moModel$1 = {
     let pg_rest = window.localStorage.getItem('pg_rest');
     let _url = url ? url : model.url;
     let _method = method ? method : model.method;
+    let headers= model.headers ? model.headers : null;
     return m.request({
       url: pg_rest + _url,
       method: _method,
-      data: data,
-      
-    }).then(function(res) {
-      model.list = res; // list of objects
-      model.order = true;
-    }).catch(function(e) {
-      console.log(e);
-      let err = JSON.parse(e.message);
-      model.error = err.message ? err.message : e.message;
-      console.log( err );
+      body: data,
+      headers: headers
+    }).then( res=> {
+      if ( ! Boolean(res) ) return false;
+      if (res.length && res.length > 0) {
+        model.list= Array.from( res ); // list of objects
+        model.order = true;
+        return true;
+      } else
+        model.list= [];
+        return false;
+    }).catch( err=> {
+      let msg=  errMsg(err);
+      model.error= msg;
+      return Promise.reject(msg);
     });
   },
 
@@ -532,7 +549,7 @@ const moModel$1 = {
       let r = m.request({
         method: model.method[idx],
         url: pg_rest + url,
-        data: data[idx]
+        body: data[idx]
       });
       reqs.push(r);
     }
@@ -542,14 +559,18 @@ const moModel$1 = {
       //model.map_data.clear(); // = new Map();
       for ( let [idx, key] of model.map_keys.entries() ) {
         //model.map_data.set( name, lists[ idx ]);
-        model[key] = lists[idx];
+        if ( ! Boolean( lists[idx] ) ) continue;
+        if (lists[idx].length && lists[idx].length > 0) {
+          //model[key]= lists[ idx ];
+          model[key] = Array.from( lists[idx] );
+          //console.log(lists[idx]);
+        } else
+          model[key]= [];
       } 
       return true;
       return Promise.resolve(true);
-    }).catch(function (e) {
-      console.log(e);
-      let err = JSON.parse(e.message);
-      model.error = err.message ? err.message : e.message;
+    }).catch(function (err) {
+      model.error = errMsg(err);
     });
   },
 
@@ -565,7 +586,7 @@ const moModel$1 = {
   /** getFormData
     return item's data object 
   */
-  /*
+  
   getFormData(form, isSetOnly=false) {
     // form - dom form
     // isSetOnly - set out only
@@ -578,7 +599,7 @@ const moModel$1 = {
     } );
     return data;
   },
-  */
+  
   /** formSubmit
     return false    
   */
@@ -600,26 +621,25 @@ const moModel$1 = {
         delete data[k];
         continue;
       }
-      if ( data[k] === '' ) data[k] = null;
+      if ( data[k] === '' ) delete data[k];  //data[k] = null;
     }
     model.save = { err: false, msg: '' };
     return m.request({
       url: url,
       method: method,
-      data: data,
-      async: false
+      body: data,
+      async: false,
+      headers: model.headers
     }).then( res => {
       event.target.parentNode.classList.remove('disable');
       if (model.list) moModel$1.getList(model);
       if ( vuDialog$1.dialog && vuDialog$1.dialog.open) vuDialog$1.close();
-      //return true; //msg;
+      return res; 
     }).catch( err => {
-      console.log(err);
-      let e = JSON.parse(err.message);
-      let msg= e.details ? e.details : e.message ? e.message : err.message;
+      let msg= errMsg(err);
       model.save = { err: true, msg: msg };
       event.target.parentNode.classList.remove('disable');
-      
+      return Promise.reject(msg);
     });
     //m.redraw();
     return false;
@@ -900,6 +920,16 @@ const moStruct = {
     profil: ['Код профиля'],
     prof_name: ['Наименвание профиля']
   },
+  doc_spec: {
+    spec: ["Код", true],
+    name: ["Специальность"],
+    prvs: ["Код PRVS V021" ],
+    profil: ["Профиль"],
+    prof_k: ["Профиль койки"],
+    det: ["Детский"] 
+  },
+  
+  
   dul: {
     code: ["Код", true],     
     name: ["Наименование"],
@@ -968,6 +998,7 @@ const moStruct = {
 };
 
 // src/apps/view/vuApp.js
+
 const vuLoading$1 = {
   view() { 
     return m(".loading-icon", 
@@ -1466,11 +1497,11 @@ const vuDivs = function(vnode){
 const vuSpPodr = function(vnode){
   return vuDataSheet(vnode);
 }
-
-const vuSpPara = function(vnode){
-  return vuCatalog(vnode);
-};
 */
+const vuSpPara = function(vnode){
+  return vuSheet(vnode);
+};
+
 const roLocal = {
   [spravApi.mo]: {
     render: function() {
@@ -1480,7 +1511,7 @@ const roLocal = {
   [spravApi.mo_doct]: {
     render: function() {
       let view = m(vuDoctor, {
-        model: moModel$1.getModel(restApi$1.doctor),
+        model: moModel$1.getModel(restSprav.doctor),
         header: "Врачи",
         name: "Врач",
         filter: 3, // search in the first 3 table columns
@@ -1493,7 +1524,7 @@ const roLocal = {
   [spravApi.mo_dist]: {
     render: function() {
       let view = m(vuDist, {
-        model: moModel.getModel( restApi.district ),
+        model: moModel.getModel( restSprav.district ),
         header: "Врачебные участки",
         name: "Участок"
       });
@@ -1503,7 +1534,7 @@ const roLocal = {
   [spravApi.mo_divs]: {
     render: function() {
       let view = m(vuDivs, {
-        model: moModel.getModel( restApi.division ),
+        model: moModel.getModel( restSprav.division ),
         header: "Отделения МО",
         name: "Отделение"
       });
@@ -1513,7 +1544,7 @@ const roLocal = {
   [spravApi.mo_podr]: {
     render: function() {
       let view = m(vuSpPodr, {
-          model: moModel.getModel( restApi.sp_podr ),
+          model: moModel.getModel( restSprav.sp_podr ),
           header: "Отдеделения МО ПК",
           name: "Отделение",
           find: 2, // search in the first 1 table columns
@@ -1526,9 +1557,10 @@ const roLocal = {
   [spravApi.mo_sp_para]: {
     render: function() {
       let view = m(vuSpPara, {
-          model:  moModel$1.getModel( restApi$1.sp_para),
+          model:  moModel$1.getModel( restSprav.sp_para),
           header: "Коды диагностических подразделений",
-          name: "Подазделение"
+          name: "Подазделение",
+          struct: idName
       });
       return vuView(view);
     }
@@ -1537,7 +1569,7 @@ const roLocal = {
   [spravApi.mo_local]: {
     render: function() {
       let view = m(vuMoLocal, {
-          model: moModel$1.getModel( restApi$1.mo_local ),
+          model: moModel$1.getModel( restSprav.mo_local ),
           header: "МО Приморского края",
           name: "МО",
           find: 3, // search in the first 3 table columns
@@ -1549,7 +1581,7 @@ const roLocal = {
   [spravApi.mo_smo]: {
     render: function() {
       let view = m(vuSmoLocal, {
-        model: moModel$1.getModel( restApi$1.smo_local ),
+        model: moModel$1.getModel( restSprav.smo_local ),
         header: "СМО Приморского края",
         name: "СМО",
         find: 2, // search in the first 3 table columns
@@ -1596,7 +1628,7 @@ const pmuFind = function ( model ) {
       q= `?code_usl=ilike.${cu}*`;
     }
     //console.log(q);
-    model.url=restApi$1.pmu.url + `${q}&limit=20`;
+    model.url=restSprav.pmu.url + `${q}&limit=20`;
     //console.log(model.url);
     return moModel$1.getList(model);
     //m.redraw();
@@ -1637,7 +1669,7 @@ const pmuForm = function (vnode) {
   let fld= ['ccode', 'code_podr', 'code_spec'];
   let on_submit = function (event) {
     event.preventDefault();
-    let model= Object.assign({ item: item}, restApi$1.pmu );
+    let model= Object.assign({ item: item}, restSprav.pmu );
     return moModel$1.formSubmit(event, model, 'PATCH');
   };
   
@@ -1699,7 +1731,7 @@ const grcForm = function (vnode) {
   
   let { model, item }= vnode.attrs;
   let _item= Object.assign({ grup: '' }, item);
-  let _model= { url: restApi$1.pgr.url, item: _item, change: ['code_usl', 'grup'] };
+  let _model= { url: restSprav.pgr.url, item: _item, change: ['code_usl', 'grup'] };
   let fld= ['grup', ];
   let on_submit = function (event) {
     event.preventDefault();
@@ -1746,7 +1778,7 @@ const vuGrups= function(vnode){
     //e.preventDefault();
     let grup= e.target.getAttribute('data');
     let _model= {
-      url: `${restApi$1.pgr.url}?code_usl=eq.${item.code_usl}`,
+      url: `${restSprav.pgr.url}?code_usl=eq.${item.code_usl}`,
       key: 'grup',
       item: { grup: grup },
     };
@@ -1784,7 +1816,7 @@ const vuPmuItem = function(vnode){
   let q= `?code_usl=eq.${code}`;
   //console.log(q);
   let model= moModel$1.getModel();
-  model.url= [ `${restApi$1.pmu.url}${q}`, `${restApi$1.pgc.url}` ];
+  model.url= [ `${restSprav.pmu.url}${q}`, `${restSprav.pgc.url}` ];
   model.method= ['GET', 'POST'];
   model.map_keys= ['item', 'grup'];
   // getViewRpcMap(model: object, data: additional data object)
@@ -1819,7 +1851,7 @@ const grupForm = function (vnode) {
   let fld= ['name',];
   let on_submit = function (event) {
     event.preventDefault();
-    let model= Object.assign({ item: item}, restApi$1.pmu_grup );
+    let model= Object.assign({ item: item}, restSprav.pmu_grup );
     moModel$1.formSubmit(event, model, 'PATCH');
     //moModel.getViewRpcMap(model, [ null, {code: item.code_usl}] );
   };
@@ -1888,7 +1920,7 @@ const grcForm$1 = function (vnode) {
   
   let { model, item }= vnode.attrs;
   let _item= Object.assign({ code_usl: '' }, { grup: item.id });
-  let _model= { url: restApi$1.pgr.url, item: _item, change: ['code_usl', 'grup'] };
+  let _model= { url: restSprav.pgr.url, item: _item, change: ['code_usl', 'grup'] };
   let fld= ['code_usl'];
   let on_submit = function (event) {
     event.preventDefault();
@@ -1933,7 +1965,7 @@ const vuPmus= function(vnode){
     //e.preventDefault();
     let code_usl= e.target.getAttribute('data');
     let _model= {
-      url: `${restApi$1.pgr.url}?grup=eq.${item.id}`,
+      url: `${restSprav.pgr.url}?grup=eq.${item.id}`,
       key: 'code_usl',
       item: { code_usl },
     };
@@ -1972,7 +2004,7 @@ const vuGrupItem = function(vnode){
   let q= `?id=eq.${grup}`;
   //console.log(q);
   let model= moModel$1.getModel();
-  model.url= [ `${restApi$1.pmu_grup.url}${q}`, `${restApi$1.grc.url}` ];
+  model.url= [ `${restSprav.pmu_grup.url}${q}`, `${restSprav.grc.url}` ];
   model.method= ['GET', 'POST'];
   model.map_keys= ['item', 'pmus'];
   // getViewRpcMap(model: object, data: additional data object)
@@ -2012,7 +2044,7 @@ const foFind = function ( model ) {
     let { code: co='' } = data, q;
     if (co.length < 2) return false;
     q= `?code=ilike.${co}*`;
-    model.url=restApi$1.mkb.url + `${q}&limit=20`;
+    model.url=restSprav.mkb.url + `${q}&limit=20`;
     return moModel$1.getList(model);
   };
   return fetchForm( {  on_submit, data, flds, ffunc: form} );
@@ -2074,9 +2106,10 @@ const roProf = {
   [spravApi.prof_spec]: {
     render: function() {
       let view = m(vuSpec, {
-          model:  moModel$1.getModel( restApi$1.doc_spec ),
+          model:  moModel$1.getModel( restSprav.doc_spec ),
           header: "Коды врачебных специальностей",
-          name: "Специальность"
+          name: "Специальность",
+          struct: moStruct.doc_spec
       });
       return vuView(view);
     }
@@ -2084,7 +2117,7 @@ const roProf = {
   [spravApi.prof_prof]: {
     render: function() {
       let view = m(vuProf, {
-          model:  moModel$1.getModel( restApi$1.prof),
+          model:  moModel$1.getModel( restSprav.prof),
           header: "Профили помощи",
           name: "Профиль"
       });
@@ -2094,7 +2127,7 @@ const roProf = {
   [spravApi.prof_prvs]: {
     render: function() {
       let view = m(vuPrvs, {
-          model:  moModel$1.getModel( restApi$1.prvs),
+          model:  moModel$1.getModel( restSprav.prvs),
           header: "Специальности V021",
           name: "Специальность"
       });
@@ -2104,7 +2137,7 @@ const roProf = {
   [spravApi.prof_vidpom]: {
     render: function() {
       let view = m(vuVidpom, {
-          model:  moModel$1.getModel( restApi$1.vidpom),
+          model:  moModel$1.getModel( restSprav.vidpom),
           header: "Вид помощи",
           name: "Вид"
       });
@@ -2114,7 +2147,7 @@ const roProf = {
   [spravApi.prof_pmus]: {
     render: function() {
       let view = m(vuPmu, {
-          model:  moModel$1.getModel( restApi$1.pmu ),
+          model:  moModel$1.getModel( restSprav.pmu ),
           header: "Простые мед. усдуги",
           name: "Услуга",
           href: spravApi.prof_pmus,
@@ -2134,7 +2167,7 @@ const roProf = {
   [spravApi.prof_pgrup]: {
     render: function() {
       let view = m(vuPgrup, {
-          model:  moModel$1.getModel( restApi$1.pmu_grup ),
+          model:  moModel$1.getModel( restSprav.pmu_grup ),
           header: "Гуппы ПМУ ",
           name: "Группа",
           filter: 2,
@@ -2155,7 +2188,7 @@ const roProf = {
   [spravApi.prof_mkb]: {
     render: function() {
       let view = m(vuMkb, {
-          model:  moModel$1.getModel( restApi$1.mkb),
+          model:  moModel$1.getModel( restSprav.mkb),
           header: "МКБ - 10",
           name: "Диагноз",
           struct: moStruct.mkb
@@ -2167,7 +2200,7 @@ const roProf = {
   [spravApi.tfoms_purp]: {
     render: function() {
       let view = m(vuPurp, {
-          model:  moModel.getModel( restApi.purp ),
+          model:  moModel.getModel( restSprav.purp ),
           header: "Цели обращения",
           name: "Цель"
       });
@@ -2177,7 +2210,7 @@ const roProf = {
   [spravApi.tfoms_type]: {
     render: function() {
       let view = m(vuType, {
-          model:  moModel.getModel( restApi.type ),
+          model:  moModel.getModel( restSprav.type ),
           header: "Особый случай",
           name: "Случай"
       });
@@ -2187,7 +2220,7 @@ const roProf = {
   [spravApi.tfoms_insur]: {
     render: function() {
       let view = m(vuCateg, {
-          model:  moModel.getModel( restApi.insur),
+          model:  moModel.getModel( restSprav.insur),
           header: "Категории ОМС",
           name: "Категория"
       });
@@ -2197,7 +2230,7 @@ const roProf = {
   [spravApi.tfoms_istfin]: {
     render: function() {
       let view = m(vuIstfin, {
-          model:  moModel.getModel( restApi.istfin ),
+          model:  moModel.getModel( restSprav.istfin ),
           header: "Источники финансирования",
           name: "Источник"
       });
@@ -2207,7 +2240,7 @@ const roProf = {
   [spravApi.tfoms_errors]: {
     render: function() {
       let view = m(vuErrors, {
-          model:  moModel.getModel( restApi.errors ),
+          model:  moModel.getModel( restSprav.errors ),
           header: "Причины отказов",
           name: "Причина"
       });
@@ -2273,7 +2306,7 @@ const roCom = {
   [spravApi.com_dul]: {
     render: function() {
       let view = m(vuDul, {
-          model:  moModel$1.getModel( restApi.dul ),
+          model:  moModel$1.getModel( restSprav.dul ),
           header: "Документ удостоверяющий личнось",
           name: "Документ"
       });
@@ -2283,7 +2316,7 @@ const roCom = {
   [spravApi.com_okato]: {
     render: function() {
       let view = m(vuOkato, {
-          model:  moModel$1.getModel( restApi.okato),
+          model:  moModel$1.getModel( restSprav.okato),
           header: "ОКАТО",
           name: "ОКАТО"
       });

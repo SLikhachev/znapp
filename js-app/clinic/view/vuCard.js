@@ -245,9 +245,9 @@ const crdViz = function(vnode) {
       return m('tr', [
         Object.keys(tal_hdr).map( column => {
           let td = tal_hdr[column].length === 2 ?
-            m('td.choice.blue', m('a', {
+            m('td.choice.blue', m(m.route.Link, {
               href: `${clinicApi.talons}/${s[column]}/${crd}`,
-              oncreate: m.route.link
+              //oncreate: m.route.link
             }, s[column])) : m('td', s[column]);
           return td;
         })
@@ -265,9 +265,9 @@ const crdViz = function(vnode) {
           m('tbody', [tal.map( this.listMap )] )
         ]) )),
         m('.pure-g', m('.pure-u-1-3',
-          m('a.pure-button.pure-button-primary', {
+          m(m.route.Link, { selector: 'a.pure-button.pure-button-primary', 
             href: `${[clinicApi.talon_add]}${crd}`,
-            oncreate: m.route.link,
+            //oncreate: m.route.link,
             //onclick: (e) => m.route.set('/cards/0/'),
             style: "float: right; margin-top: 2em; font-size: 1.3 em"
             }, "Добавить талон")
