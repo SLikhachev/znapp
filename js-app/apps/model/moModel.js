@@ -35,14 +35,16 @@ export const moModel = {
   getModel(
     {url=null, method="GET", options=null, order_by='id', editable=null, change=null, key='id' } = {}
   ) {
-    // url - string of model's REST API url
-    // method - string of model's REST method
-    // options - array of strings of option tables names
-    // need for form data select/option if any
-    // order_by - string "order by" with initially SELECT 
-    // editable - array defines is model could changed
-    // change - array editable fields names
-    // key - primary key for sql model table dafault id
+/*
+  url - string of model's REST API url
+  method - string of model's REST method
+  options - array of strings of option tables names, required for complex views of this model
+    need for form data select/option if any
+  order_by - string "order by" with initially SELECT 
+  editable - array defines is model could changed
+  change - array editable fields names
+  key - primary key for sql model table dafault id
+*/
     let model = {
       url: url,
       method: method,
@@ -254,7 +256,7 @@ export const moModel = {
       url: url,
       method: method,
       body: data,
-      async: false,
+      //async: false,
       headers: model.headers
     }).then( res => {
       event.target.parentNode.classList.remove('disable');

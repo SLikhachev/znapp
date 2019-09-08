@@ -74,8 +74,13 @@ export const moStruct = {
     prof_k: ["Профиль койки"],
     det: ["Детский"] 
   },
-  
-  
+  profil: {
+    id: ["Код", true ],
+    name: ["Профиль"],
+    one_visit: ["ПМУ посещение"],
+    two_visit: ["ПМУ обращение"],
+    podr: ["Подразделение"]
+  },
   dul: {
     code: ["Код", true],     
     name: ["Наименование"],
@@ -137,6 +142,18 @@ export const moStruct = {
     ds: ["Диагноз"],
     mark_name: ["Наименование маркера"],
     mark_id: ["Индекс маркера"],
+  },
+  // tarifs
+  tarif_base: {
+    id: ["№ п/п"], 
+    name: ["Тариф"],
+    tarif: ["Цена руб./ Коэфф. "],
+  },
+  tarif_pmu_vzaimo: {
+    id: ["№ п/п"], 
+    code: ["Код ПМУ"],
+    tarif: ["Цена руб."],
+    name: ["ПМУ"]
   },
   
   

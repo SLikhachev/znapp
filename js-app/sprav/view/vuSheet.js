@@ -19,15 +19,24 @@ export const vuDialogForm= function(data){
 
 // clojure
 export const vuSheet = function (vnode) {
-  // model,
-  // header,
-  // name,
-  // struct,
-  // filter,
-  // href,
-  // itemForm,
-  // fetchForm
-  
+  /* common view for sprav
+  attrs if defined:
+  model - required model object,
+      if model has editable array ( set in spravApi.restSprav of 3 words: add, del, edit ),
+      then dialog window will be defined to change the item of sprav
+      add - may add item
+      del - may del item
+      edit - may edit item
+      if model has change array of strings then this fields ( names) will be editable
+  header - required header string for view page,
+  name - string requred for item edit form as header in dialog window,
+  struct - required object represent items in table: order and names of tabel's header,
+  filter - int represent number of columns to fiter tables row from 1  ,
+  href - if defined then first column will be route to another page of this app,
+  itemForm - if defined then yhis form will bu used for change item in dialog window,
+  fetchForm - if defined then this form will be used for fetch items from sql table
+    in that case items will not be showed in table as for simple tables (short tables)
+  */
  
   let {
     model, header, name, struct, filter=0, //filter int of fields to order
@@ -46,7 +55,7 @@ export const vuSheet = function (vnode) {
       if (editable.indexOf('del') >= 0) edialog.ddel= ddel;
   }
   const dialog= edialog.add || edialog.edit || edialog.ddel;
-  const sort=  e=> model.sort(e.target.getAttribute('data'));   
+  const sort=  e=> model.sort(e.target.getAttribute('data'));
   //const table= {struct, edialog, href, sort};
   
   if (href) delete edialog.edit; 

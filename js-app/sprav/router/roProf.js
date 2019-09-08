@@ -8,6 +8,8 @@ import { vuSprav, vuView } from '../view/vuSprav.js';
 import { moStruct } from '../model/moStruct.js';
 import { idName } from '../model/moStruct.js';
 
+import { itemProfil } from '../form/spravForm';
+
 import { vuSheet } from '../view/vuSheet';
 import { itemForm } from '../form/foItem';
 //
@@ -52,7 +54,6 @@ const vuPgrup = function (vnode) {
   return view;
 }
 
-
 export const roProf = {
   [spravApi.prof]: {
     render: function() {
@@ -66,7 +67,8 @@ export const roProf = {
           model:  moModel.getModel( restSprav.doc_spec ),
           header: "Коды врачебных специальностей",
           name: "Специальность",
-          struct: moStruct.doc_spec
+          struct: moStruct.doc_spec,
+          filter: 2,
       });
       return vuView(view);
     }
@@ -74,9 +76,12 @@ export const roProf = {
   [spravApi.prof_prof]: {
     render: function() {
       let view = m(vuProf, {
-          model:  moModel.getModel( restSprav.prof),
+          model:  moModel.getModel( restSprav.profil),
           header: "Профили помощи",
-          name: "Профиль"
+          name: "Профиль",
+          struct: moStruct.profil,
+          itemForm: itemProfil,
+          filter: 2,
       });
       return vuView(view);
     }
@@ -86,7 +91,9 @@ export const roProf = {
       let view = m(vuPrvs, {
           model:  moModel.getModel( restSprav.prvs),
           header: "Специальности V021",
-          name: "Специальность"
+          name: "Специальность",
+          struct: idName,
+          filter: 2
       });
       return vuView(view);
     }
@@ -96,7 +103,9 @@ export const roProf = {
       let view = m(vuVidpom, {
           model:  moModel.getModel( restSprav.vidpom),
           header: "Вид помощи",
-          name: "Вид"
+          name: "Вид",
+          struct: idName,
+          //filter: 2
       });
       return vuView(view);
     }

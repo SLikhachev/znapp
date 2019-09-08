@@ -9,8 +9,7 @@ import { idName, moStruct } from '../model/moStruct.js';
 //
 import { vuSheet } from '../view/vuSheet.js';
 import { vuDoctor } from '../view/vuDoctor.js';
-import { vuMoLocal } from '../view/vuMoLocal.js';
-import { vuSmoLocal } from '../view/vuSmoLocal.js';
+
 /*
 const vuDist = function(vnode){
   return vuCatalog(vnode);
@@ -25,6 +24,13 @@ const vuSpPodr = function(vnode){
 const vuSpPara = function(vnode){
   return vuSheet(vnode);
 };
+const vuMoLocal = function(vnode){
+  return vuSheet(vnode);
+}
+const vuSmoLocal = function(vnode){
+  return vuSheet(vnode);
+}
+
 
 export const roLocal = {
   [spravApi.mo]: {
@@ -96,7 +102,7 @@ export const roLocal = {
           model: moModel.getModel( restSprav.mo_local ),
           header: "МО Приморского края",
           name: "МО",
-          find: 3, // search in the first 3 table columns
+          filter: 3, // search in the first 3 table columns
           struct: moStruct.moLocal
         });
         return vuView(view);
@@ -108,7 +114,6 @@ export const roLocal = {
         model: moModel.getModel( restSprav.smo_local ),
         header: "СМО Приморского края",
         name: "СМО",
-        find: 2, // search in the first 3 table columns
         struct: moStruct.smoLocal
       });
       return vuView(view);
