@@ -21,9 +21,8 @@ export const vuTableRow= function(data) {
       onclick: edit
     }, val);
   
-  const anchor_cell= (val, vpk) => m('td.choice.blue', m('a', {
+  const anchor_cell= (val, vpk) => m('td.choice.blue', m(m.route.Link, {
       href: `${href}/${vpk}`,
-      oncreate: m.route.link
     }, val));
   
   const ddel_cell= vpk => m('td', m('i.fa.fa-minus-circle.choice.red', {

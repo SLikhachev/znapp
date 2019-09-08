@@ -9,6 +9,7 @@ import { roLocal } from './router/roLocal.js';
 import { roProf } from './router/roProf.js';
 import { roCom } from './router/roCom.js';
 //import { roOnko } from './router/roOnko.js';
+import { roTarif } from './router/roTarif.js';
 
 const spravRouter = { [spravApi.root]: {
     render: function() {
@@ -18,7 +19,7 @@ const spravRouter = { [spravApi.root]: {
   }
 };
 
-Object.assign(spravRouter, roLocal, roProf, roCom); //roOnko);
+Object.assign(spravRouter, roLocal, roProf, roCom, roTarif); //roOnko);
 
 //m.route(document.getElementById('content'), "/", {})
 m.route(document.body, "/", spravRouter);

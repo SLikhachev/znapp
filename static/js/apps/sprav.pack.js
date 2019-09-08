@@ -171,13 +171,13 @@ const restSprav = {
     division: { url:"division"},
     sp_podr: { url:"sp_podr", order_by: 'mo_code' },
     sp_para: { url:"sp_para"},
-    purp: { url: 'purpose'},
+    //purp: { url: 'purpose'},
     mo_local: { url:"mo_local"},
     smo_local: { url:"smo_local"},
     
     // prof
     doc_spec : { url:"spec_prvs_profil", order_by: 'spec', key: 'spec'}, 
-    prof: { url: 'profil' },
+    profil: { url: 'profil', editable: ['edit'], change: ['one_visit', 'two_visit', 'podr'], },
     prvs: { url: 'prvs' },
     vidpom: { url: 'vidpom' },
     pmu: { url: 'pmu', editable: ['edit'], change: ['ccode', 'code_podr', 'code_spec'], key: 'code_usl' },
@@ -186,10 +186,10 @@ const restSprav = {
     pmu_grup: { url: 'pmu_grup', editable: ['add'] },
     grc: { url: 'rpc/get_grc'},
     mkb: { url: 'mkb10', order_by: 'code'},
-    type: {url: 'spec_case'},
-    insur: {url: 'kategor'},
-    istfin: {url: 'ist_fin'},
-    errors: {url: 'errors_code'},
+    //type: {url: 'spec_case'},
+    //insur: {url: 'kategor'},
+    //istfin: {url: 'ist_fin'},
+    //errors: {url: 'errors_code'},
     
     // onko
     onko_n1: {url: 'n1_protkaz'},
@@ -217,6 +217,9 @@ const restSprav = {
     dul: {url: 'dul'},
     okato: { url: 'okato'},
     
+    //tarif
+    tarif_base: { url: 'tarifs_base', editable: ['edit'] },
+    tarif_pmu_vzaimo:  { url: 'tarifs_pmu_vzaimoras', editable: ['edit'] },
 };
 
 const spravApi = {
@@ -274,8 +277,12 @@ const spravApi = {
     // common sprav
     com: "/com",
     com_dul: "/com/dul",
-    com_okato: "/com/okato"
+    com_okato: "/com/okato",
     
+    //tarifs
+    tarif: "/tarif",
+    tarif_base: "/tarif/base",
+    tarif_pmu_vzaimo: "/tarif/pmu_vzaimo",
 };
 
 const spravMenu = { subAppMenu: {
@@ -342,6 +349,14 @@ const spravMenu = { subAppMenu: {
       [`#!${spravApi.com_okato}`, "ОКАТО"],
     ]
   },
+  
+  tarif: {
+    nref: [`#!${spravApi.tarif}`, "Тарифы"],
+    items: [
+      [`#!${spravApi.tarif_base}`, "Базовый"],
+      [`#!${spravApi.tarif_pmu_vzaimo}`, "ПМУ взаиморас."],
+    ]
+  }
 }
 };
 
@@ -354,19 +369,19 @@ const spravMenu = { subAppMenu: {
 
 //import { moModel } from '../model/moModel.js';
 
-const vuDialog$1 = {
+const vuDialog = {
   
   dialog: null,
   //dialog: document.getElementById('dialog'),
   
   oncreate(vnode) {
-      vuDialog$1.dialog = vnode.dom;
+      vuDialog.dialog = vnode.dom;
       //console.log(dialogView.dialog);
   },
   
   view(vnode) {
     return m('dialog#dialog', m('.dialog-content', [
-      m('i.fa fa-times.dclose', { onclick: vuDialog$1.close }),
+      m('i.fa fa-times.dclose', { onclick: vuDialog.close }),
         m('span.dheader', `${vnode.attrs.header} (${vnode.attrs.word})`),
           vnode.children
         ])
@@ -374,7 +389,7 @@ const vuDialog$1 = {
   },
   
   open (vnode=null) {
-    vuDialog$1.dialog.showModal();
+    vuDialog.dialog.showModal();
     return false;
   },
   
@@ -382,8 +397,8 @@ const vuDialog$1 = {
     //let srverr = document.getElementById('srv-error');
     //let srverr = vuDialog.dialog.querySelector('#srv-error');
     //if ( !!srverr ) srverr.parentNode.removeChild(srverr);
-    vuDialog$1.dialog.querySelector('form').reset();
-    vuDialog$1.dialog.close();
+    vuDialog.dialog.querySelector('form').reset();
+    vuDialog.dialog.close();
     if ( reload ) m.redraw();
     return false;
   },
@@ -402,21 +417,23 @@ const errMsg= function(error){
   return m;
 };
 
-const moModel$1 = {
+const moModel = {
   
   // :: String -> Array -> String -> Object
   // ret models object (POJO)
   getModel(
     {url=null, method="GET", options=null, order_by='id', editable=null, change=null, key='id' } = {}
   ) {
-    // url - string of model's REST API url
-    // method - string of model's REST method
-    // options - array of strings of option tables names
-    // need for form data select/option if any
-    // order_by - string "order by" with initially SELECT 
-    // editable - array defines is model could changed
-    // change - array editable fields names
-    // key - primary key for sql model table dafault id
+/*
+  url - string of model's REST API url
+  method - string of model's REST method
+  options - array of strings of option tables names, required for complex views of this model
+    need for form data select/option if any
+  order_by - string "order by" with initially SELECT 
+  editable - array defines is model could changed
+  change - array editable fields names
+  key - primary key for sql model table dafault id
+*/
     let model = {
       url: url,
       method: method,
@@ -433,7 +450,7 @@ const moModel$1 = {
       sort: null, // for list
       save: null,
     };  
-    model.sort= field => moModel$1.sort(model, field);
+    model.sort= field => moModel.sort(model, field);
     model.getItem= id => {
       model.item= {};
       if (id === null) return false; 
@@ -628,12 +645,12 @@ const moModel$1 = {
       url: url,
       method: method,
       body: data,
-      async: false,
+      //async: false,
       headers: model.headers
     }).then( res => {
       event.target.parentNode.classList.remove('disable');
-      if (model.list) moModel$1.getList(model);
-      if ( vuDialog$1.dialog && vuDialog$1.dialog.open) vuDialog$1.close();
+      if (model.list) moModel.getList(model);
+      if ( vuDialog.dialog && vuDialog.dialog.open) vuDialog.close();
       return res; 
     }).catch( err => {
       let msg= errMsg(err);
@@ -698,19 +715,19 @@ const fetchForm= function( attrs ){
 }; //func
 
 
-const change$1= function(e, model, method, word) {
+const change= function(e, model, method, word) {
     //console.log(word);
     //e.preventDefault();
     item_id= e.target.getAttribute('data');
-    vuForm$1.method= method;
-    vuForm$1.word= word;
+    vuForm.method= method;
+    vuForm.word= word;
     model.getItem(item_id);
-    vuDialog$1.open();
+    vuDialog.open();
     return true;
   };
 
 // Forms in dialog window for catalogs 
-const vuForm$1 = {
+const vuForm = {
   
   item: null,
   method: "",
@@ -720,8 +737,8 @@ const vuForm$1 = {
   
   onSubmit(e) {
     e.preventDefault(); // if not then in route we will see wrong path (method GET + all form fields)
-    if (vuForm$1.model !== null && vuForm$1.model.item !== null) {
-      moModel$1.formSubmit(e, vuForm$1.model, vuForm$1.method);
+    if (vuForm.model !== null && vuForm.model.item !== null) {
+      moModel.formSubmit(e, vuForm.model, vuForm.method);
     }
     //vuDialog.close();
     //moModel.getList(vuForm.model);
@@ -730,27 +747,27 @@ const vuForm$1 = {
   
   oninit(vnode) {
     //vuDialog.model = vnode.attrs.model;
-    vuForm$1.model = vnode.attrs.model;
-    vuForm$1.name = vnode.attrs.name;
+    vuForm.model = vnode.attrs.model;
+    vuForm.name = vnode.attrs.name;
   },
     
   view(vnode) {
     return [m('form.pure-form.pure-form-aligned',
-      { id: 'moform', onsubmit: vuForm$1.onSubmit }, [
+      { id: 'moform', onsubmit: vuForm.onSubmit }, [
         vnode.children,
         m('.pure-controls', [
             //m('input[type=hidden][name=method]', {value: method} ),
-            m('button.pure-button[type=submit]', vuForm$1.word),
+            m('button.pure-button[type=submit]', vuForm.word),
         ])
       ]), // form
-      vuForm$1.model.save && vuForm$1.model.save.err ?
+      vuForm.model.save && vuForm.model.save.err ?
         [m('br'), m('span.red', 'Ошибка базы данных:'),
-        m('br'), m('span.red', `${vuForm$1.model.save.msg}`)] : ''
+        m('br'), m('span.red', `${vuForm.model.save.msg}`)] : ''
     ]; // return
   },
 };
 
-const vuTheader$1 = {
+const vuTheader = {
   view (vnode) {
     return m(".pure-g", m(".pure-u-1-1.box-1",
         m('span.dheader', vnode.attrs.header )
@@ -787,10 +804,10 @@ const vuFilter = {
   
   addItem(e) {
     //e.preventDefault();
-    vuForm$1.method= 'POST';
-    vuForm$1.word= 'Добавить';
+    vuForm.method= 'POST';
+    vuForm.word= 'Добавить';
     vuFilter.model.getItem(null);
-    vuDialog$1.open();
+    vuDialog.open();
     //return false;
   },
   
@@ -928,8 +945,13 @@ const moStruct = {
     prof_k: ["Профиль койки"],
     det: ["Детский"] 
   },
-  
-  
+  profil: {
+    id: ["Код", true ],
+    name: ["Профиль"],
+    one_visit: ["ПМУ посещение"],
+    two_visit: ["ПМУ обращение"],
+    podr: ["Подразделение"]
+  },
   dul: {
     code: ["Код", true],     
     name: ["Наименование"],
@@ -992,6 +1014,18 @@ const moStruct = {
     mark_name: ["Наименование маркера"],
     mark_id: ["Индекс маркера"],
   },
+  // tarifs
+  tarif_base: {
+    id: ["№ п/п"], 
+    name: ["Тариф"],
+    tarif: ["Цена руб./ Коэфф. "],
+  },
+  tarif_pmu_vzaimo: {
+    id: ["№ п/п"], 
+    code: ["Код ПМУ"],
+    tarif: ["Цена руб."],
+    name: ["ПМУ"]
+  },
   
   
   
@@ -999,7 +1033,7 @@ const moStruct = {
 
 // src/apps/view/vuApp.js
 
-const vuLoading$1 = {
+const vuLoading = {
   view() { 
     return m(".loading-icon", 
       m('.i.fa.fa-refresh.fa-spin.fa-3x.fa-fw'),
@@ -1030,9 +1064,8 @@ const vuTableRow= function(data) {
       onclick: edit
     }, val);
   
-  const anchor_cell= (val, vpk) => m('td.choice.blue', m('a', {
+  const anchor_cell= (val, vpk) => m('td.choice.blue', m(m.route.Link, {
       href: `${href}/${vpk}`,
-      oncreate: m.route.link
     }, val));
   
   const ddel_cell= vpk => m('td', m('i.fa.fa-minus-circle.choice.red', {
@@ -1099,15 +1132,24 @@ const vuListTable = function (vnode) {
 
 // clojure
 const vuSheet = function (vnode) {
-  // model,
-  // header,
-  // name,
-  // struct,
-  // filter,
-  // href,
-  // itemForm,
-  // fetchForm
-  
+  /* common view for sprav
+  attrs if defined:
+  model - required model object,
+      if model has editable array ( set in spravApi.restSprav of 3 words: add, del, edit ),
+      then dialog window will be defined to change the item of sprav
+      add - may add item
+      del - may del item
+      edit - may edit item
+      if model has change array of strings then this fields ( names) will be editable
+  header - required header string for view page,
+  name - string requred for item edit form as header in dialog window,
+  struct - required object represent items in table: order and names of tabel's header,
+  filter - int represent number of columns to fiter tables row from 1  ,
+  href - if defined then first column will be route to another page of this app,
+  itemForm - if defined then yhis form will bu used for change item in dialog window,
+  fetchForm - if defined then this form will be used for fetch items from sql table
+    in that case items will not be showed in table as for simple tables (short tables)
+  */
  
   let {
     model, header, name, struct, filter=0, //filter int of fields to order
@@ -1115,8 +1157,8 @@ const vuSheet = function (vnode) {
   }= vnode.attrs;
   //console.log( typeof fetchForm );
   //console.log(href);
-  const edit= e => change$1(e, model, 'PATCH', 'Изменить');
-  const ddel= e => change$1(e, model, 'DELETE', 'Удалить');
+  const edit= e => change(e, model, 'PATCH', 'Изменить');
+  const ddel= e => change(e, model, 'DELETE', 'Удалить');
   const edialog={}; 
   let { editable }= model;
 
@@ -1126,14 +1168,14 @@ const vuSheet = function (vnode) {
       if (editable.indexOf('del') >= 0) edialog.ddel= ddel;
   }
   const dialog= edialog.add || edialog.edit || edialog.ddel;
-  const sort=  e=> model.sort(e.target.getAttribute('data'));   
+  const sort=  e=> model.sort(e.target.getAttribute('data'));
   //const table= {struct, edialog, href, sort};
   
   if (href) delete edialog.edit; 
   
   if ( fetchForm$$1 === null ) {
-    moModel$1.getList( model );
-    moModel$1.getData( model );
+    moModel.getList( model );
+    moModel.getData( model );
   } else {
     model.getItem(null);
   }
@@ -1145,20 +1187,20 @@ const vuSheet = function (vnode) {
     view () {
       //console.log(itemForm);
       return [
-        header ? m(vuTheader$1, {header: header}) : '',
+        header ? m(vuTheader, {header: header}) : '',
         fetchForm$$1 ? fetchForm$$1( model ) : '',
         model.error ? m(".error", model.error) :
           model.list ? [
             filter ? m(vuFilter, {cols: filter, model: model, add: edialog.add} ) : '',
             m(vuListTable, {struct: struct, edialog: edialog, href: href, sort: sort, model: model} ),
             dialog ? itemForm ? // set in parent view if any
-              m(vuDialog$1, { header: header, word: vuForm$1.word },
-                m(vuForm$1, { model: model, name: name },
-                  m(itemForm, { model: model, method: vuForm$1.method } )
+              m(vuDialog, { header: header, word: vuForm.word },
+                m(vuForm, { model: model, name: name },
+                  m(itemForm, { model: model, method: vuForm.method } )
                 )
               ) : '' //m('h2', 'Не определена форма редактирования объекта')
             : '' // not editable
-          ] : m(vuLoading$1)
+          ] : m(vuLoading)
       ];
     }
   }; //return this object
@@ -1202,7 +1244,20 @@ const fieldFrom = function (fromObj, field, data, to_attrs={}) {
 
 };
 
-const itForm = function(fld, func, vnode){
+//export const fieldFrom = function (fromObj, field, data, to_attrs={}) {
+  // fromObj - object with form fields (label, input) description
+  // field - fromObj attribute name for form field (form input tag name is equal  to attr name)
+  // data - object gets actual data from (model field)
+  // to_attrs = additional attrs to be set to input tag
+
+// return only fieldset html
+const itForm = function(flds, func, vnode){
+/*
+return item form editanle item of sprav model
+flds - array of fields to edit
+func- function returns field represent
+item - item to edit
+*/
   let item; //= vnode.attrs.item;
  
   //let fld = fld;
@@ -1216,7 +1271,7 @@ const itForm = function(fld, func, vnode){
       //item= vnode.attrs.model.item;
       //console.log(item);
       return m('fieldset', [
-        item ? fld.map( f => m('.pure-control-group', func(f, item)) ): ''
+        item ? flds.map( f => m('.pure-control-group', func(f, item)) ): ''
       ]);
     },
   };
@@ -1224,7 +1279,7 @@ const itForm = function(fld, func, vnode){
 
 // label = [class, text], if null no label
 // input = tag = [class, type, tabindex (int), required(bool)]
-
+// Item object for simple model of id and name fields only
 const Item= {
   id: { label: ['', "Номер"], input: {
       tag: ['.lcode', "number", 1, true],
@@ -1236,11 +1291,13 @@ const Item= {
     }
   },
 };
-
+// represent item form
 const itf$1 = function(f, d, a={}) { return fieldFrom(Item, f, d, a); };
 
 const itemForm = function(vnode){
-  return itForm( Object.assign( { fld: ['id', 'name'], ffunc: itf$1 }, vnode.attrs ) );
+  //return itForm( Object.assign( { flds: ['id', 'name'], ffunc: itf }, vnode.attrs ) );
+  let flds= ['id', 'name'];
+  return itForm( flds, itf$1, vnode );
 };
 
 // src/sprav/view/vuDoctor.js
@@ -1289,9 +1346,9 @@ const Item$1 = {
 
 
 const itemForm$1= function(vnode){
-  let fld= ['family', 'name', 'sname', 'snils', 'code', 'spec', 'division', 'district', 'tabid'];
+  let flds= ['family', 'name', 'sname', 'snils', 'code', 'spec', 'division', 'district', 'tabid'];
   const itf = function(f, d, a={}) { return fieldFrom(Item$1, f, d, a); };
-  return itForm( fld, itf , vnode);
+  return itForm( flds, itf , vnode);
 };
 // clojure
 const vuDoctor = function (vnode) {
@@ -1300,193 +1357,8 @@ const vuDoctor = function (vnode) {
   return view
 };
 
-// src/sprav/view/vuDataSheet.js
-
-// DataSheet view: assumes model is not a simple list of records
-// { id, name }, but has definitely struct defined in Struct module 
-// clojure
-const vuDataSheet = function (vnode) {
-  
-  let modelObject = vnode.attrs.model, // model Object
-    headerString = vnode.attrs.header, // String: page header 
-    nameString = vnode.attrs.name, // String: models item name 
-    findInt = vnode.attrs.find, // Int: how many cols include in find function
-    structObject = vnode.attrs.struct; // the struct Object
-  
-  //let item, method;
-  
-  const edit= function(e) {
-    return change$1(e, modelObject, 'PATCH', 'Изменить');
-  };
-  const ddel= function(e) {
-    return change$1(e, modelObject, 'DELETE', 'Удалить');
-  };
-  
-  const sort=  e=> {
-    e.preventDefault();
-    return modelObject.sort(e.target.getAttribute('data'));
-  };
-  
-  return {
-    
-    oninit () {
-      moModel$1.getList( modelObject );
-      moModel$1.getData( modelObject );
-    },
-    //onbeforeupdate() {
-      //moModel.getList( modelObject );
-      //moModel.getData( modelObject );
-    //},
-    listMap (s) {
-      //let id = s.code + ' ' + s.spec;
-      let first = true;
-      return m('tr', [
-        Object.keys(structObject).map( (column) => {
-          let td = first ? m('td.choice.blue', {
-            data:  s.id, // every item must have id attr
-            onclick: modelObject.edit ? edit : ''
-          }, s[column]) : m('td', s[column]);
-          first = false;
-          return td;
-        }),
-        modelObject.del ? 
-        m('td', m('i.fa.fa-minus-circle.choice.red', {
-          data: s.id,
-          onclick: ddel
-        }) ) : ''
-      ]);
-    },
-
-    view () {
-      return modelObject.error ? [ m(".error", modelObject.error) ] :
-        modelObject.list ? [
-          m(vuTheader$1, { header: headerString} ),
-          m(vuFilter, {cols: findInt, model: modelObject, add: false} ),
-        
-          m('table.pure-table.pure-table-bordered[id=find_table]', [
-            m('thead', [
-              m('tr', [
-                Object.keys(structObject).map( (column) => {
-                  let field = structObject[column];
-                  return field.length > 1 ? m('th.sortable',
-                    { data: column, onclick: sort },
-                    [field[0], m('i.fa.fa-sort.pl10')]
-                    ) : m('th', field[0]);
-                }),
-                modelObject.del ? m('th', "Удалить") : ''
-              ])
-            ]),
-            m('tbody', [modelObject.list.map( this.listMap )] )
-          ]),
-          modelObject.edit ? this.itemForm ? // set in parent view if any
-          m(vuDialog$1,
-            { header: headerString,
-              word: vuForm$1.word
-            }, m(vuForm$1, { model: modelObject, name: nameString },
-                m(this.itemForm, { model: modelObject, method: vuForm$1.method } )
-             )
-          ) : m('h2', 'Не определена форма редактирования объекта') : ''
-        
-        ] : m(vuLoading$1);
-    }
-  }; //return this object
-};
-
-// src/clinic/view/vuMoLocal.js
-
-//POJO
-const itemForm$2 = {
-    
-  view(vnode) {
-    let item = vnode.attrs.item,
-    ro = vnode.attrs.method === 'DELETE' ? true : false;
-    return m('fieldset', [      
-      m('input[type=hidden][name=id]', {value: item ? item.id : '' } ),
-      m('.pure-control-group', [
-        m('label[for=code]', 'Код MO'),
-        m('input.lcode[id=code][type=text][name=code]', {
-          value: item ? item.code : '',
-          readonly: ro,
-          'data-validation': 'number',
-          'data-validation-error-msg': 'целое число'
-        }),
-      ]),
-      m('.pure-control-group', [
-        m('label[for=scode]', 'Код MO для ТФОМС'),
-        m('input.fcode[id=scode][type=text][name=scode]', {
-          value: item ? item.scode : '',
-          readonly: ro,
-          'data-validation': 'number',
-          'data-validation-error-msg': 'целое число'
-        }),
-      ]),
-      m('.pure-control-group', [
-        m('label[for=sname]', 'Наименование кратко'),
-        m('textarea[id=sname][name=sname][cols=40]',
-          {readonly: ro},
-          item ? item.sname : '')
-      ]),
-      m('.pure-control-group', [
-        m('label[for=name]', 'Наименование полное'),
-        m('textarea[id=name][name=name][cols=40]',
-          {readonly: ro},
-          item ? item.name : '')
-      ]),
-    ]);
-  },
-};
-// clojure
-const vuMoLocal = function (vnode) {
-  let view = vuDataSheet(vnode);
-  view.itemForm = itemForm$2;
-  return view;
-};
-
-// src/clinic/view/vuSmoLocal.js
-
-//POJO
-const itemForm$3 = {
-    
-  view(vnode) {
-    let item = vnode.attrs.item,
-    ro = vnode.attrs.method === 'DELETE' ? true : false;
-    return m('fieldset', [      
-      m('input[type=hidden][name=id]', {value: item ? item.id : '' } ),
-      m('.pure-control-group', [
-        m('label[for=code]', 'Код СMO'),
-        m('input.lcode[id=code][type=text][name=code]', {
-          value: item ? item.code : '',
-          readonly: ro,
-          'data-validation': 'number',
-          'data-validation-error-msg': 'целое число'
-        }),
-      ]),
-      m('.pure-control-group', [
-        m('label[for=okato]', 'СМО ОКАТО'),
-        m('input.fcode[id=okato][type=text][name=okato]', {
-          value: item ? item.okato : '',
-          readonly: ro,
-          'data-validation': 'number',
-          'data-validation-error-msg': 'целое число'
-        }),
-      ]),
-      m('.pure-control-group', [
-        m('label[for=sname]', 'Наименование'),
-        m('textarea[id=name][name=name][cols=40]',
-          {readonly: ro},
-          item ? item.name : '')
-      ]),
-    ]);
-  },
-};
-// clojure
-const vuSmoLocal = function (vnode) {
-  let view = vuDataSheet(vnode);
-  view.itemForm = itemForm$3;
-  return view;
-};
-
 // src/sprav/router.moRouter.js
+
 /*
 const vuDist = function(vnode){
   return vuCatalog(vnode);
@@ -1501,6 +1373,13 @@ const vuSpPodr = function(vnode){
 const vuSpPara = function(vnode){
   return vuSheet(vnode);
 };
+const vuMoLocal = function(vnode){
+  return vuSheet(vnode);
+};
+const vuSmoLocal = function(vnode){
+  return vuSheet(vnode);
+};
+
 
 const roLocal = {
   [spravApi.mo]: {
@@ -1511,7 +1390,7 @@ const roLocal = {
   [spravApi.mo_doct]: {
     render: function() {
       let view = m(vuDoctor, {
-        model: moModel$1.getModel(restSprav.doctor),
+        model: moModel.getModel(restSprav.doctor),
         header: "Врачи",
         name: "Врач",
         filter: 3, // search in the first 3 table columns
@@ -1557,7 +1436,7 @@ const roLocal = {
   [spravApi.mo_sp_para]: {
     render: function() {
       let view = m(vuSpPara, {
-          model:  moModel$1.getModel( restSprav.sp_para),
+          model:  moModel.getModel( restSprav.sp_para),
           header: "Коды диагностических подразделений",
           name: "Подазделение",
           struct: idName
@@ -1569,10 +1448,10 @@ const roLocal = {
   [spravApi.mo_local]: {
     render: function() {
       let view = m(vuMoLocal, {
-          model: moModel$1.getModel( restSprav.mo_local ),
+          model: moModel.getModel( restSprav.mo_local ),
           header: "МО Приморского края",
           name: "МО",
-          find: 3, // search in the first 3 table columns
+          filter: 3, // search in the first 3 table columns
           struct: moStruct.moLocal
         });
         return vuView(view);
@@ -1581,15 +1460,70 @@ const roLocal = {
   [spravApi.mo_smo]: {
     render: function() {
       let view = m(vuSmoLocal, {
-        model: moModel$1.getModel( restSprav.smo_local ),
+        model: moModel.getModel( restSprav.smo_local ),
         header: "СМО Приморского края",
         name: "СМО",
-        find: 2, // search in the first 3 table columns
         struct: moStruct.smoLocal
       });
       return vuView(view);
     }
   },
+};
+
+//export const itForm = function(flds, func, vnode){
+/*
+return item form editanle item of sprav model
+flds - array of fields to edit
+func- function returns field represent
+item - item to edit
+*/
+const Profil= {
+  id: { label: ['', "Код"], input: {
+      tag: ['.lcode', "number"],
+      attrs: { disabled: true }
+    }
+  },
+  name: { label: ['', 'Профиль'], input: {
+      tag: ['.fname[size=54]', 'text'],
+      attrs: { disabled: true }
+    }
+  },
+  one_visit: { label: ['', "ПМУ посещение"], input: {
+      tag: ['.fname[size=54]', 'text', 3],
+    }
+  },
+  two_visit: { label: ['', "ПМУ обращени"], input: {
+      tag: ['.fname[size=54]', 'text', 4],
+    }
+  },
+  podr: { label: ['', "Подразделение"], input: {
+      tag: ['.lcode', "number", 5],
+    }
+  },
+};
+const itemProfil = function(vnode){
+  //return itForm( Object.assign( { flds: ['id', 'name'], ffunc: itf }, vnode.attrs ) );
+  const _it = function(f, d, a={}) { return fieldFrom(Profil, f, d, a); };
+  let flds= [ 'id', 'name', 'one_visit', 'two_visit', 'podr'];
+  //let flds= [ 'id', 'name', 'one_visit', 'two_visit', 'podr'];
+  return itForm( flds, _it, vnode );
+};
+//=================================================
+const TarifBase= {
+  name: { label: ['', "Тариф"], input: {
+      tag: ['.fname[size=54]', "text"],
+    }
+  },
+  tarif: { label: ['', 'Размер'], input: {
+      tag: ['.fname[size=54]', 'text'],
+    }
+  },
+};
+const itemTarifBase = function(vnode){
+  //return itForm( Object.assign( { flds: ['id', 'name'], ffunc: itf }, vnode.attrs ) );
+  let flds= [ 'name', 'tarif'];
+  const _it = function(f, d, a={}) { return fieldFrom(TarifBase, f, d, a); };
+  return itForm( flds, _it, vnode );
 };
 
 const Fetch = {
@@ -1630,7 +1564,7 @@ const pmuFind = function ( model ) {
     //console.log(q);
     model.url=restSprav.pmu.url + `${q}&limit=20`;
     //console.log(model.url);
-    return moModel$1.getList(model);
+    return moModel.getList(model);
     //m.redraw();
     //return false;
   };
@@ -1670,7 +1604,7 @@ const pmuForm = function (vnode) {
   let on_submit = function (event) {
     event.preventDefault();
     let model= Object.assign({ item: item}, restSprav.pmu );
-    return moModel$1.formSubmit(event, model, 'PATCH');
+    return moModel.formSubmit(event, model, 'PATCH');
   };
   
   return {
@@ -1735,8 +1669,8 @@ const grcForm = function (vnode) {
   let fld= ['grup', ];
   let on_submit = function (event) {
     event.preventDefault();
-    moModel$1.formSubmit(event, _model, 'POST');
-    moModel$1.getViewRpcMap(model, [ null, {code: item.code_usl}] );
+    moModel.formSubmit(event, _model, 'POST');
+    moModel.getViewRpcMap(model, [ null, {code: item.code_usl}] );
     //console.log(model);
   };
   
@@ -1782,8 +1716,8 @@ const vuGrups= function(vnode){
       key: 'grup',
       item: { grup: grup },
     };
-    moModel$1.formSubmit(e, _model, 'DELETE');
-    moModel$1.getViewRpcMap(model, [ null, {code: item.code_usl}] );
+    moModel.formSubmit(e, _model, 'DELETE');
+    moModel.getViewRpcMap(model, [ null, {code: item.code_usl}] );
     //m.redraw();
   };
   let thdr= [['id', 'Номер группы'], ['name', 'Описание'], [null, 'Удалить из группы'] ];
@@ -1815,12 +1749,12 @@ const vuPmuItem = function(vnode){
   //console.log(code);
   let q= `?code_usl=eq.${code}`;
   //console.log(q);
-  let model= moModel$1.getModel();
+  let model= moModel.getModel();
   model.url= [ `${restSprav.pmu.url}${q}`, `${restSprav.pgc.url}` ];
   model.method= ['GET', 'POST'];
   model.map_keys= ['item', 'grup'];
   // getViewRpcMap(model: object, data: additional data object)
-  moModel$1.getViewRpcMap(model, [ null, {code: code}] );
+  moModel.getViewRpcMap(model, [ null, {code: code}] );
   
   return {  
     onupdate() {
@@ -1830,7 +1764,7 @@ const vuPmuItem = function(vnode){
       return model.error ? [ m(".error", model.error) ] :
       model.item ?
         [m(vuItem, {model: model}), m(vuGrups, {model: model} )] 
-      : m(vuLoading$1);
+      : m(vuLoading);
     }
   };
 };
@@ -1852,7 +1786,7 @@ const grupForm = function (vnode) {
   let on_submit = function (event) {
     event.preventDefault();
     let model= Object.assign({ item: item}, restSprav.pmu_grup );
-    moModel$1.formSubmit(event, model, 'PATCH');
+    moModel.formSubmit(event, model, 'PATCH');
     //moModel.getViewRpcMap(model, [ null, {code: item.code_usl}] );
   };
   
@@ -1924,8 +1858,8 @@ const grcForm$1 = function (vnode) {
   let fld= ['code_usl'];
   let on_submit = function (event) {
     event.preventDefault();
-    moModel$1.formSubmit(event, _model, 'POST');
-    moModel$1.getViewRpcMap(model, [ null, {grup: item.id}] );
+    moModel.formSubmit(event, _model, 'POST');
+    moModel.getViewRpcMap(model, [ null, {grup: item.id}] );
     //console.log(model);
   };
   
@@ -1969,8 +1903,8 @@ const vuPmus= function(vnode){
       key: 'code_usl',
       item: { code_usl },
     };
-    moModel$1.formSubmit(e, _model, 'DELETE');
-    moModel$1.getViewRpcMap(model, [ null, {grup: item.id}] );
+    moModel.formSubmit(e, _model, 'DELETE');
+    moModel.getViewRpcMap(model, [ null, {grup: item.id}] );
     //m.redraw();
   };
   let thdr= [['code_usl', 'Код ПМУ'], ['name', 'Описание'],
@@ -2003,19 +1937,19 @@ const vuGrupItem = function(vnode){
   let { grup } = vnode.attrs; //from url
   let q= `?id=eq.${grup}`;
   //console.log(q);
-  let model= moModel$1.getModel();
+  let model= moModel.getModel();
   model.url= [ `${restSprav.pmu_grup.url}${q}`, `${restSprav.grc.url}` ];
   model.method= ['GET', 'POST'];
   model.map_keys= ['item', 'pmus'];
   // getViewRpcMap(model: object, data: additional data object)
-  moModel$1.getViewRpcMap(model, [ null, {grup: grup}] );
+  moModel.getViewRpcMap(model, [ null, {grup: grup}] );
   
   return {  
     view() {
       return model.error ? [ m(".error", model.error) ] :
       model.item ?
         [m(vuItem$1, {model: model}), m(vuPmus, {model: model} )] 
-      : m(vuLoading$1);
+      : m(vuLoading);
     }
   };
 };
@@ -2045,7 +1979,7 @@ const foFind = function ( model ) {
     if (co.length < 2) return false;
     q= `?code=ilike.${co}*`;
     model.url=restSprav.mkb.url + `${q}&limit=20`;
-    return moModel$1.getList(model);
+    return moModel.getList(model);
   };
   return fetchForm( {  on_submit, data, flds, ffunc: form} );
 }; //func
@@ -2095,7 +2029,6 @@ const vuPgrup = function (vnode) {
   return view;
 };
 
-
 const roProf = {
   [spravApi.prof]: {
     render: function() {
@@ -2106,10 +2039,11 @@ const roProf = {
   [spravApi.prof_spec]: {
     render: function() {
       let view = m(vuSpec, {
-          model:  moModel$1.getModel( restSprav.doc_spec ),
+          model:  moModel.getModel( restSprav.doc_spec ),
           header: "Коды врачебных специальностей",
           name: "Специальность",
-          struct: moStruct.doc_spec
+          struct: moStruct.doc_spec,
+          filter: 2,
       });
       return vuView(view);
     }
@@ -2117,9 +2051,12 @@ const roProf = {
   [spravApi.prof_prof]: {
     render: function() {
       let view = m(vuProf, {
-          model:  moModel$1.getModel( restSprav.prof),
+          model:  moModel.getModel( restSprav.profil),
           header: "Профили помощи",
-          name: "Профиль"
+          name: "Профиль",
+          struct: moStruct.profil,
+          itemForm: itemProfil,
+          filter: 2,
       });
       return vuView(view);
     }
@@ -2127,9 +2064,11 @@ const roProf = {
   [spravApi.prof_prvs]: {
     render: function() {
       let view = m(vuPrvs, {
-          model:  moModel$1.getModel( restSprav.prvs),
+          model:  moModel.getModel( restSprav.prvs),
           header: "Специальности V021",
-          name: "Специальность"
+          name: "Специальность",
+          struct: idName,
+          filter: 2
       });
       return vuView(view);
     }
@@ -2137,9 +2076,11 @@ const roProf = {
   [spravApi.prof_vidpom]: {
     render: function() {
       let view = m(vuVidpom, {
-          model:  moModel$1.getModel( restSprav.vidpom),
+          model:  moModel.getModel( restSprav.vidpom),
           header: "Вид помощи",
-          name: "Вид"
+          name: "Вид",
+          struct: idName,
+          //filter: 2
       });
       return vuView(view);
     }
@@ -2147,7 +2088,7 @@ const roProf = {
   [spravApi.prof_pmus]: {
     render: function() {
       let view = m(vuPmu, {
-          model:  moModel$1.getModel( restSprav.pmu ),
+          model:  moModel.getModel( restSprav.pmu ),
           header: "Простые мед. усдуги",
           name: "Услуга",
           href: spravApi.prof_pmus,
@@ -2167,7 +2108,7 @@ const roProf = {
   [spravApi.prof_pgrup]: {
     render: function() {
       let view = m(vuPgrup, {
-          model:  moModel$1.getModel( restSprav.pmu_grup ),
+          model:  moModel.getModel( restSprav.pmu_grup ),
           header: "Гуппы ПМУ ",
           name: "Группа",
           filter: 2,
@@ -2188,7 +2129,7 @@ const roProf = {
   [spravApi.prof_mkb]: {
     render: function() {
       let view = m(vuMkb, {
-          model:  moModel$1.getModel( restSprav.mkb),
+          model:  moModel.getModel( restSprav.mkb),
           header: "МКБ - 10",
           name: "Диагноз",
           struct: moStruct.mkb
@@ -2250,50 +2191,13 @@ const roProf = {
   */
 };
 
-// src/sprav/view/vuCatalog.js
-
-const itemForm$5 = function(vnode) {
-  let item; // = vnode.attrs.item;
-  
-  return {
-    view(vnode) {
-      item = vnode.attrs.item;
-      //ro = vnode.attrs.method === 'DELETE' ? true : false;
-    
-      return m('fieldset', [
-        m('.pure-control-group', [
-          m('label[for=code]', 'Код'),
-          m('input.fcode[id=code][type=number][name=id]', {
-            value: item.id ? item.id : '',
-            readonly: item.id ? true : false, //id is auto
-          }),
-          item.id ? m('span.pure-form-message-inline', 'Поле не редактируется.') : ''
-        ]),
-        m('.pure-control-group', [
-          m('label[for=desc]', this.name),
-          m('textarea[id=desc][name=name][cols=40]',
-            item.name ? item.name : '')
-        ])
-      ]);
-    },
-  };
-};
-
-// clojure
-const vuCatalog = function(vnode) {
-  let view = vuSheet(vnode);
-  view.itemForm = itemForm$5;
-  return view;
-};
-//
-
 // src/sprav/router/profRouter.js
 
 const vuDul = function(vnode){
-  return vuCatalog(vnode);
+  return vuSheet(vnode);
 };
 const vuOkato = function(vnode){
-  return vuCatalog(vnode);
+  return vuSheet(vnode);
 };
 
 const roCom = {
@@ -2306,9 +2210,11 @@ const roCom = {
   [spravApi.com_dul]: {
     render: function() {
       let view = m(vuDul, {
-          model:  moModel$1.getModel( restSprav.dul ),
+          model:  moModel.getModel( restSprav.dul ),
           header: "Документ удостоверяющий личнось",
-          name: "Документ"
+          name: "Документ",
+          struct: moStruct.dul,
+          filter: 2
       });
       return vuView(view);
     }
@@ -2316,9 +2222,11 @@ const roCom = {
   [spravApi.com_okato]: {
     render: function() {
       let view = m(vuOkato, {
-          model:  moModel$1.getModel( restSprav.okato),
+          model:  moModel.getModel( restSprav.okato),
           header: "ОКАТО",
-          name: "ОКАТО"
+          name: "ОКАТО",
+          struct: moStruct.okato,
+          filter: 3
       });
       return vuView(view);
     }
@@ -2326,8 +2234,125 @@ const roCom = {
 
 };
 
+// label = [class, text], if null no label
+// input = tag = [class, type, tabindex (int), required(bool)]
+
+const Item$5 = {
+  code: { label: ['', "Код услуги"], input: {
+      tag: ['', "text"],
+      attrs: { readonly: true }
+    }
+  },
+  tarif: { label: ['', 'Тариф'], input: {
+      tag: ['', 'text'],
+    }
+  },
+};
+
+const itemForm$3 = function(vnode){
+  let item; //= vnode.attrs.item;
+  const _it = function(f, d, a={}) { return fieldFrom(Item$5, f, d, a); };
+  let fld = ['code', 'tarif'];
+  const fld_fun= item=> {
+    return [
+      fld.map( f => m('.pure-control-group', _it(f, item)) ),
+      m('span', item.name )
+    ];  
+  };
+  return {  
+    onbeforeupdate(vnode) {
+      item= vnode.attrs.model.item;
+    },
+    view() {
+      //item= vnode.attrs.model.item;
+      //console.log(item);
+      return m('fieldset', [
+        item ? fld_fun(item) : ''
+      ]);
+    },
+  };
+};
+
+const Fetch$2 = {
+  code: { label: ['', "Код услуги"], input: {
+      tag: ['.input-find.pure-u-3-4', "text"],
+      //attrs: { placeholder: "Код услуги" }
+    }
+  },
+};
+
+const pmu$1= function(f, d) {
+  //const a= { fval: v=> v ? v : "", onkeyup: e=> d[f]= e.target.value};
+  return fieldFrom(Fetch$2, f, d, {});
+};
+
+const pmuFind$1 = function ( model ) {
+  
+  //let { model }= vnode.attrs, data={};
+  let data= model.item;
+  let flds= ['code'];
+  //console.log( vnode );
+  let on_submit = function (event) {
+    // button FIND click event handler callback
+    event.preventDefault();
+    let { code: cu='' } = data, q;
+    if ( cu.length < 3) return false;
+    q= `?code=ilike.${cu}*`;
+    model.url=restSprav.tarif_pmu_vzaimo.url + `${q}&limit=20`;
+    return moModel.getList(model);
+  };
+  return fetchForm( {  on_submit, data, flds, ffunc: pmu$1} );
+}; //func
+
+// clojure
+const vuTarifPmuVzaimo = function (vnode) {
+  vnode.attrs.fetchForm= pmuFind$1;
+  vnode.attrs.itemForm= itemForm$3;
+  let view = vuSheet(vnode);
+  return view;
+};
+
+// src/sprav/router/profRouter.js
+
+const vuBase = function(vnode){
+  return vuSheet(vnode);
+};
+
+const roTarif = {
+  [spravApi.tarif]: {
+    render: function() {
+      return vuView( m(vuSprav, { text: "Тарифы ТТС" } ) );
+    }
+  },
+  
+  [spravApi.tarif_base]: {
+    render: function() {
+      let view = m(vuBase, {
+          model:  moModel.getModel( restSprav.tarif_base ),
+          header: "Базовые тарифы и коэфициенты",
+          name: "Тфриф",
+          struct: moStruct.tarif_base,
+          itemForm: itemTarifBase,
+      });
+      return vuView(view);
+    }
+  },
+  
+  [spravApi.tarif_pmu_vzaimo]: {
+    render: function() {
+      let view = m(vuTarifPmuVzaimo, {
+          model:  moModel.getModel( restSprav.tarif_pmu_vzaimo ),
+          header: "Тарифы на ПМУ по взаиморасчетам",
+          name: "Тариф",
+          struct: moStruct.tarif_pmu_vzaimo,
+      });
+      return vuView(view);
+    }
+  },
+  
+};
+
 // src/sprav/router_sprav.js
-//import { roOnko } from './router/roOnko.js';
 
 const spravRouter = { [spravApi.root]: {
     render: function() {
@@ -2337,7 +2362,7 @@ const spravRouter = { [spravApi.root]: {
   }
 };
 
-Object.assign(spravRouter, roLocal, roProf, roCom); //roOnko);
+Object.assign(spravRouter, roLocal, roProf, roCom, roTarif); //roOnko);
 
 //m.route(document.getElementById('content'), "/", {})
 m.route(document.body, "/", spravRouter);

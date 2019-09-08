@@ -48,9 +48,9 @@ const Item = {
 
 
 const itemForm= function(vnode){
-  let fld= ['family', 'name', 'sname', 'snils', 'code', 'spec', 'division', 'district', 'tabid'];
+  let flds= ['family', 'name', 'sname', 'snils', 'code', 'spec', 'division', 'district', 'tabid'];
   const itf = function(f, d, a={}) { return fieldFrom(Item, f, d, a); };
-  return itForm( fld, itf , vnode);
+  return itForm( flds, itf , vnode);
 }
 
 const _Form = function(vnode){

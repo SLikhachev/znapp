@@ -14,13 +14,13 @@ export const restSprav = {
     division: { url:"division"},
     sp_podr: { url:"sp_podr", order_by: 'mo_code' },
     sp_para: { url:"sp_para"},
-    purp: { url: 'purpose'},
+    //purp: { url: 'purpose'},
     mo_local: { url:"mo_local"},
     smo_local: { url:"smo_local"},
     
     // prof
     doc_spec : { url:"spec_prvs_profil", order_by: 'spec', key: 'spec'}, 
-    prof: { url: 'profil' },
+    profil: { url: 'profil', editable: ['edit'], change: ['one_visit', 'two_visit', 'podr'], },
     prvs: { url: 'prvs' },
     vidpom: { url: 'vidpom' },
     pmu: { url: 'pmu', editable: ['edit'], change: ['ccode', 'code_podr', 'code_spec'], key: 'code_usl' },
@@ -29,10 +29,10 @@ export const restSprav = {
     pmu_grup: { url: 'pmu_grup', editable: ['add'] },
     grc: { url: 'rpc/get_grc'},
     mkb: { url: 'mkb10', order_by: 'code'},
-    type: {url: 'spec_case'},
-    insur: {url: 'kategor'},
-    istfin: {url: 'ist_fin'},
-    errors: {url: 'errors_code'},
+    //type: {url: 'spec_case'},
+    //insur: {url: 'kategor'},
+    //istfin: {url: 'ist_fin'},
+    //errors: {url: 'errors_code'},
     
     // onko
     onko_n1: {url: 'n1_protkaz'},
@@ -60,6 +60,9 @@ export const restSprav = {
     dul: {url: 'dul'},
     okato: { url: 'okato'},
     
+    //tarif
+    tarif_base: { url: 'tarifs_base', editable: ['edit'] },
+    tarif_pmu_vzaimo:  { url: 'tarifs_pmu_vzaimoras', editable: ['edit'] },
 };
 
 export const spravApi = {
@@ -117,8 +120,12 @@ export const spravApi = {
     // common sprav
     com: "/com",
     com_dul: "/com/dul",
-    com_okato: "/com/okato"
+    com_okato: "/com/okato",
     
+    //tarifs
+    tarif: "/tarif",
+    tarif_base: "/tarif/base",
+    tarif_pmu_vzaimo: "/tarif/pmu_vzaimo",
 };
 
 export const spravMenu = { subAppMenu: {
@@ -185,5 +192,13 @@ export const spravMenu = { subAppMenu: {
       [`#!${spravApi.com_okato}`, "ОКАТО"],
     ]
   },
+  
+  tarif: {
+    nref: [`#!${spravApi.tarif}`, "Тарифы"],
+    items: [
+      [`#!${spravApi.tarif_base}`, "Базовый"],
+      [`#!${spravApi.tarif_pmu_vzaimo}`, "ПМУ взаиморас."],
+    ]
+  }
 }
 }
