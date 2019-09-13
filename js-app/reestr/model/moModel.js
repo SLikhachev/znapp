@@ -75,7 +75,7 @@ export const moModel = {
     return m.request({
       url: url,
       method: method,
-      body: data,
+      data: data,
       timeout: 0
     }).then((res) => {
       model.file = res.file ? res.file: null;
@@ -91,6 +91,7 @@ export const moModel = {
       form.classList.remove('disable');
       return false;
     });
+    return false;
   },
   
   // submit with simple / preflight CORS request   
@@ -110,7 +111,7 @@ export const moModel = {
     return m.request({
       url: url,
       method: method,
-      body: fdata,
+      data: fdata,
       timeout: 0
     }).then((res) => {
       model.file = res.file ? res.file: null;
@@ -125,6 +126,7 @@ export const moModel = {
       event.target.parentNode.classList.remove('disable');
       return false;
     });
+    return false;
   }
 
 }

@@ -19,7 +19,7 @@ const Form = function(vnode) {
     imp.classList.add('disable');
     //console.log(resp.getAttribute('display'));
     moModel.formSubmit(event, _schema('task'), model, "POST").then((t) => {
-      //console.log(model);
+      //console.log(imp);
       imp.classList.remove('disable');
     });
   };
@@ -48,8 +48,7 @@ const Form = function(vnode) {
                   m('option[value=1][selected]', 'Амбулаторный'),
                   m('option[value=2]', 'Онкология'),
                   m('option[value=3]', 'Дневной стационар'),
-                  m('option[value=4]', 'Профосмотр'),
-                  m('option[value=5]', 'Инокраевые'),
+                  m('option[value=4]', 'Инокраевые'),
                 ]),
               ]),
               m('.pure-controls', [

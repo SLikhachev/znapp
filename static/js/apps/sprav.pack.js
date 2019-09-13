@@ -174,7 +174,6 @@ const restSprav = {
     //purp: { url: 'purpose'},
     mo_local: { url:"mo_local"},
     smo_local: { url:"smo_local"},
-    
     // prof
     doc_spec : { url:"spec_prvs_profil", order_by: 'spec', key: 'spec'}, 
     profil: { url: 'profil', editable: ['edit'], change: ['one_visit', 'two_visit', 'podr'], },
@@ -388,7 +387,7 @@ const vuDialog = {
     );
   },
   
-  open (vnode=null) {
+  open () {
     vuDialog.dialog.showModal();
     return false;
   },
@@ -397,7 +396,8 @@ const vuDialog = {
     //let srverr = document.getElementById('srv-error');
     //let srverr = vuDialog.dialog.querySelector('#srv-error');
     //if ( !!srverr ) srverr.parentNode.removeChild(srverr);
-    vuDialog.dialog.querySelector('form').reset();
+    f= vuDialog.dialog.querySelector('form');
+    if (Boolean(f)) f.reset();
     vuDialog.dialog.close();
     if ( reload ) m.redraw();
     return false;
@@ -410,11 +410,19 @@ const vuDialog = {
 //console.log(schema);
 
 const errMsg= function(error){
-  console.log(error);
-  let e = JSON.parse(error.message);
-  let m= e.details ? e.details : e.message ? e.message: error.message;
+  //console.log(error);
+  //let e = JSON.parse(error.message);
+  let e= error.response;
+  let m= e.details ? e.details : e.message ? e.message: error;
   console.log(m);
   return m;
+};
+
+// return posgrest url if pg_rest else task url
+const _schema= type=> {
+  if (type === 'task')
+    return window.localStorage.getItem('task_rest');
+  return window.localStorage.getItem('pg_rest');
 };
 
 const moModel = {
@@ -474,11 +482,11 @@ const moModel = {
     let method= model.method ? model.method : 'GET';
     // filed - sort by with SELECT, default 'id' field
     //let schema = window.localStorage.getItem('pg_rest');
-    let pg_rest = window.localStorage.getItem('pg_rest');
+    let schema = _schema('pg_rest');
     let id = model.order_by ? model.order_by : 'id',
     sign= model.url.includes('?') ? '&': '?';
     order = `${sign}order=${id}.asc`;
-    let url = pg_rest + model.url + order;
+    let url = schema + model.url + order;
     console.log(url);
     return m.request({
       method: method,
@@ -500,7 +508,7 @@ const moModel = {
   getData(model){
     if ( model.options === null ) return false;
     //let schema = window.localStorage.getItem('pg_rest');
-    let pg_rest = window.localStorage.getItem('pg_rest');
+    let schema= _schema('pg_rest');
     let data = [];
     //morder= model.order ? model.order : 'id';
     //order= `?order=${morder}.asc`;
@@ -509,7 +517,7 @@ const moModel = {
       let order= `?order=${morder}.asc`;
       let r = m.request({
         method: t.method ? t.method : "GET" ,
-        url: pg_rest + t.url + order
+        url: schema + t.url + order
       });
       data.push(r);
     });
@@ -534,7 +542,7 @@ const moModel = {
   // return Promise
   getViewRpc (model, data, url=null, method=null) {
     //let schema = window.localStorage.getItem('pg_rest');
-    let pg_rest = window.localStorage.getItem('pg_rest');
+    let schema = _schema('pg_rest');
     let _url = url ? url : model.url;
     let _method = method ? method : model.method;
     let headers= model.headers ? model.headers : null;
@@ -560,12 +568,12 @@ const moModel = {
   },
 
   getViewRpcMap (model, data) {
-    let pg_rest = window.localStorage.getItem('pg_rest');
+    let schema= _schema('pg_rest');
     let reqs = [];
     for (let [idx, url] of model.url.entries()) {
       let r = m.request({
         method: model.method[idx],
-        url: pg_rest + url,
+        url: schema + url,
         body: data[idx]
       });
       reqs.push(r);
@@ -624,8 +632,8 @@ const moModel = {
   formSubmit(event, model, method) {
     //console.log(model);
     event.target.parentNode.classList.add('disable');
-    let pg_rest = window.localStorage.getItem('pg_rest');
-    let url = pg_rest + model.url;
+    let schema= _schema('pg_rest');
+    let url = schema + model.url;
     let key= model.key ? model.key : 'id';
     let data= Object.assign({}, model.item);
     let sign= model.url.includes('?') ? '&': '?';
@@ -658,8 +666,6 @@ const moModel = {
       event.target.parentNode.classList.remove('disable');
       return Promise.reject(msg);
     });
-    //m.redraw();
-    return false;
   }
 /*
   formSubmit (model, form) {  
@@ -1292,12 +1298,12 @@ const Item= {
   },
 };
 // represent item form
-const itf$1 = function(f, d, a={}) { return fieldFrom(Item, f, d, a); };
 
 const itemForm = function(vnode){
+  const itf = function(f, d, a={}) { return fieldFrom(Item, f, d, a); };
   //return itForm( Object.assign( { flds: ['id', 'name'], ffunc: itf }, vnode.attrs ) );
   let flds= ['id', 'name'];
-  return itForm( flds, itf$1, vnode );
+  return itForm( flds, itf, vnode );
 };
 
 // src/sprav/view/vuDoctor.js
@@ -1380,7 +1386,6 @@ const vuSmoLocal = function(vnode){
   return vuSheet(vnode);
 };
 
-
 const roLocal = {
   [spravApi.mo]: {
     render: function() {
@@ -1439,7 +1444,8 @@ const roLocal = {
           model:  moModel.getModel( restSprav.sp_para),
           header: "Коды диагностических подразделений",
           name: "Подазделение",
-          struct: idName
+          struct: idName,
+          filter: 2,
       });
       return vuView(view);
     }
@@ -1480,12 +1486,12 @@ item - item to edit
 const Profil= {
   id: { label: ['', "Код"], input: {
       tag: ['.lcode', "number"],
-      attrs: { disabled: true }
+      attrs: { readonly: true }
     }
   },
   name: { label: ['', 'Профиль'], input: {
       tag: ['.fname[size=54]', 'text'],
-      attrs: { disabled: true }
+      attrs: { readonly: true }
     }
   },
   one_visit: { label: ['', "ПМУ посещение"], input: {
@@ -1595,7 +1601,7 @@ const Item$3 = {
     }
   },
 };
-const itf$3 = function(f, d, a={}) { return fieldFrom(Item$3, f, d, a); };
+const itf$2 = function(f, d, a={}) { return fieldFrom(Item$3, f, d, a); };
 
 const pmuForm = function (vnode) {
 
@@ -1615,7 +1621,7 @@ const pmuForm = function (vnode) {
         m(".pure-u-1-2",
           m("form.pure-form", { onsubmit: on_submit },
             m("fieldset", m(".pure-g", [
-              fld.map( f => m(".pure-u-1-4", itf$3(f, item))),
+              fld.map( f => m(".pure-u-1-4", itf$2(f, item))),
               m(".pure-u-1-5", 
                 m('button.pure-button.pure-button-primary[type="submit"]',
                   {style: 'margin-top: 1.7em'},
@@ -1776,7 +1782,7 @@ const Item$4 = {
   },
 };
 
-const itf$4 = function(f, d, a={}) { return fieldFrom(Item$4, f, d, a); };
+const itf$3 = function(f, d, a={}) { return fieldFrom(Item$4, f, d, a); };
 
 // add PMU to GRUP
 const grupForm = function (vnode) {
@@ -1798,7 +1804,7 @@ const grupForm = function (vnode) {
         m(".pure-u-1-2",
           m("form.pure-form", { onsubmit: on_submit },
             m("fieldset", m(".pure-g", [
-              fld.map( f => m(".pure-u-1-3", itf$4(f, item))),
+              fld.map( f => m(".pure-u-1-3", itf$3(f, item))),
               m(".pure-u-1-5", 
                 m('button.pure-button.pure-button-primary[type="submit"]',
                   {style: 'margin-top: 1.7em'},
@@ -2080,7 +2086,7 @@ const roProf = {
           header: "Вид помощи",
           name: "Вид",
           struct: idName,
-          //filter: 2
+          filter: 2
       });
       return vuView(view);
     }

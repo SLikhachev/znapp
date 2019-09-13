@@ -114,7 +114,7 @@ export const moTalon = {
     m.request({
       url: url,
       method: method,
-      body: tal
+      data: tal
     }).then( res => {
       event.target.parentNode.classList.remove('disable');
     }).catch( err => {

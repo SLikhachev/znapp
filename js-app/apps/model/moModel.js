@@ -7,9 +7,10 @@ import { vuDialog } from '../view/vuDialog.js';
 //console.log(schema);
 
 export const errMsg= function(error){
-  console.log(error);
-  let e = JSON.parse(error.message);
-  let m= e.details ? e.details : e.message ? e.message: error.message;
+  //console.log(error);
+  //let e = JSON.parse(error.message);
+  let e= error.response;
+  let m= e.details ? e.details : e.message ? e.message: error;
   console.log(m);
   return m;
 }
@@ -85,11 +86,11 @@ export const moModel = {
     let method= model.method ? model.method : 'GET';
     // filed - sort by with SELECT, default 'id' field
     //let schema = window.localStorage.getItem('pg_rest');
-    let pg_rest = window.localStorage.getItem('pg_rest');
+    let schema = _schema('pg_rest');
     let id = model.order_by ? model.order_by : 'id',
     sign= model.url.includes('?') ? '&': '?';
     order = `${sign}order=${id}.asc`;
-    let url = pg_rest + model.url + order;
+    let url = schema + model.url + order;
     console.log(url);
     return m.request({
       method: method,
@@ -111,7 +112,7 @@ export const moModel = {
   getData(model){
     if ( model.options === null ) return false;
     //let schema = window.localStorage.getItem('pg_rest');
-    let pg_rest = window.localStorage.getItem('pg_rest');
+    let schema= _schema('pg_rest');
     let data = [];
     //morder= model.order ? model.order : 'id';
     //order= `?order=${morder}.asc`;
@@ -120,7 +121,7 @@ export const moModel = {
       let order= `?order=${morder}.asc`;
       let r = m.request({
         method: t.method ? t.method : "GET" ,
-        url: pg_rest + t.url + order
+        url: schema + t.url + order
       });
       data.push(r);
     });
@@ -145,12 +146,12 @@ export const moModel = {
   // return Promise
   getViewRpc (model, data, url=null, method=null) {
     //let schema = window.localStorage.getItem('pg_rest');
-    let pg_rest = window.localStorage.getItem('pg_rest');
+    let schema = _schema('pg_rest');
     let _url = url ? url : model.url;
     let _method = method ? method : model.method;
     let headers= model.headers ? model.headers : null;
     return m.request({
-      url: pg_rest + _url,
+      url: schema + _url,
       method: _method,
       body: data,
       headers: headers
@@ -171,12 +172,12 @@ export const moModel = {
   },
 
   getViewRpcMap (model, data) {
-    let pg_rest = window.localStorage.getItem('pg_rest');
+    let schema= _schema('pg_rest');
     let reqs = [];
     for (let [idx, url] of model.url.entries()) {
       let r = m.request({
         method: model.method[idx],
-        url: pg_rest + url,
+        url: schema + url,
         body: data[idx]
       });
       reqs.push(r);
@@ -235,8 +236,8 @@ export const moModel = {
   formSubmit(event, model, method) {
     //console.log(model);
     event.target.parentNode.classList.add('disable');
-    let pg_rest = window.localStorage.getItem('pg_rest');
-    let url = pg_rest + model.url;
+    let schema= _schema('pg_rest');
+    let url = schema + model.url;
     let key= model.key ? model.key : 'id';
     let data= Object.assign({}, model.item);
     let sign= model.url.includes('?') ? '&': '?';
@@ -269,8 +270,6 @@ export const moModel = {
       event.target.parentNode.classList.remove('disable');
       return Promise.reject(msg);
     });
-    //m.redraw();
-    return false;
   }
 /*
   formSubmit (model, form) {  

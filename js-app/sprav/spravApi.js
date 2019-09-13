@@ -17,7 +17,6 @@ export const restSprav = {
     //purp: { url: 'purpose'},
     mo_local: { url:"mo_local"},
     smo_local: { url:"smo_local"},
-    
     // prof
     doc_spec : { url:"spec_prvs_profil", order_by: 'spec', key: 'spec'}, 
     profil: { url: 'profil', editable: ['edit'], change: ['one_visit', 'two_visit', 'podr'], },

@@ -84,7 +84,7 @@ const talForm = function (vnode) {
 				m('.pure-u-3-24', { style: "margin-top: 5px;" }, 
           m('button.pure-button.pure-button-primary[type="submit"]',
             { style: "font-size: 1.1em",
-              onclick: talonSave
+              //onclick: talonSave
             },
           "Сохранить" )
         )
@@ -127,10 +127,8 @@ const crdForm = function (vnode) {
             { //onclick: e => cardSave
           }, "Сохранить"),
         
-       m(m.route.Link, { selector: 'a.pure-button.',
+       m(m.route.Link, { selector: 'a.pure-button.', 
             href: `${clinicApi.cards}/${card.crd_num}`,
-            //oncreate: m.route.link,
-            //onclick: (e) => m.route.set('/crads/add/'),
             style: "margin-left: 2em;"
             }, "Открыть карту" )
       ]), /*form*/

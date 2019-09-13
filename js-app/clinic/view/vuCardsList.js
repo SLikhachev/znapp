@@ -54,9 +54,9 @@ const cardFind= function (vnode) {
                     //value: 0,
                     onclick: findCards
                   }, "Найти" ),
-                m('a.pure-button.pure-button-primary', {
+                m(m.route.Link, { selector: 'a.pure-button.pure-button-primary', 
                   href: href,
-                  oncreate: m.route.link,
+                  //oncreate: m.route.link,
                   style: "margin-left: 2em;"
                   }, "Новая карта" )
               ),
@@ -116,7 +116,7 @@ export const vuCardsList = function (vnode) {
     return m('tr', [
       Object.keys(cardz_hdr).map( (column) => {
         let cell = column === 'fam' ? fio : s[column];
-        let td = first ? m('td.choice.blue', m(m.route.Link, {
+        let td = first ? m('td.choice.blue', m (m.route.Link, {
           href: `${clinicApi.cards}/${cell}`,
           //oncreate: m.route.link
         }, cell)) : m('td', cell);

@@ -100,7 +100,7 @@ export const moCard = {
     m.request({
       url: url,
       method: method,
-      body: card
+      data: card
     }).then( res => {
       event.target.parentNode.classList.remove('disable');
     }).catch( err => {

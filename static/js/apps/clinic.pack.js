@@ -211,12 +211,12 @@ const restSprav = {
     division: { url:"division"},
     sp_podr: { url:"sp_podr", order_by: 'mo_code' },
     sp_para: { url:"sp_para"},
-    purp: { url: 'purpose'},
+    //purp: { url: 'purpose'},
     mo_local: { url:"mo_local"},
     smo_local: { url:"smo_local"},
     // prof
-    doc_spec : { url:"spec_prvs_profil"}, // view name
-    prof: { url: 'profil' },
+    doc_spec : { url:"spec_prvs_profil", order_by: 'spec', key: 'spec'}, 
+    profil: { url: 'profil', editable: ['edit'], change: ['one_visit', 'two_visit', 'podr'], },
     prvs: { url: 'prvs' },
     vidpom: { url: 'vidpom' },
     pmu: { url: 'pmu', editable: ['edit'], change: ['ccode', 'code_podr', 'code_spec'], key: 'code_usl' },
@@ -225,10 +225,10 @@ const restSprav = {
     pmu_grup: { url: 'pmu_grup', editable: ['add'] },
     grc: { url: 'rpc/get_grc'},
     mkb: { url: 'mkb10', order_by: 'code'},
-    type: {url: 'spec_case'},
-    insur: {url: 'kategor'},
-    istfin: {url: 'ist_fin'},
-    errors: {url: 'errors_code'},
+    //type: {url: 'spec_case'},
+    //insur: {url: 'kategor'},
+    //istfin: {url: 'ist_fin'},
+    //errors: {url: 'errors_code'},
     
     // onko
     onko_n1: {url: 'n1_protkaz'},
@@ -256,6 +256,9 @@ const restSprav = {
     dul: {url: 'dul'},
     okato: { url: 'okato'},
     
+    //tarif
+    tarif_base: { url: 'tarifs_base', editable: ['edit'] },
+    tarif_pmu_vzaimo:  { url: 'tarifs_pmu_vzaimoras', editable: ['edit'] },
 };
 
 // src/apps/view/vuDialog.js
@@ -286,7 +289,7 @@ const vuDialog = {
     );
   },
   
-  open (vnode=null) {
+  open () {
     vuDialog.dialog.showModal();
     return false;
   },
@@ -295,7 +298,8 @@ const vuDialog = {
     //let srverr = document.getElementById('srv-error');
     //let srverr = vuDialog.dialog.querySelector('#srv-error');
     //if ( !!srverr ) srverr.parentNode.removeChild(srverr);
-    vuDialog.dialog.querySelector('form').reset();
+    f= vuDialog.dialog.querySelector('form');
+    if (Boolean(f)) f.reset();
     vuDialog.dialog.close();
     if ( reload ) m.redraw();
     return false;
@@ -308,11 +312,19 @@ const vuDialog = {
 //console.log(schema);
 
 const errMsg= function(error){
-  console.log(error);
-  let e = JSON.parse(error.message);
-  let m= e.details ? e.details : e.message ? e.message: error.message;
+  //console.log(error);
+  //let e = JSON.parse(error.message);
+  let e= error.response;
+  let m= e.details ? e.details : e.message ? e.message: error;
   console.log(m);
   return m;
+};
+
+// return posgrest url if pg_rest else task url
+const _schema= type=> {
+  if (type === 'task')
+    return window.localStorage.getItem('task_rest');
+  return window.localStorage.getItem('pg_rest');
 };
 
 const moModel = {
@@ -322,14 +334,16 @@ const moModel = {
   getModel(
     {url=null, method="GET", options=null, order_by='id', editable=null, change=null, key='id' } = {}
   ) {
-    // url - string of model's REST API url
-    // method - string of model's REST method
-    // options - array of strings of option tables names
-    // need for form data select/option if any
-    // order_by - string "order by" with initially SELECT 
-    // editable - array defines is model could changed
-    // change - array editable fields names
-    // key - primary key for sql model table dafault id
+/*
+  url - string of model's REST API url
+  method - string of model's REST method
+  options - array of strings of option tables names, required for complex views of this model
+    need for form data select/option if any
+  order_by - string "order by" with initially SELECT 
+  editable - array defines is model could changed
+  change - array editable fields names
+  key - primary key for sql model table dafault id
+*/
     let model = {
       url: url,
       method: method,
@@ -370,11 +384,11 @@ const moModel = {
     let method= model.method ? model.method : 'GET';
     // filed - sort by with SELECT, default 'id' field
     //let schema = window.localStorage.getItem('pg_rest');
-    let pg_rest = window.localStorage.getItem('pg_rest');
+    let schema = _schema('pg_rest');
     let id = model.order_by ? model.order_by : 'id',
     sign= model.url.includes('?') ? '&': '?';
     order = `${sign}order=${id}.asc`;
-    let url = pg_rest + model.url + order;
+    let url = schema + model.url + order;
     console.log(url);
     return m.request({
       method: method,
@@ -396,7 +410,7 @@ const moModel = {
   getData(model){
     if ( model.options === null ) return false;
     //let schema = window.localStorage.getItem('pg_rest');
-    let pg_rest = window.localStorage.getItem('pg_rest');
+    let schema= _schema('pg_rest');
     let data = [];
     //morder= model.order ? model.order : 'id';
     //order= `?order=${morder}.asc`;
@@ -405,7 +419,7 @@ const moModel = {
       let order= `?order=${morder}.asc`;
       let r = m.request({
         method: t.method ? t.method : "GET" ,
-        url: pg_rest + t.url + order
+        url: schema + t.url + order
       });
       data.push(r);
     });
@@ -430,12 +444,12 @@ const moModel = {
   // return Promise
   getViewRpc (model, data, url=null, method=null) {
     //let schema = window.localStorage.getItem('pg_rest');
-    let pg_rest = window.localStorage.getItem('pg_rest');
+    let schema = _schema('pg_rest');
     let _url = url ? url : model.url;
     let _method = method ? method : model.method;
     let headers= model.headers ? model.headers : null;
     return m.request({
-      url: pg_rest + _url,
+      url: schema + _url,
       method: _method,
       body: data,
       headers: headers
@@ -456,12 +470,12 @@ const moModel = {
   },
 
   getViewRpcMap (model, data) {
-    let pg_rest = window.localStorage.getItem('pg_rest');
+    let schema= _schema('pg_rest');
     let reqs = [];
     for (let [idx, url] of model.url.entries()) {
       let r = m.request({
         method: model.method[idx],
-        url: pg_rest + url,
+        url: schema + url,
         body: data[idx]
       });
       reqs.push(r);
@@ -520,8 +534,8 @@ const moModel = {
   formSubmit(event, model, method) {
     //console.log(model);
     event.target.parentNode.classList.add('disable');
-    let pg_rest = window.localStorage.getItem('pg_rest');
-    let url = pg_rest + model.url;
+    let schema= _schema('pg_rest');
+    let url = schema + model.url;
     let key= model.key ? model.key : 'id';
     let data= Object.assign({}, model.item);
     let sign= model.url.includes('?') ? '&': '?';
@@ -541,7 +555,7 @@ const moModel = {
       url: url,
       method: method,
       body: data,
-      async: false,
+      //async: false,
       headers: model.headers
     }).then( res => {
       event.target.parentNode.classList.remove('disable');
@@ -554,8 +568,6 @@ const moModel = {
       event.target.parentNode.classList.remove('disable');
       return Promise.reject(msg);
     });
-    //m.redraw();
-    return false;
   }
 /*
   formSubmit (model, form) {  
@@ -677,7 +689,7 @@ const moCard = {
     m.request({
       url: url,
       method: method,
-      body: card
+      data: card
     }).then( res => {
       event.target.parentNode.classList.remove('disable');
     }).catch( err => {
@@ -800,7 +812,7 @@ const moTalon = {
     m.request({
       url: url,
       method: method,
-      body: tal
+      data: tal
     }).then( res => {
       event.target.parentNode.classList.remove('disable');
     }).catch( err => {
@@ -902,9 +914,9 @@ const cardFind= function (vnode) {
                     //value: 0,
                     onclick: findCards
                   }, "Найти" ),
-                m('a.pure-button.pure-button-primary', {
+                m(m.route.Link, { selector: 'a.pure-button.pure-button-primary', 
                   href: href,
-                  oncreate: m.route.link,
+                  //oncreate: m.route.link,
                   style: "margin-left: 2em;"
                   }, "Новая карта" )
               ),
@@ -959,7 +971,7 @@ const vuCardsList = function (vnode) {
     return m('tr', [
       Object.keys(cardz_hdr).map( (column) => {
         let cell = column === 'fam' ? fio : s[column];
-        let td = first ? m('td.choice.blue', m(m.route.Link, {
+        let td = first ? m('td.choice.blue', m (m.route.Link, {
           href: `${clinicApi.cards}/${cell}`,
           //oncreate: m.route.link
         }, cell)) : m('td', cell);
@@ -1633,7 +1645,6 @@ const crdViz = function(vnode) {
           let td = tal_hdr[column].length === 2 ?
             m('td.choice.blue', m(m.route.Link, {
               href: `${clinicApi.talons}/${s[column]}/${crd}`,
-              //oncreate: m.route.link
             }, s[column])) : m('td', s[column]);
           return td;
         })
@@ -1651,10 +1662,8 @@ const crdViz = function(vnode) {
           m('tbody', [tal.map( this.listMap )] )
         ]) )),
         m('.pure-g', m('.pure-u-1-3',
-          m(m.route.Link, { selector: 'a.pure-button.pure-button-primary', 
+          m(m.route.Link, { selector: 'a.pure-button.pure-button-primary',
             href: `${[clinicApi.talon_add]}${crd}`,
-            //oncreate: m.route.link,
-            //onclick: (e) => m.route.set('/cards/0/'),
             style: "float: right; margin-top: 2em; font-size: 1.3 em"
             }, "Добавить талон")
           )
@@ -1843,7 +1852,6 @@ const vuTalonsList = function (vnode) {
         }, cell) */
         m('td.choice.blue', m(m.route.Link, {
           href: column == 'crd_num' ? `${clinicApi.cards}/${crd}`: `${clinicApi.talons}/${tal}/${crd}`,
-          //oncreate: m.route.link
         }, cell)) : m('td', cell);
         return td;
       }),
@@ -1956,7 +1964,7 @@ const talForm = function (vnode) {
 				m('.pure-u-3-24', { style: "margin-top: 5px;" }, 
           m('button.pure-button.pure-button-primary[type="submit"]',
             { style: "font-size: 1.1em",
-              onclick: talonSave
+              //onclick: talonSave
             },
           "Сохранить" )
         )
@@ -1999,10 +2007,8 @@ const crdForm = function (vnode) {
             { //onclick: e => cardSave
           }, "Сохранить"),
         
-       m(m.route.Link, { selector: 'a.pure-button.',
+       m(m.route.Link, { selector: 'a.pure-button.', 
             href: `${clinicApi.cards}/${card.crd_num}`,
-            //oncreate: m.route.link,
-            //onclick: (e) => m.route.set('/crads/add/'),
             style: "margin-left: 2em;"
             }, "Открыть карту" )
       ]), /*form*/

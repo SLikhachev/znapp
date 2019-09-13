@@ -132,7 +132,6 @@ export const vuTalonsList = function (vnode) {
         }, cell) */
         m('td.choice.blue', m(m.route.Link, {
           href: column == 'crd_num' ? `${clinicApi.cards}/${crd}`: `${clinicApi.talons}/${tal}/${crd}`,
-          //oncreate: m.route.link
         }, cell)) : m('td', cell);
         return td;
       }),
