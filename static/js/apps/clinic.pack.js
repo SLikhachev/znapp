@@ -196,6 +196,51 @@ const clinicMenu = { subAppMenu: {
 }
 };
 
+// src/apps/view/vuDialog.js
+
+// https://github.com/GoogleChrome/dialog-polyfill
+// https://html5test.com/
+// Fifix since 53 about:config
+// dom.dialog_element.enabled
+
+//import { moModel } from '../model/moModel.js';
+
+const vuDialog = {
+  
+  dialog: null,
+  //dialog: document.getElementById('dialog'),
+  
+  oncreate(vnode) {
+      vuDialog.dialog = vnode.dom;
+      //console.log(dialogView.dialog);
+  },
+  
+  view(vnode) {
+    return m('dialog#dialog', m('.dialog-content', [
+      m('i.fa fa-times.dclose', { onclick: vuDialog.close }),
+        m('span.dheader', `${vnode.attrs.header} (${vnode.attrs.word})`),
+          vnode.children
+        ])
+    );
+  },
+  
+  open () {
+    vuDialog.dialog.showModal();
+    return false;
+  },
+  
+  close (reload=false) { //e - EventObject
+    //let srverr = document.getElementById('srv-error');
+    //let srverr = vuDialog.dialog.querySelector('#srv-error');
+    //if ( !!srverr ) srverr.parentNode.removeChild(srverr);
+    f= vuDialog.dialog.querySelector('form');
+    if (Boolean(f)) f.reset();
+    vuDialog.dialog.close();
+    if ( reload ) m.redraw();
+    return false;
+  },
+};
+
 // src/sparv/spravApi.js
 // here url is a table name
 
@@ -261,51 +306,6 @@ const restSprav = {
     tarif_pmu_vzaimo:  { url: 'tarifs_pmu_vzaimoras', editable: ['edit'] },
 };
 
-// src/apps/view/vuDialog.js
-
-// https://github.com/GoogleChrome/dialog-polyfill
-// https://html5test.com/
-// Fifix since 53 about:config
-// dom.dialog_element.enabled
-
-//import { moModel } from '../model/moModel.js';
-
-const vuDialog = {
-  
-  dialog: null,
-  //dialog: document.getElementById('dialog'),
-  
-  oncreate(vnode) {
-      vuDialog.dialog = vnode.dom;
-      //console.log(dialogView.dialog);
-  },
-  
-  view(vnode) {
-    return m('dialog#dialog', m('.dialog-content', [
-      m('i.fa fa-times.dclose', { onclick: vuDialog.close }),
-        m('span.dheader', `${vnode.attrs.header} (${vnode.attrs.word})`),
-          vnode.children
-        ])
-    );
-  },
-  
-  open () {
-    vuDialog.dialog.showModal();
-    return false;
-  },
-  
-  close (reload=false) { //e - EventObject
-    //let srverr = document.getElementById('srv-error');
-    //let srverr = vuDialog.dialog.querySelector('#srv-error');
-    //if ( !!srverr ) srverr.parentNode.removeChild(srverr);
-    f= vuDialog.dialog.querySelector('form');
-    if (Boolean(f)) f.reset();
-    vuDialog.dialog.close();
-    if ( reload ) m.redraw();
-    return false;
-  },
-};
-
 // src/apps/model/moModel.js
 
 //const pg_rest = window.localStorage.getItem('pg_rest'); //postgest schemaRest;
@@ -315,7 +315,8 @@ const errMsg= function(error){
   //console.log(error);
   //let e = JSON.parse(error.message);
   let e= error.response;
-  let m= e.details ? e.details : e.message ? e.message: error;
+  //let m= e.details ? e.details : e.message ? e.message: error;
+  let m= e.message ? e.message : error;
   console.log(m);
   return m;
 };
@@ -603,8 +604,6 @@ const moModel = {
 
 // src/clinic/model/moCards.js
 
-//let schema = schemaRest;
-
 const moCardsList = {
   // return model object 
   getModel() {
@@ -665,6 +664,7 @@ const moCard = {
   saveCard(event, card, model, method) {
     event.target.parentNode.classList.add('disable');
     model.card = Object.assign(model.card, card);
+    const to_save= Object.assign({}, card);
     //console.log(moCard.model.card);
     /*
     testCase(2000, true).then( (res) => {
@@ -679,24 +679,24 @@ const moCard = {
         m.redraw();
     });
     */
-    let pg_rest = window.localStorage.getItem('pg_rest');
+    let schema = _schema('pg_rest');
     //let method = event.target.getAttribute('method');
     let { crd_num } = card;
-    let table = `${pg_rest}cardz_clin`;
+    let table = `${schema}cardz_clin`;
     let url = crd_num ? `${table}?crd_num=eq.${crd_num}`: table;
-    if ( Boolean(crd_num) ) delete card.crd_num;
+    if ( Boolean(crd_num) ) delete to_save.crd_num;
     
-    m.request({
+    return m.request({
       url: url,
       method: method,
-      data: card
+      body: to_save
     }).then( res => {
       event.target.parentNode.classList.remove('disable');
     }).catch( err => {
-      model.save = { err: true, msg: errMsg(err) };
+      model.save = errMsg(err);
       event.target.parentNode.classList.remove('disable');
+      vuDialog.open();
     });
-    return false;
   }
 };
 
@@ -1010,7 +1010,7 @@ const vuCardsList = function (vnode) {
 const tabsView = function(vnode) {
   //console.log(vnode.attrs);
   
-  let item = vnode.attrs.item;
+  //let item = vnode.attrs.item;
   let tabs = [], tabs_cont=[];
   let tab_names = vnode.attrs.tabs;  //Array.of('Карта', 'Дополнительно', 'Прикрепить');
   let tab_contents = vnode.attrs.conts; //Array.of(crdMain, crdOpt, crdAtt);
@@ -1035,7 +1035,7 @@ const tabsView = function(vnode) {
 
   };
   return {
-    oncreate(vnode) {
+    oncreate() {
       //console.log(vnode.attrs.data);
       tabs = document.getElementsByClassName('tab');
       tabs_cont=document.getElementsByClassName('tab-content');
@@ -1045,9 +1045,9 @@ const tabsView = function(vnode) {
       hideTabs(1); // other hide
     },
     
-    view(vnode) {
+    view() {
       let idx=0;
-      return m('div#tabs', [
+      return [ m('div#tabs', [
         tab_names.map( (name) => {
           return m('.tab',
               { idx: idx++,
@@ -1062,7 +1062,13 @@ const tabsView = function(vnode) {
             
             m(cont, {model: vnode.attrs.model, method: vnode.attrs.method}) );
         })
-      ]);
+      ]),
+      m(vuDialog, { header: 'Ошибка бработки', word: vnode.attrs.model.word },
+        m('span.red', {style: "font-size: 1.2em; font-weight: 500"},
+          vnode.attrs.model.save ? vnode.attrs.model.save: 'No messages'
+        )
+      )
+    ];
   }
 }
 };
@@ -1596,13 +1602,13 @@ const crdMain = function(vnode) {
 // ============================
           m(".pure-g", [
             m(".pure-u-10-24 ", [
-              m('span#card_message',
-                model.save ? model.save.ok ? model.save.msg : m('span.red', model.save.msg) : '')
+              m('span#card_message', '')
+                //model.save ? model.save.ok ? model.save.msg : m('span.red', model.save.msg) : '')
             ]),
             m(".pure-u-14-24 ", [
               m('button.pure-button.pure-button-primary[type="submit"]',
                 { //onfocus: setPale,
-                  onclick: cardSave
+                  //onclick: cardSave
                   //tetabindex: "20",
                 }, "Сохранить"),
 
@@ -1700,6 +1706,7 @@ const vuCard = function(vnode) {
   let conts = [crdMain, crdViz, crdExt, crdAtt, crdDel];
   const crd = parseInt(vnode.attrs.crd);
   const model= moCard.getModel();
+  model.word= 'Карты';
   moCard.getCard( model, crd );
   const method = isNaN(crd) || crd === 0 ? "POST": "PATCH";
   
@@ -2097,7 +2104,6 @@ const talNap = function(vnode) {
     }
   };
 };
-
 
 const pmuForm = function (vnode) {
   

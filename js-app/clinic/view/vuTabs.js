@@ -1,8 +1,9 @@
 
 // src/clinic/view/vuTabs.js
-
+import { vuDialog } from '../../apps/view/vuDialog.js';
 import { moCard } from '../model/moCards.js';
 import { moTalon } from '../model/moTalons.js';
+
 
 export const toFocus = function (vnode) {
   vnode.dom.focus();
@@ -20,7 +21,7 @@ export const delPale = function(e) {
 export const tabsView = function(vnode) {
   //console.log(vnode.attrs);
   
-  let item = vnode.attrs.item;
+  //let item = vnode.attrs.item;
   let tabs = [], tabs_cont=[];
   let tab_names = vnode.attrs.tabs;  //Array.of('Карта', 'Дополнительно', 'Прикрепить');
   let tab_contents = vnode.attrs.conts; //Array.of(crdMain, crdOpt, crdAtt);
@@ -45,7 +46,7 @@ export const tabsView = function(vnode) {
 
   };
   return {
-    oncreate(vnode) {
+    oncreate() {
       //console.log(vnode.attrs.data);
       tabs = document.getElementsByClassName('tab');
       tabs_cont=document.getElementsByClassName('tab-content');
@@ -55,9 +56,9 @@ export const tabsView = function(vnode) {
       hideTabs(1); // other hide
     },
     
-    view(vnode) {
+    view() {
       let idx=0;
-      return m('div#tabs', [
+      return [ m('div#tabs', [
         tab_names.map( (name) => {
           return m('.tab',
               { idx: idx++,
@@ -72,7 +73,13 @@ export const tabsView = function(vnode) {
             
             m(cont, {model: vnode.attrs.model, method: vnode.attrs.method}) );
         })
-      ]);
+      ]),
+      m(vuDialog, { header: 'Ошибка бработки', word: vnode.attrs.model.word },
+        m('span.red', {style: "font-size: 1.2em; font-weight: 600"},
+          vnode.attrs.model.save ? vnode.attrs.model.save: 'No messages'
+        )
+      )
+    ];
   }
 }
 }

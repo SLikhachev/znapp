@@ -1,11 +1,9 @@
 // src/clinic/model/moCards.js
 
-//import { schemaRest } from '../../apps/apiConf.js';
+import { vuDialog } from '../../apps/view/vuDialog.js';
 import { restSprav } from '../../sprav/spravApi.js';
 import { restClinic } from '../clinicApi.js';
-import { moModel, errMsg } from '../../apps/model/moModel.js';
-
-//let schema = schemaRest;
+import { moModel, errMsg, _schema } from '../../apps/model/moModel.js';
 
 export const moCardsList = {
   // return model object 
@@ -76,6 +74,7 @@ export const moCard = {
   saveCard(event, card, model, method) {
     event.target.parentNode.classList.add('disable');
     model.card = Object.assign(model.card, card);
+    const to_save= Object.assign({}, card);
     //console.log(moCard.model.card);
     /*
     testCase(2000, true).then( (res) => {
@@ -90,23 +89,23 @@ export const moCard = {
         m.redraw();
     });
     */
-    let pg_rest = window.localStorage.getItem('pg_rest');
+    let schema = _schema('pg_rest');
     //let method = event.target.getAttribute('method');
     let { crd_num } = card;
-    let table = `${pg_rest}cardz_clin`;
+    let table = `${schema}cardz_clin`;
     let url = crd_num ? `${table}?crd_num=eq.${crd_num}`: table;
-    if ( Boolean(crd_num) ) delete card.crd_num;
+    if ( Boolean(crd_num) ) delete to_save.crd_num;
     
-    m.request({
+    return m.request({
       url: url,
       method: method,
-      data: card
+      body: to_save
     }).then( res => {
       event.target.parentNode.classList.remove('disable');
     }).catch( err => {
-      model.save = { err: true, msg: errMsg(err) };
+      model.save = errMsg(err);
       event.target.parentNode.classList.remove('disable');
+      vuDialog.open();
     });
-    return false;
   }
 };

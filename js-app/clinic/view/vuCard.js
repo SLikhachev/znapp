@@ -198,13 +198,13 @@ const crdMain = function(vnode) {
 // ============================
           m(".pure-g", [
             m(".pure-u-10-24 ", [
-              m('span#card_message',
-                model.save ? model.save.ok ? model.save.msg : m('span.red', model.save.msg) : '')
+              m('span#card_message', '')
+                //model.save ? model.save.ok ? model.save.msg : m('span.red', model.save.msg) : '')
             ]),
             m(".pure-u-14-24 ", [
               m('button.pure-button.pure-button-primary[type="submit"]',
                 { //onfocus: setPale,
-                  onclick: cardSave
+                  //onclick: cardSave
                   //tetabindex: "20",
                 }, "Сохранить"),
 
@@ -302,6 +302,7 @@ export const vuCard = function(vnode) {
   let conts = [crdMain, crdViz, crdExt, crdAtt, crdDel];
   const crd = parseInt(vnode.attrs.crd);
   const model= moCard.getModel();
+  model.word= 'Карты';
   moCard.getCard( model, crd );
   const method = isNaN(crd) || crd === 0 ? "POST": "PATCH";
   
