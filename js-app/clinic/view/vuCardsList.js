@@ -54,9 +54,8 @@ const cardFind= function (vnode) {
                     //value: 0,
                     onclick: findCards
                   }, "Найти" ),
-                m('a.pure-button.pure-button-primary', {
+                m(m.route.Link, { selector: 'a.pure-button.pure-button-primary',
                   href: href,
-                  oncreate: m.route.link,
                   style: "margin-left: 2em;"
                   }, "Новая карта" )
               ),

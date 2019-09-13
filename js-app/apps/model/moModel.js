@@ -7,9 +7,12 @@ import { vuDialog } from '../view/vuDialog.js';
 //console.log(schema);
 
 export const errMsg= function(error){
-  console.log(error);
-  let e = JSON.parse(error.message);
-  let m= e.details ? e.details : e.message ? e.message: error.message;
+  //console.log(error);
+  //in mithril 204 return object response 
+  //let e = JSON.parse(error.message);
+  //Object.keys(e).map( k=> console.log(k, e[k]));
+  const e= error.response;
+  let m= e.details ? e.details : e.message ? e.message: e;
   console.log(m);
   return m;
 }

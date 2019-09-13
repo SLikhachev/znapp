@@ -156,6 +156,17 @@ const vuMain = {
   }
 };
 
+// src/apps/view/vuDialog.js
+
+// src/apps/model/moModel.js
+
+// return date in yyyy-mm format
+const _month= () => {
+    let d = new Date(), y = d.getFullYear(), m = d.getMonth() + 1;
+    m= m < 10 ? `0${m}`: `${m}`;
+    return `${y}-${m}`;
+  };
+
 // src/apps/view/vuApp.js
 
 const vuTheader = {
@@ -226,7 +237,7 @@ const appMenu = { subAppMenu: {
 const pg_rest = window.localStorage.getItem('pg_rest'); //task schemaRest;
 const task_rest = window.localStorage.getItem('task_rest'); //task schemaRest;
 
-const moModel = {
+const moModel$1 = {
   
   getModel( url=null, sort_by=null ) {
     //console.log(url);
@@ -287,7 +298,7 @@ const moModel = {
         m.request({
             method: method,
             url: task_rest + upurl + get_param,
-            data: data,
+            body: data,
         }).then((res) => {
             if (res.file) {
                 model.file = res.file;
@@ -359,7 +370,7 @@ const fileForm = function(vnode) {
   
   const on_form_submit = function (event) {
     event.preventDefault();
-    return moModel.doSubmit(event.target, model, "POST");
+    return moModel$1.doSubmit(event.target, model, "POST");
   };
   
   const on_form_create = function (vnode) {
@@ -382,7 +393,7 @@ const fileForm = function(vnode) {
     vnode.dom.addEventListener('submit', on_form_submit);
   };
   
-  const get_href = function(vnode, model) {
+  const get_href$$1 = function(vnode, model) {
     return task_rest + vnode.state.task_get_url + model.file;
   };
   
@@ -439,7 +450,7 @@ const fileForm = function(vnode) {
             model.done ? m('div', [
               m('h4.blue', model.message),
               m('span.blue', {style: "font-size: 1.2em"}, "Файл отчета: "),
-              m('a.pure-button', {href: get_href( vnode, model ), style: "font-size: 1.2 em"}, model.file ) 
+              m('a.pure-button', {href: get_href$$1( vnode, model ), style: "font-size: 1.2 em"}, model.file ) 
            ]) : m('div', [
               m('h4.blue', model.message),
               m('span.blue', {style: "font-size: 1.2em"}, "Исходный файл: ", model.file )
@@ -490,7 +501,7 @@ const vuDataSheet = function (vnode) {
   return {
     
   oninit () {
-    moModel.getList( vnode.attrs.model );
+    moModel$1.getList( vnode.attrs.model );
   },
   /*
   oncreate() {
@@ -550,20 +561,21 @@ const vuDataSheet = function (vnode) {
 const Form = function(vnode) {
   
   const model = vnode.attrs.model;
-  //console.log(model);
+  const task_post_url= taskApi.volum.post_url;
+  const data= { month: _month() };
   
   const update = function (event) {
     //console.log('update');
     event.preventDefault();
     let form = document.getElementById("volume_form");
-    return moModel.doSubmit(form, model, "POST");
+    return moModel$1.doSubmit(form, model, "POST");
   };
   
   const report = function (event) {
     //console.log('report');
     event.preventDefault();
     let form = document.getElementById("volume_form");
-    return moModel.doSubmit(form, model, "GET");
+    return moModel$1.doSubmit(form, model, "GET");
   };
 
   const get_href = function(vnode, model) {
@@ -572,28 +584,19 @@ const Form = function(vnode) {
   
   return {
   
-  oninit(vnode) {
-    vnode.state.task_get_url = taskApi.volum.get_url;
-    vnode.state.task_post_url = taskApi.volum.post_url;
-    vnode.state.month = () => {
-      let d = new Date(), y = d.getFullYear(), m = d.getMonth() + 1;
-        return `${y.toString()}-${m.toString()}`;
-    };
-  },
-  
-  view(vnode) {
+  view() {
     //console.log(model);
     return [ m('.pure-g', [
       m('.pure-u-1-3', [
         m('form.pure-form.pure-form-stacked[id="volume_form"]',
-            { action: vnode.state.task_post_url,
+            { action: task_post_url,
             }, [
           m('fieldset', [
             m('legend', "Расчет объемов"),
             m('.pure-control-group', [
               m('label[for=month]', 'Месяц'),
               m('input[id="month"][type="month"][name="month"][reqired=required]',
-                 { value: vnode.state.month() }
+                 { value: data.month, onblur: e=> data.month = e.target.value }
               )
             ]),
             m('.pure-controls', [
@@ -652,7 +655,7 @@ const roSurvey = {
     render: function() {
       let view = m(vuHosp, {
         header: "Госпитализация отчет из файда ЕИР",
-        model: moModel.getModel()
+        model: moModel$1.getModel()
         
       });
       return vuView(appMenu, view);
@@ -663,7 +666,7 @@ const roSurvey = {
       //console.log(pgRest.volum);
       let view = m(vuVolum, {
         header: "Обемы помощи приказ 146",
-        model: moModel.getModel( pgRest.volum ),
+        model: moModel$1.getModel( pgRest.volum ),
         struct: moStruct().p146_report,
         //form: true
       });

@@ -55,7 +55,7 @@ export const cardField = {
   }},
   polis_num: {label: ['', "Номер"], input: {
       //tag: ['.pure-u-3-6', 'text', 10, false],
-      tag: ['', 'text', 10, false],
+      tag: ['', 'text', 10, true],
     //attrs: { placeholder:"Номер" }
   }},
   smo: {label: ['', "Страховщик"], input: {
@@ -63,7 +63,7 @@ export const cardField = {
       attrs: { fval: v => v ? v-250000: '' }
   }},
   smo_okato: {label: ['', "Регион"], input: {
-      tag: ['', 'text', 12, false],
+      tag: ['', 'text', 12, true],
       attrs: { list:  "okato", fblur: true }
   }},
   mo_att: {label: ['',  "Прикреплен к МО"], input: {
@@ -118,13 +118,13 @@ export const talCard = {
       tag: ['', "date"],
       //attrs: {}
     }},
-    polis_ser: { label: ['', 'Полис'], input: {
+    polis_ser: { label: ['', 'Полис (редактируем в карте)'], input: {
       tag: ['', "text"],
-      attrs: { placeholder: 'Серия'}
+      attrs: { placeholder: 'Серия', readonly: true}
     }},
     polis_num: { label: [], input: {
       tag: ['', "text"],
-      attrs: { placeholder: 'Номер'}
+      attrs: { placeholder: 'Номе', readonly: true}
     }},
     smo: {label: ['', 'СМО'], input: {
       tag: ['', "text"],

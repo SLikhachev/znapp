@@ -65,7 +65,7 @@ const moModel = {
         m.request({
             method: method,
             url: task_rest + upurl + get_param,
-            data: data,
+            body: data,
         }).then((res) => {
             if (res.file) {
                 model.file = res.file;

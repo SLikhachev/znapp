@@ -1,6 +1,7 @@
 // src/clinic/view/vuTalon.js
 
 import { vuLoading } from '../../apps/view/vuApp.js';
+import { vuDialog } from '../../apps/view/vuDialog.js';
 import { moModel } from '../../apps/model/moModel.js';
 import { restSprav } from '../../sprav/spravApi.js';
 import { clinicApi, restClinic } from '../clinicApi.js';
@@ -8,6 +9,7 @@ import { moTalon, talonOpt } from '../model/moTalons.js';
 import { moCard } from '../model/moCards.js';
 import { tabsView, forTabs } from './vuTabs.js';
 import { tof, ctf, ptf } from '../form/foForm.js';
+
 /*
 const card_fileds = [
   'crd_num', 'fam', 'im', 'ot', 'date_birth',
@@ -22,10 +24,62 @@ const talForm = function (vnode) {
   let tal= model.talon;
   const tal_num= tal.tal_num; //? tal.tal_num: 'Новый';
   const data= talonOpt.data;
+  //const check= {};
+  
   const doc_fam= () => {
+    let fin, pur, doct;
+    let ist= Array.from(data.get('ist_fin')).find(s=> s.id == tal.ist_fin);
+    if ( Boolean(ist) ) {
+      fin= ist.name;
+      //check.ist_fin= ist.id;
+    } else {
+      fin= 'Оплата ?';
+      //check.ist_fin= null;
+      tal.ist_fin= null;
+    }
+    let p= Array.from(data.get('purpose')).find(p=> p.id == tal.purp);
+    if ( Boolean(p) ) {
+      pur= p.name.split(' ')[0];
+      //check.purp= p.id;
+    } else {
+      pur= 'Цель ?';
+      tal.purp= null;
+    }
     let doc= Array.from(data.get('doctor')).find( d=> d.spec == tal.doc_spec && d.code == tal.doc_code );
-    return doc.family ? doc.family : '';
+    if ( Boolean(doc) ) {
+      doct= doc.family
+      //check.doc_spec= doct.spec;
+      //check.doc_code= doct.code;
+    } else {
+      doct= 'Доктор ?';
+      tal.doc_spec= null;
+      tal.doc_code= null;
+    }
+    return `${fin}, ${pur}: ${doct}`;
   };
+  
+  const diag_charm= () => {
+    let cha1, cha2;
+    let ch1= Array.from(data.get('char_main')).find(c=> c.id == tal.char1);
+    let ch2= Array.from(data.get('char_main')).find(c=> c.id == tal.char2);
+    if ( Boolean(ch1) ) {
+      cha1= ch1.name.split(' ')[0];
+      //check.char1= ch1.id
+    } else {
+      cha1= 'Осн характер ?';
+      tal.char1= null;
+    }
+    if ( Boolean(ch2) ) {
+      cha2= ch2.name.split(' ')[0];
+      check.char2= ch1.id
+    } else {
+      cha2= '';
+      tal.char2= null;
+    }
+    
+    return `${cha1}, ${cha2}`;
+  };
+  
   
   const talonSave = function(e) {
     e.preventDefault();
@@ -45,6 +99,11 @@ const talForm = function (vnode) {
           m(".pure-u-4-24", tof('open_date', tal)),
           m(".pure-u-4-24", tof('close_date', tal)),
           m('.pure-u-6-24', tof('talon_month', tal)),
+          /*
+          m('.pure-u-2-24',
+            { style: "padding-top: 2em ; font-size: 1.2em; font-weight: 600" },
+            'Декабрь'),
+          */
           m(".pure-u-8-24", [ tof('first_vflag', tal), tof('for_pom', tal), tof('finality', tal) ]),
         ]),
         m(".pure-g", [
@@ -52,7 +111,7 @@ const talForm = function (vnode) {
           m(".pure-u-2-24", tof('purp', tal)),
           m(".pure-u-2-24", tof('doc_spec',tal)),
           m(".pure-u-2-24", tof('doc_code', tal)),
-          m(".pure-u-6-24", {
+          m(".pure-u-10-24", {
               style: "padding-top: 2em ; font-size: 1.2em; font-weight: 600"
             }, doc_fam() ), 
         ]),
@@ -79,12 +138,18 @@ const talForm = function (vnode) {
         ]),
 
       ]),
-
+      m('.pure-g',
+        m(".pure-u-6-24", {
+            style: "padding-top: 0em ; font-size: 1.2em; font-weight: 600"
+            },
+            diag_charm()
+          )
+      ),
       m('fieldset', { style: "padding-left: 0%;" }, [
 				m('.pure-u-3-24', { style: "margin-top: 5px;" }, 
           m('button.pure-button.pure-button-primary[type="submit"]',
             { style: "font-size: 1.1em",
-              onclick: talonSave
+              //onclick: talonSave
             },
           "Сохранить" )
         )
@@ -134,8 +199,8 @@ const crdForm = function (vnode) {
             style: "margin-left: 2em;"
             }, "Открыть карту" )
       ]), /*form*/
-      m('span#card_message',
-        model.save ? model.save.err ? m('span.red', model.save.msg) : '' : ''
+      m('span#card_message', ''
+        //model.save ? model.save.err ? m('span.red', model.save.msg) : '' : ''
       )
       
     ); //patz
@@ -508,6 +573,7 @@ export const vuTalon = function(vnode) {
   
   let { tal, crd }= vnode.attrs;
   let model= moTalon.getModel(); //;
+  model.word= 'Талоны';
   let tabs= ['Талон', 'Направление', 'ДС', 'ПМУ'];
   let conts= [talMain, talNap, talDs, talPmu,];
   let t= parseInt(tal);
@@ -525,6 +591,7 @@ export const vuTalon = function(vnode) {
       return model.error ? [ m(".error", model.error) ] :
         talonOpt.data.size > 0 && model.card ?
           m(tabsView, {model: model, tabs: tabs, conts: conts, method: method})
+          //ErrDialog(model)
         : m(vuLoading);
     } 
   }; 

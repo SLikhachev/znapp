@@ -24,8 +24,9 @@ const talonFind = function(vnode){
     if (data.q_date === "" && data.q_dspec !== "")
       data.q_date = '2010-01-01';
     data.q_date = data.q_date === "" ? null : data.q_date;
-    if (data.q_dspec === "")
-      data.q_dspec = null;
+    data.q_dspec = null;
+    //if (data.q_dspec === "")
+    //  data.q_dspec = null;
     data.lim = 50;
     data.offs = 0;
     //console.log ( data );
@@ -55,12 +56,13 @@ const talonFind = function(vnode){
                   {placeholder:"С даты"}
                 )
               ),
+              /*
               m(".pure-u-1-5",
                 m("input.input-find.pure-u-2-3[name=q_dspec][type='number']",
                   {placeholder:"Специалист (код)"}
                 )
               ),
-              /*
+              
               m(".pure-u-1-5",
                 m("input.input-find.pure-u-2-3[name=q_data_end][type='date']",
                   {placeholder:"По дату"}

@@ -20,7 +20,7 @@ export const talonField = {
     }
   },
   talon_month: { label: ['.leg-sec.red', "Месяц талона"], input: {
-      tag: ['.pure-u-6-24.tal_month', 'number', 3, false],
+      tag: ['.pure-u-6-24.tal_month', 'number', 3, true],
       attrs: {
         style: "height: 45%", min: 1, max: 12,
         fval: v => v ? v : month()
@@ -43,28 +43,33 @@ export const talonField = {
     }
   },
   ist_fin: { label: ['', "Оплата"], input: {
-      tag: ['.pure-u-18-24', "text", 7, true],
+      tag: ['.pure-u-18-24', "number", 7, true],
+      attrs: { min: 1, max: 9, value: 1 }
     }
   },
   purp: { label: ['', "Цель"], input: {
-      tag: ['.pure-u-18-24', 'text', 8, true],
+      tag: ['.pure-u-18-24', 'number', 8, true],
+      attrs: { min: 0, max: 33, value: 1 }
     }
   },
   doc_spec: { label: ['', "Врач"], input: {
-      tag: ['.pure-u-22-24', "text", 9, true],
-      attrs: { placeholder: "Спец"}
+      tag: ['.pure-u-22-24', "number", 9, true],
+      attrs: { placeholder: "Спец", min: 1, max: 961}
     }
   },
   doc_code: { label: ['', "Код"], input: {
-      tag: ['.pure-u-22-24', "text", 10, true]
+      tag: ['.pure-u-22-24', "number", 10, true],
+      attrs: { min: 1 }
     }
   },
   visit_pol: {label: ['', "Амбул"], input: {
-    tag: ['.pure-u-20-24', 'text', 11]
+    tag: ['.pure-u-20-24', 'number', 11],
+    attrs: { min: 0}
     }
   },
   visit_home: {label: ['', "На дом"], input: {
-      tag: ['.input.pure-u-20-24', "text", 12]
+      tag: ['.input.pure-u-20-24', "number", 12],
+       attrs: { min: 0}
     }
   },
   ds1: {label: ['', "Осн. диагноз"], input: {
@@ -72,7 +77,8 @@ export const talonField = {
     }
   },
   char1: {label: ['', "Характер"], input: {
-      tag: ['.input.pure-u-16-24', "text", 14, true]
+      tag: ['.input.pure-u-16-24', "number", 14, true],
+      attrs: { min: 1, max: 12}
     }
   },
   ishod: {label: ['', "Исход"], input: {

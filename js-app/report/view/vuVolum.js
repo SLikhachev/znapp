@@ -1,5 +1,6 @@
 // src/report/view/vuVolum.js
 
+import { _month, _schema } from '../../apps/model/moModel.js';
 //import { vuTheader } from '../../apps/view/vuApp.js';
 import { taskApi } from '../reportApi.js';
 import { task_rest, moModel } from '../model/moModel.js';
@@ -9,6 +10,9 @@ const Form = function(vnode) {
   
   const model = vnode.attrs.model;
   //console.log(model);
+  const task_get_url= taskApi.volum.get_url;
+  const task_post_url= taskApi.volum.post_url;
+  const data= { month: _month() };
   
   const update = function (event) {
     //console.log('update');
@@ -30,28 +34,19 @@ const Form = function(vnode) {
   
   return {
   
-  oninit(vnode) {
-    vnode.state.task_get_url = taskApi.volum.get_url;
-    vnode.state.task_post_url = taskApi.volum.post_url;
-    vnode.state.month = () => {
-      let d = new Date(), y = d.getFullYear(), m = d.getMonth() + 1;
-        return `${y.toString()}-${m.toString()}`;
-    };
-  },
-  
-  view(vnode) {
+  view() {
     //console.log(model);
     return [ m('.pure-g', [
       m('.pure-u-1-3', [
         m('form.pure-form.pure-form-stacked[id="volume_form"]',
-            { action: vnode.state.task_post_url,
+            { action: task_post_url,
             }, [
           m('fieldset', [
             m('legend', "Расчет объемов"),
             m('.pure-control-group', [
               m('label[for=month]', 'Месяц'),
               m('input[id="month"][type="month"][name="month"][reqired=required]',
-                 { value: vnode.state.month() }
+                 { value: data.month, onblur: e=> data.month = e.target.value }
               )
             ]),
             m('.pure-controls', [

@@ -14,7 +14,9 @@ export const restSprav = {
     division: { url:"division"},
     sp_podr: { url:"sp_podr", order_by: 'mo_code' },
     sp_para: { url:"sp_para"},
-    //purp: { url: 'purpose'},
+    istfin: {url: 'ist_fin'},
+    purp: { url: 'purpose'},
+    charm: { url: 'char_main'},
     mo_local: { url:"mo_local"},
     smo_local: { url:"smo_local"},
     
@@ -31,7 +33,6 @@ export const restSprav = {
     mkb: { url: 'mkb10', order_by: 'code'},
     //type: {url: 'spec_case'},
     //insur: {url: 'kategor'},
-    //istfin: {url: 'ist_fin'},
     //errors: {url: 'errors_code'},
     
     // onko

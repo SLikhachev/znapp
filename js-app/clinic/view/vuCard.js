@@ -1,28 +1,59 @@
 // src/clinic/view/vuCard.js
 
 import { vuLoading } from '../../apps/view/vuApp.js';
+import { vuDialog } from '../../apps/view/vuDialog.js';
 import { moCard, cardOpt } from '../model/moCards.js';
 import { clinicApi } from '../clinicApi.js';
 import { tabsView, forTabs } from './vuTabs.js';
 import { cof } from '../form/foForm.js';
-
+/*
+export const ErrDialog= model=> m(vuDialog,
+  { header: 'Ошибка обработки', word: 'Карты' },
+  model.save ? m('span', { style: " font-size: 1.3em; color: red; "}, model.save.msg): '');
+*/
 const crdMain = function(vnode) {
 
   let { model, method }= vnode.attrs;
   const data= cardOpt.data;
   const card = model.card ? Object.assign({}, model.card[0]) : {};
   
+  const dontSave= msg=> {
+    model.save= { err: true, msg: msg };
+    //alert(msg);
+    vuDialog.open();
+    return false;
+  }
+  
   const cardSave= function(e) {
     e.preventDefault();
     // form send with forTabs onCreate function
     //console.log(card);
-    // check dul type
+    // check polis type
+    model.save= null;
+    if (card.polis_type === null)
+      return dontSave('Тип полиса неизвестен'); 
+    // check dul and polis
     let s= card.dul_serial, n= card.dul_number;
     s = s ? s.toString().length: 0;
     n = n ? n.toString().length: 0;
     if (s=== 0 && n=== 0) {
       card.dul_type= null;
     }
+    if (card.polis_type < 3 && card.dul_type === null )
+      return dontSave('Указанный тип полиса требует паспотрных данных');
+    // check gender
+    if(card.gender === null )
+      return dontSave('Пол не указан');
+    // check address
+    let y= card.city_g;
+    y= y ? y.toString().length: 0;
+    s= card.street_g;
+    n= card.home_g;
+    s= s ? s.toString().length: 0;
+    n= n ? n.toString().length: 0;
+    if (y === 0 && s > 0 && n > 0)
+      return dontSave('Укажите город проживания')
+    
     return moCard.saveCard(e, card, model, method);
     //return true;
   };
@@ -104,7 +135,7 @@ const crdMain = function(vnode) {
 
     view: function () {
       //console.log(method);
-      return m('form.tcard.pure-form.pure-form-aligned',
+      return [m('form.tcard.pure-form.pure-form-aligned',
         {style: "font-size: 1.2em;", id: "card", oncreate: forTabs, onsubmit: cardSave},
         [m('fieldset', [m('legend', "Карта пациента"),
           m(".pure-g", [
@@ -197,14 +228,14 @@ const crdMain = function(vnode) {
         ]), // fieldset
 // ============================
           m(".pure-g", [
-            m(".pure-u-10-24 ", [
-              m('span#card_message',
-                model.save ? model.save.ok ? model.save.msg : m('span.red', model.save.msg) : '')
-            ]),
+            m(".pure-u-10-24 ",
+              m('span#card_message', ''
+                //model.save ? model.save.ok ? model.save.msg : m('span.red', model.save.msg) : '')
+            )),
             m(".pure-u-14-24 ", [
               m('button.pure-button.pure-button-primary[type="submit"]',
                 { //onfocus: setPale,
-                  onclick: cardSave
+                  //onclick: cardSave
                   //tetabindex: "20",
                 }, "Сохранить"),
 
@@ -216,7 +247,9 @@ const crdMain = function(vnode) {
               }, "Добавить новую")*/
             ])
           ]) // pure-g
-        ]);// form
+        ]),// form
+        //ErrDialog(model)
+        ];
 //=========================
     } // view
   }; // return
@@ -305,6 +338,7 @@ export const vuCard = function(vnode) {
   let conts = [crdMain, crdViz, crdExt, crdAtt, crdDel];
   const crd = parseInt(vnode.attrs.crd);
   const model= moCard.getModel();
+  model.word= 'Карты';
   moCard.getCard( model, crd );
   const method = isNaN(crd) || crd === 0 ? "POST": "PATCH";
   

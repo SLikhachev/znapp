@@ -1,8 +1,12 @@
 
 // src/clinic/view/vuTabs.js
+import { vuDialog } from '../../apps/view/vuDialog.js';
+//import { moCard } from '../model/moCards.js';
+//import { moTalon } from '../model/moTalons.js';
 
-import { moCard } from '../model/moCards.js';
-import { moTalon } from '../model/moTalons.js';
+export const ErrDialog= model=> m(vuDialog,
+  { header: 'Ошибка обработки', word: model.word },
+  model.save ? m('span', { style: " font-size: 1.3em; color: red; "}, model.save.msg): '');
 
 export const toFocus = function (vnode) {
   vnode.dom.focus();
@@ -16,11 +20,10 @@ export const delPale = function(e) {
   e.target.setAttribute('style', 'opacity: 1.0');
 }
 
-
 export const tabsView = function(vnode) {
   //console.log(vnode.attrs);
   
-  let item = vnode.attrs.item;
+  //let item = vnode.attrs.item;
   let tabs = [], tabs_cont=[];
   let tab_names = vnode.attrs.tabs;  //Array.of('Карта', 'Дополнительно', 'Прикрепить');
   let tab_contents = vnode.attrs.conts; //Array.of(crdMain, crdOpt, crdAtt);
@@ -71,7 +74,8 @@ export const tabsView = function(vnode) {
             //{ oncreate: (vnode => tabs_cont.push(vnode.dom)) },
             
             m(cont, {model: vnode.attrs.model, method: vnode.attrs.method}) );
-        })
+        }),
+        ErrDialog(vnode.attrs.model)
       ]);
   }
 }

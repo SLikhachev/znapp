@@ -35,7 +35,8 @@ export const vuDialog = {
     //let srverr = document.getElementById('srv-error');
     //let srverr = vuDialog.dialog.querySelector('#srv-error');
     //if ( !!srverr ) srverr.parentNode.removeChild(srverr);
-    vuDialog.dialog.querySelector('form').reset();
+    let f = vuDialog.dialog.querySelector('form');
+    if ( Boolean(f) ) f.reset();
     vuDialog.dialog.close();
     if ( reload ) m.redraw();
     return false;
