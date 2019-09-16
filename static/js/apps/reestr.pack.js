@@ -160,6 +160,19 @@ const vuMain = {
 
 // src/apps/model/moModel.js
 
+//const pg_rest = window.localStorage.getItem('pg_rest'); //postgest schemaRest;
+//console.log(schema);
+
+const errMsg= function(error){
+  //console.log(error);
+  //let e = JSON.parse(error.message);
+  let e= error.response;
+  //let m= e.details ? e.details : e.message ? e.message: error;
+  let m= e.message ? e.message : error;
+  console.log(m);
+  return m;
+};
+
 // return posgrest url if pg_rest else task url
 const _schema= type=> {
   if (type === 'task')
@@ -187,7 +200,7 @@ const foResp= model=> m('#resp',
     model.message ? m('.legend', ["Статус обработки",
       model.done ? m('div', [
         m('h4.blue', model.message),
-        m('span.blue', {style: "font-size: 1.2em"}, "Файл: "),
+        m('span.blue', {style: "font-size: 1.2em"}, "Результат, Файл : "),
         model.route ? get_route(model) : model.href ? get_href(model) :
           m('span.blue', {style: "font-size: 1.2em"}, model.file)
       ]) : m('div', m('h4.blue', model.message))
@@ -262,8 +275,8 @@ const reestrApi = {
     vmxl_last: "/vmxl/last",
     
     invoice: "/invoice",
-    invoice_imp: "/invoice/imp",
-    invoice_exp: "/invoice/exp",
+    inv_impex: "/invoice/impex",
+    inv_calc: "/invoice/calc",
     
     impo: "/impo",
     impo_dbf: "/impo/dbf",
@@ -289,8 +302,8 @@ const reestrMenu = { subAppMenu: {
   invoice: {
     nref: [`#!${reestrApi.invoice}`, "Счета"],
     items: [
-      [`#!${reestrApi.invoice_imp}`, "Импорт счета"],
-      [`#!${reestrApi.invoice_exp}`, "Экспорт счета"],
+      [`#!${reestrApi.inv_impex}`, "Реестр в СМО"],
+      [`#!${reestrApi.inv_calc}`, "Рассчеты"],
     ]
   },
   impo: {
@@ -301,8 +314,6 @@ const reestrMenu = { subAppMenu: {
   }
 }
 };
-
-// src/report/model/moModel.js
 
 const _month$1= () => {
     let d = new Date(), y = d.getFullYear(), m = d.getMonth() + 1;
@@ -349,7 +360,7 @@ const moModel$1 = {
       model.list = res; // list of objects
       model.order = true;
     }).catch(function(e) {
-      model.error = e.message;
+      model.error = errMsg(e);
       console.log(model.error);
     });
   },
@@ -378,7 +389,7 @@ const moModel$1 = {
     return m.request({
       url: url,
       method: method,
-      data: data,
+      body: data,
       timeout: 0
     }).then((res) => {
       model.file = res.file ? res.file: null;
@@ -389,12 +400,11 @@ const moModel$1 = {
       form.classList.remove('disable');
       return true;
     }).catch((err) => {
-      model.error = err.message;
+      model.error = errMsg(e);
       console.log(model.error);
       form.classList.remove('disable');
       return false;
     });
-    return false;
   },
   
   // submit with simple / preflight CORS request   
@@ -414,7 +424,7 @@ const moModel$1 = {
     return m.request({
       url: url,
       method: method,
-      data: fdata,
+      body: fdata,
       timeout: 0
     }).then((res) => {
       model.file = res.file ? res.file: null;
@@ -424,12 +434,11 @@ const moModel$1 = {
       event.target.parentNode.classList.remove('disable');
       return true;
     }).catch((err) => {
-      model.error = err.message;
+      model.error = errMsg(e);
       console.log(model.error);
       event.target.parentNode.classList.remove('disable');
       return false;
     });
-    return false;
   }
 
 };
@@ -878,7 +887,7 @@ const Form$1 = function(vnode) {
     let imp= document.getElementById('imp');
     imp.classList.add('disable');
     //console.log(resp.getAttribute('display'));
-    moModel$1.formSubmit(event, _schema$1('task'), model, "POST").then((t) => {
+    moModel$1.formSubmit(event, _schema('task'), model, "POST").then((t) => {
       //console.log(imp);
       imp.classList.remove('disable');
     });
@@ -908,7 +917,9 @@ const Form$1 = function(vnode) {
                   m('option[value=1][selected]', 'Амбулаторный'),
                   m('option[value=2]', 'Онкология'),
                   m('option[value=3]', 'Дневной стационар'),
-                  m('option[value=4]', 'Инокраевые'),
+                  m('option[value=4]', 'Профосмотр'),
+                  m('option[value=5]', 'Инокраевые'),
+                  m('option[value=6]', 'Тарифы ПМУ'),
                 ]),
               ]),
               m('.pure-controls', [
@@ -983,7 +994,7 @@ const Form$2 = function(vnode) {
 };  
 };
 
-const vuInvexp = function (vnode) {
+const vuInvcalc = function (vnode) {
   //card_id: "/cards/:crd",
   return {
     view () {
@@ -1004,20 +1015,20 @@ const roInvoice = {
       return vuView(reestrMenu, m(vuApp, { text: "Счета и реестры для СМО и ФОМС" } ) );
     }
   },
-  [reestrApi.invoice_imp]: {
+  [reestrApi.inv_impex]: {
     render: function() {
       let view = m(vuInvimp, {
-        header: "Имопрт ZIP файла счета",
+        header: "Реестр в СМО из ZIP файла счета БАРС",
         model: moModel$1.getModel( taskReestr.invoice.post_url )
         
       });
       return vuView(reestrMenu, view);
     }
   },
-  [reestrApi.invoice_exp]: {
+  [reestrApi.inv_calc]: {
     render: function() {
-      let view = m(vuInvexp, {
-        header: "Формируем XLSX файл реестра пролеченных из XML счета",
+      let view = m(vuInvcalc, {
+        header: "Собственные рассчеты",
        //model: moModel.getModel()
         
       });

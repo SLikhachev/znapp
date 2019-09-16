@@ -1,6 +1,8 @@
 
 // src/report/model/moModel.js
 
+import { errMsg } from '../../apps/model/moModel.js';
+
 export const _month= () => {
     let d = new Date(), y = d.getFullYear(), m = d.getMonth() + 1;
     m= m < 10 ? `0${m}`: `${m}`;
@@ -46,7 +48,7 @@ export const moModel = {
       model.list = res; // list of objects
       model.order = true;
     }).catch(function(e) {
-      model.error = e.message;
+      model.error = errMsg(e);
       console.log(model.error);
     });
   },
@@ -75,7 +77,7 @@ export const moModel = {
     return m.request({
       url: url,
       method: method,
-      data: data,
+      body: data,
       timeout: 0
     }).then((res) => {
       model.file = res.file ? res.file: null;
@@ -86,12 +88,11 @@ export const moModel = {
       form.classList.remove('disable');
       return true;
     }).catch((err) => {
-      model.error = err.message;
+      model.error = errMsg(e);
       console.log(model.error);
       form.classList.remove('disable');
       return false;
     });
-    return false;
   },
   
   // submit with simple / preflight CORS request   
@@ -111,7 +112,7 @@ export const moModel = {
     return m.request({
       url: url,
       method: method,
-      data: fdata,
+      body: fdata,
       timeout: 0
     }).then((res) => {
       model.file = res.file ? res.file: null;
@@ -121,12 +122,11 @@ export const moModel = {
       event.target.parentNode.classList.remove('disable');
       return true;
     }).catch((err) => {
-      model.error = err.message;
+      model.error = errMsg(e);
       console.log(model.error);
       event.target.parentNode.classList.remove('disable');
       return false;
     });
-    return false;
   }
 
 }
