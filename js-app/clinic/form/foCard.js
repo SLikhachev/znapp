@@ -14,7 +14,7 @@ export const cardField = {
     }
   },
   fam: { label: ['', ''], input: {
-      tag: ['', 'text', 2, true],
+      tag: ['', 'text', 2, false],
       attrs: { placeholder: "Фамилия" }
     }
   },
@@ -34,8 +34,8 @@ export const cardField = {
     }
   },
   dul_type: {label: ['', 'Тип документа'], input: {
-      tag: ['.pure-u-1-6', 'text', 6, false],
-      //attrs: { }
+      tag: ['.pure-u-1-6', 'number', 6, false],
+      attrs: { min: 1 }
     }
   },
   dul_serial: {label: ['', "Документ"], input: {
@@ -55,19 +55,19 @@ export const cardField = {
   }},
   polis_num: {label: ['', "Номер"], input: {
       //tag: ['.pure-u-3-6', 'text', 10, false],
-      tag: ['', 'text', 10, false],
-    //attrs: { placeholder:"Номер" }
+      tag: ['', 'number', 10, true],
+      attrs: { min : 1 }
   }},
   smo: {label: ['', "Страховщик"], input: {
       tag: ['.pure-u-1-6', 'text', 11, false],
-      attrs: { fval: v => v ? v-250000: '' }
+      //attrs: { pattern: "[0-9]*" }
   }},
   smo_okato: {label: ['', "Регион"], input: {
       tag: ['', 'text', 12, false],
       attrs: { list:  "okato", fblur: true }
   }},
   mo_att: {label: ['',  "Прикреплен к МО"], input: {
-      tag: ['.pure-u-1-6', 'text', 13, false],
+      tag: ['.pure-u-1-6', 'number', 13, false],
       //attrs: { }
     }
   },
@@ -118,13 +118,13 @@ export const talCard = {
       tag: ['', "date"],
       //attrs: {}
     }},
-    polis_ser: { label: ['', 'Полис'], input: {
+    polis_ser: { label: ['', 'Полис (редактируем в карте)'], input: {
       tag: ['', "text"],
-      attrs: { placeholder: 'Серия'}
+      attrs: { placeholder: 'Серия', readonly: true }
     }},
     polis_num: { label: [], input: {
       tag: ['', "text"],
-      attrs: { placeholder: 'Номер'}
+      attrs: { placeholder: 'Номер', readonlu: true}
     }},
     smo: {label: ['', 'СМО'], input: {
       tag: ['', "text"],

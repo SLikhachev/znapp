@@ -30,6 +30,10 @@ export const _schema= type=> {
   return window.localStorage.getItem('pg_rest');
 }
 
+//export const _region= ()=> int(window.localStorage.getItem('smo_reg'));
+
+export const _region= ()=> 250000;
+
 export const moModel = {
   
   // :: String -> Array -> String -> Object

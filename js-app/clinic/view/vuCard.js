@@ -1,6 +1,8 @@
 // src/clinic/view/vuCard.js
 
+import { vuDialog } from '../../apps/view/vuDialog.js';
 import { vuLoading } from '../../apps/view/vuApp.js';
+import { _region } from '../../apps/model/moModel.js';
 import { moCard, cardOpt } from '../model/moCards.js';
 import { clinicApi } from '../clinicApi.js';
 import { tabsView, forTabs } from './vuTabs.js';
@@ -11,22 +13,61 @@ const crdMain = function(vnode) {
   let { model, method }= vnode.attrs;
   const data= cardOpt.data;
   const card = model.card ? Object.assign({}, model.card[0]) : {};
+  const _reg= _region();
+  card.smo = card.smo === null ? 0: card.smo - _reg;
+  //console.log(card.smo);
+  const crd= Boolean(card.crd_num);
   
-  const cardSave= function(e) {
-    e.preventDefault();
-    // form send with forTabs onCreate function
-    //console.log(card);
-    // check dul type
+  const toSave= ()=> {
+    //dost
+    let dost= '',
+    fam= card.fam ? card.fam: '', 
+    im= card.im ? card.im: '', 
+    ot= card.ot? card.ot: ''; 
+    if (fam.length === 0) dost += '2_';
+    if (im.length === 0) dost += '3_';
+    if (ot.length === 0) dost += '1_';
+    if ( fam.length === 0 && im.length ===0 )
+      return 'Укажите Фамилию или Имя';
+    // gender
+    if ( !Boolean( card.gender))
+      return 'Укажите пол'; 
+    // DUL
     let s= card.dul_serial, n= card.dul_number;
     s = s ? s.toString().length: 0;
     n = n ? n.toString().length: 0;
     if (s=== 0 && n=== 0) {
       card.dul_type= null;
     }
-    return moCard.saveCard(e, card, model, method);
-    //return true;
+    if ( Boolean(card.polis_type) && card.polis_type < 3 && !Boolean(card.dul_type) )
+      return 'Для этого типа полиса требуются данные ДУЛ';
+    // SMO
+    if ( !Boolean(card.smo) && !Boolean(card.smo_okato) )
+      return 'Укажите либо СМО либо СМО ОКАТО';
+    card.smo= card.smo ? card.smo + _reg: null;
+    // city_g
+    ct= card.city_g ? card.city_g.toString().length: 0;
+    st= card.street_g ? card.street_g.toString().length: 0;
+    if (st > 0 && ct === 0)
+      return 'Укажите город';
+    return '';
   };
   
+  const cardSave= function(e) {
+    e.preventDefault();
+    // form send with forTabs onCreate function
+    // above changed all processing will made here
+    //console.log(card);
+    // check dul type
+    model.save= toSave();
+    if (model.save.length > 0) {
+      vuDialog.open();
+      return false;
+    }
+    model.save= null;
+    return moCard.saveCard(e, card, model, method).then( t=> card.smo -= _reg );
+    //return true;
+  };
   // gender
   const gnd = function(c){
     return ['м', 'ж'].indexOf( c.gender.toLowerCase() );
@@ -58,13 +99,15 @@ const crdMain = function(vnode) {
   // set smo
   const set_smo = function(e) {
      let smo = parseInt(e.target.value);
-     if ( isNaN(smo) ) card.smo = 250000; //this value subtracts from code in input
-     else card.smo = smo + 250000;
+     if ( isNaN(smo) ) card.smo = 0; //this value subtracts from code in input
+     else card.smo = smo; // + _reg;
+     //console.log(card.smo); 
   };
   // smo OKATO
   const set_smo_okato = function(e) {
     if ( Boolean(card.smo) ) {
-      let smo = Array.from( data.get('smo_local') ).find( item => item.code == card.smo );
+      let _smo= card.smo + _reg;
+      let smo = Array.from( data.get('smo_local') ).find( item => item.code == _smo );
       if ( Boolean(smo) ) {
         card.smo_okato = smo.okato;
         let o = Array.from( data.get('okato') ).find( item => item.okato == smo.okato );
@@ -110,7 +153,7 @@ const crdMain = function(vnode) {
           m(".pure-g", [
             m(".pure-u-7-24", [
 // --            
-              m(".pure-control-group", cof('crd_num', card)),
+              m(".pure-control-group", cof('crd_num', card, { readonly: crd} )),
               m(".pure-control-group", cof('fam', card)),
               m(".pure-control-group", cof('im', card)),
               m('.pure-control-group', cof('ot', card)),
@@ -148,7 +191,8 @@ const crdMain = function(vnode) {
               ]),
               m(".pure-control-group", [
                 cof('smo', card, {onblur: set_smo}),
-                m('span.item_name', set_name(card.smo, 'smo_local', 'code', 'short_name'))
+                m('span.item_name',
+                  card.smo === null ? '':  set_name(card.smo + _reg, 'smo_local', 'code', 'short_name'))
               ]),
 // --
               m(".pure-control-group", [

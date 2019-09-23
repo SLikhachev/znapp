@@ -328,6 +328,10 @@ const _schema= type=> {
   return window.localStorage.getItem('pg_rest');
 };
 
+//export const _region= ()=> int(window.localStorage.getItem('smo_reg'));
+
+const _region= ()=> 250000;
+
 const moModel = {
   
   // :: String -> Array -> String -> Object
@@ -663,7 +667,8 @@ const moCard = {
   
   saveCard(event, card, model, method) {
     event.target.parentNode.classList.add('disable');
-    model.card = Object.assign(model.card, card);
+    let { crd_num } = model.card[0];
+    //model.card = Object.assign(model.card, card);
     const to_save= Object.assign({}, card);
     //console.log(moCard.model.card);
     /*
@@ -681,17 +686,21 @@ const moCard = {
     */
     let schema = _schema('pg_rest');
     //let method = event.target.getAttribute('method');
-    let { crd_num } = card;
+    let { _crd_num, id } = card;
     let table = `${schema}cardz_clin`;
-    let url = crd_num ? `${table}?crd_num=eq.${crd_num}`: table;
-    if ( Boolean(crd_num) ) delete to_save.crd_num;
-    
+    let url = id ? `${table}?id=eq.${id}`: table;
+    ['id', 'created', 'modified', 'cuser'].forEach( k=> delete to_save[k] );
+    if ( method === 'PATCH' && (crd_num == _crd_num) )
+      // same card number 
+      delete to_save.crd_num; // primary key duplication
+    // else change card number
     return m.request({
       url: url,
       method: method,
       body: to_save
     }).then( res => {
       event.target.parentNode.classList.remove('disable');
+      return true;
     }).catch( err => {
       model.save = errMsg(err);
       event.target.parentNode.classList.remove('disable');
@@ -1064,7 +1073,7 @@ const tabsView = function(vnode) {
         })
       ]),
       m(vuDialog, { header: 'Ошибка бработки', word: vnode.attrs.model.word },
-        m('span.red', {style: "font-size: 1.2em; font-weight: 500"},
+        m('span.red', {style: "font-size: 1.2em; font-weight: 600"},
           vnode.attrs.model.save ? vnode.attrs.model.save: 'No messages'
         )
       )
@@ -1271,7 +1280,7 @@ const cardField = {
     }
   },
   fam: { label: ['', ''], input: {
-      tag: ['', 'text', 2, true],
+      tag: ['', 'text', 2, false],
       attrs: { placeholder: "Фамилия" }
     }
   },
@@ -1291,8 +1300,8 @@ const cardField = {
     }
   },
   dul_type: {label: ['', 'Тип документа'], input: {
-      tag: ['.pure-u-1-6', 'text', 6, false],
-      //attrs: { }
+      tag: ['.pure-u-1-6', 'number', 6, false],
+      attrs: { min: 1 }
     }
   },
   dul_serial: {label: ['', "Документ"], input: {
@@ -1312,19 +1321,19 @@ const cardField = {
   }},
   polis_num: {label: ['', "Номер"], input: {
       //tag: ['.pure-u-3-6', 'text', 10, false],
-      tag: ['', 'text', 10, false],
-    //attrs: { placeholder:"Номер" }
+      tag: ['', 'number', 10, true],
+      attrs: { min : 1 }
   }},
   smo: {label: ['', "Страховщик"], input: {
       tag: ['.pure-u-1-6', 'text', 11, false],
-      attrs: { fval: v => v ? v-250000: '' }
+      //attrs: { pattern: "[0-9]*" }
   }},
   smo_okato: {label: ['', "Регион"], input: {
       tag: ['', 'text', 12, false],
       attrs: { list:  "okato", fblur: true }
   }},
   mo_att: {label: ['',  "Прикреплен к МО"], input: {
-      tag: ['.pure-u-1-6', 'text', 13, false],
+      tag: ['.pure-u-1-6', 'number', 13, false],
       //attrs: { }
     }
   },
@@ -1375,13 +1384,13 @@ const talCard = {
       tag: ['', "date"],
       //attrs: {}
     }},
-    polis_ser: { label: ['', 'Полис'], input: {
+    polis_ser: { label: ['', 'Полис (редактируем в карте)'], input: {
       tag: ['', "text"],
-      attrs: { placeholder: 'Серия'}
+      attrs: { placeholder: 'Серия', readonly: true }
     }},
     polis_num: { label: [], input: {
       tag: ['', "text"],
-      attrs: { placeholder: 'Номер'}
+      attrs: { placeholder: 'Номер', readonlu: true}
     }},
     smo: {label: ['', 'СМО'], input: {
       tag: ['', "text"],
@@ -1415,22 +1424,60 @@ const crdMain = function(vnode) {
   let { model, method }= vnode.attrs;
   const data= cardOpt.data;
   const card = model.card ? Object.assign({}, model.card[0]) : {};
+  const _reg= _region();
+  card.smo = card.smo === null ? 0: card.smo - _reg;
+  //console.log(card.smo);
+  const crd= Boolean(card.crd_num);
   
-  const cardSave= function(e) {
-    e.preventDefault();
-    // form send with forTabs onCreate function
-    //console.log(card);
-    // check dul type
+  const toSave= ()=> {
+    //dost
+    let fam= card.fam ? card.fam: '', 
+    im= card.im ? card.im: '', 
+    ot= card.ot? card.ot: ''; 
+    if (fam.length === 0) ;
+    if (im.length === 0) ;
+    if (ot.length === 0) ;
+    if ( fam.length === 0 && im.length ===0 )
+      return 'Укажите Фамилию или Имя';
+    // gender
+    if ( !Boolean( card.gender))
+      return 'Укажите пол'; 
+    // DUL
     let s= card.dul_serial, n= card.dul_number;
     s = s ? s.toString().length: 0;
     n = n ? n.toString().length: 0;
     if (s=== 0 && n=== 0) {
       card.dul_type= null;
     }
-    return moCard.saveCard(e, card, model, method);
-    //return true;
+    if ( Boolean(card.polis_type) && card.polis_type < 3 && !Boolean(card.dul_type) )
+      return 'Для этого типа полиса требуются данные ДУЛ';
+    // SMO
+    if ( !Boolean(card.smo) && !Boolean(card.smo_okato) )
+      return 'Укажите либо СМО либо СМО ОКАТО';
+    card.smo= card.smo ? card.smo + _reg: null;
+    // city_g
+    ct= card.city_g ? card.city_g.toString().length: 0;
+    st= card.street_g ? card.street_g.toString().length: 0;
+    if (st > 0 && ct === 0)
+      return 'Укажите город';
+    return '';
   };
   
+  const cardSave= function(e) {
+    e.preventDefault();
+    // form send with forTabs onCreate function
+    // above changed all processing will made here
+    //console.log(card);
+    // check dul type
+    model.save= toSave();
+    if (model.save.length > 0) {
+      vuDialog.open();
+      return false;
+    }
+    model.save= null;
+    return moCard.saveCard(e, card, model, method).then( t=> card.smo -= _reg );
+    //return true;
+  };
   // gender
   const gnd = function(c){
     return ['м', 'ж'].indexOf( c.gender.toLowerCase() );
@@ -1462,13 +1509,15 @@ const crdMain = function(vnode) {
   // set smo
   const set_smo = function(e) {
      let smo = parseInt(e.target.value);
-     if ( isNaN(smo) ) card.smo = 250000; //this value subtracts from code in input
-     else card.smo = smo + 250000;
+     if ( isNaN(smo) ) card.smo = 0; //this value subtracts from code in input
+     else card.smo = smo; // + _reg;
+     //console.log(card.smo); 
   };
   // smo OKATO
   const set_smo_okato = function(e) {
     if ( Boolean(card.smo) ) {
-      let smo = Array.from( data.get('smo_local') ).find( item => item.code == card.smo );
+      let _smo= card.smo + _reg;
+      let smo = Array.from( data.get('smo_local') ).find( item => item.code == _smo );
       if ( Boolean(smo) ) {
         card.smo_okato = smo.okato;
         let o = Array.from( data.get('okato') ).find( item => item.okato == smo.okato );
@@ -1514,7 +1563,7 @@ const crdMain = function(vnode) {
           m(".pure-g", [
             m(".pure-u-7-24", [
 // --            
-              m(".pure-control-group", cof('crd_num', card)),
+              m(".pure-control-group", cof('crd_num', card, { readonly: crd} )),
               m(".pure-control-group", cof('fam', card)),
               m(".pure-control-group", cof('im', card)),
               m('.pure-control-group', cof('ot', card)),
@@ -1552,7 +1601,8 @@ const crdMain = function(vnode) {
               ]),
               m(".pure-control-group", [
                 cof('smo', card, {onblur: set_smo}),
-                m('span.item_name', set_name(card.smo, 'smo_local', 'code', 'short_name'))
+                m('span.item_name',
+                  card.smo === null ? '':  set_name(card.smo + _reg, 'smo_local', 'code', 'short_name'))
               ]),
 // --
               m(".pure-control-group", [
