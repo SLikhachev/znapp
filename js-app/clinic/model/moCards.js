@@ -5,6 +5,8 @@ import { restSprav } from '../../sprav/spravApi.js';
 import { restClinic } from '../clinicApi.js';
 import { moModel, errMsg, _schema, _region } from '../../apps/model/moModel.js';
 
+const _reg= _region();
+
 export const moCardsList = {
   // return model object 
   getModel() {
@@ -73,7 +75,7 @@ export const moCard = {
   
   saveCard(event, card, model, method) {
     event.target.parentNode.classList.add('disable');
-    let { crd_num } = model.card[0];
+    //let { crd_num } = model.card[0];
     //model.card = Object.assign(model.card, card);
     const to_save= Object.assign({}, card);
     //console.log(moCard.model.card);
@@ -92,14 +94,16 @@ export const moCard = {
     */
     let schema = _schema('pg_rest');
     //let method = event.target.getAttribute('method');
-    let { _crd_num, id } = card;
+    let { crd_num, id, old_card } = card;
     let table = `${schema}cardz_clin`;
     let url = id ? `${table}?id=eq.${id}`: table;
     ['id', 'created', 'modified', 'cuser'].forEach( k=> delete to_save[k] );
-    if ( method === 'PATCH' && (crd_num == _crd_num) )
+    if ( method === 'PATCH' && (crd_num == old_card) )
       // same card number 
       delete to_save.crd_num; // primary key duplication
     // else change card number
+    delete to_save.old_card; // no that field in table
+    to_save.smo += _reg;
     return m.request({
       url: url,
       method: method,
@@ -108,9 +112,10 @@ export const moCard = {
       event.target.parentNode.classList.remove('disable');
       return true;
     }).catch( err => {
-      model.save = errMsg(err);
+      //model.save = errMsg(err);
       event.target.parentNode.classList.remove('disable');
-      vuDialog.open();
+      throw ( errMsg (err) );
+      //vuDialog.open();
     });
   }
 };

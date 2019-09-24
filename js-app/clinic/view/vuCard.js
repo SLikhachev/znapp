@@ -12,45 +12,54 @@ const crdMain = function(vnode) {
 
   let { model, method }= vnode.attrs;
   const data= cardOpt.data;
-  const card = model.card ? Object.assign({}, model.card[0]) : {};
+  //const card = model.card ? Object.assign({}, model.card[0]) : {};
+  const card= model.card ? model.card[0] : {};
+  card.old_card= card.crd_num;
   const _reg= _region();
-  card.smo = card.smo === null ? 0: card.smo - _reg;
+  if (card.smo !== null)
+    if( card.smo >= _reg)
+      card.smo -= _reg;
   //console.log(card.smo);
-  const crd= Boolean(card.crd_num);
+  //const crd= Boolean(card.crd_num);
   
   const toSave= ()=> {
     //dost
-    let dost= '',
-    fam= card.fam ? card.fam: '', 
-    im= card.im ? card.im: '', 
-    ot= card.ot? card.ot: ''; 
-    if (fam.length === 0) dost += '2_';
-    if (im.length === 0) dost += '3_';
-    if (ot.length === 0) dost += '1_';
-    if ( fam.length === 0 && im.length ===0 )
+    let dost= '';
+    if ( !card.fam ) dost += '2_';
+    if ( !card.im ) dost += '3_';
+    if ( !card.ot ) dost += '1_';
+    if ( !card.fam && !card.im )
       return 'Укажите Фамилию или Имя';
+    if ( Boolean(dost) )
+      card.dost= dost;
+    
     // gender
-    if ( !Boolean( card.gender))
-      return 'Укажите пол'; 
+    if ( !Boolean( card.gender ))
+      return 'Укажите пол';
+    
     // DUL
-    let s= card.dul_serial, n= card.dul_number;
-    s = s ? s.toString().length: 0;
-    n = n ? n.toString().length: 0;
-    if (s=== 0 && n=== 0) {
+    if ( !card.dul_serial && !card.dul_number )
       card.dul_type= null;
-    }
     if ( Boolean(card.polis_type) && card.polis_type < 3 && !Boolean(card.dul_type) )
       return 'Для этого типа полиса требуются данные ДУЛ';
+    
     // SMO
-    if ( !Boolean(card.smo) && !Boolean(card.smo_okato) )
+    if ( card.smo === null && card.smo_okato === null)
       return 'Укажите либо СМО либо СМО ОКАТО';
-    card.smo= card.smo ? card.smo + _reg: null;
+    //if ( card.smo < _reg)
+    //  card.smo += _reg;
+    
     // city_g
-    ct= card.city_g ? card.city_g.toString().length: 0;
-    st= card.street_g ? card.street_g.toString().length: 0;
-    if (st > 0 && ct === 0)
+    if (card.city_g === null && card.street_g !== null)
       return 'Укажите город';
-    return '';
+    
+    // int value
+    ['mo_att'].forEach( k=> {
+      if ( !Boolean( card[k] ) )
+        card[k]= null;
+    });
+    
+    return false;
   };
   
   const cardSave= function(e) {
@@ -60,13 +69,17 @@ const crdMain = function(vnode) {
     //console.log(card);
     // check dul type
     model.save= toSave();
-    if (model.save.length > 0) {
+    if ( Boolean( model.save ) ) {
       vuDialog.open();
       return false;
     }
-    model.save= null;
-    return moCard.saveCard(e, card, model, method).then( t=> card.smo -= _reg );
-    //return true;
+    //model.save= null;
+    return moCard.saveCard(e, card, model, method).then(t=>
+       m.route.set([clinicApi.cards])
+    ).catch(err=> {
+      model.save = err;
+      vuDialog.open();
+    });
   };
   // gender
   const gnd = function(c){
@@ -74,9 +87,11 @@ const crdMain = function(vnode) {
   };
   // polis num digits
   const num_digits = function(card) {
-    let s= card.polis_ser, n= card.polis_num;
-    s= s ? s.toString().length: 0;
-    n= n ? n.toString().length: 0;
+    let s= 0, n= 0;
+    if ( card.polis_ser !== null)
+      s= card.polis_ser.toString().length;
+    if ( card.polis_num !== null)
+      n= card.polis_num.toString().length;
     try {
       if (s === 0 && n === 16) {
         card.polis_type = 3;
@@ -147,13 +162,16 @@ const crdMain = function(vnode) {
 
     view: function () {
       //console.log(method);
+      //let crd= Boolean (model.talons);
+      //console.log(model.talons);
       return m('form.tcard.pure-form.pure-form-aligned',
         {style: "font-size: 1.2em;", id: "card", oncreate: forTabs, onsubmit: cardSave},
         [m('fieldset', [m('legend', "Карта пациента"),
           m(".pure-g", [
             m(".pure-u-7-24", [
 // --            
-              m(".pure-control-group", cof('crd_num', card, { readonly: crd} )),
+              m(".pure-control-group", cof('crd_num', card,
+                  { readonly: Boolean (model.talons.length) } )),
               m(".pure-control-group", cof('fam', card)),
               m(".pure-control-group", cof('im', card)),
               m('.pure-control-group', cof('ot', card)),

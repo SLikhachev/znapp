@@ -111,7 +111,8 @@ export const vuCardsList = function (vnode) {
   };
   
   const listMap= function(s) {
-    let fio = `${s['fam']} ${s['im']} ${s['ot']}`;
+    let f= ['fam', 'im', 'ot'].map(k=> s[k]? s[k]: ''); 
+    let fio = `${f[0]} ${f[1]} ${f[2]}`;
     let first = true;
     return m('tr', [
       Object.keys(cardz_hdr).map( (column) => {
@@ -119,7 +120,7 @@ export const vuCardsList = function (vnode) {
         let td = first ? m('td.choice.blue', m (m.route.Link, {
           href: `${clinicApi.cards}/${cell}`,
           //oncreate: m.route.link
-        }, cell)) : m('td', cell);
+        }, cell)) : m('td', cell ? cell: '');
         first = false;
         return td;
       }),

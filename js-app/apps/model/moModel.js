@@ -10,8 +10,8 @@ export const errMsg= function(error){
   //console.log(error);
   //let e = JSON.parse(error.message);
   let e= error.response;
-  //let m= e.details ? e.details : e.message ? e.message: error;
-  let m= e.message ? e.message : error;
+  let m= e.details ? e.details : e.message ? e.message: e;
+  //let m= e.message ? e.message : error;
   console.log(m);
   return m;
 }
