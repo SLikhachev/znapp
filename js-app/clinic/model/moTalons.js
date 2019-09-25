@@ -24,7 +24,7 @@ export const moTalonsList = {
 };
 
 export const talonOpt= {
-  options: [ restSprav.doctor, restSprav.ist_fin, restSprav.purp ],
+  options: [ restSprav.doctor, restSprav.ist_fin, restSprav.purp, restSprav.chm ],
   data: new Map(),
   error: null,
   getOptions() {

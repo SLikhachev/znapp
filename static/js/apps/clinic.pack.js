@@ -570,6 +570,7 @@ const restSprav$1 = {
     pmu_grup: { url: 'pmu_grup', editable: ['add'] },
     grc: { url: 'rpc/get_grc'},
     mkb: { url: 'mkb10', order_by: 'code'},
+    chm: { url: 'char_main'},
     //type: {url: 'spec_case'},
     //insur: {url: 'kategor'},
     ist_fin: {url: 'ist_fin'},
@@ -737,7 +738,7 @@ const moTalonsList = {
 };
 
 const talonOpt= {
-  options: [ restSprav$1.doctor, restSprav$1.ist_fin, restSprav$1.purp ],
+  options: [ restSprav$1.doctor, restSprav$1.ist_fin, restSprav$1.purp, restSprav$1.chm ],
   data: new Map(),
   error: null,
   getOptions() {
@@ -2389,7 +2390,7 @@ const talForm = function (vnode) {
   const doc_fam= ()=> {
     let doc;
     let fin= get_name(tal.ist_fin, 'ist_fin', 'id', 'name', 'Оплата?', false);
-    console.log(fin);
+    //console.log(fin)
     let purp= get_name(tal.purp, 'purpose', 'id', 'name', 'Цель?', true);
     let doct= Array.from(data.get('doctor')).find( d=> d.spec == tal.doc_spec && d.code == tal.doc_code );
     if ( Boolean(doct) && Boolean(doct.family) )
@@ -2399,6 +2400,14 @@ const talForm = function (vnode) {
     return Array.of(fin, purp, doc);
   };
   
+  const set_char = function(e) {
+    let ch;
+    if (Boolean(e.target.value )) {
+      ch = Array.from(data.get('char_main')).find(item => item.id == e.target.value);
+      if (Boolean(ch))
+        tal.char1= ch.id;
+    }
+  };
   const talonSave = function(e) {
     e.preventDefault();
     //saveTalon(event, model, method)
@@ -2440,12 +2449,23 @@ const talForm = function (vnode) {
         ]),
         //m('legend.leg-sec', "Диагноз, результат"),
         m('.pure-g', [
-           m('.pure-u-3-24', tof('ds1', tal)),
-          m('.pure-u-2-24', tof('char1', tal)),
+          m('.pure-u-3-24', tof('ds1', tal)),
+          m('.pure-u-2-24', [
+            tof('char1', tal, {
+              list:  "char",
+              onblur: set_char
+            }),
+            m('datalist[id="char"]', [
+              data.get('char_main').filter(c => c.id < 7).map(c=> {
+                let ch = `${c.id}. ${c.name.split(' ')[0]}`;
+                return m('option', ch);
+              })
+            ])
+          ]),
           m('.pure-u-2-24', tof('ishod', tal)),
           m('.pure-u-2-24', tof('travma_type',tal)),
-        //]),
-        //m('.pure-g', [
+        ]),
+        m('.pure-g', [
           m('.pure-u-3-24', tof('ds2', tal)),
           m('.pure-u-2-24', tof('char2', tal))
         ]),

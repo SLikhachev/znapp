@@ -52,6 +52,14 @@ const talForm = function (vnode) {
     return Array.of(fin, purp, doc);
   };
   
+  const set_char = function(e) {
+    let ch;
+    if (Boolean(e.target.value )) {
+      ch = Array.from(data.get('char_main')).find(item => item.id == e.target.value);
+      if (Boolean(ch))
+        tal.char1= ch.id;
+    }
+  };
   const talonSave = function(e) {
     e.preventDefault();
     //saveTalon(event, model, method)
@@ -93,12 +101,23 @@ const talForm = function (vnode) {
         ]),
         //m('legend.leg-sec', "Диагноз, результат"),
         m('.pure-g', [
-           m('.pure-u-3-24', tof('ds1', tal)),
-          m('.pure-u-2-24', tof('char1', tal)),
+          m('.pure-u-3-24', tof('ds1', tal)),
+          m('.pure-u-2-24', [
+            tof('char1', tal, {
+              list:  "char",
+              onblur: set_char
+            }),
+            m('datalist[id="char"]', [
+              data.get('char_main').filter(c => c.id < 7).map(c=> {
+                let ch = `${c.id}. ${c.name.split(' ')[0]}`;
+                return m('option', ch);
+              })
+            ])
+          ]),
           m('.pure-u-2-24', tof('ishod', tal)),
           m('.pure-u-2-24', tof('travma_type',tal)),
-        //]),
-        //m('.pure-g', [
+        ]),
+        m('.pure-g', [
           m('.pure-u-3-24', tof('ds2', tal)),
           m('.pure-u-2-24', tof('char2', tal))
         ]),

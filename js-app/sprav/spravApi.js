@@ -28,6 +28,7 @@ export const restSprav = {
     pmu_grup: { url: 'pmu_grup', editable: ['add'] },
     grc: { url: 'rpc/get_grc'},
     mkb: { url: 'mkb10', order_by: 'code'},
+    chm: { url: 'char_main'},
     //type: {url: 'spec_case'},
     //insur: {url: 'kategor'},
     ist_fin: {url: 'ist_fin'},
