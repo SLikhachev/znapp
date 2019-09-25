@@ -12,7 +12,7 @@ import { tof, ctf } from '../form/foForm.js';
 import { talNap } from './vuTalNap.js';
 import { talPmu } from './vuTalPmu.js';
 import { talDs } from './vuTalDs.js';
-import { checkDost} from './vuCard.js';
+import { checkDost, getName } from './vuCard.js';
 /*
 const card_fileds = [
   'crd_num', 'fam', 'im', 'ot', 'date_birth',
@@ -21,18 +21,35 @@ const card_fileds = [
   'mo_att'
 ];
 */
+
+//export const getName = function(data, val, key, prop, name, text, first_word=false) {
+  // data - optional data MAP
+  // val - string fofom input tag value
+  // key - key in data MAP to check
+  // prop - table's colemn name to check
+  // name - name of table's column to output from
+  // text - String text to output if item not find
+  // first_word - out only first word from named column
 const talForm = function (vnode) {
   
   let { model, method }= vnode.attrs;
   let tal= model.talon;
   const tal_num= tal.tal_num ? tal.tal_num: 'Новый';
   const data= talonOpt.data;
-  //onsole.log(data);
-  const doc_fam= () => {
-    let doc= Array.from(data.get('doctor')).find( d=> d.spec == tal.doc_spec && d.code == tal.doc_code );
-    if ( Boolean(doc) && Boolean(doc.family) )
-      return doc.family;
-    return '';
+  //console.log(data);
+  const get_name=
+    (val, key, prop, name, text, _word)=> getName( data, val, key, prop, name, text, _word );
+  const doc_fam= ()=> {
+    let doc;
+    let fin= get_name(tal.ist_fin, 'ist_fin', 'id', 'name', 'Оплата?', false);
+    //console.log(fin)
+    let purp= get_name(tal.purp, 'purpose', 'id', 'name', 'Цель?', true);
+    let doct= Array.from(data.get('doctor')).find( d=> d.spec == tal.doc_spec && d.code == tal.doc_code );
+    if ( Boolean(doct) && Boolean(doct.family) )
+      doc= m('span', doct.family);
+    else
+      doc= m('span.red', ' Доктор? ')
+    return Array.of(fin, purp, doc);
   };
   
   const talonSave = function(e) {
@@ -60,9 +77,9 @@ const talForm = function (vnode) {
           m(".pure-u-2-24", tof('purp', tal)),
           m(".pure-u-2-24", tof('doc_spec',tal)),
           m(".pure-u-2-24", tof('doc_code', tal)),
-          m(".pure-u-6-24", {
-              style: "padding-top: 2em ; font-size: 1.2em; font-weight: 600"
-            }, doc_fam() ), 
+          m(".pure-u-10-24", {
+              style: "padding-top: 2em ; font-size: 1.1em; font-weight: 500"
+            }, doc_fam() ),
         ]),
         //m('legend.leg-sec', "Визиты, дни"),
         m(".pure-g", [

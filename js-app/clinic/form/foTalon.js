@@ -43,28 +43,30 @@ export const talonField = {
     }
   },
   ist_fin: { label: ['', "Оплата"], input: {
-      tag: ['.pure-u-18-24', "text", 7, true],
+      tag: ['.pure-u-18-24', "number", 7, true],
+      attrs: { min: 1, max: 9}
     }
   },
   purp: { label: ['', "Цель"], input: {
-      tag: ['.pure-u-18-24', 'text', 8, true],
+      tag: ['.pure-u-18-24', 'number', 8, true],
+      attrs: { min: 0, max: 33}
     }
   },
   doc_spec: { label: ['', "Врач"], input: {
-      tag: ['.pure-u-22-24', "text", 9, true],
+      tag: ['.pure-u-22-24', "number", 9, true],
       attrs: { placeholder: "Спец"}
     }
   },
   doc_code: { label: ['', "Код"], input: {
-      tag: ['.pure-u-22-24', "text", 10, true]
+      tag: ['.pure-u-22-24', "number", 10, true]
     }
   },
   visit_pol: {label: ['', "Амбул"], input: {
-    tag: ['.pure-u-20-24', 'text', 11]
+    tag: ['.pure-u-20-24', 'number', 11]
     }
   },
   visit_home: {label: ['', "На дом"], input: {
-      tag: ['.input.pure-u-20-24', "text", 12]
+      tag: ['.input.pure-u-20-24', "number", 12]
     }
   },
   ds1: {label: ['', "Осн. диагноз"], input: {

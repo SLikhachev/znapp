@@ -556,7 +556,7 @@ const restSprav$1 = {
     division: { url:"division"},
     sp_podr: { url:"sp_podr", order_by: 'mo_code' },
     sp_para: { url:"sp_para"},
-    //purp: { url: 'purpose'},
+    purp: { url: 'purpose'},
     mo_local: { url:"mo_local"},
     smo_local: { url:"smo_local"},
     // prof
@@ -572,7 +572,7 @@ const restSprav$1 = {
     mkb: { url: 'mkb10', order_by: 'code'},
     //type: {url: 'spec_case'},
     //insur: {url: 'kategor'},
-    //istfin: {url: 'ist_fin'},
+    ist_fin: {url: 'ist_fin'},
     //errors: {url: 'errors_code'},
     
     // onko
@@ -737,7 +737,7 @@ const moTalonsList = {
 };
 
 const talonOpt= {
-  options: [ restSprav$1.doctor ],
+  options: [ restSprav$1.doctor, restSprav$1.ist_fin, restSprav$1.purp ],
   data: new Map(),
   error: null,
   getOptions() {
@@ -1210,28 +1210,30 @@ const talonField = {
     }
   },
   ist_fin: { label: ['', "Оплата"], input: {
-      tag: ['.pure-u-18-24', "text", 7, true],
+      tag: ['.pure-u-18-24', "number", 7, true],
+      attrs: { min: 1, max: 9}
     }
   },
   purp: { label: ['', "Цель"], input: {
-      tag: ['.pure-u-18-24', 'text', 8, true],
+      tag: ['.pure-u-18-24', 'number', 8, true],
+      attrs: { min: 0, max: 33}
     }
   },
   doc_spec: { label: ['', "Врач"], input: {
-      tag: ['.pure-u-22-24', "text", 9, true],
+      tag: ['.pure-u-22-24', "number", 9, true],
       attrs: { placeholder: "Спец"}
     }
   },
   doc_code: { label: ['', "Код"], input: {
-      tag: ['.pure-u-22-24', "text", 10, true]
+      tag: ['.pure-u-22-24', "number", 10, true]
     }
   },
   visit_pol: {label: ['', "Амбул"], input: {
-    tag: ['.pure-u-20-24', 'text', 11]
+    tag: ['.pure-u-20-24', 'number', 11]
     }
   },
   visit_home: {label: ['', "На дом"], input: {
-      tag: ['.input.pure-u-20-24', "text", 12]
+      tag: ['.input.pure-u-20-24', "number", 12]
     }
   },
   ds1: {label: ['', "Осн. диагноз"], input: {
@@ -1446,6 +1448,27 @@ const checkDost = card=> {
   return '';   
 };
 
+const getName = function(data, val, key, prop, name, text, first_word=false) {
+    // data - optional data MAP
+    // val - String fofom input tag value
+    // key - String key in data MAP to check
+    // prop - String table's column name to check
+    // name - String name of table's column to output from
+    // text - String text to output if item not find
+    // first_word - Boolean out only first word from named column
+    
+    //console.log(key, val);
+    if ( !Boolean(val)) return m('span', " ");
+    let item = Array.from( data.get(key) ).find( it => it[prop].toString() == val );
+    //console.log(item);
+    if (item !== undefined) {
+      if ( !first_word ) return m('span', `${item[name]} `);
+      return m('span', `${item[name].split(' ')[0]} `);
+    }
+    return m('span.red', `${text} `);
+  };
+  
+
 const toSaveCard= card=> {
     //dost
     
@@ -1570,16 +1593,9 @@ const crdMain = function(vnode) {
     }
   };
   // gets the name of option from Map by key
-  const set_name = function(val, key, prop, name, first_word=false) {
-    //console.log(key, val);
-    if ( !Boolean(val)) return "";
-    let item = Array.from( data.get(key) ).find( item => item[prop].toString() == val );
-    //console.log(item);
-    if (item !== undefined) {
-      if ( !first_word ) return item[name];
-      return item[name].split(' ')[0];
-    }
-    return m('span.red', "Неизвестный код");
+ 
+  const get_name = function(val, key, prop, name) {
+    return getName(data, val, key, prop, name, 'Неизвестный код', false);
   };
   
   return {
@@ -1630,7 +1646,7 @@ const crdMain = function(vnode) {
               ]),
 // --            
               m(".pure-control-group", [cof('dul_type', card),
-                m('span.item_name', set_name(card.dul_type, 'dul', 'code', 'short_name'))
+                m('span.item_name', get_name(card.dul_type, 'dul', 'code', 'short_name'))
               ]),
               m(".pure-control-group", cof('dul_serial', card)),
               m(".pure-control-group", cof('dul_number', card)),
@@ -1644,7 +1660,7 @@ const crdMain = function(vnode) {
               m(".pure-control-group", [
                 cof('smo', card, {onblur: set_smo}),
                 m('span.item_name',
-                  card.smo === null ? '':  set_name(card.smo + _reg, 'smo_local', 'code', 'short_name'))
+                  card.smo === null ? '':  get_name(card.smo + _reg, 'smo_local', 'code', 'short_name'))
               ]),
 // --
               m(".pure-control-group", [
@@ -1673,7 +1689,7 @@ const crdMain = function(vnode) {
                 cof('mo_att', card),
                 m('.item_name',
                   {style: "margin: 1em 0; padding-left: 1em"},
-                  set_name(card.mo_att, 'mo_local', 'scode', 'sname') )
+                  get_name(card.mo_att, 'mo_local', 'scode', 'sname') )
               ]),
             ]), //-- 8-24
 // ============================         
@@ -2352,18 +2368,35 @@ const card_fileds = [
   'mo_att'
 ];
 */
+
+//export const getName = function(data, val, key, prop, name, text, first_word=false) {
+  // data - optional data MAP
+  // val - string fofom input tag value
+  // key - key in data MAP to check
+  // prop - table's colemn name to check
+  // name - name of table's column to output from
+  // text - String text to output if item not find
+  // first_word - out only first word from named column
 const talForm = function (vnode) {
   
   let { model, method }= vnode.attrs;
   let tal= model.talon;
   const tal_num= tal.tal_num ? tal.tal_num: 'Новый';
   const data= talonOpt.data;
-  //onsole.log(data);
-  const doc_fam= () => {
-    let doc= Array.from(data.get('doctor')).find( d=> d.spec == tal.doc_spec && d.code == tal.doc_code );
-    if ( Boolean(doc) && Boolean(doc.family) )
-      return doc.family;
-    return '';
+  //console.log(data);
+  const get_name=
+    (val, key, prop, name, text, _word)=> getName( data, val, key, prop, name, text, _word );
+  const doc_fam= ()=> {
+    let doc;
+    let fin= get_name(tal.ist_fin, 'ist_fin', 'id', 'name', 'Оплата?', false);
+    console.log(fin);
+    let purp= get_name(tal.purp, 'purpose', 'id', 'name', 'Цель?', true);
+    let doct= Array.from(data.get('doctor')).find( d=> d.spec == tal.doc_spec && d.code == tal.doc_code );
+    if ( Boolean(doct) && Boolean(doct.family) )
+      doc= m('span', doct.family);
+    else
+      doc= m('span.red', ' Доктор? ');
+    return Array.of(fin, purp, doc);
   };
   
   const talonSave = function(e) {
@@ -2391,9 +2424,9 @@ const talForm = function (vnode) {
           m(".pure-u-2-24", tof('purp', tal)),
           m(".pure-u-2-24", tof('doc_spec',tal)),
           m(".pure-u-2-24", tof('doc_code', tal)),
-          m(".pure-u-6-24", {
-              style: "padding-top: 2em ; font-size: 1.2em; font-weight: 600"
-            }, doc_fam() ), 
+          m(".pure-u-10-24", {
+              style: "padding-top: 2em ; font-size: 1.1em; font-weight: 500"
+            }, doc_fam() ),
         ]),
         //m('legend.leg-sec', "Визиты, дни"),
         m(".pure-g", [

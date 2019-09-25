@@ -20,6 +20,27 @@ export const checkDost = card=> {
   return '';   
 }
 
+export const getName = function(data, val, key, prop, name, text, first_word=false) {
+    // data - optional data MAP
+    // val - String fofom input tag value
+    // key - String key in data MAP to check
+    // prop - String table's column name to check
+    // name - String name of table's column to output from
+    // text - String text to output if item not find
+    // first_word - Boolean out only first word from named column
+    
+    //console.log(key, val);
+    if ( !Boolean(val)) return m('span', " ");
+    let item = Array.from( data.get(key) ).find( it => it[prop].toString() == val );
+    //console.log(item);
+    if (item !== undefined) {
+      if ( !first_word ) return m('span', `${item[name]} `);
+      return m('span', `${item[name].split(' ')[0]} `);
+    }
+    return m('span.red', `${text} `);
+  };
+  
+
 export const toSaveCard= card=> {
     //dost
     
@@ -144,16 +165,9 @@ const crdMain = function(vnode) {
     }
   };
   // gets the name of option from Map by key
-  const set_name = function(val, key, prop, name, first_word=false) {
-    //console.log(key, val);
-    if ( !Boolean(val)) return "";
-    let item = Array.from( data.get(key) ).find( item => item[prop].toString() == val );
-    //console.log(item);
-    if (item !== undefined) {
-      if ( !first_word ) return item[name];
-      return item[name].split(' ')[0];
-    }
-    return m('span.red', "Неизвестный код");
+ 
+  const get_name = function(val, key, prop, name) {
+    return getName(data, val, key, prop, name, 'Неизвестный код', false);
   };
   
   return {
@@ -204,7 +218,7 @@ const crdMain = function(vnode) {
               ]),
 // --            
               m(".pure-control-group", [cof('dul_type', card),
-                m('span.item_name', set_name(card.dul_type, 'dul', 'code', 'short_name'))
+                m('span.item_name', get_name(card.dul_type, 'dul', 'code', 'short_name'))
               ]),
               m(".pure-control-group", cof('dul_serial', card)),
               m(".pure-control-group", cof('dul_number', card)),
@@ -218,7 +232,7 @@ const crdMain = function(vnode) {
               m(".pure-control-group", [
                 cof('smo', card, {onblur: set_smo}),
                 m('span.item_name',
-                  card.smo === null ? '':  set_name(card.smo + _reg, 'smo_local', 'code', 'short_name'))
+                  card.smo === null ? '':  get_name(card.smo + _reg, 'smo_local', 'code', 'short_name'))
               ]),
 // --
               m(".pure-control-group", [
@@ -247,7 +261,7 @@ const crdMain = function(vnode) {
                 cof('mo_att', card),
                 m('.item_name',
                   {style: "margin: 1em 0; padding-left: 1em"},
-                  set_name(card.mo_att, 'mo_local', 'scode', 'sname') )
+                  get_name(card.mo_att, 'mo_local', 'scode', 'sname') )
               ]),
             ]), //-- 8-24
 // ============================         
