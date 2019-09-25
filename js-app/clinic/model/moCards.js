@@ -1,9 +1,10 @@
 // src/clinic/model/moCards.js
 
 import { vuDialog } from '../../apps/view/vuDialog.js';
+import { moModel, errMsg, _schema, _region } from '../../apps/model/moModel.js';
 import { restSprav } from '../../sprav/spravApi.js';
 import { restClinic } from '../clinicApi.js';
-import { moModel, errMsg, _schema, _region } from '../../apps/model/moModel.js';
+
 
 const _reg= _region();
 
@@ -103,7 +104,7 @@ export const moCard = {
       delete to_save.crd_num; // primary key duplication
     // else change card number
     delete to_save.old_card; // no that field in table
-    to_save.smo += _reg;
+    to_save.smo = parseInt(to_save.smo) + _reg;
     return m.request({
       url: url,
       method: method,

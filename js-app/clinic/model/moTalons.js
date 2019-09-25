@@ -1,8 +1,10 @@
 // src/apps/model/moTalons.js
 
+import { moModel, errMsg, _region } from '../../apps/model/moModel.js';
 import { restSprav } from '../../sprav/spravApi.js';
 import { restClinic } from '../clinicApi.js';
-import { moModel, errMsg } from '../../apps/model/moModel.js';
+
+const _reg= _region();
 
 export const moTalonsList = {
   // :: Object
@@ -94,6 +96,8 @@ export const moTalon = {
     for (let f of card_fileds) {
       c[f] = card[f];
     }
+    c.smo -= _reg;
+    c.old_card= c.crd_num;
     model.card= c; // rewrites and this is not a list
     // prepare talon
     model.talon= model.talon ? moTalon.to_talon(model.talon[0], card_fileds) : {};

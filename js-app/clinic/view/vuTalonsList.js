@@ -50,14 +50,14 @@ const talonFind = function(vnode){
           m("fieldset",
             m(".pure-g", [
               m(".pure-u-1-5",
-                m("input.input-find.pure-u-3-4[name=q_tal][type='number']",
+                m("input.input-find.pure-u-2-3[name=q_tal][type='number']",
                   { placeholder: "Номер талона",
                     onupdate: v => v.dom.value = '' //vnode hook
                   }
                 )
               ),
               m(".pure-u-1-5",
-                m("input.input-find.pure-u-2-3[name=q_crd][type='search']",
+                m("input.input-find.pure-u-2-3[name=q_crd][type='text']",
                   {placeholder:"Номер карты"}
                 )
               ),

@@ -241,71 +241,6 @@ const vuDialog = {
   },
 };
 
-// src/sparv/spravApi.js
-// here url is a table name
-
-// editable - array of string as [ 'add', 'edit', 'del' ]
-// change - editable fields names if any else all fields exclude id
-const restSprav = {
-    // local
-    get doctor() {
-        return { url:"doctor", options: [ this.division, this.district ], order_by: 'code',
-        editable: ['add', 'edit', 'del'] };
-    },
-    district: { url:"district"},
-    division: { url:"division"},
-    sp_podr: { url:"sp_podr", order_by: 'mo_code' },
-    sp_para: { url:"sp_para"},
-    //purp: { url: 'purpose'},
-    mo_local: { url:"mo_local"},
-    smo_local: { url:"smo_local"},
-    // prof
-    doc_spec : { url:"spec_prvs_profil", order_by: 'spec', key: 'spec'}, 
-    profil: { url: 'profil', editable: ['edit'], change: ['one_visit', 'two_visit', 'podr'], },
-    prvs: { url: 'prvs' },
-    vidpom: { url: 'vidpom' },
-    pmu: { url: 'pmu', editable: ['edit'], change: ['ccode', 'code_podr', 'code_spec'], key: 'code_usl' },
-    pgr: { url: 'pmu_grup_code' },
-    pgc: { url: 'rpc/get_pgc', },
-    pmu_grup: { url: 'pmu_grup', editable: ['add'] },
-    grc: { url: 'rpc/get_grc'},
-    mkb: { url: 'mkb10', order_by: 'code'},
-    //type: {url: 'spec_case'},
-    //insur: {url: 'kategor'},
-    //istfin: {url: 'ist_fin'},
-    //errors: {url: 'errors_code'},
-    
-    // onko
-    onko_n1: {url: 'n1_protkaz'},
-    onko_n2: {url: 'n2_stady'},
-    onko_n3: {url: 'n3_tumor'},
-    onko_n4: {url: 'n4_nodus'},
-    onko_n5: {url: 'n5_metastaz'},
-    onko_n6: {url: 'rpc/onko_tnm'}, //pg base proc
-    onko_n7: {url: 'n7_hystolog'},
-    onko_n8: {url: 'onko_hysto_n8'}, // pg base view
-    onko_n9: {url: 'onko_hysto_n9'}, // pg_base view
-    onko_n10: {url: 'n10_mark'},
-    onko_n11: {url: 'onko_mark_n11'}, // pg base view
-    onko_n12: {url: 'onko_mark_n12'}, // pg base view
-    onko_n13: {url: 'n13_lech_type'},
-    onko_n14: {url: 'n14_hirlech_type'},
-    onko_n15: {url: 'n15_leklech_line'},
-    onko_n16: {url: 'n16_leklech_cycle'},
-    onko_n17: {url: 'n17_luchlech_type'},
-    onko_n18: {url: 'n18_povod_obras'},
-    onko_n19: {url: 'n19_consil_cel'},
-    //onko_n21: {url: 'rpc/onko_lek_schema'}, //pg base proc
-
-    // common
-    dul: {url: 'dul'},
-    okato: { url: 'okato'},
-    
-    //tarif
-    tarif_base: { url: 'tarifs_base', editable: ['edit'] },
-    tarif_pmu_vzaimo:  { url: 'tarifs_pmu_vzaimoras', editable: ['edit'] },
-};
-
 // src/apps/model/moModel.js
 
 //const pg_rest = window.localStorage.getItem('pg_rest'); //postgest schemaRest;
@@ -606,7 +541,73 @@ const moModel = {
 */
 };
 
+// src/sparv/spravApi.js
+// here url is a table name
+
+// editable - array of string as [ 'add', 'edit', 'del' ]
+// change - editable fields names if any else all fields exclude id
+const restSprav$1 = {
+    // local
+    get doctor() {
+        return { url:"doctor", options: [ this.division, this.district ], order_by: 'code',
+        editable: ['add', 'edit', 'del'] };
+    },
+    district: { url:"district"},
+    division: { url:"division"},
+    sp_podr: { url:"sp_podr", order_by: 'mo_code' },
+    sp_para: { url:"sp_para"},
+    //purp: { url: 'purpose'},
+    mo_local: { url:"mo_local"},
+    smo_local: { url:"smo_local"},
+    // prof
+    doc_spec : { url:"spec_prvs_profil", order_by: 'spec', key: 'spec'}, 
+    profil: { url: 'profil', editable: ['edit'], change: ['one_visit', 'two_visit', 'podr'], },
+    prvs: { url: 'prvs' },
+    vidpom: { url: 'vidpom' },
+    pmu: { url: 'pmu', editable: ['edit'], change: ['ccode', 'code_podr', 'code_spec'], key: 'code_usl' },
+    pgr: { url: 'pmu_grup_code' },
+    pgc: { url: 'rpc/get_pgc', },
+    pmu_grup: { url: 'pmu_grup', editable: ['add'] },
+    grc: { url: 'rpc/get_grc'},
+    mkb: { url: 'mkb10', order_by: 'code'},
+    //type: {url: 'spec_case'},
+    //insur: {url: 'kategor'},
+    //istfin: {url: 'ist_fin'},
+    //errors: {url: 'errors_code'},
+    
+    // onko
+    onko_n1: {url: 'n1_protkaz'},
+    onko_n2: {url: 'n2_stady'},
+    onko_n3: {url: 'n3_tumor'},
+    onko_n4: {url: 'n4_nodus'},
+    onko_n5: {url: 'n5_metastaz'},
+    onko_n6: {url: 'rpc/onko_tnm'}, //pg base proc
+    onko_n7: {url: 'n7_hystolog'},
+    onko_n8: {url: 'onko_hysto_n8'}, // pg base view
+    onko_n9: {url: 'onko_hysto_n9'}, // pg_base view
+    onko_n10: {url: 'n10_mark'},
+    onko_n11: {url: 'onko_mark_n11'}, // pg base view
+    onko_n12: {url: 'onko_mark_n12'}, // pg base view
+    onko_n13: {url: 'n13_lech_type'},
+    onko_n14: {url: 'n14_hirlech_type'},
+    onko_n15: {url: 'n15_leklech_line'},
+    onko_n16: {url: 'n16_leklech_cycle'},
+    onko_n17: {url: 'n17_luchlech_type'},
+    onko_n18: {url: 'n18_povod_obras'},
+    onko_n19: {url: 'n19_consil_cel'},
+    //onko_n21: {url: 'rpc/onko_lek_schema'}, //pg base proc
+
+    // common
+    dul: {url: 'dul'},
+    okato: { url: 'okato'},
+    
+    //tarif
+    tarif_base: { url: 'tarifs_base', editable: ['edit'] },
+    tarif_pmu_vzaimo:  { url: 'tarifs_pmu_vzaimoras', editable: ['edit'] },
+};
+
 // src/clinic/model/moCards.js
+
 
 const _reg= _region();
 
@@ -634,7 +635,7 @@ const moCardsList = {
 };
 
 const cardOpt= {
-  options: [restSprav.dul, restSprav.smo_local, restSprav.mo_local, restSprav.okato],
+  options: [restSprav$1.dul, restSprav$1.smo_local, restSprav$1.mo_local, restSprav$1.okato],
   data: new Map(),
   error: null,
   getOptions() {
@@ -697,7 +698,7 @@ const moCard = {
       delete to_save.crd_num; // primary key duplication
     // else change card number
     delete to_save.old_card; // no that field in table
-    to_save.smo += _reg;
+    to_save.smo = parseInt(to_save.smo) + _reg;
     return m.request({
       url: url,
       method: method,
@@ -715,6 +716,8 @@ const moCard = {
 };
 
 // src/apps/model/moTalons.js
+
+const _reg$1= _region();
 
 const moTalonsList = {
   // :: Object
@@ -734,7 +737,7 @@ const moTalonsList = {
 };
 
 const talonOpt= {
-  options: [ restSprav.doctor ],
+  options: [ restSprav$1.doctor ],
   data: new Map(),
   error: null,
   getOptions() {
@@ -806,6 +809,8 @@ const moTalon = {
     for (let f of card_fileds) {
       c[f] = card[f];
     }
+    c.smo -= _reg$1;
+    c.old_card= c.crd_num;
     model.card= c; // rewrites and this is not a list
     // prepare talon
     model.talon= model.talon ? moTalon.to_talon(model.talon[0], card_fileds) : {};
@@ -1400,7 +1405,7 @@ const talCard = {
     }},
     polis_num: { label: [], input: {
       tag: ['', "text"],
-      attrs: { placeholder: 'Номер', readonlu: true}
+      attrs: { placeholder: 'Номер', readonly: true}
     }},
     smo: {label: ['', 'СМО'], input: {
       tag: ['', "text"],
@@ -1429,30 +1434,24 @@ const ptf = function(field, data, to_attrs={}) {
 
 // src/clinic/view/vuCard.js
 
-const crdMain = function(vnode) {
-
-  let { model, method }= vnode.attrs;
-  const data= cardOpt.data;
-  //const card = model.card ? Object.assign({}, model.card[0]) : {};
-  const card= model.card ? model.card[0] : {};
-  card.old_card= card.crd_num;
-  const _reg= _region();
-  if (card.smo !== null)
-    if( card.smo >= _reg)
-      card.smo -= _reg;
-  //console.log(card.smo);
-  //const crd= Boolean(card.crd_num);
-  
-  const toSave= ()=> {
-    //dost
-    let dost= '';
-    if ( !card.fam ) dost += '2_';
-    if ( !card.im ) dost += '3_';
-    if ( !card.ot ) dost += '1_';
-    if ( !card.fam && !card.im )
+const checkDost = card=> {
+  let dost= '';
+  if ( !card.fam ) dost += '2_';
+  if ( !card.im ) dost += '3_';
+  if ( !card.ot ) dost += '1_';
+  if ( !card.fam && !card.im )
       return 'Укажите Фамилию или Имя';
+  if ( Boolean(dost) )
+    card.dost= dost;
+  return '';   
+};
+
+const toSaveCard= card=> {
+    //dost
+    
+    let dost= checkDost(card);
     if ( Boolean(dost) )
-      card.dost= dost;
+      return dost;
     
     // gender
     if ( !Boolean( card.gender ))
@@ -1483,12 +1482,27 @@ const crdMain = function(vnode) {
     return false;
   };
   
+
+const crdMain = function(vnode) {
+
+  let { model, method }= vnode.attrs;
+  const data= cardOpt.data;
+  //const card = model.card ? Object.assign({}, model.card[0]) : {};
+  const card= model.card ? model.card[0] : {};
+  card.old_card= card.crd_num;
+  const _reg= _region();
+  if (card.smo !== null)
+    if( card.smo >= _reg)
+      card.smo -= _reg;
+  //console.log(card.smo);
+  //const crd= Boolean(card.crd_num);
+  
   const cardSave= function(e) {
     e.preventDefault();
     // form send with forTabs onCreate function
     // above changed all processing will made here
     //console.log(card);
-    model.save= toSave();
+    model.save= toSaveCard(card);
     if ( Boolean( model.save ) ) {
       vuDialog.open();
       return false;
@@ -1842,7 +1856,7 @@ const talonFind = function(vnode){
     data.q_dspec= null;
     data.lim = 50;
     data.offs = 0;
-    console.log ( data );
+    //console.log ( data );
     return moModel.getViewRpc( model, data );
     //return false;
   };
@@ -1854,14 +1868,14 @@ const talonFind = function(vnode){
           m("fieldset",
             m(".pure-g", [
               m(".pure-u-1-5",
-                m("input.input-find.pure-u-3-4[name=q_tal][type='number']",
+                m("input.input-find.pure-u-2-3[name=q_tal][type='number']",
                   { placeholder: "Номер талона",
                     onupdate: v => v.dom.value = '' //vnode hook
                   }
                 )
               ),
               m(".pure-u-1-5",
-                m("input.input-find.pure-u-2-3[name=q_crd][type='search']",
+                m("input.input-find.pure-u-2-3[name=q_crd][type='text']",
                   {placeholder:"Номер карты"}
                 )
               ),
@@ -1983,153 +1997,6 @@ const vuTalonsList = function (vnode) {
   }; //return this object
 };
 
-// src/clinic/view/vuTalon.js
-/*
-const card_fileds = [
-  'crd_num', 'fam', 'im', 'ot', 'date_birth',
-  'polis_ser', 'polis_num', 'smo',
-  'dul_serial', 'dul_number',
-  'mo_att'
-];
-*/
-const talForm = function (vnode) {
-  
-  let { model, method }= vnode.attrs;
-  let tal= model.talon;
-  const tal_num= tal.tal_num; //? tal.tal_num: 'Новый';
-  const data= talonOpt.data;
-  const doc_fam= () => {
-    let doc= Array.from(data.get('doctor')).find( d=> d.spec == tal.doc_spec && d.code == tal.doc_code );
-    return doc.family ? doc.family : '';
-  };
-  
-  const talonSave = function(e) {
-    e.preventDefault();
-    //saveTalon(event, model, method)
-    return moTalon.saveTalon(e, model, method);
-  };
-  
-  return {
-    view() {
-    //console.log('talForm view');
-    return m(".pure-u-18-24", [
-		m("form.pure-form.pure-form-stacked.tcard", { style: "font-size: 1.2em;",
-      id: "talon", oncreate: forTabs, onsubmit: talonSave}, [
-			m('fieldset', [
-        m('legend', `Талон № ${tal_num}`),
-        m(".pure-g", [
-          m(".pure-u-4-24", tof('open_date', tal)),
-          m(".pure-u-4-24", tof('close_date', tal)),
-          m('.pure-u-6-24', tof('talon_month', tal)),
-          m(".pure-u-8-24", [ tof('first_vflag', tal), tof('for_pom', tal), tof('finality', tal) ]),
-        ]),
-        m(".pure-g", [
-          m(".pure-u-2-24", tof('ist_fin', tal)),
-          m(".pure-u-2-24", tof('purp', tal)),
-          m(".pure-u-2-24", tof('doc_spec',tal)),
-          m(".pure-u-2-24", tof('doc_code', tal)),
-          m(".pure-u-6-24", {
-              style: "padding-top: 2em ; font-size: 1.2em; font-weight: 600"
-            }, doc_fam() ), 
-        ]),
-        //m('legend.leg-sec', "Визиты, дни"),
-        m(".pure-g", [
-          m('.pure-u-2-24', tof('visit_pol', tal)),
-          m('.pure-u-2-24', tof('visit_home', tal)),
-          m(".pure-u-6-24", {
-            style: "padding-top: 2em ; font-size: 1.2em; font-weight: 600"
-            },
-            "Количество посещений"
-          ),
-        ]),
-        //m('legend.leg-sec', "Диагноз, результат"),
-        m('.pure-g', [
-           m('.pure-u-3-24', tof('ds1', tal)),
-          m('.pure-u-2-24', tof('char1', tal)),
-          m('.pure-u-2-24', tof('ishod', tal)),
-          m('.pure-u-2-24', tof('travma_type',tal)),
-        //]),
-        //m('.pure-g', [
-          m('.pure-u-3-24', tof('ds2', tal)),
-          m('.pure-u-2-24', tof('char2', tal))
-        ]),
-
-      ]),
-
-      m('fieldset', { style: "padding-left: 0%;" }, [
-				m('.pure-u-3-24', { style: "margin-top: 5px;" }, 
-          m('button.pure-button.pure-button-primary[type="submit"]',
-            { style: "font-size: 1.1em",
-              //onclick: talonSave
-            },
-          "Сохранить" )
-        )
-      ]) 
-    ])//- form --
-  ]); //- 18-24 -
- } // view
- }
-};
-const crdForm = function (vnode) {
-  let { card }= vnode.attrs; // ref to talon model.card
-  const model= {}; //local model
-  const method= 'PATCH';
-  //console.log(card);
-  let ff = [
-    'fam', 'im', 'ot', 'birth_date',
-    'polis_ser', 'polis_num', 'smo'];
-  
-  const cardSave = function(e) {
-    e.preventDefault();
-    //saveCard(event, card, model, method) {
-    return moCard.saveCard(e, card, model, method);
-  };
-  return {
-    view() {
-    //console.log('crdForm view')
-      let duls= card.dul_serial ? card.dul_serial: '';
-      let duln= card.dul_number ? card.dul_number: 'Нет';
-      let mo= card.mo_att ? card.mo_att: '';
-      //console.log(card);
-      return m(".pure-u-6-24.patz-data", { style: "overflow: hidden; padding-right: 1em" },
-        m(".legnd", `Карта № ${card.crd_num}`),
-        m('form.tcard.pure-form.pure-form-stacked',
-         {style:"font-size: 1.2em;", id:"tal_card", onsubmit: cardSave },[
-          //m(".legnd", `Карта № ${card.crd_num}`),
-          ff.map( f => m(".pure-control-group", ctf(f, card)) ),
-          m("span", `Приписан: ${mo}`),
-          m("span", `Документ ${duls} ${duln}`),
-          m('button.pure-button.pure-button-primary[type="submit"]',
-            { //onclick: e => cardSave
-          }, "Сохранить"),
-        
-       m(m.route.Link, { selector: 'a.pure-button.', 
-            href: `${clinicApi.cards}/${card.crd_num}`,
-            style: "margin-left: 2em;"
-            }, "Открыть карту" )
-      ]), /*form*/
-      m('span#card_message',
-        model.save ? model.save.err ? m('span.red', model.save.msg) : '' : ''
-      )
-      
-    ); //patz
-    } // view
-  }; // return
-};
-const talMain = function (vnode) {
-  let { model, method }= vnode.attrs;
-  return {
-    view () {
-      //console.log('talMain view');
-      return m(".pure-g", {style: "padding-left: 4em;"}, [
-        m(crdForm, {card: model.card} ), // only patch
-        m(talForm, {model: model, method: method } )
-      ]);
-    }
-  }
-};
-
-
 const talNap = function(vnode) {
   let tal= vnode.attrs.model.talon;
 
@@ -2189,7 +2056,7 @@ const talNap = function(vnode) {
 
 
           ])
-        ])
+        ]);
     }
   };
 };
@@ -2425,6 +2292,7 @@ const talPmu = function(vnode) {
     }
   };
 };
+
 const talDs = function(vnode) {
   let tal= vnode.attrs.model.talon;
   return {
@@ -2470,10 +2338,183 @@ const talDs = function(vnode) {
               ]),
             ]),
           ])
-        ])
+        ]);
     }
   };
 };
+
+// src/clinic/view/vuTalon.js
+/*
+const card_fileds = [
+  'crd_num', 'fam', 'im', 'ot', 'date_birth',
+  'polis_ser', 'polis_num', 'smo',
+  'dul_serial', 'dul_number',
+  'mo_att'
+];
+*/
+const talForm = function (vnode) {
+  
+  let { model, method }= vnode.attrs;
+  let tal= model.talon;
+  const tal_num= tal.tal_num ? tal.tal_num: 'Новый';
+  const data= talonOpt.data;
+  //onsole.log(data);
+  const doc_fam= () => {
+    let doc= Array.from(data.get('doctor')).find( d=> d.spec == tal.doc_spec && d.code == tal.doc_code );
+    if ( Boolean(doc) && Boolean(doc.family) )
+      return doc.family;
+    return '';
+  };
+  
+  const talonSave = function(e) {
+    e.preventDefault();
+    //saveTalon(event, model, method)
+    return moTalon.saveTalon(e, model, method);
+  };
+  
+  return {
+    view() {
+    //console.log('talForm view');
+    return m(".pure-u-18-24", [
+		m("form.pure-form.pure-form-stacked.tcard", { style: "font-size: 1.2em;",
+      id: "talon", oncreate: forTabs, onsubmit: talonSave}, [
+			m('fieldset', [
+        m('legend', `Талон № ${tal_num}`),
+        m(".pure-g", [
+          m(".pure-u-4-24", tof('open_date', tal)),
+          m(".pure-u-4-24", tof('close_date', tal)),
+          m('.pure-u-6-24', tof('talon_month', tal)),
+          m(".pure-u-8-24", [ tof('first_vflag', tal), tof('for_pom', tal), tof('finality', tal) ]),
+        ]),
+        m(".pure-g", [
+          m(".pure-u-2-24", tof('ist_fin', tal)),
+          m(".pure-u-2-24", tof('purp', tal)),
+          m(".pure-u-2-24", tof('doc_spec',tal)),
+          m(".pure-u-2-24", tof('doc_code', tal)),
+          m(".pure-u-6-24", {
+              style: "padding-top: 2em ; font-size: 1.2em; font-weight: 600"
+            }, doc_fam() ), 
+        ]),
+        //m('legend.leg-sec', "Визиты, дни"),
+        m(".pure-g", [
+          m('.pure-u-2-24', tof('visit_pol', tal)),
+          m('.pure-u-2-24', tof('visit_home', tal)),
+          m(".pure-u-6-24", {
+            style: "padding-top: 2em ; font-size: 1.2em; font-weight: 600"
+            },
+            "Количество посещений"
+          ),
+        ]),
+        //m('legend.leg-sec', "Диагноз, результат"),
+        m('.pure-g', [
+           m('.pure-u-3-24', tof('ds1', tal)),
+          m('.pure-u-2-24', tof('char1', tal)),
+          m('.pure-u-2-24', tof('ishod', tal)),
+          m('.pure-u-2-24', tof('travma_type',tal)),
+        //]),
+        //m('.pure-g', [
+          m('.pure-u-3-24', tof('ds2', tal)),
+          m('.pure-u-2-24', tof('char2', tal))
+        ]),
+
+      ]),
+
+      m('fieldset', { style: "padding-left: 0%;" }, [
+				m('.pure-u-3-24', { style: "margin-top: 5px;" }, 
+          m('button.pure-button.pure-button-primary[type="submit"]',
+            { style: "font-size: 1.1em",
+              //onclick: talonSave
+            },
+          "Сохранить" )
+        )
+      ]) 
+    ])//- form --
+  ]); //- 18-24 -
+ } // view
+ }
+};
+
+
+const crdForm = function (vnode) {
+  let { model }= vnode.attrs;
+  let { card }= model; // ref to talon model.card
+  //const model= {}; //local model
+  const method= 'PATCH';
+  //console.log(card);
+  let ff = [
+    'fam', 'im', 'ot', 'birth_date',
+    'polis_ser', 'polis_num', 'smo'];
+  
+  const toSave= card=> {
+    let dost= checkDost(card);
+    if ( Boolean(dost) )
+      return dost;
+    return '';
+  };
+  
+  const cardSave = function(e) {
+    e.preventDefault();
+    //saveCard(event, card, model, method) {
+    
+    model.save= toSave(card);
+    if ( Boolean( model.save ) ) {
+      vuDialog.open();
+      return false;
+    }
+    return moCard.saveCard(e, card, model, method).catch(err=> {
+      model.save = err;
+      vuDialog.open();
+    });
+  };
+
+  return {
+    view() {
+    //console.log('crdForm view')
+      let duls= card.dul_serial ? card.dul_serial: '';
+      let duln= card.dul_number ? card.dul_number: 'Нет';
+      let mo= card.mo_att ? card.mo_att: '';
+      //console.log(card);
+      return m(".pure-u-6-24.patz-data", { style: "overflow: hidden; padding-right: 1em" },
+        m(".legnd", `Карта № ${card.crd_num}`),
+        m('form.tcard.pure-form.pure-form-stacked',
+         {style:"font-size: 1.2em;", id:"tal_card", onsubmit: cardSave },[
+          //m(".legnd", `Карта № ${card.crd_num}`),
+          ff.map( f => m(".pure-control-group", ctf(f, card)) ),
+          m("span", `Приписан: ${mo}`),
+          m("span", `Документ ${duls} ${duln}`),
+          m('button.pure-button.pure-button-primary[type="submit"]',
+            { //onclick: e => cardSave
+          }, "Сохранить"),
+        
+       m(m.route.Link, { selector: 'a.pure-button.', 
+            href: `${clinicApi.cards}/${card.crd_num}`,
+            style: "margin-left: 2em;"
+            }, "Открыть карту" )
+      ]), /*form*/
+      /*
+      m('span#card_message',
+        model.save ? model.save.err ? m('span.red', model.save.msg) : '' : ''
+      )
+      */
+    ); //patz
+    } // view
+  }; // return
+};
+
+
+const talMain = function (vnode) {
+  let { model, method }= vnode.attrs;
+  return {
+    view () {
+      //console.log('talMain view');
+      return m(".pure-g", {style: "padding-left: 4em;"}, [
+        m(crdForm, {model: model} ), // only patch
+        m(talForm, {model: model, method: method } )
+      ]);
+    }
+  }
+};
+
 
 const vuTalon = function(vnode) {
   //console.log(vnode.attrs);

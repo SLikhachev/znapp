@@ -124,7 +124,7 @@ export const talCard = {
     }},
     polis_num: { label: [], input: {
       tag: ['', "text"],
-      attrs: { placeholder: 'Номер', readonlu: true}
+      attrs: { placeholder: 'Номер', readonly: true}
     }},
     smo: {label: ['', 'СМО'], input: {
       tag: ['', "text"],

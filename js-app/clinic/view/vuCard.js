@@ -8,30 +8,24 @@ import { clinicApi } from '../clinicApi.js';
 import { tabsView, forTabs } from './vuTabs.js';
 import { cof } from '../form/foForm.js';
 
-const crdMain = function(vnode) {
-
-  let { model, method }= vnode.attrs;
-  const data= cardOpt.data;
-  //const card = model.card ? Object.assign({}, model.card[0]) : {};
-  const card= model.card ? model.card[0] : {};
-  card.old_card= card.crd_num;
-  const _reg= _region();
-  if (card.smo !== null)
-    if( card.smo >= _reg)
-      card.smo -= _reg;
-  //console.log(card.smo);
-  //const crd= Boolean(card.crd_num);
-  
-  const toSave= ()=> {
-    //dost
-    let dost= '';
-    if ( !card.fam ) dost += '2_';
-    if ( !card.im ) dost += '3_';
-    if ( !card.ot ) dost += '1_';
-    if ( !card.fam && !card.im )
+export const checkDost = card=> {
+  let dost= '';
+  if ( !card.fam ) dost += '2_';
+  if ( !card.im ) dost += '3_';
+  if ( !card.ot ) dost += '1_';
+  if ( !card.fam && !card.im )
       return 'Укажите Фамилию или Имя';
+  if ( Boolean(dost) )
+    card.dost= dost;
+  return '';   
+}
+
+export const toSaveCard= card=> {
+    //dost
+    
+    let dost= checkDost(card);
     if ( Boolean(dost) )
-      card.dost= dost;
+      return dost;
     
     // gender
     if ( !Boolean( card.gender ))
@@ -62,12 +56,27 @@ const crdMain = function(vnode) {
     return false;
   };
   
+
+const crdMain = function(vnode) {
+
+  let { model, method }= vnode.attrs;
+  const data= cardOpt.data;
+  //const card = model.card ? Object.assign({}, model.card[0]) : {};
+  const card= model.card ? model.card[0] : {};
+  card.old_card= card.crd_num;
+  const _reg= _region();
+  if (card.smo !== null)
+    if( card.smo >= _reg)
+      card.smo -= _reg;
+  //console.log(card.smo);
+  //const crd= Boolean(card.crd_num);
+  
   const cardSave= function(e) {
     e.preventDefault();
     // form send with forTabs onCreate function
     // above changed all processing will made here
     //console.log(card);
-    model.save= toSave();
+    model.save= toSaveCard(card);
     if ( Boolean( model.save ) ) {
       vuDialog.open();
       return false;
