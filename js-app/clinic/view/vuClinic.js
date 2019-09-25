@@ -32,3 +32,8 @@ export const vuClinic = function(vnode) {
     }
   }
 }
+
+export const getFIO= s=> {
+   let f= ['fam', 'im', 'ot'].map(k=> s[k]? s[k]: '');
+   return `${f[0]} ${f[1]} ${f[2]}`;
+}

@@ -50,10 +50,10 @@ const crdMain = function(vnode) {
     //  card.smo += _reg;
     
     // city_g
-    if (card.city_g === null && card.street_g !== null)
+    if ( !card.city_g && Boolean(card.street_g) )
       return 'Укажите город';
     
-    // int value
+    // nulled empty int values 
     ['mo_att'].forEach( k=> {
       if ( !Boolean( card[k] ) )
         card[k]= null;
@@ -67,7 +67,6 @@ const crdMain = function(vnode) {
     // form send with forTabs onCreate function
     // above changed all processing will made here
     //console.log(card);
-    // check dul type
     model.save= toSave();
     if ( Boolean( model.save ) ) {
       vuDialog.open();
@@ -169,7 +168,7 @@ const crdMain = function(vnode) {
         [m('fieldset', [m('legend', "Карта пациента"),
           m(".pure-g", [
             m(".pure-u-7-24", [
-// --            
+// --        // -- TODO check for card.card_type to process card number    
               m(".pure-control-group", cof('crd_num', card,
                   { readonly: Boolean (model.talons.length) } )),
               m(".pure-control-group", cof('fam', card)),

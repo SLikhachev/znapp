@@ -1,9 +1,11 @@
 // src/clinic/view/vuCardsList.js
 
 import { vuLoading } from '../../apps/view/vuApp.js';
-import { restClinic, clinicApi } from '../clinicApi.js';
 import { moModel } from '../../apps/model/moModel.js';
+import { restClinic, clinicApi } from '../clinicApi.js';
 import { moCardsList } from '../model/moCards.js';
+import { getFIO } from './vuClinic.js';
+
 
 const cardFind= function (vnode) {
 
@@ -111,9 +113,7 @@ export const vuCardsList = function (vnode) {
   };
   
   const listMap= function(s) {
-    let f= ['fam', 'im', 'ot'].map(k=> s[k]? s[k]: ''); 
-    let fio = `${f[0]} ${f[1]} ${f[2]}`;
-    let first = true;
+    let fio = getFIO(s), first = true;
     return m('tr', [
       Object.keys(cardz_hdr).map( (column) => {
         let cell = column === 'fam' ? fio : s[column];

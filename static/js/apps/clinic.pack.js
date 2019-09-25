@@ -866,6 +866,11 @@ const vuClinic = function(vnode) {
   }
 };
 
+const getFIO= s=> {
+   let f= ['fam', 'im', 'ot'].map(k=> s[k]? s[k]: '');
+   return `${f[0]} ${f[1]} ${f[2]}`;
+};
+
 // src/apps/view/vuApp.js
 
 const vuLoading = {
@@ -878,6 +883,7 @@ const vuLoading = {
 };
 
 // src/clinic/view/vuCardsList.js
+
 
 const cardFind= function (vnode) {
 
@@ -980,9 +986,7 @@ const vuCardsList = function (vnode) {
   };
   
   const listMap= function(s) {
-    let f= ['fam', 'im', 'ot'].map(k=> s[k]? s[k]: ''); 
-    let fio = `${f[0]} ${f[1]} ${f[2]}`;
-    let first = true;
+    let fio = getFIO(s), first = true;
     return m('tr', [
       Object.keys(cardz_hdr).map( (column) => {
         let cell = column === 'fam' ? fio : s[column];
@@ -1467,10 +1471,10 @@ const crdMain = function(vnode) {
     //  card.smo += _reg;
     
     // city_g
-    if (card.city_g === null && card.street_g !== null)
+    if ( !card.city_g && Boolean(card.street_g) )
       return 'Укажите город';
     
-    // int value
+    // nulled empty int values 
     ['mo_att'].forEach( k=> {
       if ( !Boolean( card[k] ) )
         card[k]= null;
@@ -1484,7 +1488,6 @@ const crdMain = function(vnode) {
     // form send with forTabs onCreate function
     // above changed all processing will made here
     //console.log(card);
-    // check dul type
     model.save= toSave();
     if ( Boolean( model.save ) ) {
       vuDialog.open();
@@ -1586,7 +1589,7 @@ const crdMain = function(vnode) {
         [m('fieldset', [m('legend', "Карта пациента"),
           m(".pure-g", [
             m(".pure-u-7-24", [
-// --            
+// --        // -- TODO check for card.card_type to process card number    
               m(".pure-control-group", cof('crd_num', card,
                   { readonly: Boolean (model.talons.length) } )),
               m(".pure-control-group", cof('fam', card)),
@@ -1806,44 +1809,54 @@ const vuCard = function(vnode) {
 };
 
 // src/clinic/view/vuTalonsList.js
-//import { toCard } from './vuCardsList.js';
-//import { vuTalon } from './vuTalon.js';
-
+/*
+IN q_tal integer,
+IN q_crd character varying,
+IN q_date date,
+IN q_dspec integer,
+IN lim integer,
+IN offs integer)
+*/
 const talonFind = function(vnode){
   
   let { model } = vnode.attrs;
   
   const findTalons= function(event) {  
     event.preventDefault();
-    let data = moModel.getFormData( $('form#talon_find') );
+    //let data = moModel.getFormData( $('form#talon_find') );
+    let data = moModel.getFormData( event.target );
     //console.log ( data );
     //moTalonsList.model.list=[];
     //return false;
-    if (data.q_tal === "")
+    if ( !data.q_tal)
       data.q_tal = 1;
-    if ( data.q_crd === "" && (data.q_date !== "" || data.q_dspec !== "" ) )
+    if ( !data.q_crd && Boolean(data.q_date) ) // || data.q_dspec !== "" ) )
       data.q_crd = ".*";
-    if (data.q_date === "" && data.q_dspec !== "")
+    if ( !data.q_date) //&& data.q_dspec !== "")
       data.q_date = '2010-01-01';
-    data.q_date = data.q_date === "" ? null : data.q_date;
+    //data.q_date = data.q_date === "" ? null : data.q_date;
+    /*
     if (data.q_dspec === "")
       data.q_dspec = null;
+    */
+    data.q_dspec= null;
     data.lim = 50;
     data.offs = 0;
-    //console.log ( data );
-    moModel.getViewRpc( model, data );
-    return false;
+    console.log ( data );
+    return moModel.getViewRpc( model, data );
+    //return false;
   };
+  
   return { 
     view () { return m(".pure-g",
       m(".pure-u-1-1", // data gets from this FORM fieldsl
-        m("form.pure-form[id=talon_find]",
+        m("form.pure-form[id=talon_find]", { onsubmit: findTalons },
           m("fieldset",
             m(".pure-g", [
               m(".pure-u-1-5",
                 m("input.input-find.pure-u-3-4[name=q_tal][type='number']",
                   { placeholder: "Номер талона",
-                    onupdate: v => v.dom.value = '' 
+                    onupdate: v => v.dom.value = '' //vnode hook
                   }
                 )
               ),
@@ -1854,15 +1867,16 @@ const talonFind = function(vnode){
               ),
               m(".pure-u-1-5",
                 m("input.input-find.pure-u-2-3[name=q_date][type='date']",
-                  {placeholder:"С даты"}
+                  //{placeholder:"С даты"}
                 )
               ),
+              /*
               m(".pure-u-1-5",
                 m("input.input-find.pure-u-2-3[name=q_dspec][type='number']",
                   {placeholder:"Специалист (код)"}
                 )
               ),
-              /*
+              
               m(".pure-u-1-5",
                 m("input.input-find.pure-u-2-3[name=q_data_end][type='date']",
                   {placeholder:"По дату"}
@@ -1870,8 +1884,8 @@ const talonFind = function(vnode){
               ),
               */
               m(".pure-u-1-5",
-                m('button.pure-button.pure-button-primary[type="button"]', {
-                    onclick: findTalons
+                m('button.pure-button.pure-button-primary[type=submit"]', {
+                    //onclick: findTalons
                   },
                 "Найти"
                 )
@@ -1918,7 +1932,7 @@ const vuTalonsList = function (vnode) {
   };
   
   const listMap= function(s) {
-    let fio = `${s['fam']} ${s['im']} ${s['ot']}`;
+    let fio = getFIO(s);
     let tal= s.tal_num, crd= s.crd_num;
     return m('tr', [
       Object.keys(talonz_hdr).map( (column) => {
