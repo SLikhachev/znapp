@@ -37,8 +37,12 @@ const talForm = function (vnode) {
   const tal_num= tal.tal_num ? tal.tal_num: 'Новый';
   const data= talonOpt.data;
   //console.log(data);
+  let mkb= [];
+  const dsp= "^[A-Z][0-9]{2}(\.[0-9]{1})?$";
+  const ds= new RegExp( dsp );
   const get_name=
     (val, key, prop, name, text, _word)=> getName( data, val, key, prop, name, text, _word );
+  
   const doc_fam= ()=> {
     let doc;
     let fin= get_name(tal.ist_fin, 'ist_fin', 'id', 'name', 'Оплата?', false);
@@ -51,14 +55,42 @@ const talForm = function (vnode) {
       doc= m('span.red', ' Доктор? ')
     return Array.of(fin, purp, doc);
   };
-  
-  const set_char = function(e) {
+  // c_zab (1,2,3) if ds1 <> Z
+  //ishod ()
+  // rslt 
+  const set_data= (e, attr, table, prop)=> {
     let ch;
     if (Boolean(e.target.value )) {
-      ch = Array.from(data.get('char_main')).find(item => item.id == e.target.value);
-      if (Boolean(ch))
-        tal.char1= ch.id;
+      ch = Array.from(data.get(table)).find(item => item[prop] == e.target.value.split('.')[0]);
+      if (Boolean(ch)) {
+        tal[attr]= ch[prop];
+        e.target.value= ch[prop];
+      } else {
+        tal[attr]= e.target.value;
+      }
     }
+    return false;
+  };
+  
+  const set_char= e=> set_data(e, 'char1', 'char_main', 'id');
+  const set_ishod= e=> set_data(e, 'ishod', 'char_main', 'id');
+  
+  let dvs; //= '';
+  let ds_model = { url: 'mkb10?code=like.', order_by: 'code', list: [], headers: { Range: '0-10' } };
+  const set_diag= e=> {
+    
+    dvs = e.target.value;
+    //console.log(dvs);
+    //console.log( ds.test(dvs) );
+    //e.target.value= dv;
+    //return true;
+    //if (dv.length < 3)
+    //  return;
+    if (ds.test(dvs) ) {
+      ds_model.url += `${dvs}*`;
+      return moModel.getList(ds_model).then(t=> console.log( ds_model.list ));
+    }
+    //return false;
   };
   const talonSave = function(e) {
     e.preventDefault();
@@ -101,20 +133,40 @@ const talForm = function (vnode) {
         ]),
         //m('legend.leg-sec', "Диагноз, результат"),
         m('.pure-g', [
-          m('.pure-u-3-24', tof('ds1', tal)),
+          m('.pure-u-3-24', [
+            tof('ds1', tal, {
+              //pattern: "[A-Z][0-9]{2}(\.[0-9]{1})?",
+              //list: 'ds',
+              value: dvs,
+              oninput: set_diag
+              //onchange: set_diag
+            }),
+            //m('datalist[id="ds"]', mkb.map(d=> m('option', {value: d.code})) )
+          ]),
           m('.pure-u-2-24', [
             tof('char1', tal, {
               list:  "char",
               onblur: set_char
             }),
             m('datalist[id="char"]', [
-              data.get('char_main').filter(c => c.id < 7).map(c=> {
+              data.get('char_main').filter(c => c.id < 4).map(c=> {
                 let ch = `${c.id}. ${c.name.split(' ')[0]}`;
-                return m('option', ch);
+                return m('option', { value: ch });
               })
             ])
           ]),
-          m('.pure-u-2-24', tof('ishod', tal)),
+          m('.pure-u-2-24', [
+            tof('ishod', tal, {
+              list:  "ishod",
+              onblur: set_ishod
+            }),
+            m('datalist[id="ishod"]', [
+              data.get('char_main').filter(c => c.id < 7).map(c=> {
+                let ch = `${c.id}. ${c.name.split(' ')[0]}`;
+                return m('option', { value: ch });
+              })
+            ])
+          ]),
           m('.pure-u-2-24', tof('travma_type',tal)),
         ]),
         m('.pure-g', [

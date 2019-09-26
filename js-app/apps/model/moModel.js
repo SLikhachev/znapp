@@ -99,7 +99,8 @@ export const moModel = {
     console.log(url);
     return m.request({
       method: method,
-      url: url
+      url: url,
+      headers: model.headers ? model.headers: null
     }).then(function(res) {
       if ( ! Boolean(res) ) return false;
       if (res.length && res.length > 0) {
