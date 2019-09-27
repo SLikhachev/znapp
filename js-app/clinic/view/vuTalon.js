@@ -37,14 +37,14 @@ const talForm = function (vnode) {
   const tal_num= tal.tal_num ? tal.tal_num: 'Новый';
   const data= talonOpt.data;
   //console.log(data);
-  const dsp= "^[A-Z][0-9]{2}(\.[0-9]{1})?$";
+  const dsp= "^[A-Z][0-9]{2}(\.[0-9]{1,2})?$";
   const diag= new RegExp( dsp );
   const get_name=
     (val, key, prop, name, text, _word)=> getName( data, val, key, prop, name, text, _word );
   
   const doc_fam= ()=> {
-    let doc;
-    let fin= get_name(tal.ist_fin, 'ist_fin', 'id', 'name', 'Оплата?', false);
+    let doc, fin='';
+    //let fin= get_name(tal.ist_fin, 'ist_fin', 'id', 'name', 'Оплата?', false);
     //console.log(fin)
     let purp= get_name(tal.purp, 'purpose', 'id', 'name', 'Цель?', true);
     let doct= Array.from(data.get('doctor')).find( d=> d.spec == tal.doc_spec && d.code == tal.doc_code );
@@ -71,11 +71,13 @@ const talForm = function (vnode) {
     return false;
   };
   
+  const set_istfin= e=> set_data(e, 'ist_fin', 'ist_fin', 'id');
   const set_char= e=> set_data(e, 'char1', 'char_main', 'id');
   const set_ishod= e=> set_data(e, 'ishod', 'char_main', 'id');
+  const set_travma= e=> set_data(e, 'travma_type', 'travma_type', 'id');
   
-  let dvs; //= '';
-  const ds_model= { mkb: 'mkb10?code=like.', order_by: 'code', list: null, headers: { Range: '0-10' } };
+  let dvs= tal.ds1;
+  const ds_model= { mkb: 'mkb10?code=like.', order_by: 'code', list: null, headers: { Range: '0-20' } };
   const ds_check= { url: 'mkb10?code=eq.', order_by: 'code', list: null }
   const set_diag= e=> {
     dvs = e.target.value;
@@ -85,6 +87,11 @@ const talForm = function (vnode) {
     }
     return false;
   };
+  const ds_show= ()=> {
+    let dsl= ds_model.list ? ds_model.list: [];
+    let ds= dsl.find(d=> tal.ds1 == d.code.trim() );
+    return ds ? ds.name: ''; // m('span.red', ' Диагноз? ');
+  }
   
   const talonSave = function(e) {
     e.preventDefault();
@@ -100,14 +107,20 @@ const talForm = function (vnode) {
       id: "talon", oncreate: forTabs, onsubmit: talonSave}, [
 			m('fieldset', [
         m('legend', `Талон № ${tal_num}`),
+        //
         m(".pure-g", [
           m(".pure-u-4-24", tof('open_date', tal)),
           m(".pure-u-4-24", tof('close_date', tal)),
           m('.pure-u-6-24', tof('talon_month', tal)),
           m(".pure-u-8-24", [ tof('first_vflag', tal), tof('for_pom', tal), tof('finality', tal) ]),
         ]),
+        //
         m(".pure-g", [
-          m(".pure-u-2-24", tof('ist_fin', tal)),
+          m(".pure-u-2-24", [ tof('ist_fin', tal, { list: "istfin", onblur: set_istfin }),
+            m('datalist[id="istfin"]',
+              data.get('ist_fin').map(c=> m('option', { value: `${c.id}. ${c.name}`}))
+            )
+          ]),
           m(".pure-u-2-24", tof('purp', tal)),
           m(".pure-u-2-24", tof('doc_spec',tal)),
           m(".pure-u-2-24", tof('doc_code', tal)),
@@ -136,20 +149,15 @@ const talForm = function (vnode) {
               //onchange: set_diag
             }),
             m('datalist[id="diags"]',
-              ds_model.list ? ds_model.list.map(d=> m('option', {value: d.code})) : []
+              ds_model.list ? ds_model.list.map(d=> m('option', {value: d.code.trim()})) : []
             )
           ]),
-          m('.pure-u-2-24', [
-            tof('char1', tal, {
-              list:  "char",
-              onblur: set_char
-            }),
-            m('datalist[id="char"]', [
-              data.get('char_main').filter(c => c.id < 4).map(c=> {
-                let ch = `${c.id}. ${c.name.split(' ')[0]}`;
-                return m('option', { value: ch });
-              })
-            ])
+          m('.pure-u-2-24', [ tof('char1', tal, { list:  "char", onblur: set_char }),
+            m('datalist[id="char"]',
+              data.get('char_main').filter(c => c.id < 4).map(c=>
+                m('option', { value: `${c.id}. ${c.name.split(' ')[0]}` })
+              )
+            )
           ]),
           m('.pure-u-2-24', [
             tof('ishod', tal, {
@@ -163,7 +171,17 @@ const talForm = function (vnode) {
               })
             ])
           ]),
-          m('.pure-u-2-24', tof('travma_type',tal)),
+          m('.pure-u-2-24', [ tof('travma_type', tal, { list:  "travma", onblur: set_travma }),
+            m('datalist[id="travma"]',
+              data.get('travma_type').map(c=>
+                m('option', { value: `${c.id}. ${c.name}` })
+              )
+            )
+          ]),
+          m(".pure-u-10-24", {
+              style: "padding-top: 2em ; font-size: 1.1em; font-weight: 500"
+            }, ds_show()
+          ),
         ]),
         m('.pure-g', [
           m('.pure-u-3-24', tof('ds2', tal)),

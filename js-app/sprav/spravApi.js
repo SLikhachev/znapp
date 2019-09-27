@@ -29,6 +29,7 @@ export const restSprav = {
     grc: { url: 'rpc/get_grc'},
     mkb: { url: 'mkb10', order_by: 'code'},
     chm: { url: 'char_main'},
+    travma: { url: 'travma_type'},
     //type: {url: 'spec_case'},
     //insur: {url: 'kategor'},
     ist_fin: {url: 'ist_fin'},

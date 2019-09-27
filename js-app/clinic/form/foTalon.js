@@ -43,8 +43,8 @@ export const talonField = {
     }
   },
   ist_fin: { label: ['', "Оплата"], input: {
-      tag: ['.pure-u-18-24', "number", 7, true],
-      attrs: { min: 1, max: 9}
+      tag: ['.pure-u-18-24', "text", 7, true],
+      //attrs: { min: 1, max: 9}
     }
   },
   purp: { label: ['', "Цель"], input: {
