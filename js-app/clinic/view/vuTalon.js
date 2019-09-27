@@ -37,9 +37,8 @@ const talForm = function (vnode) {
   const tal_num= tal.tal_num ? tal.tal_num: 'Новый';
   const data= talonOpt.data;
   //console.log(data);
-  let mkb= [];
   const dsp= "^[A-Z][0-9]{2}(\.[0-9]{1})?$";
-  const ds= new RegExp( dsp );
+  const diag= new RegExp( dsp );
   const get_name=
     (val, key, prop, name, text, _word)=> getName( data, val, key, prop, name, text, _word );
   
@@ -76,22 +75,17 @@ const talForm = function (vnode) {
   const set_ishod= e=> set_data(e, 'ishod', 'char_main', 'id');
   
   let dvs; //= '';
-  let ds_model = { url: 'mkb10?code=like.', order_by: 'code', list: [], headers: { Range: '0-10' } };
+  const ds_model= { mkb: 'mkb10?code=like.', order_by: 'code', list: null, headers: { Range: '0-10' } };
+  const ds_check= { url: 'mkb10?code=eq.', order_by: 'code', list: null }
   const set_diag= e=> {
-    
     dvs = e.target.value;
-    //console.log(dvs);
-    //console.log( ds.test(dvs) );
-    //e.target.value= dv;
-    //return true;
-    //if (dv.length < 3)
-    //  return;
-    if (ds.test(dvs) ) {
-      ds_model.url += `${dvs}*`;
-      return moModel.getList(ds_model).then(t=> console.log( ds_model.list ));
+    if ( diag.test(dvs) ) {
+      ds_model.url = `${ds_model.mkb}${dvs}*`;
+      return moModel.getList(ds_model);// .then(t=> console.log( ds_model.list ));
     }
-    //return false;
+    return false;
   };
+  
   const talonSave = function(e) {
     e.preventDefault();
     //saveTalon(event, model, method)
@@ -135,13 +129,15 @@ const talForm = function (vnode) {
         m('.pure-g', [
           m('.pure-u-3-24', [
             tof('ds1', tal, {
-              //pattern: "[A-Z][0-9]{2}(\.[0-9]{1})?",
-              //list: 'ds',
+              //pattern: dsp, // "[A-Z][0-9]{2}(\.[0-9]{1})?",
+              list: 'diags',
               value: dvs,
               oninput: set_diag
               //onchange: set_diag
             }),
-            //m('datalist[id="ds"]', mkb.map(d=> m('option', {value: d.code})) )
+            m('datalist[id="diags"]',
+              ds_model.list ? ds_model.list.map(d=> m('option', {value: d.code})) : []
+            )
           ]),
           m('.pure-u-2-24', [
             tof('char1', tal, {
