@@ -75,7 +75,7 @@ export const toSaveCard= card=> {
     });
     
     return false;
-  };
+};
   
 
 const crdMain = function(vnode) {

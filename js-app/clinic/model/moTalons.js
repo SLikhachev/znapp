@@ -1,9 +1,9 @@
 // src/apps/model/moTalons.js
-
-import { moModel, errMsg, _region } from '../../apps/model/moModel.js';
+import { moModel, errMsg, _schema, _region, _month } from '../../apps/model/moModel.js';
 import { restSprav } from '../../sprav/spravApi.js';
 import { restClinic } from '../clinicApi.js';
 
+let _year;
 const _reg= _region();
 
 export const moTalonsList = {
@@ -20,12 +20,12 @@ export const moTalonsList = {
     };
     return model;
   },
-  
+  _year: _month().split('-')[0]
 };
 
 export const talonOpt= {
   options: [ restSprav.doctor, restSprav.ist_fin,
-    restSprav.purp, restSprav.chm, restSprav.travma ],
+    restSprav.purp, restSprav.chm, restSprav.cishod, restSprav.cresult, restSprav.travma ],
   data: new Map(),
   error: null,
   getOptions() {
@@ -61,7 +61,7 @@ export const moTalon = {
       ).then( t => moTalon.prepare( model )  );//.catch(e => alert(e));
     }
     // get card only to new talon
-    let pg_rest = window.localStorage.getItem('pg_rest');
+    let pg_rest = _schema('pg_rest');
     let url = `${pg_rest}cardz_clin?crd_num=eq.${crd}`;
     return m.request({
       method: 'GET',
@@ -108,25 +108,27 @@ export const moTalon = {
   saveTalon(event, model, method) {
     //console.log(event);
     event.target.parentNode.classList.add('disable');
-    let tal= Object.assign({}, model.talon);
-    let pg_rest = window.localStorage.getItem('pg_rest');
-    let { tal_num } = tal;
+    let to_save= Object.assign({}, model.talon);
+    let pg_rest =  _schema('pg_rest');
+    let { tal_num } = to_save;
     let url=`${pg_rest}talonz_clin`;
     if ( Boolean(tal_num) ) {
       url += `?tal_num=eq.${tal_num}`;
       delete tal.tal_num;
     }
-    m.request({
+     ['created', 'modified', 'cuser'].forEach( k=> delete to_save[k] );
+    return m.request({
       url: url,
       method: method,
-      data: tal
+      body: to_save
     }).then( res => {
       event.target.parentNode.classList.remove('disable');
+      return true;
     }).catch( err => {
-      model.save = { err: true, msg: errMsg(err) };
+      //model.save = { err: true, msg: errMsg(err) };
       event.target.parentNode.classList.remove('disable');
+      throw ( errMsg (err) );
     });
-    return false;
   }
 };
 

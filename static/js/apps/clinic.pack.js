@@ -165,7 +165,8 @@ const restClinic = {
     get_card: { url:"rpc/clin_card_by_num", method:"POST"},
     get_crd_talons: {url: 'rpc/clin_crd_talons', method: 'POST'},
 
-    talons_cnt: { url:"count_talons_clin", method:"GET" }, 
+    //talons_cnt: { url:"count_talons_clin", method:"GET" }, 
+    talons_cnt: { url:"rpc/get_tal_count", method:"POST" }, 
     talon_find: { url:"rpc/clin_talons", method:"POST"},
     get_talon: { url:"rpc/clin_talon_by_num", method:"POST"},
 
@@ -255,6 +256,13 @@ const errMsg= function(error){
   console.log(m);
   return m;
 };
+
+// return date in yyyy-mm format
+const _month= () => {
+    let d = new Date(), y = d.getFullYear(), m = d.getMonth() + 1;
+    m= m < 10 ? `0${m}`: `${m}`;
+    return `${y}-${m}`;
+  };
 
 // return posgrest url if pg_rest else task url
 const _schema= type=> {
@@ -573,10 +581,9 @@ const restSprav$1 = {
     mkb: { url: 'mkb10', order_by: 'code'},
     chm: { url: 'char_main'},
     travma: { url: 'travma_type'},
-    //type: {url: 'spec_case'},
-    //insur: {url: 'kategor'},
-    ist_fin: {url: 'ist_fin'},
-    //errors: {url: 'errors_code'},
+    ist_fin: { url: 'ist_fin'},
+    cishod: { url: 'cishod'},
+    cresult: { url: 'cresult'},
     
     // onko
     onko_n1: {url: 'n1_protkaz'},
@@ -719,7 +726,6 @@ const moCard = {
 };
 
 // src/apps/model/moTalons.js
-
 const _reg$1= _region();
 
 const moTalonsList = {
@@ -736,12 +742,12 @@ const moTalonsList = {
     };
     return model;
   },
-  
+  _year: _month().split('-')[0]
 };
 
 const talonOpt= {
   options: [ restSprav$1.doctor, restSprav$1.ist_fin,
-    restSprav$1.purp, restSprav$1.chm, restSprav$1.travma ],
+    restSprav$1.purp, restSprav$1.chm, restSprav$1.cishod, restSprav$1.cresult, restSprav$1.travma ],
   data: new Map(),
   error: null,
   getOptions() {
@@ -777,7 +783,7 @@ const moTalon = {
       ).then( t => moTalon.prepare( model )  );//.catch(e => alert(e));
     }
     // get card only to new talon
-    let pg_rest = window.localStorage.getItem('pg_rest');
+    let pg_rest = _schema('pg_rest');
     let url = `${pg_rest}cardz_clin?crd_num=eq.${crd}`;
     return m.request({
       method: 'GET',
@@ -824,25 +830,27 @@ const moTalon = {
   saveTalon(event, model, method) {
     //console.log(event);
     event.target.parentNode.classList.add('disable');
-    let tal= Object.assign({}, model.talon);
-    let pg_rest = window.localStorage.getItem('pg_rest');
-    let { tal_num } = tal;
+    let to_save= Object.assign({}, model.talon);
+    let pg_rest =  _schema('pg_rest');
+    let { tal_num } = to_save;
     let url=`${pg_rest}talonz_clin`;
     if ( Boolean(tal_num) ) {
       url += `?tal_num=eq.${tal_num}`;
       delete tal.tal_num;
     }
-    m.request({
+     ['created', 'modified', 'cuser'].forEach( k=> delete to_save[k] );
+    return m.request({
       url: url,
       method: method,
-      data: tal
+      body: to_save
     }).then( res => {
       event.target.parentNode.classList.remove('disable');
+      return true;
     }).catch( err => {
-      model.save = { err: true, msg: errMsg(err) };
+      //model.save = { err: true, msg: errMsg(err) };
       event.target.parentNode.classList.remove('disable');
+      throw ( errMsg (err) );
     });
-    return false;
   }
 };
 
@@ -1190,8 +1198,8 @@ const talonField = {
       attrs: {style: "height: 45%",}
     }
   },
-  talon_month: { label: ['.leg-sec.red', "Месяц талона"], input: {
-      tag: ['.pure-u-6-24.tal_month', 'number', 3, false],
+  talon_month: { label: ['leg_sec.red', "Месяц талона"], input: {
+      tag: ['.pure-u-22-24.tal_month', 'month', 3, true],
       attrs: {
         style: "height: 45%", min: 1, max: 12,
         fval: v => v ? v : month()
@@ -1252,8 +1260,8 @@ const talonField = {
       tag: ['.input.pure-u-16-24', "text", 15, true]
     }
   },
-  travma_type: {label: ['', "Травма"], input: {
-      tag: ['.input.pure-u-14-24', "text", 16]
+  rslt: {label: ['', "Результат"], input: {
+      tag: ['.input.pure-u-16-24', "text", 16, true]
     }
   },
   ds2: {label: ['', "Доп. диагноз"], input: {
@@ -1264,7 +1272,10 @@ const talonField = {
       tag: ['.input.pure-u-16-24', "text", 18]
     }
   },
-
+  travma_type: {label: ['', "Травма"], input: {
+      tag: ['.input.pure-u-14-24', "text", 19]
+    }
+  },
 };
 
 const pmuAdd = {
@@ -1507,7 +1518,7 @@ const toSaveCard= card=> {
     });
     
     return false;
-  };
+};
   
 
 const crdMain = function(vnode) {
@@ -1854,12 +1865,12 @@ IN offs integer)
 const talonFind = function(vnode){
   
   let { model } = vnode.attrs;
-  
+  //let yy= moTalonsList._year;
   const findTalons= function(event) {  
     event.preventDefault();
     //let data = moModel.getFormData( $('form#talon_find') );
     let data = moModel.getFormData( event.target );
-    //console.log ( data );
+    //console.log ( data.q_year );
     //moTalonsList.model.list=[];
     //return false;
     if ( !data.q_tal)
@@ -1880,6 +1891,10 @@ const talonFind = function(vnode){
     return moModel.getViewRpc( model, data );
     //return false;
   };
+  const changeYear= e=> {
+    moTalonsList._year= e.target.value;
+    m.route.set([clinicApi.lalons]);
+  };
   
   return { 
     view () { return m(".pure-g",
@@ -1890,13 +1905,14 @@ const talonFind = function(vnode){
               m(".pure-u-1-5",
                 m("input.input-find.pure-u-2-3[name=q_tal][type='number']",
                   { placeholder: "Номер талона",
-                    onupdate: v => v.dom.value = '' //vnode hook
+                    onupdate: v => v.dom.value = '', //vnode hook
+                    style: "font-size: 1.2em"
                   }
                 )
               ),
               m(".pure-u-1-5",
                 m("input.input-find.pure-u-2-3[name=q_crd][type='text']",
-                  {placeholder:"Номер карты"}
+                  {placeholder:"Номер карты", style: "font-size: 1.2em"}
                 )
               ),
               m(".pure-u-1-5",
@@ -1917,13 +1933,23 @@ const talonFind = function(vnode){
                 )
               ),
               */
-              m(".pure-u-1-5",
+              m(".pure-u-1-8",
                 m('button.pure-button.pure-button-primary[type=submit"]', {
                     //onclick: findTalons
+                    style: "font-size: 1.2em"
                   },
                 "Найти"
                 )
-              )
+              ),
+              m(".pure-u-1-5", [ // {style: "float: left"}, [
+                m('label[for=q_year]', { style: "padding-right: 2em; font-size: 1.2em" }, 'Год талонов'),
+                m("input.input-find.pure-u-1-3[name=q_year][type='number']",
+                  { value: moTalonsList._year, onchange: changeYear,
+                    style: "font-size: 1.2em; font-weight: 600",
+                    min: 2010, max: 2030
+                  }
+                )
+              ]),
             ]) // pure-g
           ) //fieldset
         ) //form
@@ -1947,8 +1973,10 @@ const vuTalonsList = function (vnode) {
     code: ['Код'],
     family: ['Врач']
   };
-  let model = moTalonsList.getModel();  
-  moModel.getViewRpc(model, {}, restClinic.talons_cnt.url, restClinic.talons_cnt.method );
+  let model = moTalonsList.getModel();
+  let yy= `talonz_clin_${moTalonsList._year.slice(2)}`;
+  console.log(yy);
+  moModel.getViewRpc(model, { _tbl: yy }, restClinic.talons_cnt.url, restClinic.talons_cnt.method );
   
   const sort= '';
   
@@ -2364,6 +2392,13 @@ const talDs = function(vnode) {
 };
 
 // src/clinic/view/vuTalon.js
+
+
+const toSaveTalon= tal=> {
+  
+};
+
+
 /*
 const card_fileds = [
   'crd_num', 'fam', 'im', 'ot', 'date_birth',
@@ -2372,6 +2407,8 @@ const card_fileds = [
   'mo_att'
 ];
 */
+
+
 
 //export const getName = function(data, val, key, prop, name, text, first_word=false) {
   // data - optional data MAP
@@ -2422,9 +2459,13 @@ const talForm = function (vnode) {
     return false;
   };
   
+  const data_list= (list, table) => m(`datalist[id=${list}]`,
+    data.get(table).map(c=> m('option', { value: `${c.id}. ${c.name.split(' ')[0]}`} ) ) );
+  
   const set_istfin= e=> set_data(e, 'ist_fin', 'ist_fin', 'id');
   const set_char= e=> set_data(e, 'char1', 'char_main', 'id');
-  const set_ishod= e=> set_data(e, 'ishod', 'char_main', 'id');
+  const set_ishod= e=> set_data(e, 'ishod', 'cishod', 'id');
+  const set_result= e=> set_data(e, 'rslt', 'cresult', 'id');
   const set_travma= e=> set_data(e, 'travma_type', 'travma_type', 'id');
   
   let dvs= tal.ds1;
@@ -2445,8 +2486,18 @@ const talForm = function (vnode) {
   
   const talonSave = function(e) {
     e.preventDefault();
-    //saveTalon(event, model, method)
-    return moTalon.saveTalon(e, model, method);
+    model.save= toSaveTalon(tal);
+    if ( Boolean( model.save ) ) {
+      vuDialog.open();
+      return false;
+    }
+    //model.save= null;
+    return moTalon.saveTalon(e, model, method).then(t=>
+       m.route.set([clinicApi.talons])
+    ).catch(err=> {
+      model.save = err;
+      vuDialog.open();
+    });
   };
   
   return {
@@ -2467,9 +2518,7 @@ const talForm = function (vnode) {
         //
         m(".pure-g", [
           m(".pure-u-2-24", [ tof('ist_fin', tal, { list: "istfin", onblur: set_istfin }),
-            m('datalist[id="istfin"]',
-              data.get('ist_fin').map(c=> m('option', { value: `${c.id}. ${c.name}`}))
-            )
+            data_list('istfin', 'ist_fin')
           ]),
           m(".pure-u-2-24", tof('purp', tal)),
           m(".pure-u-2-24", tof('doc_spec',tal)),
@@ -2502,31 +2551,18 @@ const talForm = function (vnode) {
               ds_model.list ? ds_model.list.map(d=> m('option', {value: d.code.trim()})) : []
             )
           ]),
-          m('.pure-u-2-24', [ tof('char1', tal, { list:  "char", onblur: set_char }),
+          m('.pure-u-3-24', [ tof('char1', tal, { list:  "char", onblur: set_char } ),
             m('datalist[id="char"]',
               data.get('char_main').filter(c => c.id < 4).map(c=>
                 m('option', { value: `${c.id}. ${c.name.split(' ')[0]}` })
               )
             )
           ]),
-          m('.pure-u-2-24', [
-            tof('ishod', tal, {
-              list:  "ishod",
-              onblur: set_ishod
-            }),
-            m('datalist[id="ishod"]', [
-              data.get('char_main').filter(c => c.id < 7).map(c=> {
-                let ch = `${c.id}. ${c.name.split(' ')[0]}`;
-                return m('option', { value: ch });
-              })
-            ])
+          m('.pure-u-3-24', [ tof('ishod', tal, { list:  "ishod", onblur: set_ishod} ),
+            data_list('ishod', 'cishod')
           ]),
-          m('.pure-u-2-24', [ tof('travma_type', tal, { list:  "travma", onblur: set_travma }),
-            m('datalist[id="travma"]',
-              data.get('travma_type').map(c=>
-                m('option', { value: `${c.id}. ${c.name}` })
-              )
-            )
+          m('.pure-u-3-24', [ tof('rslt', tal, { list:  "result", onblur: set_result} ),
+            data_list('result', 'cresult')
           ]),
           m(".pure-u-10-24", {
               style: "padding-top: 2em ; font-size: 1.1em; font-weight: 500"
@@ -2535,7 +2571,10 @@ const talForm = function (vnode) {
         ]),
         m('.pure-g', [
           m('.pure-u-3-24', tof('ds2', tal)),
-          m('.pure-u-2-24', tof('char2', tal))
+          m('.pure-u-3-24', tof('char2', tal)),
+          m('.pure-u-3-24', [ tof('travma_type', tal, { list:  "travma", onblur: set_travma }),
+            data_list('travma', 'travma_type')
+          ]),
         ]),
 
       ]),
@@ -2644,6 +2683,7 @@ const vuTalon = function(vnode) {
   let model= moTalon.getModel(); //;
   let tabs= ['Талон', 'Направление', 'ДС', 'ПМУ'];
   let conts= [talMain, talNap, talDs, talPmu,];
+  model.word= 'Талоны';
   let t= parseInt(tal);
   const method = isNaN(t) || t === 0 ? "POST": "PATCH";
   moTalon.getTalon(model, crd, tal );

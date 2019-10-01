@@ -8,7 +8,8 @@ export const restClinic = {
     get_card: { url:"rpc/clin_card_by_num", method:"POST"},
     get_crd_talons: {url: 'rpc/clin_crd_talons', method: 'POST'},
 
-    talons_cnt: { url:"count_talons_clin", method:"GET" }, 
+    //talons_cnt: { url:"count_talons_clin", method:"GET" }, 
+    talons_cnt: { url:"rpc/get_tal_count", method:"POST" }, 
     talon_find: { url:"rpc/clin_talons", method:"POST"},
     get_talon: { url:"rpc/clin_talon_by_num", method:"POST"},
 

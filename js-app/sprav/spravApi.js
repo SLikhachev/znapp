@@ -30,10 +30,9 @@ export const restSprav = {
     mkb: { url: 'mkb10', order_by: 'code'},
     chm: { url: 'char_main'},
     travma: { url: 'travma_type'},
-    //type: {url: 'spec_case'},
-    //insur: {url: 'kategor'},
-    ist_fin: {url: 'ist_fin'},
-    //errors: {url: 'errors_code'},
+    ist_fin: { url: 'ist_fin'},
+    cishod: { url: 'cishod'},
+    cresult: { url: 'cresult'},
     
     // onko
     onko_n1: {url: 'n1_protkaz'},

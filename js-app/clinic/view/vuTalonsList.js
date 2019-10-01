@@ -16,12 +16,12 @@ IN offs integer)
 const talonFind = function(vnode){
   
   let { model } = vnode.attrs;
-  
+  //let yy= moTalonsList._year;
   const findTalons= function(event) {  
     event.preventDefault();
     //let data = moModel.getFormData( $('form#talon_find') );
     let data = moModel.getFormData( event.target );
-    //console.log ( data );
+    //console.log ( data.q_year );
     //moTalonsList.model.list=[];
     //return false;
     if ( !data.q_tal)
@@ -42,6 +42,10 @@ const talonFind = function(vnode){
     return moModel.getViewRpc( model, data );
     //return false;
   };
+  const changeYear= e=> {
+    moTalonsList._year= e.target.value;
+    m.route.set([clinicApi.lalons]);
+  };
   
   return { 
     view () { return m(".pure-g",
@@ -52,13 +56,14 @@ const talonFind = function(vnode){
               m(".pure-u-1-5",
                 m("input.input-find.pure-u-2-3[name=q_tal][type='number']",
                   { placeholder: "Номер талона",
-                    onupdate: v => v.dom.value = '' //vnode hook
+                    onupdate: v => v.dom.value = '', //vnode hook
+                    style: "font-size: 1.2em"
                   }
                 )
               ),
               m(".pure-u-1-5",
                 m("input.input-find.pure-u-2-3[name=q_crd][type='text']",
-                  {placeholder:"Номер карты"}
+                  {placeholder:"Номер карты", style: "font-size: 1.2em"}
                 )
               ),
               m(".pure-u-1-5",
@@ -79,13 +84,23 @@ const talonFind = function(vnode){
                 )
               ),
               */
-              m(".pure-u-1-5",
+              m(".pure-u-1-8",
                 m('button.pure-button.pure-button-primary[type=submit"]', {
                     //onclick: findTalons
+                    style: "font-size: 1.2em"
                   },
                 "Найти"
                 )
-              )
+              ),
+              m(".pure-u-1-5", [ // {style: "float: left"}, [
+                m('label[for=q_year]', { style: "padding-right: 2em; font-size: 1.2em" }, 'Год талонов'),
+                m("input.input-find.pure-u-1-3[name=q_year][type='number']",
+                  { value: moTalonsList._year, onchange: changeYear,
+                    style: "font-size: 1.2em; font-weight: 600",
+                    min: 2010, max: 2030
+                  }
+                )
+              ]),
             ]) // pure-g
           ) //fieldset
         ) //form
@@ -109,8 +124,10 @@ export const vuTalonsList = function (vnode) {
     code: ['Код'],
     family: ['Врач']
   };
-  let model = moTalonsList.getModel();  
-  moModel.getViewRpc(model, {}, restClinic.talons_cnt.url, restClinic.talons_cnt.method );
+  let model = moTalonsList.getModel();
+  let yy= `talonz_clin_${moTalonsList._year.slice(2)}`;
+  console.log(yy);
+  moModel.getViewRpc(model, { _tbl: yy }, restClinic.talons_cnt.url, restClinic.talons_cnt.method );
   
   const sort= '';
   

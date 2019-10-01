@@ -1,4 +1,5 @@
 
+import { _month } from '../../apps/model/moModel.js';
 // label = [class, text]
 // input = tag = [class, type, required]
 
@@ -19,8 +20,8 @@ export const talonField = {
       attrs: {style: "height: 45%",}
     }
   },
-  talon_month: { label: ['.leg-sec.red', "Месяц талона"], input: {
-      tag: ['.pure-u-6-24.tal_month', 'number', 3, false],
+  talon_month: { label: ['leg_sec.red', "Месяц талона"], input: {
+      tag: ['.pure-u-22-24.tal_month', 'month', 3, true],
       attrs: {
         style: "height: 45%", min: 1, max: 12,
         fval: v => v ? v : month()
@@ -81,8 +82,8 @@ export const talonField = {
       tag: ['.input.pure-u-16-24', "text", 15, true]
     }
   },
-  travma_type: {label: ['', "Травма"], input: {
-      tag: ['.input.pure-u-14-24', "text", 16]
+  rslt: {label: ['', "Результат"], input: {
+      tag: ['.input.pure-u-16-24', "text", 16, true]
     }
   },
   ds2: {label: ['', "Доп. диагноз"], input: {
@@ -93,7 +94,10 @@ export const talonField = {
       tag: ['.input.pure-u-16-24', "text", 18]
     }
   },
-
+  travma_type: {label: ['', "Травма"], input: {
+      tag: ['.input.pure-u-14-24', "text", 19]
+    }
+  },
 };
 
 export const pmuAdd = {

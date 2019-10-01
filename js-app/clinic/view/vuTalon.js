@@ -13,6 +13,13 @@ import { talNap } from './vuTalNap.js';
 import { talPmu } from './vuTalPmu.js';
 import { talDs } from './vuTalDs.js';
 import { checkDost, getName } from './vuCard.js';
+
+
+const toSaveTalon= tal=> {
+  
+}
+
+
 /*
 const card_fileds = [
   'crd_num', 'fam', 'im', 'ot', 'date_birth',
@@ -21,6 +28,8 @@ const card_fileds = [
   'mo_att'
 ];
 */
+
+
 
 //export const getName = function(data, val, key, prop, name, text, first_word=false) {
   // data - optional data MAP
@@ -71,9 +80,13 @@ const talForm = function (vnode) {
     return false;
   };
   
+  const data_list= (list, table) => m(`datalist[id=${list}]`,
+    data.get(table).map(c=> m('option', { value: `${c.id}. ${c.name.split(' ')[0]}`} ) ) );
+  
   const set_istfin= e=> set_data(e, 'ist_fin', 'ist_fin', 'id');
   const set_char= e=> set_data(e, 'char1', 'char_main', 'id');
-  const set_ishod= e=> set_data(e, 'ishod', 'char_main', 'id');
+  const set_ishod= e=> set_data(e, 'ishod', 'cishod', 'id');
+  const set_result= e=> set_data(e, 'rslt', 'cresult', 'id');
   const set_travma= e=> set_data(e, 'travma_type', 'travma_type', 'id');
   
   let dvs= tal.ds1;
@@ -91,12 +104,22 @@ const talForm = function (vnode) {
     let dsl= ds_model.list ? ds_model.list: [];
     let ds= dsl.find(d=> tal.ds1 == d.code.trim() );
     return ds ? ds.name: ''; // m('span.red', ' Диагноз? ');
-  }
+  };
   
   const talonSave = function(e) {
     e.preventDefault();
-    //saveTalon(event, model, method)
-    return moTalon.saveTalon(e, model, method);
+    model.save= toSaveTalon(tal);
+    if ( Boolean( model.save ) ) {
+      vuDialog.open();
+      return false;
+    }
+    //model.save= null;
+    return moTalon.saveTalon(e, model, method).then(t=>
+       m.route.set([clinicApi.talons])
+    ).catch(err=> {
+      model.save = err;
+      vuDialog.open();
+    });
   };
   
   return {
@@ -117,9 +140,7 @@ const talForm = function (vnode) {
         //
         m(".pure-g", [
           m(".pure-u-2-24", [ tof('ist_fin', tal, { list: "istfin", onblur: set_istfin }),
-            m('datalist[id="istfin"]',
-              data.get('ist_fin').map(c=> m('option', { value: `${c.id}. ${c.name}`}))
-            )
+            data_list('istfin', 'ist_fin')
           ]),
           m(".pure-u-2-24", tof('purp', tal)),
           m(".pure-u-2-24", tof('doc_spec',tal)),
@@ -152,31 +173,18 @@ const talForm = function (vnode) {
               ds_model.list ? ds_model.list.map(d=> m('option', {value: d.code.trim()})) : []
             )
           ]),
-          m('.pure-u-2-24', [ tof('char1', tal, { list:  "char", onblur: set_char }),
+          m('.pure-u-3-24', [ tof('char1', tal, { list:  "char", onblur: set_char } ),
             m('datalist[id="char"]',
               data.get('char_main').filter(c => c.id < 4).map(c=>
                 m('option', { value: `${c.id}. ${c.name.split(' ')[0]}` })
               )
             )
           ]),
-          m('.pure-u-2-24', [
-            tof('ishod', tal, {
-              list:  "ishod",
-              onblur: set_ishod
-            }),
-            m('datalist[id="ishod"]', [
-              data.get('char_main').filter(c => c.id < 7).map(c=> {
-                let ch = `${c.id}. ${c.name.split(' ')[0]}`;
-                return m('option', { value: ch });
-              })
-            ])
+          m('.pure-u-3-24', [ tof('ishod', tal, { list:  "ishod", onblur: set_ishod} ),
+            data_list('ishod', 'cishod')
           ]),
-          m('.pure-u-2-24', [ tof('travma_type', tal, { list:  "travma", onblur: set_travma }),
-            m('datalist[id="travma"]',
-              data.get('travma_type').map(c=>
-                m('option', { value: `${c.id}. ${c.name}` })
-              )
-            )
+          m('.pure-u-3-24', [ tof('rslt', tal, { list:  "result", onblur: set_result} ),
+            data_list('result', 'cresult')
           ]),
           m(".pure-u-10-24", {
               style: "padding-top: 2em ; font-size: 1.1em; font-weight: 500"
@@ -185,7 +193,10 @@ const talForm = function (vnode) {
         ]),
         m('.pure-g', [
           m('.pure-u-3-24', tof('ds2', tal)),
-          m('.pure-u-2-24', tof('char2', tal))
+          m('.pure-u-3-24', tof('char2', tal)),
+          m('.pure-u-3-24', [ tof('travma_type', tal, { list:  "travma", onblur: set_travma }),
+            data_list('travma', 'travma_type')
+          ]),
         ]),
 
       ]),
@@ -294,6 +305,7 @@ export const vuTalon = function(vnode) {
   let model= moTalon.getModel(); //;
   let tabs= ['Талон', 'Направление', 'ДС', 'ПМУ'];
   let conts= [talMain, talNap, talDs, talPmu,];
+  model.word= 'Талоны';
   let t= parseInt(tal);
   const method = isNaN(t) || t === 0 ? "POST": "PATCH";
   moTalon.getTalon(model, crd, tal );
