@@ -3,7 +3,6 @@ import { moModel, errMsg, _schema, _region, _month } from '../../apps/model/moMo
 import { restSprav } from '../../sprav/spravApi.js';
 import { restClinic } from '../clinicApi.js';
 
-let _year;
 const _reg= _region();
 
 export const moTalonsList = {
@@ -20,7 +19,21 @@ export const moTalonsList = {
     };
     return model;
   },
-  _year: _month().split('-')[0]
+  // in cards talons reads from actual table only
+  // there is backdoor, you may set current local year to old date
+  // then talons will be reads and writes to old table
+  // talons reads from, 
+  year: _month().split('-')[0], // on init app
+  _year:  _month().split('-')[0], // on init app year,
+  // only one table
+  _table: 'talonz_clin_',
+  _pmu: 'para_clin_',
+  talTable() {
+    return `${moTalonsList._table}${moTalonsList._year.slice(2)}`;
+  },
+  pmuTable() {
+    return `${moTalonsList._pmu}${moTalonsList._year.slice(2)}`;
+  }
 };
 
 export const talonOpt= {
@@ -54,10 +67,11 @@ export const moTalon = {
   getTalon(model, card, talon) {
     let tal= parseInt(talon), crd = parseInt(card);
     if ( !isNaN(tal) && tal !== 0) {
-      let t= { tal_num: tal };
+      const t1= { tbl: moTalonsList.talTable(), _tal: tal };
+      const t2= { tbl: moTalonsList.pmuTable(), _tal: tal };
       // exisiting talon? card will be fetched within talon record
       return moModel.getViewRpcMap(
-        model, [ t, t ]
+        model, [ t1, t2 ]
       ).then( t => moTalon.prepare( model )  );//.catch(e => alert(e));
     }
     // get card only to new talon

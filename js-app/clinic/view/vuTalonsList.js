@@ -6,10 +6,10 @@ import { restClinic, clinicApi } from '../clinicApi.js';
 import { moTalonsList } from '../model/moTalons.js';
 import { getFIO } from './vuClinic.js';
 /*
+IN tbl varchar,
 IN q_tal integer,
 IN q_crd character varying,
 IN q_date date,
-IN q_dspec integer,
 IN lim integer,
 IN offs integer)
 */
@@ -35,9 +35,11 @@ const talonFind = function(vnode){
     if (data.q_dspec === "")
       data.q_dspec = null;
     */
-    data.q_dspec= null;
+    //data.q_dspec= null;
     data.lim = 50;
     data.offs = 0;
+    data.tbl= moTalonsList.talTable();
+    delete data.q_year;
     //console.log ( data );
     return moModel.getViewRpc( model, data );
     //return false;
@@ -125,8 +127,8 @@ export const vuTalonsList = function (vnode) {
     family: ['Врач']
   };
   let model = moTalonsList.getModel();
-  let yy= `talonz_clin_${moTalonsList._year.slice(2)}`;
-  console.log(yy);
+  let yy= moTalonsList.talTable();
+  //console.log(yy);
   moModel.getViewRpc(model, { _tbl: yy }, restClinic.talons_cnt.url, restClinic.talons_cnt.method );
   
   const sort= '';

@@ -164,11 +164,11 @@ const restClinic = {
     card_find: { url:"rpc/clin_cards", method:"POST" },
     get_card: { url:"rpc/clin_card_by_num", method:"POST"},
     get_crd_talons: {url: 'rpc/clin_crd_talons', method: 'POST'},
-
+    
     //talons_cnt: { url:"count_talons_clin", method:"GET" }, 
     talons_cnt: { url:"rpc/get_tal_count", method:"POST" }, 
-    talon_find: { url:"rpc/clin_talons", method:"POST"},
-    get_talon: { url:"rpc/clin_talon_by_num", method:"POST"},
+    talon_find: { url:"rpc/talons_list", method:"POST"},
+    get_talon: { url:"rpc/get_talon_by_num", method:"POST"},
 
     get_pmu: { url:"rpc/get_tal_pmu", method:"POST"},
     para_clin: { url: "para_clin"},
@@ -726,6 +726,7 @@ const moCard = {
 };
 
 // src/apps/model/moTalons.js
+
 const _reg$1= _region();
 
 const moTalonsList = {
@@ -742,7 +743,21 @@ const moTalonsList = {
     };
     return model;
   },
-  _year: _month().split('-')[0]
+  // in cards talons reads from actual table only
+  // there is backdoor, you may set current local year to old date
+  // then talons will be reads and writes to old table
+  // talons reads from, 
+  year: _month().split('-')[0], // on init app
+  _year:  _month().split('-')[0], // on init app year,
+  // only one table
+  _table: 'talonz_clin_',
+  _pmu: 'para_clin_',
+  talTable() {
+    return `${moTalonsList._table}${moTalonsList._year.slice(2)}`;
+  },
+  pmuTable() {
+    return `${moTalonsList._pmu}${moTalonsList._year.slice(2)}`;
+  }
 };
 
 const talonOpt= {
@@ -776,10 +791,11 @@ const moTalon = {
   getTalon(model, card, talon) {
     let tal= parseInt(talon), crd = parseInt(card);
     if ( !isNaN(tal) && tal !== 0) {
-      let t= { tal_num: tal };
+      const t1= { tbl: moTalonsList.talTable(), _tal: tal };
+      const t2= { tbl: moTalonsList.pmuTable(), _tal: tal };
       // exisiting talon? card will be fetched within talon record
       return moModel.getViewRpcMap(
-        model, [ t, t ]
+        model, [ t1, t2 ]
       ).then( t => moTalon.prepare( model )  );//.catch(e => alert(e));
     }
     // get card only to new talon
@@ -1198,8 +1214,8 @@ const talonField = {
       attrs: {style: "height: 45%",}
     }
   },
-  talon_month: { label: ['leg_sec.red', "Месяц талона"], input: {
-      tag: ['.pure-u-22-24.tal_month', 'month', 3, true],
+  talon_month: { label: ['.leg_sec.red', "Месяц талона"], input: {
+      tag: ['.pure-u-8-24.tal_month', 'number', 3, true],
       attrs: {
         style: "height: 45%", min: 1, max: 12,
         fval: v => v ? v : month()
@@ -1855,10 +1871,10 @@ const vuCard = function(vnode) {
 
 // src/clinic/view/vuTalonsList.js
 /*
+IN tbl varchar,
 IN q_tal integer,
 IN q_crd character varying,
 IN q_date date,
-IN q_dspec integer,
 IN lim integer,
 IN offs integer)
 */
@@ -1884,9 +1900,11 @@ const talonFind = function(vnode){
     if (data.q_dspec === "")
       data.q_dspec = null;
     */
-    data.q_dspec= null;
+    //data.q_dspec= null;
     data.lim = 50;
     data.offs = 0;
+    data.tbl= moTalonsList.talTable();
+    delete data.q_year;
     //console.log ( data );
     return moModel.getViewRpc( model, data );
     //return false;
@@ -1974,8 +1992,8 @@ const vuTalonsList = function (vnode) {
     family: ['Врач']
   };
   let model = moTalonsList.getModel();
-  let yy= `talonz_clin_${moTalonsList._year.slice(2)}`;
-  console.log(yy);
+  let yy= moTalonsList.talTable();
+  //console.log(yy);
   moModel.getViewRpc(model, { _tbl: yy }, restClinic.talons_cnt.url, restClinic.talons_cnt.method );
   
   const sort= '';
@@ -2513,7 +2531,7 @@ const talForm = function (vnode) {
           m(".pure-u-4-24", tof('open_date', tal)),
           m(".pure-u-4-24", tof('close_date', tal)),
           m('.pure-u-6-24', tof('talon_month', tal)),
-          m(".pure-u-8-24", [ tof('first_vflag', tal), tof('for_pom', tal), tof('finality', tal) ]),
+          m(".pure-u-6-24", [ tof('first_vflag', tal), tof('for_pom', tal), tof('finality', tal) ]),
         ]),
         //
         m(".pure-g", [

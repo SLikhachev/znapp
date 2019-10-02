@@ -135,7 +135,7 @@ const talForm = function (vnode) {
           m(".pure-u-4-24", tof('open_date', tal)),
           m(".pure-u-4-24", tof('close_date', tal)),
           m('.pure-u-6-24', tof('talon_month', tal)),
-          m(".pure-u-8-24", [ tof('first_vflag', tal), tof('for_pom', tal), tof('finality', tal) ]),
+          m(".pure-u-6-24", [ tof('first_vflag', tal), tof('for_pom', tal), tof('finality', tal) ]),
         ]),
         //
         m(".pure-g", [

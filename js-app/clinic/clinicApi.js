@@ -7,11 +7,11 @@ export const restClinic = {
     card_find: { url:"rpc/clin_cards", method:"POST" },
     get_card: { url:"rpc/clin_card_by_num", method:"POST"},
     get_crd_talons: {url: 'rpc/clin_crd_talons', method: 'POST'},
-
+    
     //talons_cnt: { url:"count_talons_clin", method:"GET" }, 
     talons_cnt: { url:"rpc/get_tal_count", method:"POST" }, 
-    talon_find: { url:"rpc/clin_talons", method:"POST"},
-    get_talon: { url:"rpc/clin_talon_by_num", method:"POST"},
+    talon_find: { url:"rpc/talons_list", method:"POST"},
+    get_talon: { url:"rpc/get_talon_by_num", method:"POST"},
 
     get_pmu: { url:"rpc/get_tal_pmu", method:"POST"},
     para_clin: { url: "para_clin"},
