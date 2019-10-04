@@ -17,9 +17,12 @@ import { talPolis } from './vuTalPolis';
 
 
 const toSaveTalon= tal=> {
+    // SMO
+  if ( tal.smo === null && tal.smo_okato === null)
+    return 'Укажите либо СМО либо СМО ОКАТО';
+  return '';
+};
   
-}
-
 let edit= moTalonsList.year == moTalonsList._year ? false: true;
 
 /*

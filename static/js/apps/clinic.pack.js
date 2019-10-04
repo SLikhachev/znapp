@@ -207,19 +207,19 @@ const clinicMenu = { subAppMenu: {
 
 //import { moModel } from '../model/moModel.js';
 
-const vuDialog$1 = {
+const vuDialog = {
   
   dialog: null,
   //dialog: document.getElementById('dialog'),
   
   oncreate(vnode) {
-      vuDialog$1.dialog = vnode.dom;
+      vuDialog.dialog = vnode.dom;
       //console.log(dialogView.dialog);
   },
   
   view(vnode) {
     return m('dialog#dialog', m('.dialog-content', [
-      m('i.fa fa-times.dclose', { onclick: vuDialog$1.close }),
+      m('i.fa fa-times.dclose', { onclick: vuDialog.close }),
         m('span.dheader', `${vnode.attrs.header} (${vnode.attrs.word})`),
           vnode.children
         ])
@@ -227,7 +227,7 @@ const vuDialog$1 = {
   },
   
   open () {
-    vuDialog$1.dialog.showModal();
+    vuDialog.dialog.showModal();
     return false;
   },
   
@@ -235,9 +235,9 @@ const vuDialog$1 = {
     //let srverr = document.getElementById('srv-error');
     //let srverr = vuDialog.dialog.querySelector('#srv-error');
     //if ( !!srverr ) srverr.parentNode.removeChild(srverr);
-    f= vuDialog$1.dialog.querySelector('form');
+    f= vuDialog.dialog.querySelector('form');
     if (Boolean(f)) f.reset();
-    vuDialog$1.dialog.close();
+    vuDialog.dialog.close();
     if ( reload ) m.redraw();
     return false;
   },
@@ -510,7 +510,7 @@ const moModel = {
     }).then( res => {
       event.target.parentNode.classList.remove('disable');
       if (model.list) moModel.getList(model);
-      if ( vuDialog$1.dialog && vuDialog$1.dialog.open) vuDialog$1.close();
+      if ( vuDialog.dialog && vuDialog.dialog.open) vuDialog.close();
       return res; 
     }).catch( err => {
       let msg= errMsg(err);
@@ -651,7 +651,7 @@ const moTalonsList = {
 };
 
 const talonOpt= {
-  options: [ restSprav$1.doctor, restSprav$1.ist_fin, restSprav$1.smo_local,
+  options: [ restSprav$1.doctor, restSprav$1.ist_fin, restSprav$1.smo_local, restSprav$1.okato,
     restSprav$1.purp, restSprav$1.chm, restSprav$1.cishod, restSprav$1.cresult, restSprav$1.travma ],
   data: new Map(),
   error: null,
@@ -1114,7 +1114,7 @@ const tabsView = function(vnode) {
             m(cont, {model: vnode.attrs.model, method: vnode.attrs.method}) );
         })
       ]),
-      m(vuDialog$1, { header: 'Ошибка бработки', word: vnode.attrs.model.word },
+      m(vuDialog, { header: 'Ошибка бработки', word: vnode.attrs.model.word },
         m('span.red', {style: "font-size: 1.2em; font-weight: 600"},
           vnode.attrs.model.save ? vnode.attrs.model.save: 'No messages'
         )
@@ -1452,7 +1452,7 @@ const tof = function(field, data, to_attrs={}) {
   return fieldFrom(talonField, field, data, to_attrs);
 };
 
-const cof$1 = function(field, data, to_attrs={}) {
+const cof = function(field, data, to_attrs={}) {
   return fieldFrom(cardField, field, data, to_attrs);
 };
 
@@ -1622,7 +1622,7 @@ const crdMain = function(vnode) {
     //console.log(card);
     model.save= toSaveCard(card);
     if ( Boolean( model.save ) ) {
-      vuDialog$1.open();
+      vuDialog.open();
       return false;
     }
     //model.save= null;
@@ -1630,7 +1630,7 @@ const crdMain = function(vnode) {
        m.route.set([clinicApi.cards])
     ).catch(err=> {
       model.save = err;
-      vuDialog$1.open();
+      vuDialog.open();
     });
   };
   // gender
@@ -1659,12 +1659,12 @@ const crdMain = function(vnode) {
           m(".pure-g", [
             m(".pure-u-7-24", [
 // --        // -- TODO check for card.card_type to process card number    
-              m(".pure-control-group", cof$1('crd_num', card,
+              m(".pure-control-group", cof('crd_num', card,
                   { readonly: Boolean (model.talons.length) } )),
-              m(".pure-control-group", cof$1('fam', card)),
-              m(".pure-control-group", cof$1('im', card)),
-              m('.pure-control-group', cof$1('ot', card)),
-              m(".pure-control-group", cof$1('birth_date', card)),
+              m(".pure-control-group", cof('fam', card)),
+              m(".pure-control-group", cof('im', card)),
+              m('.pure-control-group', cof('ot', card)),
+              m(".pure-control-group", cof('birth_date', card)),
 
               m(".pure-control-group", [
                 m('label', {for: "gender"}, "Пол"),
@@ -1684,16 +1684,16 @@ const crdMain = function(vnode) {
                 })
               ]),
 // --            
-              m(".pure-control-group", [cof$1('dul_type', card),
+              m(".pure-control-group", [cof('dul_type', card),
                 m('span.item_name', get_name(card.dul_type, 'dul', 'code', 'short_name'))
               ]),
-              m(".pure-control-group", cof$1('dul_serial', card)),
-              m(".pure-control-group", cof$1('dul_number', card)),
+              m(".pure-control-group", cof('dul_serial', card)),
+              m(".pure-control-group", cof('dul_number', card)),
             ]), // u-7-24
 // ============================			
             m(".pure-u-8-24", [m('legend', "ОМС"),
-              m(".pure-control-group", cof$1('polis_ser', card)),
-              m(".pure-control-group", [cof$1('polis_num', card),
+              m(".pure-control-group", cof('polis_ser', card)),
+              m(".pure-control-group", [cof('polis_num', card),
                 m('div.item_name', {style: "margin-left: 10em;"}, num_digits(card)),
               ]),
               /*
@@ -1734,7 +1734,7 @@ const crdMain = function(vnode) {
               ]),
 // --          
               m(".pure-control-group", [
-                cof$1('mo_att', card),
+                cof('mo_att', card),
                 m('.item_name',
                   {style: "margin: 1em 0; padding-left: 1em"},
                   get_name(card.mo_att, 'mo_local', 'scode', 'sname') )
@@ -1742,15 +1742,15 @@ const crdMain = function(vnode) {
             ]), //-- 8-24
 // ============================         
             m(".pure-u-9-24", [m('legend', "Адрес"),
-              m(".pure-control-group", cof$1('city_g', card)),
-              m(".pure-control-group", cof$1('street_g', card)),
+              m(".pure-control-group", cof('city_g', card)),
+              m(".pure-control-group", cof('street_g', card)),
               m(".pure-control-group", [
-                cof$1('home_g', card),
-                cof$1('corp_g', card),
-                cof$1('flat_g', card)
+                cof('home_g', card),
+                cof('corp_g', card),
+                cof('flat_g', card)
               ]),
-              m(".pure-control-group", cof$1('phone_wrk', card)),
-              m(".pure-control-group", cof$1('phone_hom', card))
+              m(".pure-control-group", cof('phone_wrk', card)),
+              m(".pure-control-group", cof('phone_hom', card))
             ]) //u-9-24
 // ============================
           ]) // pure-g
@@ -2118,12 +2118,12 @@ const talCrd = function (vnode) {
     
     model.save= toSave(card);
     if ( Boolean( model.save ) ) {
-      vuDialog$1.open();
+      vuDialog.open();
       return false;
     }
     return moCard.saveCard(e, card, model, method).catch(err=> {
       model.save = err;
-      vuDialog$1.open();
+      vuDialog.open();
     });
   };
 
@@ -2515,77 +2515,48 @@ const talDs = function(vnode) {
   };
 };
 
-let edit$1= moTalonsList.year == moTalonsList._year ? false: true;
-
 const talPolis = function(vnode) {
-  let tal= vnode.attrs.model.talon;
-  let polis= vnode.attrs.model.polis;
-  
-  const toSave= polis=> {
-    // SMO
-    if ( polis.smo === null && polis.smo_okato === null)
-      return 'Укажите либо СМО либо СМО ОКАТО';
-    return '';
-  };
-  
-  const polisSave = function(e) {
-    e.preventDefault();
-    //saveCard(event, card, model, method) {
-    
-    model.save= toSave(polis);
-    if ( Boolean( model.save ) ) {
-      vuDialog.open();
-      return false;
-    }
-    return moTalon.savePolis(e, polis, model, method).catch(err=> {
-      model.save = err;
-      vuDialog.open();
-    });
-  };
+  //let tal= vnode.attrs.model.talon;
+  const data= talonOpt.data;
+  let tal= { smo: null, smo_okato: null, polis_ser: null, polis_num:null, polis_type: null};
+  const _set_smo= sel_smo(tal);
+  const _set_smo_okato = set_smo_okato(data, tal);
   
   return {
-    view() { return m('h2', 'TAL POLIS');
-      return m("form.pure-form.pure-form-stacked.tcard",
-        {style: "font-size: 1.2em;", id: "tal_polis", onsubmit: polisSave }, [
+    view() { 
+      return m("form.pure-form.pure-form-aligned.tcard",
+        {style: "font-size: 1.2em;", id: "tal_polis" }, [
         m('fieldset', [
           m('legend', 'Талон № ', tal.tal_num ? tal.tal_num: 'Новый'),
           m('legend.leg-sec', "Полис на дату визита"),
-          m(".pure-control-group", ptf('polis_ser', polis)),
-          m(".pure-control-group", [ptf('polis_num', polis),
-            m('div.item_name', {style: "margin-left: 10em;"}, num_digits(polis)),
+          m(".pure-control-group", cof('polis_ser', tal)),
+          m(".pure-control-group", [ cof('polis_num', tal),
+            m('span.item_name', {style: "margin-left: 0em;"}, num_digits(tal)),
+          ]),
+// --
+          m(".pure-control-group", [
+            m('label', { for: "smo"}, "Страховщик"),
+            m('select[name="smo"]',
+              { value: tal.smo, onchange: _set_smo}, [
+              m('option[value=""]', ""),
+              data.get('smo_local').map(s=> m('option', {value: s.code}, s.short_name))
+            ])
           ]),
           m(".pure-control-group", [
-             cof('smo', card, {onblur: _set_smo}),
-                m('span.item_name',
-                  card.smo === null ? '':  get_name(card.smo + _reg, 'smo_local', 'code', 'short_name'))
-              ]),
-// --
-              m(".pure-control-group", [
-                m('label', { for: "smo_okato"}, "Регион"),
-                m('input[name="smo_okato"][type="text"]', {
-                  oncreate: v => _set_smo_okato( { target: v.dom} ),
-                  list:  "okato",
-                  //value: card.smo_okato,
-                  tabindex: "12",
-                  onblur: _set_smo_okato
-                }),
-                //cof('smo_okato', card, {
-                //  oncreate: v => set_smo_okato({target: v.dom}),
-                //  onblur: set_smo_okato
-                //}),
-                //m('span.item_name', set_name(card.smo_okato, 'okato', 'okato', 'name', true) )
-                m('datalist[id="okato"]', [
-                  data.get('okato').map(o => {
-                    let okato = `${o.region}. ${o.name.split(' ')[0]}`;
-                    return m('option', okato);
-                  })
-                ])
-              ]),
-// --          
-          m('button.pure-button.pure-button-primary[type="submit"]',
-            { disabled: edit$1
-          }, "Сохранить"),
-        
+            m('label', { for: "smo_okato"}, "Регион"),
+            m('input[name="smo_okato"][type="text"]', {
+               oncreate: v => _set_smo_okato( { target: v.dom} ),
+               list:  "okato",
+               onblur: _set_smo_okato
+            }),
+            m('datalist[id="okato"]', [
+              data.get('okato').map(o => {
+                let okato = `${o.region}. ${o.name.split(' ')[0]}`;
+                return m('option', okato);
+              })
+            ])
+          ]),
+// --        
         ])
       ]);
     }
@@ -2596,10 +2567,13 @@ const talPolis = function(vnode) {
 
 
 const toSaveTalon= tal=> {
-  
+    // SMO
+  if ( tal.smo === null && tal.smo_okato === null)
+    return 'Укажите либо СМО либо СМО ОКАТО';
+  return '';
 };
-
-let edit$2= moTalonsList.year == moTalonsList._year ? false: true;
+  
+let edit$1= moTalonsList.year == moTalonsList._year ? false: true;
 
 /*
 const card_fileds = [
@@ -2688,7 +2662,7 @@ const talForm = function (vnode) {
     e.preventDefault();
     model.save= toSaveTalon(tal);
     if ( Boolean( model.save ) ) {
-      vuDialog$1.open();
+      vuDialog.open();
       return false;
     }
     //model.save= null;
@@ -2696,7 +2670,7 @@ const talForm = function (vnode) {
        m.route.set([clinicApi.talons])
     ).catch(err=> {
       model.save = err;
-      vuDialog$1.open();
+      vuDialog.open();
     });
   };
   
@@ -2785,7 +2759,7 @@ const talForm = function (vnode) {
       m('fieldset', { style: "padding-left: 0%;" }, [
 				m('.pure-u-3-24', { style: "margin-top: 5px;" }, 
           m('button.pure-button.pure-button-primary[type="submit"]',
-            { style: "font-size: 1.1em", disabled: edit$2 
+            { style: "font-size: 1.1em", disabled: edit$1 
               //onclick: talonSave
             },
           "Сохранить" )
