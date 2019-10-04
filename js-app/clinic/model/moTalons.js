@@ -37,7 +37,7 @@ export const moTalonsList = {
 };
 
 export const talonOpt= {
-  options: [ restSprav.doctor, restSprav.ist_fin,
+  options: [ restSprav.doctor, restSprav.ist_fin, restSprav.smo_local,
     restSprav.purp, restSprav.chm, restSprav.cishod, restSprav.cresult, restSprav.travma ],
   data: new Map(),
   error: null,
@@ -51,12 +51,13 @@ export const moTalon = {
   
   getModel() {
     const model= {
-      url: [restClinic.get_talon.url, restClinic.get_pmu.url],
-      method: [restClinic.get_talon.method,  restClinic.get_pmu.method],
-      map_keys: ['talon', 'pmu'],
+      url: [restClinic.get_talon.url, restClinic.get_pmu.url, restClinic.get_polis.url],
+      method: [restClinic.get_talon.method,  restClinic.get_pmu.method, restClinic.get_polis.method],
+      map_keys: ['talon', 'pmu', 'polis'],
       talon: null,
       card: null,
       pmu: null,
+      polis: null,
       tosave: null,
       error: null,
       save: null
@@ -69,9 +70,10 @@ export const moTalon = {
     if ( !isNaN(tal) && tal !== 0) {
       const t1= { tbl: moTalonsList.talTable(), _tal: tal };
       const t2= { tbl: moTalonsList.pmuTable(), _tal: tal };
+      const t3= { tyear: moTalonsList._year, _tal: tal };
       // exisiting talon? card will be fetched within talon record
       return moModel.getViewRpcMap(
-        model, [ t1, t2 ]
+        model, [ t1, t2, t3 ]
       ).then( t => moTalon.prepare( model )  );//.catch(e => alert(e));
     }
     // get card only to new talon
@@ -111,7 +113,7 @@ export const moTalon = {
     for (let f of card_fileds) {
       c[f] = card[f];
     }
-    c.smo -= _reg;
+    //c.smo -= _reg;
     c.old_card= c.crd_num;
     model.card= c; // rewrites and this is not a list
     // prepare talon

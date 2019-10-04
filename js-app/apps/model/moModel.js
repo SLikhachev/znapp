@@ -32,7 +32,7 @@ export const _schema= type=> {
 
 //export const _region= ()=> int(window.localStorage.getItem('smo_reg'));
 
-export const _region= ()=> 250000;
+export const _region= ()=> '25.';
 
 export const moModel = {
   

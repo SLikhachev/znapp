@@ -163,7 +163,7 @@ const restClinic = {
     cards_cnt: { url:"count_cards_clin", method:"GET" }, 
     card_find: { url:"rpc/clin_cards", method:"POST" },
     get_card: { url:"rpc/clin_card_by_num", method:"POST"},
-    get_crd_talons: {url: 'rpc/clin_crd_talons', method: 'POST'},
+    get_crd_talons: {url: 'rpc/crd_talons', method: 'POST'},
     
     //talons_cnt: { url:"count_talons_clin", method:"GET" }, 
     talons_cnt: { url:"rpc/get_tal_count", method:"POST" }, 
@@ -171,6 +171,7 @@ const restClinic = {
     get_talon: { url:"rpc/get_talon_by_num", method:"POST"},
 
     get_pmu: { url:"rpc/get_tal_pmu", method:"POST"},
+    get_polis: { url:"rpc/get_tal_polis", method: "POST" },
     para_clin: { url: "para_clin"},
 };
 
@@ -206,19 +207,19 @@ const clinicMenu = { subAppMenu: {
 
 //import { moModel } from '../model/moModel.js';
 
-const vuDialog = {
+const vuDialog$1 = {
   
   dialog: null,
   //dialog: document.getElementById('dialog'),
   
   oncreate(vnode) {
-      vuDialog.dialog = vnode.dom;
+      vuDialog$1.dialog = vnode.dom;
       //console.log(dialogView.dialog);
   },
   
   view(vnode) {
     return m('dialog#dialog', m('.dialog-content', [
-      m('i.fa fa-times.dclose', { onclick: vuDialog.close }),
+      m('i.fa fa-times.dclose', { onclick: vuDialog$1.close }),
         m('span.dheader', `${vnode.attrs.header} (${vnode.attrs.word})`),
           vnode.children
         ])
@@ -226,7 +227,7 @@ const vuDialog = {
   },
   
   open () {
-    vuDialog.dialog.showModal();
+    vuDialog$1.dialog.showModal();
     return false;
   },
   
@@ -234,9 +235,9 @@ const vuDialog = {
     //let srverr = document.getElementById('srv-error');
     //let srverr = vuDialog.dialog.querySelector('#srv-error');
     //if ( !!srverr ) srverr.parentNode.removeChild(srverr);
-    f= vuDialog.dialog.querySelector('form');
+    f= vuDialog$1.dialog.querySelector('form');
     if (Boolean(f)) f.reset();
-    vuDialog.dialog.close();
+    vuDialog$1.dialog.close();
     if ( reload ) m.redraw();
     return false;
   },
@@ -273,7 +274,7 @@ const _schema= type=> {
 
 //export const _region= ()=> int(window.localStorage.getItem('smo_reg'));
 
-const _region= ()=> 250000;
+const _region= ()=> '25.';
 
 const moModel = {
   
@@ -509,7 +510,7 @@ const moModel = {
     }).then( res => {
       event.target.parentNode.classList.remove('disable');
       if (model.list) moModel.getList(model);
-      if ( vuDialog.dialog && vuDialog.dialog.open) vuDialog.close();
+      if ( vuDialog$1.dialog && vuDialog$1.dialog.open) vuDialog$1.close();
       return res; 
     }).catch( err => {
       let msg= errMsg(err);
@@ -616,10 +617,152 @@ const restSprav$1 = {
     tarif_pmu_vzaimo:  { url: 'tarifs_pmu_vzaimoras', editable: ['edit'] },
 };
 
+// src/apps/model/moTalons.js
+
+const moTalonsList = {
+  // :: Object
+  // return model object (POJO)
+  getModel() {
+    const model = {
+      url: restClinic.talon_find.url,
+      method: restClinic.talon_find.method,
+      list: null, // main data list (showing in table page)
+      error: null, // Promise all error
+      order: true, // for list
+      sort: null // for list
+    };
+    return model;
+  },
+  // in cards talons reads from actual table only
+  // there is backdoor, you may set current local year to old date
+  // then talons will be reads and writes to old table
+  // talons reads from, 
+  year: _month().split('-')[0], // on init app
+  _year:  _month().split('-')[0], // on init app year,
+  // only one table
+  _table: 'talonz_clin_',
+  _pmu: 'para_clin_',
+  talTable() {
+    return `${moTalonsList._table}${moTalonsList._year.slice(2)}`;
+  },
+  pmuTable() {
+    return `${moTalonsList._pmu}${moTalonsList._year.slice(2)}`;
+  }
+};
+
+const talonOpt= {
+  options: [ restSprav$1.doctor, restSprav$1.ist_fin, restSprav$1.smo_local,
+    restSprav$1.purp, restSprav$1.chm, restSprav$1.cishod, restSprav$1.cresult, restSprav$1.travma ],
+  data: new Map(),
+  error: null,
+  getOptions() {
+    if (this.data && this.data.size && this.data.size !== 0) return;
+    moModel.getData( talonOpt );
+  }
+};
+
+const moTalon = {
+  
+  getModel() {
+    const model= {
+      url: [restClinic.get_talon.url, restClinic.get_pmu.url, restClinic.get_polis.url],
+      method: [restClinic.get_talon.method,  restClinic.get_pmu.method, restClinic.get_polis.method],
+      map_keys: ['talon', 'pmu', 'polis'],
+      talon: null,
+      card: null,
+      pmu: null,
+      polis: null,
+      tosave: null,
+      error: null,
+      save: null
+    };
+    return model;
+  },
+  
+  getTalon(model, card, talon) {
+    let tal= parseInt(talon), crd = parseInt(card);
+    if ( !isNaN(tal) && tal !== 0) {
+      const t1= { tbl: moTalonsList.talTable(), _tal: tal };
+      const t2= { tbl: moTalonsList.pmuTable(), _tal: tal };
+      const t3= { tyear: moTalonsList._year, _tal: tal };
+      // exisiting talon? card will be fetched within talon record
+      return moModel.getViewRpcMap(
+        model, [ t1, t2, t3 ]
+      ).then( t => moTalon.prepare( model )  );//.catch(e => alert(e));
+    }
+    // get card only to new talon
+    let pg_rest = _schema('pg_rest');
+    let url = `${pg_rest}cardz_clin?crd_num=eq.${crd}`;
+    return m.request({
+      method: 'GET',
+      url: url
+    }).then(function(res) {
+      // there are no talon and pmu keys
+      model.card = res; // res is list
+      moTalon.prepare( model ); 
+    }).catch(function(err) {
+      model.error = errMsg(err);
+    });
+  },
+  
+  // delete from talon cards fields
+  to_talon(data, fields) {
+    let t = {};
+    Object.keys(data).map( k => {
+      if (fields.indexOf(k) < 0) t[k] = data[k];
+    });
+    t.crd_num = data.crd_num;
+    return t;
+  },
+  
+  prepare( model ) {
+   const card_fileds = [
+    'id', 'crd_num', 'fam', 'im', 'ot', 'birth_date',
+    'polis_ser', 'polis_num', 'smo',
+    'dul_serial', 'dul_number',
+    'mo_att' ];
+    // prepare card
+    let card = model.card ? model.card[0] : model.talon[0];
+    let c = {};
+    for (let f of card_fileds) {
+      c[f] = card[f];
+    }
+    //c.smo -= _reg;
+    c.old_card= c.crd_num;
+    model.card= c; // rewrites and this is not a list
+    // prepare talon
+    model.talon= model.talon ? moTalon.to_talon(model.talon[0], card_fileds) : {};
+    if (model.pmu === null)  model.pmu=[];
+  },
+  
+  saveTalon(event, model, method) {
+    //console.log(event);
+    event.target.parentNode.classList.add('disable');
+    let to_save= Object.assign({}, model.talon);
+    let pg_rest =  _schema('pg_rest');
+    let { tal_num } = to_save;
+    let url=`${pg_rest}talonz_clin`;
+    if ( Boolean(tal_num) ) {
+      url += `?tal_num=eq.${tal_num}`;
+      delete tal.tal_num;
+    }
+     ['created', 'modified', 'cuser'].forEach( k=> delete to_save[k] );
+    return m.request({
+      url: url,
+      method: method,
+      body: to_save
+    }).then( res => {
+      event.target.parentNode.classList.remove('disable');
+      return true;
+    }).catch( err => {
+      //model.save = { err: true, msg: errMsg(err) };
+      event.target.parentNode.classList.remove('disable');
+      throw ( errMsg (err) );
+    });
+  }
+};
+
 // src/clinic/model/moCards.js
-
-
-const _reg= _region();
 
 const moCardsList = {
   // return model object 
@@ -672,9 +815,10 @@ const moCard = {
   
   getCard(model, crd) {
     let c= { crd_num: String(crd) };
+    let t= Object.assign( { tal_tbl: moTalonsList.talTable()}, c );
     //console.log(crd);
     return moModel.getViewRpcMap(
-      model, [c, c]
+      model, [c, t]
     );
   },
   
@@ -708,7 +852,7 @@ const moCard = {
       delete to_save.crd_num; // primary key duplication
     // else change card number
     delete to_save.old_card; // no that field in table
-    to_save.smo = parseInt(to_save.smo) + _reg;
+    //to_save.smo = parseInt(to_save.smo) + _reg;
     return m.request({
       url: url,
       method: method,
@@ -721,151 +865,6 @@ const moCard = {
       event.target.parentNode.classList.remove('disable');
       throw ( errMsg (err) );
       //vuDialog.open();
-    });
-  }
-};
-
-// src/apps/model/moTalons.js
-
-const _reg$1= _region();
-
-const moTalonsList = {
-  // :: Object
-  // return model object (POJO)
-  getModel() {
-    const model = {
-      url: restClinic.talon_find.url,
-      method: restClinic.talon_find.method,
-      list: null, // main data list (showing in table page)
-      error: null, // Promise all error
-      order: true, // for list
-      sort: null // for list
-    };
-    return model;
-  },
-  // in cards talons reads from actual table only
-  // there is backdoor, you may set current local year to old date
-  // then talons will be reads and writes to old table
-  // talons reads from, 
-  year: _month().split('-')[0], // on init app
-  _year:  _month().split('-')[0], // on init app year,
-  // only one table
-  _table: 'talonz_clin_',
-  _pmu: 'para_clin_',
-  talTable() {
-    return `${moTalonsList._table}${moTalonsList._year.slice(2)}`;
-  },
-  pmuTable() {
-    return `${moTalonsList._pmu}${moTalonsList._year.slice(2)}`;
-  }
-};
-
-const talonOpt= {
-  options: [ restSprav$1.doctor, restSprav$1.ist_fin,
-    restSprav$1.purp, restSprav$1.chm, restSprav$1.cishod, restSprav$1.cresult, restSprav$1.travma ],
-  data: new Map(),
-  error: null,
-  getOptions() {
-    if (this.data && this.data.size && this.data.size !== 0) return;
-    moModel.getData( talonOpt );
-  }
-};
-
-const moTalon = {
-  
-  getModel() {
-    const model= {
-      url: [restClinic.get_talon.url, restClinic.get_pmu.url],
-      method: [restClinic.get_talon.method,  restClinic.get_pmu.method],
-      map_keys: ['talon', 'pmu'],
-      talon: null,
-      card: null,
-      pmu: null,
-      tosave: null,
-      error: null,
-      save: null
-    };
-    return model;
-  },
-  
-  getTalon(model, card, talon) {
-    let tal= parseInt(talon), crd = parseInt(card);
-    if ( !isNaN(tal) && tal !== 0) {
-      const t1= { tbl: moTalonsList.talTable(), _tal: tal };
-      const t2= { tbl: moTalonsList.pmuTable(), _tal: tal };
-      // exisiting talon? card will be fetched within talon record
-      return moModel.getViewRpcMap(
-        model, [ t1, t2 ]
-      ).then( t => moTalon.prepare( model )  );//.catch(e => alert(e));
-    }
-    // get card only to new talon
-    let pg_rest = _schema('pg_rest');
-    let url = `${pg_rest}cardz_clin?crd_num=eq.${crd}`;
-    return m.request({
-      method: 'GET',
-      url: url
-    }).then(function(res) {
-      // there are no talon and pmu keys
-      model.card = res; // res is list
-      moTalon.prepare( model ); 
-    }).catch(function(err) {
-      model.error = errMsg(err);
-    });
-  },
-  
-  // delete from talon cards fields
-  to_talon(data, fields) {
-    let t = {};
-    Object.keys(data).map( k => {
-      if (fields.indexOf(k) < 0) t[k] = data[k];
-    });
-    t.crd_num = data.crd_num;
-    return t;
-  },
-  
-  prepare( model ) {
-   const card_fileds = [
-    'id', 'crd_num', 'fam', 'im', 'ot', 'birth_date',
-    'polis_ser', 'polis_num', 'smo',
-    'dul_serial', 'dul_number',
-    'mo_att' ];
-    // prepare card
-    let card = model.card ? model.card[0] : model.talon[0];
-    let c = {};
-    for (let f of card_fileds) {
-      c[f] = card[f];
-    }
-    c.smo -= _reg$1;
-    c.old_card= c.crd_num;
-    model.card= c; // rewrites and this is not a list
-    // prepare talon
-    model.talon= model.talon ? moTalon.to_talon(model.talon[0], card_fileds) : {};
-    if (model.pmu === null)  model.pmu=[];
-  },
-  
-  saveTalon(event, model, method) {
-    //console.log(event);
-    event.target.parentNode.classList.add('disable');
-    let to_save= Object.assign({}, model.talon);
-    let pg_rest =  _schema('pg_rest');
-    let { tal_num } = to_save;
-    let url=`${pg_rest}talonz_clin`;
-    if ( Boolean(tal_num) ) {
-      url += `?tal_num=eq.${tal_num}`;
-      delete tal.tal_num;
-    }
-     ['created', 'modified', 'cuser'].forEach( k=> delete to_save[k] );
-    return m.request({
-      url: url,
-      method: method,
-      body: to_save
-    }).then( res => {
-      event.target.parentNode.classList.remove('disable');
-      return true;
-    }).catch( err => {
-      //model.save = { err: true, msg: errMsg(err) };
-      event.target.parentNode.classList.remove('disable');
-      throw ( errMsg (err) );
     });
   }
 };
@@ -1115,7 +1114,7 @@ const tabsView = function(vnode) {
             m(cont, {model: vnode.attrs.model, method: vnode.attrs.method}) );
         })
       ]),
-      m(vuDialog, { header: 'Ошибка бработки', word: vnode.attrs.model.word },
+      m(vuDialog$1, { header: 'Ошибка бработки', word: vnode.attrs.model.word },
         m('span.red', {style: "font-size: 1.2em; font-weight: 600"},
           vnode.attrs.model.save ? vnode.attrs.model.save: 'No messages'
         )
@@ -1215,7 +1214,7 @@ const talonField = {
     }
   },
   talon_month: { label: ['.leg_sec.red', "Месяц талона"], input: {
-      tag: ['.pure-u-8-24.tal_month', 'number', 3, true],
+      tag: ['.pure-u-12-24.tal_month', 'number', 3, true],
       attrs: {
         style: "height: 45%", min: 1, max: 12,
         fval: v => v ? v : month()
@@ -1373,7 +1372,7 @@ const cardField = {
       attrs: { min : 1 }
   }},
   smo: {label: ['', "Страховщик"], input: {
-      tag: ['.pure-u-1-6', 'text', 11, false],
+      //tag: ['.pure-u-1-6', 'text', 11, false],
       //attrs: { pattern: "[0-9]*" }
   }},
   smo_okato: {label: ['', "Регион"], input: {
@@ -1453,7 +1452,7 @@ const tof = function(field, data, to_attrs={}) {
   return fieldFrom(talonField, field, data, to_attrs);
 };
 
-const cof = function(field, data, to_attrs={}) {
+const cof$1 = function(field, data, to_attrs={}) {
   return fieldFrom(cardField, field, data, to_attrs);
 };
 
@@ -1467,6 +1466,8 @@ const ptf = function(field, data, to_attrs={}) {
 
 // src/clinic/view/vuCard.js
 
+const _Reg= _region();
+
 const checkDost = card=> {
   let dost= '';
   if ( !card.fam ) dost += '2_';
@@ -1476,8 +1477,70 @@ const checkDost = card=> {
       return 'Укажите Фамилию или Имя';
   if ( Boolean(dost) )
     card.dost= dost;
-  return '';   
+  return '';
 };
+
+const num_digits = function(card) {
+    let s= 0, n= 0;
+    if ( card.polis_ser !== null)
+      s= card.polis_ser.toString().length;
+    if ( card.polis_num !== null)
+      n= card.polis_num.toString().length;
+    try {
+      if (s === 0 && n === 16) {
+        card.polis_type = 3;
+        return "ЕНП 16 цифр";
+      }
+      if (s === 0 && n > 0 && n < 16) {
+        card.polis_type = 2;
+        return `Временное свидетельсто ${n} цифр`;
+      }
+      if (s > 0 && n > 0) {
+        card.polis_type = 1;
+        return `Старый полис ${n} цифр`;
+      }
+      card.polis_type = null;
+      return m('span.red', `Кривой полис ${n} цифр`);
+    } catch (e) {
+      return m('span.red', "Тип полиса неизвестен");
+    }
+};
+// set smo select from options
+const sel_smo = card=> {
+  return e=>  {
+    if ( Boolean( e.target.value) ) {
+      card.smo= e.target.value;
+    } else {
+      card.smo= null;
+      card.smo_okato= null;
+    }
+  };
+};
+
+  // smo OKATO
+const set_smo_okato = (data, card)=> {
+  return e=> {  
+    if ( Boolean(card.smo) ) {
+      let _smo= card.smo; // + _reg;
+      let smo = Array.from( data.get('smo_local') ).find( item => item.code == _smo );
+      if ( Boolean(smo) ) {
+        card.smo_okato = smo.okato;
+        let o = Array.from( data.get('okato') ).find( item => item.okato == smo.okato );
+        e.target.value = `${o.region}. ${o.name.split(' ')[0]}`;
+        return false;
+      }
+    } else {
+      if ( Boolean( e.target.value ) && !e.target.value.includes(_Reg)) {
+        rg = e.target.value.split('.')[0];
+        card.smo_okato = Array.from(data.get('okato')).find(item => item.region.toString() == rg)['okato'];
+      } else {
+        e.target.value= null;
+        card.smo_okato= null;
+      }
+    }
+  };
+};
+
 
 const getName = function(data, val, key, prop, name, text, first_word=false) {
     // data - optional data MAP
@@ -1518,7 +1581,7 @@ const toSaveCard= card=> {
       return 'Для этого типа полиса требуются данные ДУЛ';
     
     // SMO
-    if ( card.smo === null && card.smo_okato === null)
+    if ( !card.smo && !card.smo_okato)
       return 'Укажите либо СМО либо СМО ОКАТО';
     //if ( card.smo < _reg)
     //  card.smo += _reg;
@@ -1535,7 +1598,7 @@ const toSaveCard= card=> {
     
     return false;
 };
-  
+
 
 const crdMain = function(vnode) {
 
@@ -1544,10 +1607,11 @@ const crdMain = function(vnode) {
   //const card = model.card ? Object.assign({}, model.card[0]) : {};
   const card= model.card ? model.card[0] : {};
   card.old_card= card.crd_num;
-  const _reg= _region();
+  /*
   if (card.smo !== null)
     if( card.smo >= _reg)
       card.smo -= _reg;
+  */
   //console.log(card.smo);
   //const crd= Boolean(card.crd_num);
   
@@ -1558,7 +1622,7 @@ const crdMain = function(vnode) {
     //console.log(card);
     model.save= toSaveCard(card);
     if ( Boolean( model.save ) ) {
-      vuDialog.open();
+      vuDialog$1.open();
       return false;
     }
     //model.save= null;
@@ -1566,81 +1630,25 @@ const crdMain = function(vnode) {
        m.route.set([clinicApi.cards])
     ).catch(err=> {
       model.save = err;
-      vuDialog.open();
+      vuDialog$1.open();
     });
   };
   // gender
   const gnd = function(c){
     return ['м', 'ж'].indexOf( c.gender.toLowerCase() );
   };
-  // polis num digits
-  const num_digits = function(card) {
-    let s= 0, n= 0;
-    if ( card.polis_ser !== null)
-      s= card.polis_ser.toString().length;
-    if ( card.polis_num !== null)
-      n= card.polis_num.toString().length;
-    try {
-      if (s === 0 && n === 16) {
-        card.polis_type = 3;
-        return "ЕНП 16 цифр";
-      }
-      if (s === 0 && n > 0 && n < 16) {
-        card.polis_type = 2;
-        return `Временное свидетельсто ${n} цифр`;
-      }
-      if (s > 0 && n > 0) {
-        card.polis_type = 1;
-        return `Старый полис ${n} цифр`;
-      }
-      card.polis_type = null;
-      return m('span.red', `Кривой полис ${n} цифр`);
-    } catch (e) {
-      return m('span.red', "Тип полиса неизвестен");
-    }
-  };
   // set smo
-  const set_smo = function(e) {
-     let smo = parseInt(e.target.value);
-     if ( isNaN(smo) ) card.smo = 0; //this value subtracts from code in input
-     else card.smo = smo; // + _reg;
-     //console.log(card.smo); 
-  };
+  //const _set_smo = set_smo(card);
+  const _set_smo= sel_smo(card);
+  
   // smo OKATO
-  const set_smo_okato = function(e) {
-    if ( Boolean(card.smo) ) {
-      let _smo= card.smo + _reg;
-      let smo = Array.from( data.get('smo_local') ).find( item => item.code == _smo );
-      if ( Boolean(smo) ) {
-        card.smo_okato = smo.okato;
-        let o = Array.from( data.get('okato') ).find( item => item.okato == smo.okato );
-        e.target.value = `${o.region}. ${o.name.split(' ')[0]}`;
-        return false;
-      }
-    }
-    if (Boolean(e.target.value )) {
-      rg = e.target.value.split('.')[0];
-      card.smo_okato = Array.from(data.get('okato')).find(item => item.region.toString() == rg)['okato'];
-    }
-  };
+  const _set_smo_okato = set_smo_okato(data, card);
   // gets the name of option from Map by key
- 
   const get_name = function(val, key, prop, name) {
     return getName(data, val, key, prop, name, 'Неизвестный код', false);
   };
   
   return {
-    oninit() {
-      //model = attrs.model;
-      //data = model.data;
-      //console.log(model.data);
-      //console.log(model.map_data);
-      // will be locale object yet
-      //card = model.card ? Object.assign({}, model.card[0]) : {};
-      //method = attrs.method;
-      //console.log(card);
-    },
-
     view: function () {
       //console.log(method);
       //let crd= Boolean (model.talons);
@@ -1651,12 +1659,12 @@ const crdMain = function(vnode) {
           m(".pure-g", [
             m(".pure-u-7-24", [
 // --        // -- TODO check for card.card_type to process card number    
-              m(".pure-control-group", cof('crd_num', card,
+              m(".pure-control-group", cof$1('crd_num', card,
                   { readonly: Boolean (model.talons.length) } )),
-              m(".pure-control-group", cof('fam', card)),
-              m(".pure-control-group", cof('im', card)),
-              m('.pure-control-group', cof('ot', card)),
-              m(".pure-control-group", cof('birth_date', card)),
+              m(".pure-control-group", cof$1('fam', card)),
+              m(".pure-control-group", cof$1('im', card)),
+              m('.pure-control-group', cof$1('ot', card)),
+              m(".pure-control-group", cof$1('birth_date', card)),
 
               m(".pure-control-group", [
                 m('label', {for: "gender"}, "Пол"),
@@ -1676,32 +1684,41 @@ const crdMain = function(vnode) {
                 })
               ]),
 // --            
-              m(".pure-control-group", [cof('dul_type', card),
+              m(".pure-control-group", [cof$1('dul_type', card),
                 m('span.item_name', get_name(card.dul_type, 'dul', 'code', 'short_name'))
               ]),
-              m(".pure-control-group", cof('dul_serial', card)),
-              m(".pure-control-group", cof('dul_number', card)),
+              m(".pure-control-group", cof$1('dul_serial', card)),
+              m(".pure-control-group", cof$1('dul_number', card)),
             ]), // u-7-24
 // ============================			
             m(".pure-u-8-24", [m('legend', "ОМС"),
-              m(".pure-control-group", cof('polis_ser', card)),
-              m(".pure-control-group", [cof('polis_num', card),
+              m(".pure-control-group", cof$1('polis_ser', card)),
+              m(".pure-control-group", [cof$1('polis_num', card),
                 m('div.item_name', {style: "margin-left: 10em;"}, num_digits(card)),
               ]),
+              /*
               m(".pure-control-group", [
-                cof('smo', card, {onblur: set_smo}),
+                cof('smo', card, {onblur: _set_smo}),
                 m('span.item_name',
                   card.smo === null ? '':  get_name(card.smo + _reg, 'smo_local', 'code', 'short_name'))
-              ]),
+              ]),*/
 // --
+              m(".pure-control-group", [
+                m('label', { for: "smo"}, "Страховщик"),
+                m('select[name="smo"]',
+                  {tabindex: 11, value: card.smo, onchange: _set_smo}, [
+                  m('option[value=""]', ""),
+                  data.get('smo_local').map(s=> m('option', {value: s.code}, s.short_name))
+                ])
+              ]),
               m(".pure-control-group", [
                 m('label', { for: "smo_okato"}, "Регион"),
                 m('input[name="smo_okato"][type="text"]', {
-                  oncreate: v => set_smo_okato( { target: v.dom} ),
+                  oncreate: v => _set_smo_okato( { target: v.dom} ),
                   list:  "okato",
                   //value: card.smo_okato,
                   tabindex: "12",
-                  onblur: set_smo_okato
+                  onblur: _set_smo_okato
                 }),
                 //cof('smo_okato', card, {
                 //  oncreate: v => set_smo_okato({target: v.dom}),
@@ -1717,7 +1734,7 @@ const crdMain = function(vnode) {
               ]),
 // --          
               m(".pure-control-group", [
-                cof('mo_att', card),
+                cof$1('mo_att', card),
                 m('.item_name',
                   {style: "margin: 1em 0; padding-left: 1em"},
                   get_name(card.mo_att, 'mo_local', 'scode', 'sname') )
@@ -1725,15 +1742,15 @@ const crdMain = function(vnode) {
             ]), //-- 8-24
 // ============================         
             m(".pure-u-9-24", [m('legend', "Адрес"),
-              m(".pure-control-group", cof('city_g', card)),
-              m(".pure-control-group", cof('street_g', card)),
+              m(".pure-control-group", cof$1('city_g', card)),
+              m(".pure-control-group", cof$1('street_g', card)),
               m(".pure-control-group", [
-                cof('home_g', card),
-                cof('corp_g', card),
-                cof('flat_g', card)
+                cof$1('home_g', card),
+                cof$1('corp_g', card),
+                cof$1('flat_g', card)
               ]),
-              m(".pure-control-group", cof('phone_wrk', card)),
-              m(".pure-control-group", cof('phone_hom', card))
+              m(".pure-control-group", cof$1('phone_wrk', card)),
+              m(".pure-control-group", cof$1('phone_hom', card))
             ]) //u-9-24
 // ============================
           ]) // pure-g
@@ -2061,6 +2078,95 @@ const vuTalonsList = function (vnode) {
       ] : m(vuLoading); 
     }
   }; //return this object
+};
+
+let edit= moTalonsList.year == moTalonsList._year ? false: true;
+
+const talCrd = function (vnode) {
+  let { model }= vnode.attrs;
+  let { card }= model; // ref to talon model.card
+  const data= talonOpt.data;
+  //const model= {}; //local model
+  const method= 'PATCH';
+  //console.log(card);
+  let ff = [
+    'fam', 'im', 'ot', 'birth_date',
+    'polis_ser', 'polis_num'];  //, 'smo'];
+  
+  const toSave= card=> {
+    let dost= checkDost(card);
+    if ( Boolean(dost) )
+      return dost;
+    if ( !card.smo && !card.smo_okato)
+      return 'Укажите либо СМО либо СМО ОКАТО';
+    return '';
+  };
+  
+  const _set_smo = e=> {
+    if ( Boolean( e.target.value) ) {
+      card.smo= e.target.value;
+      card.smo_okato= data.get('smo_local')[0].okato;
+    } else {
+      card.smo= null;
+      card.smo_okato= null;
+    }
+  };
+
+  const cardSave = function(e) {
+    e.preventDefault();
+    //saveCard(event, card, model, method) {
+    
+    model.save= toSave(card);
+    if ( Boolean( model.save ) ) {
+      vuDialog$1.open();
+      return false;
+    }
+    return moCard.saveCard(e, card, model, method).catch(err=> {
+      model.save = err;
+      vuDialog$1.open();
+    });
+  };
+
+  return {
+    view() {
+    //console.log('crdForm view')
+      let duls= card.dul_serial ? card.dul_serial: '';
+      let duln= card.dul_number ? card.dul_number: 'Нет';
+      let mo= card.mo_att ? card.mo_att: '';
+      //console.log(card);
+      return m(".pure-u-6-24.patz-data", { style: "overflow: hidden; padding-right: 1em" },
+        m(".legnd", `Карта № ${card.crd_num}`),
+        m('form.tcard.pure-form.pure-form-stacked',
+         {style:"font-size: 1.2em;", id:"tal_card", onsubmit: cardSave },[
+          //m(".legnd", `Карта № ${card.crd_num}`),
+          ff.map( f => m(".pure-control-group", ctf(f, card)) ),
+          m(".pure-control-group", [
+            m('label', { for: "smo"}, "Страховщик"),
+            m('select[name="smo"]',
+              {value: card.smo, onchange: _set_smo}, [
+              m('option[value=""]', ""),
+              data.get('smo_local').map(s=> m('option', {value: s.code}, s.short_name))
+            ])
+          ]),
+          m("span", `Приписан: ${mo}`),
+          m("span", `Документ ${duls} ${duln}`),
+          m('button.pure-button.pure-button-primary[type="submit"]',
+            { disabled: edit
+          }, "Сохранить"),
+        
+       m(m.route.Link, { selector: 'a.pure-button.', 
+            href: `${clinicApi.cards}/${card.crd_num}`,
+            style: "margin-left: 2em;"
+            }, "Открыть карту" )
+      ]), /*form*/
+      /*
+      m('span#card_message',
+        model.save ? model.save.err ? m('span.red', model.save.msg) : '' : ''
+      )
+      */
+    ); //patz
+    } // view
+  }; // return
 };
 
 const talNap = function(vnode) {
@@ -2409,6 +2515,83 @@ const talDs = function(vnode) {
   };
 };
 
+let edit$1= moTalonsList.year == moTalonsList._year ? false: true;
+
+const talPolis = function(vnode) {
+  let tal= vnode.attrs.model.talon;
+  let polis= vnode.attrs.model.polis;
+  
+  const toSave= polis=> {
+    // SMO
+    if ( polis.smo === null && polis.smo_okato === null)
+      return 'Укажите либо СМО либо СМО ОКАТО';
+    return '';
+  };
+  
+  const polisSave = function(e) {
+    e.preventDefault();
+    //saveCard(event, card, model, method) {
+    
+    model.save= toSave(polis);
+    if ( Boolean( model.save ) ) {
+      vuDialog.open();
+      return false;
+    }
+    return moTalon.savePolis(e, polis, model, method).catch(err=> {
+      model.save = err;
+      vuDialog.open();
+    });
+  };
+  
+  return {
+    view() { return m('h2', 'TAL POLIS');
+      return m("form.pure-form.pure-form-stacked.tcard",
+        {style: "font-size: 1.2em;", id: "tal_polis", onsubmit: polisSave }, [
+        m('fieldset', [
+          m('legend', 'Талон № ', tal.tal_num ? tal.tal_num: 'Новый'),
+          m('legend.leg-sec', "Полис на дату визита"),
+          m(".pure-control-group", ptf('polis_ser', polis)),
+          m(".pure-control-group", [ptf('polis_num', polis),
+            m('div.item_name', {style: "margin-left: 10em;"}, num_digits(polis)),
+          ]),
+          m(".pure-control-group", [
+             cof('smo', card, {onblur: _set_smo}),
+                m('span.item_name',
+                  card.smo === null ? '':  get_name(card.smo + _reg, 'smo_local', 'code', 'short_name'))
+              ]),
+// --
+              m(".pure-control-group", [
+                m('label', { for: "smo_okato"}, "Регион"),
+                m('input[name="smo_okato"][type="text"]', {
+                  oncreate: v => _set_smo_okato( { target: v.dom} ),
+                  list:  "okato",
+                  //value: card.smo_okato,
+                  tabindex: "12",
+                  onblur: _set_smo_okato
+                }),
+                //cof('smo_okato', card, {
+                //  oncreate: v => set_smo_okato({target: v.dom}),
+                //  onblur: set_smo_okato
+                //}),
+                //m('span.item_name', set_name(card.smo_okato, 'okato', 'okato', 'name', true) )
+                m('datalist[id="okato"]', [
+                  data.get('okato').map(o => {
+                    let okato = `${o.region}. ${o.name.split(' ')[0]}`;
+                    return m('option', okato);
+                  })
+                ])
+              ]),
+// --          
+          m('button.pure-button.pure-button-primary[type="submit"]',
+            { disabled: edit$1
+          }, "Сохранить"),
+        
+        ])
+      ]);
+    }
+  };
+};
+
 // src/clinic/view/vuTalon.js
 
 
@@ -2416,6 +2599,7 @@ const toSaveTalon= tal=> {
   
 };
 
+let edit$2= moTalonsList.year == moTalonsList._year ? false: true;
 
 /*
 const card_fileds = [
@@ -2425,8 +2609,6 @@ const card_fileds = [
   'mo_att'
 ];
 */
-
-
 
 //export const getName = function(data, val, key, prop, name, text, first_word=false) {
   // data - optional data MAP
@@ -2501,12 +2683,12 @@ const talForm = function (vnode) {
     let ds= dsl.find(d=> tal.ds1 == d.code.trim() );
     return ds ? ds.name: ''; // m('span.red', ' Диагноз? ');
   };
-  
+
   const talonSave = function(e) {
     e.preventDefault();
     model.save= toSaveTalon(tal);
     if ( Boolean( model.save ) ) {
-      vuDialog.open();
+      vuDialog$1.open();
       return false;
     }
     //model.save= null;
@@ -2514,7 +2696,7 @@ const talForm = function (vnode) {
        m.route.set([clinicApi.talons])
     ).catch(err=> {
       model.save = err;
-      vuDialog.open();
+      vuDialog$1.open();
     });
   };
   
@@ -2530,7 +2712,10 @@ const talForm = function (vnode) {
         m(".pure-g", [
           m(".pure-u-4-24", tof('open_date', tal)),
           m(".pure-u-4-24", tof('close_date', tal)),
-          m('.pure-u-6-24', tof('talon_month', tal)),
+          m('.pure-u-3-24', tof('talon_month', tal)),
+          m('.pure-u-3-24', {
+            style: "padding-top: 2em ; font-size: 1.1em; font-weight: 500"
+          }, `Год ${moTalonsList._year}`),
           m(".pure-u-6-24", [ tof('first_vflag', tal), tof('for_pom', tal), tof('finality', tal) ]),
         ]),
         //
@@ -2600,7 +2785,7 @@ const talForm = function (vnode) {
       m('fieldset', { style: "padding-left: 0%;" }, [
 				m('.pure-u-3-24', { style: "margin-top: 5px;" }, 
           m('button.pure-button.pure-button-primary[type="submit"]',
-            { style: "font-size: 1.1em",
+            { style: "font-size: 1.1em", disabled: edit$2 
               //onclick: talonSave
             },
           "Сохранить" )
@@ -2612,81 +2797,13 @@ const talForm = function (vnode) {
  }
 };
 
-
-const crdForm = function (vnode) {
-  let { model }= vnode.attrs;
-  let { card }= model; // ref to talon model.card
-  //const model= {}; //local model
-  const method= 'PATCH';
-  //console.log(card);
-  let ff = [
-    'fam', 'im', 'ot', 'birth_date',
-    'polis_ser', 'polis_num', 'smo'];
-  
-  const toSave= card=> {
-    let dost= checkDost(card);
-    if ( Boolean(dost) )
-      return dost;
-    return '';
-  };
-  
-  const cardSave = function(e) {
-    e.preventDefault();
-    //saveCard(event, card, model, method) {
-    
-    model.save= toSave(card);
-    if ( Boolean( model.save ) ) {
-      vuDialog.open();
-      return false;
-    }
-    return moCard.saveCard(e, card, model, method).catch(err=> {
-      model.save = err;
-      vuDialog.open();
-    });
-  };
-
-  return {
-    view() {
-    //console.log('crdForm view')
-      let duls= card.dul_serial ? card.dul_serial: '';
-      let duln= card.dul_number ? card.dul_number: 'Нет';
-      let mo= card.mo_att ? card.mo_att: '';
-      //console.log(card);
-      return m(".pure-u-6-24.patz-data", { style: "overflow: hidden; padding-right: 1em" },
-        m(".legnd", `Карта № ${card.crd_num}`),
-        m('form.tcard.pure-form.pure-form-stacked',
-         {style:"font-size: 1.2em;", id:"tal_card", onsubmit: cardSave },[
-          //m(".legnd", `Карта № ${card.crd_num}`),
-          ff.map( f => m(".pure-control-group", ctf(f, card)) ),
-          m("span", `Приписан: ${mo}`),
-          m("span", `Документ ${duls} ${duln}`),
-          m('button.pure-button.pure-button-primary[type="submit"]',
-            { //onclick: e => cardSave
-          }, "Сохранить"),
-        
-       m(m.route.Link, { selector: 'a.pure-button.', 
-            href: `${clinicApi.cards}/${card.crd_num}`,
-            style: "margin-left: 2em;"
-            }, "Открыть карту" )
-      ]), /*form*/
-      /*
-      m('span#card_message',
-        model.save ? model.save.err ? m('span.red', model.save.msg) : '' : ''
-      )
-      */
-    ); //patz
-    } // view
-  }; // return
-};
-
-
 const talMain = function (vnode) {
   let { model, method }= vnode.attrs;
   return {
     view () {
       //console.log('talMain view');
       return m(".pure-g", {style: "padding-left: 4em;"}, [
-        m(crdForm, {model: model} ), // only patch
+        m(talCrd, {model: model} ), // only patch
         m(talForm, {model: model, method: method } )
       ]);
     }
@@ -2699,8 +2816,8 @@ const vuTalon = function(vnode) {
   
   let { tal, crd }= vnode.attrs;
   let model= moTalon.getModel(); //;
-  let tabs= ['Талон', 'Направление', 'ДС', 'ПМУ'];
-  let conts= [talMain, talNap, talDs, talPmu,];
+  let tabs= ['Талон', 'Направление', 'ДС', 'ПМУ', 'Полис на дату'];
+  let conts= [talMain, talNap, talDs, talPmu, talPolis];
   model.word= 'Талоны';
   let t= parseInt(tal);
   const method = isNaN(t) || t === 0 ? "POST": "PATCH";

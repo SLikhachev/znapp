@@ -21,7 +21,7 @@ export const talonField = {
     }
   },
   talon_month: { label: ['.leg_sec.red', "Месяц талона"], input: {
-      tag: ['.pure-u-8-24.tal_month', 'number', 3, true],
+      tag: ['.pure-u-12-24.tal_month', 'number', 3, true],
       attrs: {
         style: "height: 45%", min: 1, max: 12,
         fval: v => v ? v : month()

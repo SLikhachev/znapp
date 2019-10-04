@@ -59,7 +59,7 @@ export const cardField = {
       attrs: { min : 1 }
   }},
   smo: {label: ['', "Страховщик"], input: {
-      tag: ['.pure-u-1-6', 'text', 11, false],
+      //tag: ['.pure-u-1-6', 'text', 11, false],
       //attrs: { pattern: "[0-9]*" }
   }},
   smo_okato: {label: ['', "Регион"], input: {

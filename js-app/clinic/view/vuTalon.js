@@ -3,22 +3,24 @@
 import { vuDialog } from '../../apps/view/vuDialog.js';
 import { vuLoading } from '../../apps/view/vuApp.js';
 import { moModel } from '../../apps/model/moModel.js';
-import { restSprav } from '../../sprav/spravApi.js';
+//import { restSprav } from '../../sprav/spravApi.js';
 import { clinicApi, restClinic } from '../clinicApi.js';
-import { moTalon, talonOpt } from '../model/moTalons.js';
-import { moCard } from '../model/moCards.js';
+import { moTalonsList, moTalon, talonOpt } from '../model/moTalons.js';
 import { tabsView, forTabs } from './vuTabs.js';
-import { tof, ctf } from '../form/foForm.js';
+import { getName } from './vuCard.js';
+import { tof } from '../form/foForm.js';
+import { talCrd } from './vuTalCrd.js';
 import { talNap } from './vuTalNap.js';
 import { talPmu } from './vuTalPmu.js';
 import { talDs } from './vuTalDs.js';
-import { checkDost, getName } from './vuCard.js';
+import { talPolis } from './vuTalPolis';
 
 
 const toSaveTalon= tal=> {
   
 }
 
+let edit= moTalonsList.year == moTalonsList._year ? false: true;
 
 /*
 const card_fileds = [
@@ -28,8 +30,6 @@ const card_fileds = [
   'mo_att'
 ];
 */
-
-
 
 //export const getName = function(data, val, key, prop, name, text, first_word=false) {
   // data - optional data MAP
@@ -105,7 +105,7 @@ const talForm = function (vnode) {
     let ds= dsl.find(d=> tal.ds1 == d.code.trim() );
     return ds ? ds.name: ''; // m('span.red', ' Диагноз? ');
   };
-  
+
   const talonSave = function(e) {
     e.preventDefault();
     model.save= toSaveTalon(tal);
@@ -134,7 +134,10 @@ const talForm = function (vnode) {
         m(".pure-g", [
           m(".pure-u-4-24", tof('open_date', tal)),
           m(".pure-u-4-24", tof('close_date', tal)),
-          m('.pure-u-6-24', tof('talon_month', tal)),
+          m('.pure-u-3-24', tof('talon_month', tal)),
+          m('.pure-u-3-24', {
+            style: "padding-top: 2em ; font-size: 1.1em; font-weight: 500"
+          }, `Год ${moTalonsList._year}`),
           m(".pure-u-6-24", [ tof('first_vflag', tal), tof('for_pom', tal), tof('finality', tal) ]),
         ]),
         //
@@ -204,7 +207,7 @@ const talForm = function (vnode) {
       m('fieldset', { style: "padding-left: 0%;" }, [
 				m('.pure-u-3-24', { style: "margin-top: 5px;" }, 
           m('button.pure-button.pure-button-primary[type="submit"]',
-            { style: "font-size: 1.1em",
+            { style: "font-size: 1.1em", disabled: edit 
               //onclick: talonSave
             },
           "Сохранить" )
@@ -216,81 +219,13 @@ const talForm = function (vnode) {
  }
 };
 
-
-const crdForm = function (vnode) {
-  let { model }= vnode.attrs;
-  let { card }= model; // ref to talon model.card
-  //const model= {}; //local model
-  const method= 'PATCH';
-  //console.log(card);
-  let ff = [
-    'fam', 'im', 'ot', 'birth_date',
-    'polis_ser', 'polis_num', 'smo'];
-  
-  const toSave= card=> {
-    let dost= checkDost(card);
-    if ( Boolean(dost) )
-      return dost;
-    return '';
-  };
-  
-  const cardSave = function(e) {
-    e.preventDefault();
-    //saveCard(event, card, model, method) {
-    
-    model.save= toSave(card);
-    if ( Boolean( model.save ) ) {
-      vuDialog.open();
-      return false;
-    }
-    return moCard.saveCard(e, card, model, method).catch(err=> {
-      model.save = err;
-      vuDialog.open();
-    });
-  };
-
-  return {
-    view() {
-    //console.log('crdForm view')
-      let duls= card.dul_serial ? card.dul_serial: '';
-      let duln= card.dul_number ? card.dul_number: 'Нет';
-      let mo= card.mo_att ? card.mo_att: '';
-      //console.log(card);
-      return m(".pure-u-6-24.patz-data", { style: "overflow: hidden; padding-right: 1em" },
-        m(".legnd", `Карта № ${card.crd_num}`),
-        m('form.tcard.pure-form.pure-form-stacked',
-         {style:"font-size: 1.2em;", id:"tal_card", onsubmit: cardSave },[
-          //m(".legnd", `Карта № ${card.crd_num}`),
-          ff.map( f => m(".pure-control-group", ctf(f, card)) ),
-          m("span", `Приписан: ${mo}`),
-          m("span", `Документ ${duls} ${duln}`),
-          m('button.pure-button.pure-button-primary[type="submit"]',
-            { //onclick: e => cardSave
-          }, "Сохранить"),
-        
-       m(m.route.Link, { selector: 'a.pure-button.', 
-            href: `${clinicApi.cards}/${card.crd_num}`,
-            style: "margin-left: 2em;"
-            }, "Открыть карту" )
-      ]), /*form*/
-      /*
-      m('span#card_message',
-        model.save ? model.save.err ? m('span.red', model.save.msg) : '' : ''
-      )
-      */
-    ); //patz
-    } // view
-  }; // return
-};
-
-
 const talMain = function (vnode) {
   let { model, method }= vnode.attrs;
   return {
     view () {
       //console.log('talMain view');
       return m(".pure-g", {style: "padding-left: 4em;"}, [
-        m(crdForm, {model: model} ), // only patch
+        m(talCrd, {model: model} ), // only patch
         m(talForm, {model: model, method: method } )
       ]);
     }
@@ -303,8 +238,8 @@ export const vuTalon = function(vnode) {
   
   let { tal, crd }= vnode.attrs;
   let model= moTalon.getModel(); //;
-  let tabs= ['Талон', 'Направление', 'ДС', 'ПМУ'];
-  let conts= [talMain, talNap, talDs, talPmu,];
+  let tabs= ['Талон', 'Направление', 'ДС', 'ПМУ', 'Полис на дату'];
+  let conts= [talMain, talNap, talDs, talPmu, talPolis];
   model.word= 'Талоны';
   let t= parseInt(tal);
   const method = isNaN(t) || t === 0 ? "POST": "PATCH";

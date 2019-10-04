@@ -8,6 +8,8 @@ import { clinicApi } from '../clinicApi.js';
 import { tabsView, forTabs } from './vuTabs.js';
 import { cof } from '../form/foForm.js';
 
+const _Reg= _region();
+
 export const checkDost = card=> {
   let dost= '';
   if ( !card.fam ) dost += '2_';
@@ -17,8 +19,79 @@ export const checkDost = card=> {
       return 'Укажите Фамилию или Имя';
   if ( Boolean(dost) )
     card.dost= dost;
-  return '';   
+  return '';
 }
+
+export const num_digits = function(card) {
+    let s= 0, n= 0;
+    if ( card.polis_ser !== null)
+      s= card.polis_ser.toString().length;
+    if ( card.polis_num !== null)
+      n= card.polis_num.toString().length;
+    try {
+      if (s === 0 && n === 16) {
+        card.polis_type = 3;
+        return "ЕНП 16 цифр";
+      }
+      if (s === 0 && n > 0 && n < 16) {
+        card.polis_type = 2;
+        return `Временное свидетельсто ${n} цифр`;
+      }
+      if (s > 0 && n > 0) {
+        card.polis_type = 1;
+        return `Старый полис ${n} цифр`;
+      }
+      card.polis_type = null;
+      return m('span.red', `Кривой полис ${n} цифр`);
+    } catch (e) {
+      return m('span.red', "Тип полиса неизвестен");
+    }
+};
+// set smo -- input 2 digits only
+export const set_smo = card=> {
+  return e=> {
+    let smo = parseInt(e.target.value);
+    if ( isNaN(smo) ) card.smo = 0; //this value subtracts from code in input
+    else card.smo = smo; // + _reg;
+      //console.log(card.smo);
+  };
+};
+// set smo select from options
+export const sel_smo = card=> {
+  return e=>  {
+    if ( Boolean( e.target.value) ) {
+      card.smo= e.target.value;
+    } else {
+      card.smo= null;
+      card.smo_okato= null;
+    }
+  };
+}
+
+  // smo OKATO
+export const set_smo_okato = (data, card)=> {
+  return e=> {  
+    if ( Boolean(card.smo) ) {
+      let _smo= card.smo; // + _reg;
+      let smo = Array.from( data.get('smo_local') ).find( item => item.code == _smo );
+      if ( Boolean(smo) ) {
+        card.smo_okato = smo.okato;
+        let o = Array.from( data.get('okato') ).find( item => item.okato == smo.okato );
+        e.target.value = `${o.region}. ${o.name.split(' ')[0]}`;
+        return false;
+      }
+    } else {
+      if ( Boolean( e.target.value ) && !e.target.value.includes(_Reg)) {
+        rg = e.target.value.split('.')[0];
+        card.smo_okato = Array.from(data.get('okato')).find(item => item.region.toString() == rg)['okato'];
+      } else {
+        e.target.value= null;
+        card.smo_okato= null;
+      }
+    }
+  };
+};
+
 
 export const getName = function(data, val, key, prop, name, text, first_word=false) {
     // data - optional data MAP
@@ -59,7 +132,7 @@ export const toSaveCard= card=> {
       return 'Для этого типа полиса требуются данные ДУЛ';
     
     // SMO
-    if ( card.smo === null && card.smo_okato === null)
+    if ( !card.smo && !card.smo_okato)
       return 'Укажите либо СМО либо СМО ОКАТО';
     //if ( card.smo < _reg)
     //  card.smo += _reg;
@@ -76,7 +149,7 @@ export const toSaveCard= card=> {
     
     return false;
 };
-  
+
 
 const crdMain = function(vnode) {
 
@@ -85,10 +158,11 @@ const crdMain = function(vnode) {
   //const card = model.card ? Object.assign({}, model.card[0]) : {};
   const card= model.card ? model.card[0] : {};
   card.old_card= card.crd_num;
-  const _reg= _region();
+  /*
   if (card.smo !== null)
     if( card.smo >= _reg)
       card.smo -= _reg;
+  */
   //console.log(card.smo);
   //const crd= Boolean(card.crd_num);
   
@@ -114,74 +188,18 @@ const crdMain = function(vnode) {
   const gnd = function(c){
     return ['м', 'ж'].indexOf( c.gender.toLowerCase() );
   };
-  // polis num digits
-  const num_digits = function(card) {
-    let s= 0, n= 0;
-    if ( card.polis_ser !== null)
-      s= card.polis_ser.toString().length;
-    if ( card.polis_num !== null)
-      n= card.polis_num.toString().length;
-    try {
-      if (s === 0 && n === 16) {
-        card.polis_type = 3;
-        return "ЕНП 16 цифр";
-      }
-      if (s === 0 && n > 0 && n < 16) {
-        card.polis_type = 2;
-        return `Временное свидетельсто ${n} цифр`;
-      }
-      if (s > 0 && n > 0) {
-        card.polis_type = 1;
-        return `Старый полис ${n} цифр`;
-      }
-      card.polis_type = null;
-      return m('span.red', `Кривой полис ${n} цифр`);
-    } catch (e) {
-      return m('span.red', "Тип полиса неизвестен");
-    }
-  };
   // set smo
-  const set_smo = function(e) {
-     let smo = parseInt(e.target.value);
-     if ( isNaN(smo) ) card.smo = 0; //this value subtracts from code in input
-     else card.smo = smo; // + _reg;
-     //console.log(card.smo); 
-  };
+  //const _set_smo = set_smo(card);
+  const _set_smo= sel_smo(card);
+  
   // smo OKATO
-  const set_smo_okato = function(e) {
-    if ( Boolean(card.smo) ) {
-      let _smo= card.smo + _reg;
-      let smo = Array.from( data.get('smo_local') ).find( item => item.code == _smo );
-      if ( Boolean(smo) ) {
-        card.smo_okato = smo.okato;
-        let o = Array.from( data.get('okato') ).find( item => item.okato == smo.okato );
-        e.target.value = `${o.region}. ${o.name.split(' ')[0]}`;
-        return false;
-      }
-    }
-    if (Boolean(e.target.value )) {
-      rg = e.target.value.split('.')[0];
-      card.smo_okato = Array.from(data.get('okato')).find(item => item.region.toString() == rg)['okato'];
-    }
-  };
+  const _set_smo_okato = set_smo_okato(data, card);
   // gets the name of option from Map by key
- 
   const get_name = function(val, key, prop, name) {
     return getName(data, val, key, prop, name, 'Неизвестный код', false);
   };
   
   return {
-    oninit() {
-      //model = attrs.model;
-      //data = model.data;
-      //console.log(model.data);
-      //console.log(model.map_data);
-      // will be locale object yet
-      //card = model.card ? Object.assign({}, model.card[0]) : {};
-      //method = attrs.method;
-      //console.log(card);
-    },
-
     view: function () {
       //console.log(method);
       //let crd= Boolean (model.talons);
@@ -229,20 +247,29 @@ const crdMain = function(vnode) {
               m(".pure-control-group", [cof('polis_num', card),
                 m('div.item_name', {style: "margin-left: 10em;"}, num_digits(card)),
               ]),
+              /*
               m(".pure-control-group", [
-                cof('smo', card, {onblur: set_smo}),
+                cof('smo', card, {onblur: _set_smo}),
                 m('span.item_name',
                   card.smo === null ? '':  get_name(card.smo + _reg, 'smo_local', 'code', 'short_name'))
-              ]),
+              ]),*/
 // --
+              m(".pure-control-group", [
+                m('label', { for: "smo"}, "Страховщик"),
+                m('select[name="smo"]',
+                  {tabindex: 11, value: card.smo, onchange: _set_smo}, [
+                  m('option[value=""]', ""),
+                  data.get('smo_local').map(s=> m('option', {value: s.code}, s.short_name))
+                ])
+              ]),
               m(".pure-control-group", [
                 m('label', { for: "smo_okato"}, "Регион"),
                 m('input[name="smo_okato"][type="text"]', {
-                  oncreate: v => set_smo_okato( { target: v.dom} ),
+                  oncreate: v => _set_smo_okato( { target: v.dom} ),
                   list:  "okato",
                   //value: card.smo_okato,
                   tabindex: "12",
-                  onblur: set_smo_okato
+                  onblur: _set_smo_okato
                 }),
                 //cof('smo_okato', card, {
                 //  oncreate: v => set_smo_okato({target: v.dom}),
