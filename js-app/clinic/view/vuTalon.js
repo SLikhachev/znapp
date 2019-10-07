@@ -87,25 +87,32 @@ const talForm = function (vnode) {
     data.get(table).map(c=> m('option', { value: `${c.id}. ${c.name.split(' ')[0]}`} ) ) );
   
   const set_istfin= e=> set_data(e, 'ist_fin', 'ist_fin', 'id');
-  const set_char= e=> set_data(e, 'char1', 'char_main', 'id');
+  const set_char1= e=> set_data(e, 'char1', 'char_main', 'id');
+  const set_char2= e=> set_data(e, 'char2', 'char_main', 'id');
   const set_ishod= e=> set_data(e, 'ishod', 'cishod', 'id');
   const set_result= e=> set_data(e, 'rslt', 'cresult', 'id');
   const set_travma= e=> set_data(e, 'travma_type', 'travma_type', 'id');
   
-  let dvs= tal.ds1;
-  const ds_model= { mkb: 'mkb10?code=like.', order_by: 'code', list: null, headers: { Range: '0-20' } };
-  const ds_check= { url: 'mkb10?code=eq.', order_by: 'code', list: null }
-  const set_diag= e=> {
-    dvs = e.target.value;
-    if ( diag.test(dvs) ) {
-      ds_model.url = `${ds_model.mkb}${dvs}*`;
-      return moModel.getList(ds_model);// .then(t=> console.log( ds_model.list ));
+  let ds1= tal.ds1, ds2= tal.ds2;
+  const ds1_model= { mkb: 'mkb10?code=like.', order_by: 'code', list: null, headers: { Range: '0-20' } };
+  const ds2_model= { mkb: 'mkb10?code=like.', order_by: 'code', list: null, headers: { Range: '0-20' } };
+  //const ds_check= { url: 'mkb10?code=eq.', order_by: 'code', list: null };
+  const set_ds= (ds, _model)=> e=> {
+    ds = e.target.value;
+    if ( diag.test(ds) ) {
+      _model.url = `${_model.mkb}${ds}*`;
+      return moModel.getList(_model);// .then(t=> console.log( ds_model.list ));
     }
     return false;
   };
-  const ds_show= ()=> {
-    let dsl= ds_model.list ? ds_model.list: [];
-    let ds= dsl.find(d=> tal.ds1 == d.code.trim() );
+  const set_ds1= set_ds(ds1, ds1_model);
+  const set_ds2= set_ds(ds2, ds2_model);
+  
+  const ds_show= tds=> {
+    //console.log(tds);
+    let dsl= ds1_model.list ? ds1_model.list: [];
+    let ds= dsl.find(d=> tds == d.code.trim() );
+    //console.log(ds);
     return ds ? ds.name: ''; // m('span.red', ' Диагноз? ');
   };
 
@@ -169,17 +176,16 @@ const talForm = function (vnode) {
         m('.pure-g', [
           m('.pure-u-3-24', [
             tof('ds1', tal, {
-              //pattern: dsp, // "[A-Z][0-9]{2}(\.[0-9]{1})?",
-              list: 'diags',
-              value: dvs,
-              oninput: set_diag
+              list: 'ds1',
+              value: tal.ds1,
+              oninput: set_ds1
               //onchange: set_diag
             }),
-            m('datalist[id="diags"]',
-              ds_model.list ? ds_model.list.map(d=> m('option', {value: d.code.trim()})) : []
+            m('datalist[id="ds1"]',
+              ds1_model.list ? ds1_model.list.map(d=> m('option', {value: d.code.trim()})) : []
             )
           ]),
-          m('.pure-u-3-24', [ tof('char1', tal, { list:  "char", onblur: set_char } ),
+          m('.pure-u-3-24', [ tof('char1', tal, { list:  "char", onblur: set_char1 } ),
             m('datalist[id="char"]',
               data.get('char_main').filter(c => c.id < 4).map(c=>
                 m('option', { value: `${c.id}. ${c.name.split(' ')[0]}` })
@@ -194,12 +200,20 @@ const talForm = function (vnode) {
           ]),
           m(".pure-u-10-24", {
               style: "padding-top: 2em ; font-size: 1.1em; font-weight: 500"
-            }, ds_show()
+            }, ds_show(tal.ds1)
           ),
         ]),
         m('.pure-g', [
-          m('.pure-u-3-24', tof('ds2', tal)),
-          m('.pure-u-3-24', tof('char2', tal)),
+          m('.pure-u-3-24', [tof('ds2', tal, {
+            list: 'ds2',
+            value: ds2,
+            oninput: set_ds2
+            }),
+            m('datalist[id="ds2"]',
+              ds2_model.list ? ds2_model.list.map(d=> m('option', {value: d.code.trim()})) : []
+            )
+          ]),
+          m('.pure-u-3-24', tof('char2', tal, { list:  "char", onblur: set_char2 } )),
           m('.pure-u-3-24', [ tof('travma_type', tal, { list:  "travma", onblur: set_travma }),
             data_list('travma', 'travma_type')
           ]),
