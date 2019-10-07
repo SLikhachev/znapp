@@ -556,7 +556,7 @@ const moModel = {
 
 // editable - array of string as [ 'add', 'edit', 'del' ]
 // change - editable fields names if any else all fields exclude id
-const restSprav$1 = {
+const restSprav = {
     // local
     get doctor() {
         return { url:"doctor", options: [ this.division, this.district ], order_by: 'code',
@@ -651,8 +651,8 @@ const moTalonsList = {
 };
 
 const talonOpt= {
-  options: [ restSprav$1.doctor, restSprav$1.ist_fin, restSprav$1.smo_local, restSprav$1.okato,
-    restSprav$1.purp, restSprav$1.chm, restSprav$1.cishod, restSprav$1.cresult, restSprav$1.travma ],
+  options: [ restSprav.doctor, restSprav.ist_fin, restSprav.smo_local, restSprav.okato,
+    restSprav.purp, restSprav.chm, restSprav.cishod, restSprav.cresult, restSprav.travma ],
   data: new Map(),
   error: null,
   getOptions() {
@@ -788,7 +788,7 @@ const moCardsList = {
 };
 
 const cardOpt= {
-  options: [restSprav$1.dul, restSprav$1.smo_local, restSprav$1.mo_local, restSprav$1.okato],
+  options: [restSprav.dul, restSprav.smo_local, restSprav.mo_local, restSprav.okato],
   data: new Map(),
   error: null,
   getOptions() {
@@ -902,6 +902,8 @@ const getFIO= s=> {
    let f= ['fam', 'im', 'ot'].map(k=> s[k]? s[k]: '');
    return `${f[0]} ${f[1]} ${f[2]}`;
 };
+
+const _num= num=> num ? num: 'Новый';
 
 // src/apps/view/vuApp.js
 
@@ -1184,7 +1186,7 @@ const fieldFrom = function (fromObj, field, data, to_attrs={}) {
     // third elem only for checkbox
     if (label.length > 2) {
       attrs.checked = attrs.checked ? attrs.checked :
-        attrs.fcheck ? attrs.fcheck(data[field]) : data[field] === 0;
+        attrs.fcheck ? attrs.fcheck(data[field]) : Boolean(data[field]);
       return m(lt, m(tg, attrs), label[1]);
     }
     return [ m(lt, label[1]),  m(tg, attrs)];
@@ -2169,6 +2171,43 @@ const talCrd = function (vnode) {
   }; // return
 };
 
+const talNapr= {
+ npr_mo: { label: ['', "Код МО"], input: {
+      tag: ['.pure-u-22-24', 'number', 1, true],
+      //attrs: { min: 0, max: 33}
+    }
+  },
+  npr_spec: { label: ['', "Спец"], input: {
+      tag: ['.pure-u-22-24', 'number', 1, true],
+      //attrs: { min: 0, max: 33}
+    }
+  },
+  naprlech: { label: ['', "Номер направления"], input: {
+      tag: ['.pure-u-22-24', 'number', 1, true],
+      //attrs: { min: 0, max: 33}
+    }
+  },
+  hosp_mo: { label: ['', "Код МО"], input: {
+      tag: ['.pure-u-22-24', 'number', 1, true],
+      //attrs: { min: 0, max: 33}
+    }
+  },
+  nsndhosp: { label: ['', "Номер направления"], input: {
+      tag: ['.pure-u-22-24', 'number', 1, true],
+      //attrs: { min: 0, max: 33}
+    }
+  },
+  extr: { label: ['', "Экстренно", 'check'], input: {
+      tag: ['', "checkbox", 6,  false],
+      attrs: {style: "margin-right: 0.7em"}
+    }
+  },
+};
+
+const tnf = function(field, data, to_attrs={}) {
+  return fieldFrom(talNapr, field, data, to_attrs);
+};
+
 const talNap = function(vnode) {
   let tal= vnode.attrs.model.talon;
 
@@ -2177,56 +2216,21 @@ const talNap = function(vnode) {
       return m("form.pure-form.pure-form-stacked.tcard",
         {style: "font-size: 1.2em;", id: "tal_nap"}, [
           m('fieldset', [
-            m('legend', `Талон № ${tal.tal_num}`),
+            m('legend', `Талон № ${_num(tal.tal_num)}`),
             m('legend.leg-sec', "Направление: лечение. диагностика, консультация"),
 
             m(".pure-g", [
-              m(".pure-u-2-24", [
-                m('label[for="npr_mo"]', "Код МО"),
-                m('input.pure-u-22-24[name="naprlech"][type="text"][placeholder=""]', {
-                  value: tal.npr_mo
-                })
-              ]),
-              m(".pure-u-2-24", [
-                m('label[for="npr_spec"]', "Спец"),
-                m('input.pure-u-22-24[name="npr_spec"][type="text"][placeholder=""]', {
-                  value: tal.npr_spec
-                })
-              ]),
-              m(".pure-u-5-24", [
-                m('label[for="naprlech"]', "Номер направления"),
-                m('input.pure-u-22-24[name="naprlech"][type="text"]', {
-                  value: tal.naprlech
-                })
-              ])
+              m(".pure-u-2-24", tnf('npr_mo', tal)),
+              m(".pure-u-2-24", tnf('npr_spec', tal)),
+              m(".pure-u-5-24", tnf('naprlech', tal)),
             ]),
             m('legend.leg-sec', "Госпитализация"),
 
             m(".pure-g", [
-              m(".pure-u-2-24", [
-                m('label[for="hosp_mo"]', "Код МО"),
-                m('input.pure-u-22-24[name="hosp_mo"][type="text"][placeholder=""]', {
-                  value: tal.hosp_mo
-                })
-              ]),
-              m(".pure-u-5-24", [
-                m('label[for="nsndhosp"]', "Номер направления"),
-                m('input.pure-u-22-24[name="nsndhosp"][type="text"]', {
-                  value: tal.nsndhosp
-                })
-              ]),
-              m(".pure-u-8-24", [
-                m('label[for="extr"]', { style: "margin-top: 2.2em;"}, [
-                  m('input[name="extr"][type="checkbox"]', {
-                    checked: tal.extr === 0 ? false : true,
-                //style: "margin: 1em, 0 0"
-                  }),
-                  "Экстренно",
-                ]),
-              ])
+              m(".pure-u-2-24", tnf('hosp_mo', tal)),
+              m(".pure-u-5-24", tnf('nsndhosp', tal)),
+              m(".pure-u-8-24", { style: "margin-top: 2.2em;"}, tnf('extr', tal)),
             ]),
-
-
           ])
         ]);
     }
@@ -2565,7 +2569,6 @@ const talPolis = function(vnode) {
 
 // src/clinic/view/vuTalon.js
 
-
 const toSaveTalon= tal=> {
     // SMO
   if ( tal.smo === null && tal.smo_okato === null)
@@ -2596,7 +2599,6 @@ const talForm = function (vnode) {
   
   let { model, method }= vnode.attrs;
   let tal= model.talon;
-  const tal_num= tal.tal_num ? tal.tal_num: 'Новый';
   const data= talonOpt.data;
   //console.log(data);
   const dsp= "^[A-Z][0-9]{2}(\.[0-9]{1,2})?$";
@@ -2651,6 +2653,7 @@ const talForm = function (vnode) {
     ds = e.target.value;
     if ( diag.test(ds) ) {
       _model.url = `${_model.mkb}${ds}*`;
+      //console.log(ds);
       return moModel.getList(_model);// .then(t=> console.log( ds_model.list ));
     }
     return false;
@@ -2689,7 +2692,7 @@ const talForm = function (vnode) {
 		m("form.pure-form.pure-form-stacked.tcard", { style: "font-size: 1.2em;",
       id: "talon", oncreate: forTabs, onsubmit: talonSave}, [
 			m('fieldset', [
-        m('legend', `Талон № ${tal_num}`),
+        m('legend', `Талон № ${_num(tal.tal_num)}`),
         //
         m(".pure-g", [
           m(".pure-u-4-24", tof('open_date', tal)),
@@ -2727,7 +2730,7 @@ const talForm = function (vnode) {
           m('.pure-u-3-24', [
             tof('ds1', tal, {
               list: 'ds1',
-              value: tal.ds1,
+              value: ds1,
               oninput: set_ds1
               //onchange: set_diag
             }),

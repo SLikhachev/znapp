@@ -14,7 +14,7 @@ import { talNap } from './vuTalNap.js';
 import { talPmu } from './vuTalPmu.js';
 import { talDs } from './vuTalDs.js';
 import { talPolis } from './vuTalPolis';
-
+import { _num } from './vuClinic';
 
 const toSaveTalon= tal=> {
     // SMO
@@ -46,7 +46,6 @@ const talForm = function (vnode) {
   
   let { model, method }= vnode.attrs;
   let tal= model.talon;
-  const tal_num= tal.tal_num ? tal.tal_num: 'Новый';
   const data= talonOpt.data;
   //console.log(data);
   const dsp= "^[A-Z][0-9]{2}(\.[0-9]{1,2})?$";
@@ -101,6 +100,7 @@ const talForm = function (vnode) {
     ds = e.target.value;
     if ( diag.test(ds) ) {
       _model.url = `${_model.mkb}${ds}*`;
+      //console.log(ds);
       return moModel.getList(_model);// .then(t=> console.log( ds_model.list ));
     }
     return false;
@@ -139,7 +139,7 @@ const talForm = function (vnode) {
 		m("form.pure-form.pure-form-stacked.tcard", { style: "font-size: 1.2em;",
       id: "talon", oncreate: forTabs, onsubmit: talonSave}, [
 			m('fieldset', [
-        m('legend', `Талон № ${tal_num}`),
+        m('legend', `Талон № ${_num(tal.tal_num)}`),
         //
         m(".pure-g", [
           m(".pure-u-4-24", tof('open_date', tal)),
@@ -177,7 +177,7 @@ const talForm = function (vnode) {
           m('.pure-u-3-24', [
             tof('ds1', tal, {
               list: 'ds1',
-              value: tal.ds1,
+              value: ds1,
               oninput: set_ds1
               //onchange: set_diag
             }),
