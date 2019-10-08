@@ -2,7 +2,7 @@
 // src/clinic/view/vuClinic.js
 
 import { moCard } from '../model/moCards.js';
-import { moTalon } from '../model/moTalons.js';
+import { moTalonsList, moTalon } from '../model/moTalons.js';
 
 export const vuClinic = function(vnode) {
   return {
@@ -38,4 +38,5 @@ export const getFIO= s=> {
    return `${f[0]} ${f[1]} ${f[2]}`;
 }
 
-export const _num= num=> num ? num: 'Новый';
+export const _Num= num=> num ? num: ''; //talon number
+export const _notEdit= moTalonsList.year == moTalonsList._year ? false: true; //talon editable

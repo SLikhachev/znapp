@@ -2,23 +2,26 @@
 import { moModel } from '../../apps/model/moModel.js';
 import { restSprav } from '../../sprav/spravApi';
 import { restClinic } from '../clinicApi.js';
-import { talonOpt } from '../model/moTalons.js';
+import { moTalonsList, talonOpt } from '../model/moTalons.js';
 import { ptf } from '../form/foForm.js';
+import { _Num, _notEdit } from './vuClinic'; //tal number
+
 
 
 const pmuForm = function (vnode) {
   
   let { talon, pmu }= vnode.attrs.model;
   // form fields
+  const _Disabled= _notEdit || !Boolean( _Num(talon.tal_num) );
   const fld= ['code_usl', 'ccode', 'grup'];
   // local form pmu obj
   const _pmu= {}, data= talonOpt.data;
   // local model obj
-  const md= { url: `${restClinic.para_clin.url}`, method: 'POST' };
+  const md= { url: moTalonsList.pmuTable(), method: 'POST' };
   
   const get_doc= spec=> {
     // if talon to this doctor spec then this doctor code
-    if ( !talon.doc_spec || !talon.doc_code) return 0;
+    if ( !talon.doc_spec || !talon.doc_code) return 0; //error
     if ( talon.doc_spec == spec) return talon.doc_code;
     // else first doc with this spec from all doctors
     let doc= Array.from(data.get('doctor')).find( d=> d.spec == spec);
@@ -27,7 +30,9 @@ const pmuForm = function (vnode) {
   };
   
   const preparePara= item=> {
+    //INPUT
     // item -> code_usl, name, code_podr, code_spec
+    // OUTPUT
     // para -> tal_num, date_usl, code_usl, kol_usl, exec_spec, exec_doc, exec_podr
     let exec_spec= parseInt( item.code_spec );
     
@@ -38,7 +43,7 @@ const pmuForm = function (vnode) {
     
     let exec_doc= get_doc(exec_spec);
     if ( ! Boolean( exec_doc ))
-      return { error: `Нет доктора по специальности: ${exec_spec}`}; //error   
+      return { error: `В МО нет доктора по специальности: ${exec_spec}`}; //error   
     
     return {
       tal_num: talon.tal_num, date_usl: talon.open_date,
@@ -56,14 +61,16 @@ const pmuForm = function (vnode) {
     if ( q.length === 0 )
       return false;
     else
-      q= q[0];
+      q= q[0]; // first finded
     
     let errors={};
+    // select by group
     if ( q == 'grup' ) {
       _pmu.url= restSprav.grc.url;
       _pmu.method= 'POST'
       return moModel.getViewRpc(_pmu, { grup: _pmu[q] } ).then(t=> {
-        if (_pmu.list.length === 0) return Promise.reject('Нет такой группы');
+        if (_pmu.list.length === 0)
+          return Promise.reject('Нет такой группы');
        
         let items= [];
         for ( let it of _pmu.list.values() ){
@@ -74,9 +81,9 @@ const pmuForm = function (vnode) {
           }
           delete item.error;
           items.push(item);
-        };
+        }
         if (items.length === 0) return Promise.reject('Плохая группа ');
-        // bulk insert
+        // bulk insert to table
         md.headers= {Prefer: 'return=representation'};
         return moModel.getViewRpc(md, items);
       }).then(t=> {
@@ -135,7 +142,7 @@ const pmuForm = function (vnode) {
               fld.map( f => m(".pure-u-1-4", ptf(f, _pmu) ) ),
               m(".pure-u-1-5", 
                 m('button.pure-button.pure-button-primary[type="submit"]',
-                  {style: 'margin-top: 1.7em'},
+                  {style: 'margin-top: 1.7em', disabled: _Disabled},
                   "Добавить")
               )
             ]))
@@ -155,9 +162,11 @@ const pmuForm = function (vnode) {
 export const talPmu = function(vnode) {
   
   let model= vnode.attrs.model;
+  let talon= model.talon;
   let pmu = model.pmu ? model.pmu: [];
   //tal_num int, date_usl date, code_usl varchar, kol_usl smallint,
   //exec_spec int, exec_doc int, exec_podr int, name varchar
+  let _Disabled= _notEdit || !Boolean( _Num(talon.tal_num) );
   let pmu_hdr = {
       ccode: ['Номер'],
       code_usl: ['Код услуги'],
@@ -167,6 +176,14 @@ export const talPmu = function(vnode) {
       exec_doc: ['Спец код'],
       exec_podr: ['Подр'],
       tarif: ['Тариф 5/2']
+  };
+  
+  const caption= ()=>{
+    if (_notEdit)
+      return 'Талоны прошлых лет не редактируем';
+    if ( ! Boolean( _Num(talon.tal_num) ) )
+      return 'Талон без номера, сначала сохраните новый талон';
+    return 'ПМУ текущего талона';
   };
   
   const kol_usl= e=> {
@@ -216,11 +233,11 @@ export const talPmu = function(vnode) {
         m('td', m('i.fa.fa-plus-circle.choice', {
           style: "color: green;",
           data: s.id,
-          onclick: add_kol_usl
+          onclick: _Disabled ? null: add_kol_usl
         }) ),
         m('td', m('i.fa.fa-minus-circle.choice.red', {
           data: s.id,
-          onclick: del_kol_usl
+          onclick: _Disabled ? null: del_kol_usl
         }) )
       ]) : '';
   };
@@ -231,6 +248,7 @@ export const talPmu = function(vnode) {
       return [
         m(pmuForm, { model }),
         m('table.pure-table.pure-table-bordered', [
+          m('caption', { style: "font-size: 1.2em; font-weight: 600" }, caption()),
           m('thead', hdrMap()),
           m('tbody', [pmu.map( listMap )] )
         ])

@@ -1,4 +1,7 @@
 
+import { _Num } from './vuClinic'; //tal number
+
+// not worked yet
 
 export const talDs = function(vnode) {
   let tal= vnode.attrs.model.talon;
@@ -8,7 +11,7 @@ export const talDs = function(vnode) {
       return m("form.pure-form.pure-form-stacked.tcard",
         {style: "font-size: 1.2em;", id: "tal_ds"}, [
           m('fieldset', [
-            m('legend', `Талон № ${tal.tal_num}`),
+            m('legend', `Талон № ${_Num(tal.tal_num)}`),
             m('legend.leg-sec', "Дневной стационар"),
             m(".pure-g", [
               m('.pure-u-2-24', [

@@ -14,16 +14,21 @@ import { talNap } from './vuTalNap.js';
 import { talPmu } from './vuTalPmu.js';
 import { talDs } from './vuTalDs.js';
 import { talPolis } from './vuTalPolis';
-import { _num } from './vuClinic';
+import { _Num, _notEdit } from './vuClinic'; //tal number
 
 const toSaveTalon= tal=> {
-    // SMO
+ // doctor
+ // ambul - stac days together
+ // napr ambul, stac together
+ // napr MO code
+ // napr cpec ambul
+ // polis talona
+ // SMO
   if ( tal.smo === null && tal.smo_okato === null)
     return 'Укажите либо СМО либо СМО ОКАТО';
   return '';
+  // redirect to new saved talon
 };
-  
-let edit= moTalonsList.year == moTalonsList._year ? false: true;
 
 /*
 const card_fileds = [
@@ -139,7 +144,7 @@ const talForm = function (vnode) {
 		m("form.pure-form.pure-form-stacked.tcard", { style: "font-size: 1.2em;",
       id: "talon", oncreate: forTabs, onsubmit: talonSave}, [
 			m('fieldset', [
-        m('legend', `Талон № ${_num(tal.tal_num)}`),
+        m('legend', `Талон № ${_Num(tal.tal_num)}`),
         //
         m(".pure-g", [
           m(".pure-u-4-24", tof('open_date', tal)),
@@ -224,7 +229,7 @@ const talForm = function (vnode) {
       m('fieldset', { style: "padding-left: 0%;" }, [
 				m('.pure-u-3-24', { style: "margin-top: 5px;" }, 
           m('button.pure-button.pure-button-primary[type="submit"]',
-            { style: "font-size: 1.1em", disabled: edit 
+            { style: "font-size: 1.1em", disabled: _notEdit
               //onclick: talonSave
             },
           "Сохранить" )

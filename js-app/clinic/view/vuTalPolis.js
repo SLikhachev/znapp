@@ -2,6 +2,7 @@
 import { talonOpt } from '../model/moTalons.js';
 import { cof } from '../form/foForm.js';
 import { num_digits, sel_smo, set_smo_okato } from './vuCard'; 
+import { _Num } from './vuClinic'; //tal number
 
 export const talPolis = function(vnode) {
   //let tal= vnode.attrs.model.talon;
@@ -15,7 +16,7 @@ export const talPolis = function(vnode) {
       return m("form.pure-form.pure-form-aligned.tcard",
         {style: "font-size: 1.2em;", id: "tal_polis" }, [
         m('fieldset', [
-          m('legend', 'Талон № ', tal.tal_num ? tal.tal_num: 'Новый'),
+          m('legend', `Талон № ${_Num(tal.tal_num)}`),
           m('legend.leg-sec', "Полис на дату визита"),
           m(".pure-control-group", cof('polis_ser', tal)),
           m(".pure-control-group", [ cof('polis_num', tal),

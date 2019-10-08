@@ -903,7 +903,8 @@ const getFIO= s=> {
    return `${f[0]} ${f[1]} ${f[2]}`;
 };
 
-const _num= num=> num ? num: 'Новый';
+const _Num= num=> num ? num: ''; //talon number
+const _notEdit= moTalonsList.year == moTalonsList._year ? false: true; //talon editable
 
 // src/apps/view/vuApp.js
 
@@ -2216,7 +2217,7 @@ const talNap = function(vnode) {
       return m("form.pure-form.pure-form-stacked.tcard",
         {style: "font-size: 1.2em;", id: "tal_nap"}, [
           m('fieldset', [
-            m('legend', `Талон № ${_num(tal.tal_num)}`),
+            m('legend', `Талон № ${_Num(tal.tal_num)}`),
             m('legend.leg-sec', "Направление: лечение. диагностика, консультация"),
 
             m(".pure-g", [
@@ -2241,15 +2242,16 @@ const pmuForm = function (vnode) {
   
   let { talon, pmu }= vnode.attrs.model;
   // form fields
+  const _Disabled= _notEdit || !Boolean( _Num(talon.tal_num) );
   const fld= ['code_usl', 'ccode', 'grup'];
   // local form pmu obj
   const _pmu= {}, data= talonOpt.data;
   // local model obj
-  const md= { url: `${restClinic.para_clin.url}`, method: 'POST' };
+  const md= { url: moTalonsList.pmuTable(), method: 'POST' };
   
   const get_doc= spec=> {
     // if talon to this doctor spec then this doctor code
-    if ( !talon.doc_spec || !talon.doc_code) return 0;
+    if ( !talon.doc_spec || !talon.doc_code) return 0; //error
     if ( talon.doc_spec == spec) return talon.doc_code;
     // else first doc with this spec from all doctors
     let doc= Array.from(data.get('doctor')).find( d=> d.spec == spec);
@@ -2258,7 +2260,9 @@ const pmuForm = function (vnode) {
   };
   
   const preparePara= item=> {
+    //INPUT
     // item -> code_usl, name, code_podr, code_spec
+    // OUTPUT
     // para -> tal_num, date_usl, code_usl, kol_usl, exec_spec, exec_doc, exec_podr
     let exec_spec= parseInt( item.code_spec );
     
@@ -2269,7 +2273,7 @@ const pmuForm = function (vnode) {
     
     let exec_doc= get_doc(exec_spec);
     if ( ! Boolean( exec_doc ))
-      return { error: `Нет доктора по специальности: ${exec_spec}`}; //error   
+      return { error: `В МО нет доктора по специальности: ${exec_spec}`}; //error   
     
     return {
       tal_num: talon.tal_num, date_usl: talon.open_date,
@@ -2287,14 +2291,16 @@ const pmuForm = function (vnode) {
     if ( q.length === 0 )
       return false;
     else
-      q= q[0];
+      q= q[0]; // first finded
     
     let errors={};
+    // select by group
     if ( q == 'grup' ) {
       _pmu.url= restSprav.grc.url;
       _pmu.method= 'POST';
       return moModel.getViewRpc(_pmu, { grup: _pmu[q] } ).then(t=> {
-        if (_pmu.list.length === 0) return Promise.reject('Нет такой группы');
+        if (_pmu.list.length === 0)
+          return Promise.reject('Нет такой группы');
        
         let items= [];
         for ( let it of _pmu.list.values() ){
@@ -2305,8 +2311,9 @@ const pmuForm = function (vnode) {
           }
           delete item.error;
           items.push(item);
-        }        if (items.length === 0) return Promise.reject('Плохая группа ');
-        // bulk insert
+        }
+        if (items.length === 0) return Promise.reject('Плохая группа ');
+        // bulk insert to table
         md.headers= {Prefer: 'return=representation'};
         return moModel.getViewRpc(md, items);
       }).then(t=> {
@@ -2365,7 +2372,7 @@ const pmuForm = function (vnode) {
               fld.map( f => m(".pure-u-1-4", ptf(f, _pmu) ) ),
               m(".pure-u-1-5", 
                 m('button.pure-button.pure-button-primary[type="submit"]',
-                  {style: 'margin-top: 1.7em'},
+                  {style: 'margin-top: 1.7em', disabled: _Disabled},
                   "Добавить")
               )
             ]))
@@ -2385,9 +2392,11 @@ const pmuForm = function (vnode) {
 const talPmu = function(vnode) {
   
   let model= vnode.attrs.model;
+  let talon= model.talon;
   let pmu = model.pmu ? model.pmu: [];
   //tal_num int, date_usl date, code_usl varchar, kol_usl smallint,
   //exec_spec int, exec_doc int, exec_podr int, name varchar
+  let _Disabled= _notEdit || !Boolean( _Num(talon.tal_num) );
   let pmu_hdr = {
       ccode: ['Номер'],
       code_usl: ['Код услуги'],
@@ -2397,6 +2406,14 @@ const talPmu = function(vnode) {
       exec_doc: ['Спец код'],
       exec_podr: ['Подр'],
       tarif: ['Тариф 5/2']
+  };
+  
+  const caption= ()=>{
+    if (_notEdit)
+      return 'Талоны прошлых лет не редактируем';
+    if ( ! Boolean( _Num(talon.tal_num) ) )
+      return 'Талон без номера, сначала сохраните новый талон';
+    return 'ПМУ текущего талона';
   };
   
   const kol_usl= e=> {
@@ -2446,11 +2463,11 @@ const talPmu = function(vnode) {
         m('td', m('i.fa.fa-plus-circle.choice', {
           style: "color: green;",
           data: s.id,
-          onclick: add_kol_usl
+          onclick: _Disabled ? null: add_kol_usl
         }) ),
         m('td', m('i.fa.fa-minus-circle.choice.red', {
           data: s.id,
-          onclick: del_kol_usl
+          onclick: _Disabled ? null: del_kol_usl
         }) )
       ]) : '';
   };
@@ -2461,6 +2478,7 @@ const talPmu = function(vnode) {
       return [
         m(pmuForm, { model }),
         m('table.pure-table.pure-table-bordered', [
+          m('caption', { style: "font-size: 1.2em; font-weight: 600" }, caption()),
           m('thead', hdrMap()),
           m('tbody', [pmu.map( listMap )] )
         ])
@@ -2468,6 +2486,8 @@ const talPmu = function(vnode) {
     }
   };
 };
+
+// not worked yet
 
 const talDs = function(vnode) {
   let tal= vnode.attrs.model.talon;
@@ -2477,7 +2497,7 @@ const talDs = function(vnode) {
       return m("form.pure-form.pure-form-stacked.tcard",
         {style: "font-size: 1.2em;", id: "tal_ds"}, [
           m('fieldset', [
-            m('legend', `Талон № ${tal.tal_num}`),
+            m('legend', `Талон № ${_Num(tal.tal_num)}`),
             m('legend.leg-sec', "Дневной стационар"),
             m(".pure-g", [
               m('.pure-u-2-24', [
@@ -2531,7 +2551,7 @@ const talPolis = function(vnode) {
       return m("form.pure-form.pure-form-aligned.tcard",
         {style: "font-size: 1.2em;", id: "tal_polis" }, [
         m('fieldset', [
-          m('legend', 'Талон № ', tal.tal_num ? tal.tal_num: 'Новый'),
+          m('legend', `Талон № ${_Num(tal.tal_num)}`),
           m('legend.leg-sec', "Полис на дату визита"),
           m(".pure-control-group", cof('polis_ser', tal)),
           m(".pure-control-group", [ cof('polis_num', tal),
@@ -2575,8 +2595,6 @@ const toSaveTalon= tal=> {
     return 'Укажите либо СМО либо СМО ОКАТО';
   return '';
 };
-  
-let edit$1= moTalonsList.year == moTalonsList._year ? false: true;
 
 /*
 const card_fileds = [
@@ -2692,7 +2710,7 @@ const talForm = function (vnode) {
 		m("form.pure-form.pure-form-stacked.tcard", { style: "font-size: 1.2em;",
       id: "talon", oncreate: forTabs, onsubmit: talonSave}, [
 			m('fieldset', [
-        m('legend', `Талон № ${_num(tal.tal_num)}`),
+        m('legend', `Талон № ${_Num(tal.tal_num)}`),
         //
         m(".pure-g", [
           m(".pure-u-4-24", tof('open_date', tal)),
@@ -2777,7 +2795,7 @@ const talForm = function (vnode) {
       m('fieldset', { style: "padding-left: 0%;" }, [
 				m('.pure-u-3-24', { style: "margin-top: 5px;" }, 
           m('button.pure-button.pure-button-primary[type="submit"]',
-            { style: "font-size: 1.1em", disabled: edit$1 
+            { style: "font-size: 1.1em", disabled: _notEdit
               //onclick: talonSave
             },
           "Сохранить" )
