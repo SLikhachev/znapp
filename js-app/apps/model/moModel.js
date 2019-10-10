@@ -123,8 +123,10 @@ export const moModel = {
     //morder= model.order ? model.order : 'id';
     //order= `?order=${morder}.asc`;
     model.options.forEach ( t => {
-      let morder= t.order_by ? t.order_by : 'id';
-      let order= `?order=${morder}.asc`;
+      let id= t.order_by ? t.order_by : 'id';
+      let sign= t.url.includes('?') ? '&': '?';
+      let order = `${sign}order=${id}.asc`;
+      
       let r = m.request({
         method: t.method ? t.method : "GET" ,
         url: schema + t.url + order
@@ -136,14 +138,17 @@ export const moModel = {
       model.data.clear(); // = new Map();
       
       for ( let el of model.options.entries() ) {
-        if ( ! Boolean( lists[ el[0] ] ) ) continue;
-        model.data.set( el[1].url, lists[ el[0] ]);
+        // entries [ idx, value ]
+        if ( ! Boolean( lists[ el[0] ] ) ) continue; // no data for this option
+        model.data.set( el[1].url, lists[ el[0] ]); // el[1] option object
       }
       //window.localStorage.setItem(model.opt_name, model.data);
       //model.data = _.zipObject( model.options, lists);
       //console.log( model.list );
+      return true;
     }).catch(function(err) {
       model.error = errMsg(err);
+      throw model.error;
     });
     
   },

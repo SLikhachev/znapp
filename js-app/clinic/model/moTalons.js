@@ -41,9 +41,9 @@ export const talonOpt= {
     restSprav.purp, restSprav.chm, restSprav.cishod, restSprav.cresult, restSprav.travma ],
   data: new Map(),
   error: null,
-  getOptions() {
-    if (this.data && this.data.size && this.data.size !== 0) return;
-    moModel.getData( talonOpt );
+  getOptions: async function() {
+    if (this.data && this.data.size && this.data.size !== 0) return true;
+    await moModel.getData( talonOpt );
   }
 }
 

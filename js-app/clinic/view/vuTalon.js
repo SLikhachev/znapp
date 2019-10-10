@@ -3,7 +3,7 @@
 import { vuDialog } from '../../apps/view/vuDialog.js';
 import { vuLoading } from '../../apps/view/vuApp.js';
 import { moModel } from '../../apps/model/moModel.js';
-//import { restSprav } from '../../sprav/spravApi.js';
+import { restSprav } from '../../sprav/spravApi.js';
 import { clinicApi, restClinic } from '../clinicApi.js';
 import { moTalonsList, moTalon, talonOpt } from '../model/moTalons.js';
 import { tabsView, forTabs } from './vuTabs.js';
@@ -16,19 +16,57 @@ import { talDs } from './vuTalDs.js';
 import { talPolis } from './vuTalPolis';
 import { _Num, _notEdit } from './vuClinic'; //tal number
 
-const toSaveTalon= tal=> {
- // doctor
- // ambul - stac days together
- // napr ambul, stac together
- // napr MO code
- // napr cpec ambul
- // polis talona
- // SMO
-  if ( tal.smo === null && tal.smo_okato === null)
-    return 'Укажите либо СМО либо СМО ОКАТО';
+const toSaveTalon= async function (tal, check) {
+  // Doct Oms
+  let e1= { fin: 'Укажите способ оплаты ', doct: 'Укажите доктора '};
+  let r1= Object.keys(e1).map( p=> !check[p] ? e1[p] : '').join('');
+  if ( Boolean(r1) )
+    return r1;
+
+  // polis talona
+  if ( Boolean( tal.polis_num ))
+    // SMO
+    if ( !tal.smo && !tal.smo_okato)
+      return 'Укажите либо СМО либо СМО ОКАТО';
+    
+  // ambul - stac days together
+  let amb= Number(tal.visit_pol) + Number(tal.visit_home);
+  let ds=  Number(tal.visit_daystac) + Number(tal.visit_homstac);
+  if ( Boolean(amb) && Boolean(ds) )
+    return 'Амбулвторный и ДС прием одновременно';
+    
+  // napr ambul, stac together
+  let cons= Booelean(tal.naprlech), hosp= Boolean(tal.nsndhosp);
+  if ( cons && hosp ) 
+    return 'Госпиьализация и Консутльтация одновременно';
+  
+  // napr MO code
+  // napr spec ambul
+  
+  let mo=0, spec=0;
+  if (cons || hosp) {
+    mo= cons ? Number(tal.npr_mo): Number(tal.hosp_mo);
+    spec= cons ? Number(tal.npr_spec): 0;
+    let opt= [ { url: `${restSprav.mo_local}?code=eq.${mo}` } ];
+    if ( cons )
+      opt.push( { url: `${restSprav.doc_spec}?spec=eq.${spec}` } );
+    let m= { options: opt, data: new Map() };
+    try {
+      let r= '';
+      let t= await moModel.getData(m);
+      if (m.get(restSprav.mo_local.url).length === 0)
+        r += 'Неверный код МО направления ';
+      if (cons)
+        if (m.get(restSprav.doc_spec.url).length === 0)
+          r += 'Неверный код Специалиста направления';
+      if ( Boolean (r) )
+        return r;
+    } catch (e) {
+      return e;
+    }
+  }
   return '';
-  // redirect to new saved talon
-};
+}
 
 /*
 const card_fileds = [
@@ -53,22 +91,23 @@ const talForm = function (vnode) {
   let tal= model.talon;
   const data= talonOpt.data;
   //console.log(data);
+  const check= {};
   const dsp= "^[A-Z][0-9]{2}(\.[0-9]{1,2})?$";
   const diag= new RegExp( dsp );
   const get_name=
     (val, key, prop, name, text, _word)=> getName( data, val, key, prop, name, text, _word );
   
   const doc_fam= ()=> {
-    let doc, fin='';
-    //let fin= get_name(tal.ist_fin, 'ist_fin', 'id', 'name', 'Оплата?', false);
-    //console.log(fin)
+    let doc;
+    check.fin= data.get('ist_fin').find( f=> tal.ist_fin == f.id );
     let purp= get_name(tal.purp, 'purpose', 'id', 'name', 'Цель?', true);
-    let doct= Array.from(data.get('doctor')).find( d=> d.spec == tal.doc_spec && d.code == tal.doc_code );
-    if ( Boolean(doct) && Boolean(doct.family) )
-      doc= m('span', doct.family);
-    else
-      doc= m('span.red', ' Доктор? ')
-    return Array.of(fin, purp, doc);
+    check.doct= data.get('doctor').find( d=> d.spec == tal.doc_spec && d.code == tal.doc_code );
+    if ( Boolean(check.doct) && Boolean(check.doct.family) )
+      doc= m('span', check.doct.family);
+    else 
+      doc= m('span.red', ' Доктор? ');
+    
+    return Array.of('', purp, doc);
   };
   // c_zab (1,2,3) if ds1 <> Z
   //ishod ()
@@ -121,13 +160,14 @@ const talForm = function (vnode) {
     return ds ? ds.name: ''; // m('span.red', ' Диагноз? ');
   };
 
-  const talonSave = function(e) {
+  const talonSave = async function(e) {
     e.preventDefault();
-    model.save= toSaveTalon(tal);
+    model.save= await toSaveTalon(tal, check);
     if ( Boolean( model.save ) ) {
       vuDialog.open();
       return false;
     }
+    return false;
     //model.save= null;
     return moTalon.saveTalon(e, model, method).then(t=>
        m.route.set([clinicApi.talons])
