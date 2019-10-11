@@ -5,9 +5,11 @@ import { num_digits, sel_smo, set_smo_okato } from './vuCard';
 import { _Num } from './vuClinic'; //tal number
 
 export const talPolis = function(vnode) {
-  //let tal= vnode.attrs.model.talon;
+  
+  let tal= vnode.attrs.model.talon;
   const data= talonOpt.data;
-  let tal= { smo: null, smo_okato: null, polis_ser: null, polis_num:null, polis_type: null};
+  //let tal= { smo: null, smo_okato: null, polis_ser: null, polis_num:null, polis_type: null};
+  
   const _set_smo= sel_smo(tal);
   const _set_smo_okato = set_smo_okato(data, tal);
   

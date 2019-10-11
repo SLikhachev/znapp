@@ -14,7 +14,8 @@ export const restClinic = {
     get_talon: { url:"rpc/get_talon_by_num", method:"POST"},
 
     get_pmu: { url:"rpc/get_tal_pmu", method:"POST"},
-    get_polis: { url:"rpc/get_tal_polis", method: "POST" },
+    // now current polis in talon inclided
+    //get_polis: { url:"rpc/get_tal_polis", method: "POST" },
     para_clin: { url: "para_clin"},
 };
 

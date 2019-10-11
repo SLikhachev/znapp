@@ -1,6 +1,10 @@
 
 import { _Num } from './vuClinic'; //tal number
 
+const foDs= {
+  
+}
+
 // not worked yet
 
 export const talDs = function(vnode) {

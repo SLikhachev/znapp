@@ -32,11 +32,12 @@ const toSaveTalon= async function (tal, check) {
   // ambul - stac days together
   let amb= Number(tal.visit_pol) + Number(tal.visit_home);
   let ds=  Number(tal.visit_daystac) + Number(tal.visit_homstac);
+  //console.log( amb, ds);
   if ( Boolean(amb) && Boolean(ds) )
     return 'Амбулвторный и ДС прием одновременно';
     
   // napr ambul, stac together
-  let cons= Booelean(tal.naprlech), hosp= Boolean(tal.nsndhosp);
+  let cons= Boolean(tal.naprlech), hosp= Boolean(tal.nsndhosp);
   if ( cons && hosp ) 
     return 'Госпиьализация и Консутльтация одновременно';
   
@@ -47,9 +48,9 @@ const toSaveTalon= async function (tal, check) {
   if (cons || hosp) {
     mo= cons ? Number(tal.npr_mo): Number(tal.hosp_mo);
     spec= cons ? Number(tal.npr_spec): 0;
-    let opt= [ { url: `${restSprav.mo_local}?code=eq.${mo}` } ];
+    let opt= [ { url: `${restSprav.mo_local.url}?code=eq.${mo}` } ];
     if ( cons )
-      opt.push( { url: `${restSprav.doc_spec}?spec=eq.${spec}` } );
+      opt.push( { url: `${restSprav.doc_spec.url}?spec=eq.${spec}`, order_by: 'spec' } );
     let m= { options: opt, data: new Map() };
     try {
       let r= '';
@@ -59,6 +60,7 @@ const toSaveTalon= async function (tal, check) {
       if (cons)
         if (m.get(restSprav.doc_spec.url).length === 0)
           r += 'Неверный код Специалиста направления';
+      console.log(r);
       if ( Boolean (r) )
         return r;
     } catch (e) {
@@ -163,6 +165,7 @@ const talForm = function (vnode) {
   const talonSave = async function(e) {
     e.preventDefault();
     model.save= await toSaveTalon(tal, check);
+    console.log( model.save );
     if ( Boolean( model.save ) ) {
       vuDialog.open();
       return false;

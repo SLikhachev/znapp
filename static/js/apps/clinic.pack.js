@@ -171,7 +171,8 @@ const restClinic = {
     get_talon: { url:"rpc/get_talon_by_num", method:"POST"},
 
     get_pmu: { url:"rpc/get_tal_pmu", method:"POST"},
-    get_polis: { url:"rpc/get_tal_polis", method: "POST" },
+    // now current polis in talon inclided
+    //get_polis: { url:"rpc/get_tal_polis", method: "POST" },
     para_clin: { url: "para_clin"},
 };
 
@@ -670,8 +671,9 @@ const moTalon = {
   
   getModel() {
     const model= {
-      url: [restClinic.get_talon.url, restClinic.get_pmu.url, restClinic.get_polis.url],
-      method: [restClinic.get_talon.method,  restClinic.get_pmu.method, restClinic.get_polis.method],
+      // current polis included in talon
+      url: [restClinic.get_talon.url, restClinic.get_pmu.url], //restClinic.get_polis.url],
+      method: [restClinic.get_talon.method,  restClinic.get_pmu.method], //restClinic.get_polis.method],
       map_keys: ['talon', 'pmu', 'polis'],
       talon: null,
       card: null,
@@ -689,10 +691,10 @@ const moTalon = {
     if ( !isNaN(tal) && tal !== 0) {
       const t1= { tbl: moTalonsList.talTable(), _tal: tal };
       const t2= { tbl: moTalonsList.pmuTable(), _tal: tal };
-      const t3= { tyear: moTalonsList._year, _tal: tal };
+      //const t3= { tyear: moTalonsList._year, _tal: tal };
       // exisiting talon? card will be fetched within talon record
       return moModel.getViewRpcMap(
-        model, [ t1, t2, t3 ]
+        model, [ t1, t2 ]
       ).then( t => moTalon.prepare( model )  );//.catch(e => alert(e));
     }
     // get card only to new talon
@@ -737,7 +739,8 @@ const moTalon = {
     model.card= c; // rewrites and this is not a list
     // prepare talon
     model.talon= model.talon ? moTalon.to_talon(model.talon[0], card_fileds) : {};
-    if (model.pmu === null)  model.pmu=[];
+    if ( ! Boolean(model.pmu) )
+      model.pmu=[];
   },
   
   saveTalon(event, model, method) {
@@ -1490,9 +1493,9 @@ const checkDost = card=> {
 
 const num_digits = function(card) {
     let s= 0, n= 0;
-    if ( card.polis_ser !== null)
+    if ( Boolean(card.polis_ser) )
       s= card.polis_ser.toString().length;
-    if ( card.polis_num !== null)
+    if ( Boolean(card.polis_num) )
       n= card.polis_num.toString().length;
     try {
       if (s === 0 && n === 16) {
@@ -2545,9 +2548,11 @@ const talDs = function(vnode) {
 };
 
 const talPolis = function(vnode) {
-  //let tal= vnode.attrs.model.talon;
+  
+  let tal= vnode.attrs.model.talon;
   const data= talonOpt.data;
-  let tal= { smo: null, smo_okato: null, polis_ser: null, polis_num:null, polis_type: null};
+  //let tal= { smo: null, smo_okato: null, polis_ser: null, polis_num:null, polis_type: null};
+  
   const _set_smo= sel_smo(tal);
   const _set_smo_okato = set_smo_okato(data, tal);
   
@@ -2610,11 +2615,12 @@ const toSaveTalon= async function (tal, check) {
   // ambul - stac days together
   let amb= Number(tal.visit_pol) + Number(tal.visit_home);
   let ds=  Number(tal.visit_daystac) + Number(tal.visit_homstac);
+  //console.log( amb, ds);
   if ( Boolean(amb) && Boolean(ds) )
     return 'Амбулвторный и ДС прием одновременно';
     
   // napr ambul, stac together
-  let cons= Booelean(tal.naprlech), hosp= Boolean(tal.nsndhosp);
+  let cons= Boolean(tal.naprlech), hosp= Boolean(tal.nsndhosp);
   if ( cons && hosp ) 
     return 'Госпиьализация и Консутльтация одновременно';
   
@@ -2625,9 +2631,9 @@ const toSaveTalon= async function (tal, check) {
   if (cons || hosp) {
     mo= cons ? Number(tal.npr_mo): Number(tal.hosp_mo);
     spec= cons ? Number(tal.npr_spec): 0;
-    let opt= [ { url: `${restSprav.mo_local}?code=eq.${mo}` } ];
+    let opt= [ { url: `${restSprav.mo_local.url}?code=eq.${mo}` } ];
     if ( cons )
-      opt.push( { url: `${restSprav.doc_spec}?spec=eq.${spec}` } );
+      opt.push( { url: `${restSprav.doc_spec.url}?spec=eq.${spec}`, order_by: 'spec' } );
     let m= { options: opt, data: new Map() };
     try {
       let r= '';
@@ -2637,6 +2643,7 @@ const toSaveTalon= async function (tal, check) {
       if (cons)
         if (m.get(restSprav.doc_spec.url).length === 0)
           r += 'Неверный код Специалиста направления';
+      console.log(r);
       if ( Boolean (r) )
         return r;
     } catch (e) {
@@ -2741,6 +2748,7 @@ const talForm = function (vnode) {
   const talonSave = async function(e) {
     e.preventDefault();
     model.save= await toSaveTalon(tal, check);
+    console.log( model.save );
     if ( Boolean( model.save ) ) {
       vuDialog.open();
       return false;

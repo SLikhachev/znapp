@@ -24,9 +24,9 @@ export const checkDost = card=> {
 
 export const num_digits = function(card) {
     let s= 0, n= 0;
-    if ( card.polis_ser !== null)
+    if ( Boolean(card.polis_ser) )
       s= card.polis_ser.toString().length;
-    if ( card.polis_num !== null)
+    if ( Boolean(card.polis_num) )
       n= card.polis_num.toString().length;
     try {
       if (s === 0 && n === 16) {
