@@ -2631,17 +2631,20 @@ const toSaveTalon= async function (tal, check) {
   if (cons || hosp) {
     mo= cons ? Number(tal.npr_mo): Number(tal.hosp_mo);
     spec= cons ? Number(tal.npr_spec): 0;
-    let opt= [ { url: `${restSprav.mo_local.url}?code=eq.${mo}` } ];
+    let _mo_url= `${restSprav.mo_local.url}?scode=eq.${mo}`;
+    let _spec_url= `${restSprav.doc_spec.url}?spec=eq.${spec}`;
+    let opt= [ { url: _mo_url } ];
     if ( cons )
-      opt.push( { url: `${restSprav.doc_spec.url}?spec=eq.${spec}`, order_by: 'spec' } );
-    let m= { options: opt, data: new Map() };
+      opt.push( { url: _spec_url, order_by: 'spec' } );
+    let _mdl= { options: opt, data: new Map() };
     try {
       let r= '';
-      let t= await moModel.getData(m);
-      if (m.get(restSprav.mo_local.url).length === 0)
+      let t= await moModel.getData(_mdl);
+      //console.log(_mdl);
+      if (_mdl.data.get(_mo_url).length === 0)
         r += 'Неверный код МО направления ';
       if (cons)
-        if (m.get(restSprav.doc_spec.url).length === 0)
+        if (_mdl.data.get(_spec_url).length === 0)
           r += 'Неверный код Специалиста направления';
       console.log(r);
       if ( Boolean (r) )
