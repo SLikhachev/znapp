@@ -1,13 +1,19 @@
 // src/report/view/vuHosp.js
 
+import { _month } from '../../apps/model/moModel.js';
 import { vuTheader } from '../../apps/view/vuApp.js';
-import { taskApi } from '../reportApi.js';
+import { taskReport } from '../reportApi.js';
 import { task_rest, moModel } from '../model/moModel.js';
 
 const fileForm = function(vnode) {
   
   const model = vnode.attrs.model;
   //console.log(model);
+  const data= {
+    month: _month(),
+    _get: taskReport.hosp.get_url,
+    _post: taskReport.hosp.post_url,
+  };
   
   const on_form_submit = function (event) {
     event.preventDefault();
@@ -34,27 +40,16 @@ const fileForm = function(vnode) {
     vnode.dom.addEventListener('submit', on_form_submit);
   };
   
-  const get_href = function(vnode, model) {
-    return task_rest + vnode.state.task_get_url + model.file;
-  }
+  const get_href = file=> `${task_rest}${data._get}${file}`;
   
   return {
   
-  oninit(vnode) {
-    vnode.state.task_get_url = taskApi.hosp.get_url;
-    vnode.state.task_post_url = taskApi.hosp.post_url;
-     vnode.state.month = () => {
-      let d = new Date(), y = d.getFullYear(), m = d.getMonth() + 1;
-        return `${y.toString()}-${m.toString()}`;
-    }
-  },
-  
-  view(vnode) {
+    view() {
     //console.log(model);
     return m('.pure-g', [
       m('.pure-u-1-3', [
         m('form.pure-form.pure-form-stacked', 
-            { action: vnode.state.task_post_url,
+            { action: data._post,
               method: 'POST',
               oncreate: on_form_create
             }, [
@@ -69,7 +64,7 @@ const fileForm = function(vnode) {
             m('.pure-control-group', [
               m('label[for=month]', 'Месяц'),
               m('input.fname[id="month"][type="month"][name="month"][reqired=required]',
-                 { value: vnode.state.month() }
+                 { value: data.month }
               )
             ]),
             m('.pure-controls', [
@@ -91,7 +86,7 @@ const fileForm = function(vnode) {
             model.done ? m('div', [
               m('h4.blue', model.message),
               m('span.blue', {style: "font-size: 1.2em"}, "Файл отчета: "),
-              m('a.pure-button', {href: get_href( vnode, model ), style: "font-size: 1.2 em"}, model.file ) 
+              m('a.pure-button', {href: get_href( model.file ), style: "font-size: 1.2 em"}, model.file ) 
            ]) : m('div', [
               m('h4.blue', model.message),
               m('span.blue', {style: "font-size: 1.2em"}, "Исходный файл: ", model.file )

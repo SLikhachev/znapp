@@ -1,10 +1,10 @@
 
 // src/report/model/moModel.js
 
-const pg_rest = window.localStorage.getItem('pg_rest'); //task schemaRest;
-const task_rest = window.localStorage.getItem('task_rest'); //task schemaRest;
+export const pg_rest = window.localStorage.getItem('pg_rest'); //task schemaRest;
+export const task_rest = window.localStorage.getItem('task_rest'); //task schemaRest;
 
-const moModel = {
+export const moModel = {
   
   getModel( url=null, sort_by=null ) {
     //console.log(url);
@@ -65,7 +65,7 @@ const moModel = {
         m.request({
             method: method,
             url: task_rest + upurl + get_param,
-            data: data,
+            body: data,
         }).then((res) => {
             if (res.file) {
                 model.file = res.file;
@@ -82,4 +82,3 @@ const moModel = {
         return false;
     }
 }
-export { task_rest, moModel }

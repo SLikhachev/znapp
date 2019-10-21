@@ -1,11 +1,11 @@
 
 // src/report/reportApi.js
 
-const pgRest = {
+export const restReport = {
     volum: 'p146_report?insurer=eq.999&this_year=eq.2019&order=this_month.asc',
 }
 
-const taskApi = {
+export const taskReport = {
     
     hosp: {
         post_url: "/report/common/hosp/make_report", //POST date, upload file
@@ -18,25 +18,22 @@ const taskApi = {
 
 }
 
-const appApi = {
+export const reportApi = {
     root: "/",
     surv: "/surv",
     surv_hosp: "/surv/hosp",
     surv_volum: "/surv/volum",
 }
 
-const appMenu = { subAppMenu: {
+export const reportMenu = { subAppMenu: {
   
   surv: {
-    nref: [`#!${appApi.surv}`, "Сводные"],
+    nref: [`#!${reportApi.surv}`, "Сводные"],
     items: [
-      [`#!${appApi.surv_hosp}`, "Госпитализация ЕИР"],
-      [`#!${appApi.surv_volum}`, "Объемы помощи"],
+      [`#!${reportApi.surv_hosp}`, "Госпитализация ЕИР"],
+      [`#!${reportApi.surv_volum}`, "Объемы помощи"],
       
     ]
   }
 }
 }
-
-
-export { pgRest, taskApi, appApi, appMenu };
