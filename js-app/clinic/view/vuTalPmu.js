@@ -7,7 +7,6 @@ import { ptf } from '../form/foForm.js';
 import { _Num, _notEdit } from './vuClinic'; //tal number
 
 
-
 const pmuForm = function (vnode) {
   
   let { talon, pmu }= vnode.attrs.model;

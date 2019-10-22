@@ -3,11 +3,12 @@ import { _month } from '../../apps/model/moModel.js';
 // label = [class, text]
 // input = tag = [class, type, required]
 
+/*
 const month = function () {
     let d = new Date();
     return d.getMonth() + 1;
  };
-
+*/
 export const talonField = {
 
   open_date: { label: ['', "Открыт"], input: {
@@ -24,7 +25,7 @@ export const talonField = {
       tag: ['.pure-u-12-24.tal_month', 'number', 3, true],
       attrs: {
         style: "height: 45%", min: 1, max: 12,
-        fval: v => v ? v : month()
+        //fval: v => v ? v : month()
       }
     }
   },

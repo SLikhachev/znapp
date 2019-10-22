@@ -3,6 +3,11 @@ import { moModel, errMsg, _schema, _region, _month } from '../../apps/model/moMo
 import { restSprav } from '../../sprav/spravApi.js';
 import { restClinic } from '../clinicApi.js';
 
+const tmonth = function () {
+    let d = new Date();
+    return d.getMonth() + 1;
+ };
+
 const _reg= _region();
 
 export const moTalonsList = {
@@ -99,8 +104,10 @@ export const moTalon = {
       if (fields.indexOf(k) < 0) t[k] = data[k];
     });
     t.crd_num = data.crd_num;
+    if ( !t.talon_month ) t.talon_month= tmonth();
     return t;
   },
+  
   
   prepare( model ) {
    const card_fileds = [
@@ -115,10 +122,11 @@ export const moTalon = {
       c[f] = card[f];
     }
     //c.smo -= _reg;
-    c.old_card= c.crd_num;
+    //c.old_card= c.crd_num;
     model.card= c; // rewrites and this is not a list
     // prepare talon
-    model.talon= model.talon ? moTalon.to_talon(model.talon[0], card_fileds) : {};
+    model.talon= model.talon ? moTalon.to_talon(model.talon[0], card_fileds) :
+      moTalon.to_talon( c, card_fileds );
     if ( ! Boolean(model.pmu) )
       model.pmu=[];
   },
@@ -129,19 +137,24 @@ export const moTalon = {
     let to_save= Object.assign({}, model.talon);
     let pg_rest =  _schema('pg_rest');
     let { tal_num } = to_save;
-    let url=`${pg_rest}talonz_clin`;
+    let table= moTalonsList.talTable();
+    let url=`${pg_rest}${table}`;
     if ( Boolean(tal_num) ) {
       url += `?tal_num=eq.${tal_num}`;
-      delete tal.tal_num;
+      delete to_save.tal_num;
     }
      ['created', 'modified', 'cuser'].forEach( k=> delete to_save[k] );
+    Object.keys(to_save).map( k=> {
+      if ( !to_save[k] ) delete to_save[k] //= null; // include 0 "" null
+    })
     return m.request({
       url: url,
       method: method,
-      body: to_save
+      body: to_save,
+      headers: {Prefer: 'return=representation'}
     }).then( res => {
       event.target.parentNode.classList.remove('disable');
-      return true;
+      return res;
     }).catch( err => {
       //model.save = { err: true, msg: errMsg(err) };
       event.target.parentNode.classList.remove('disable');

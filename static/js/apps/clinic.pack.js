@@ -625,6 +625,11 @@ const restSprav = {
 
 // src/apps/model/moTalons.js
 
+const tmonth = function () {
+    let d = new Date();
+    return d.getMonth() + 1;
+ };
+
 const moTalonsList = {
   // :: Object
   // return model object (POJO)
@@ -719,8 +724,10 @@ const moTalon = {
       if (fields.indexOf(k) < 0) t[k] = data[k];
     });
     t.crd_num = data.crd_num;
+    if ( !t.talon_month ) t.talon_month= tmonth();
     return t;
   },
+  
   
   prepare( model ) {
    const card_fileds = [
@@ -735,10 +742,11 @@ const moTalon = {
       c[f] = card[f];
     }
     //c.smo -= _reg;
-    c.old_card= c.crd_num;
+    //c.old_card= c.crd_num;
     model.card= c; // rewrites and this is not a list
     // prepare talon
-    model.talon= model.talon ? moTalon.to_talon(model.talon[0], card_fileds) : {};
+    model.talon= model.talon ? moTalon.to_talon(model.talon[0], card_fileds) :
+      moTalon.to_talon( c, card_fileds );
     if ( ! Boolean(model.pmu) )
       model.pmu=[];
   },
@@ -749,19 +757,24 @@ const moTalon = {
     let to_save= Object.assign({}, model.talon);
     let pg_rest =  _schema('pg_rest');
     let { tal_num } = to_save;
-    let url=`${pg_rest}talonz_clin`;
+    let table= moTalonsList.talTable();
+    let url=`${pg_rest}${table}`;
     if ( Boolean(tal_num) ) {
       url += `?tal_num=eq.${tal_num}`;
-      delete tal.tal_num;
+      delete to_save.tal_num;
     }
      ['created', 'modified', 'cuser'].forEach( k=> delete to_save[k] );
+    Object.keys(to_save).map( k=> {
+      if ( !to_save[k] ) delete to_save[k]; //= null; // include 0 "" null
+    });
     return m.request({
       url: url,
       method: method,
-      body: to_save
+      body: to_save,
+      headers: {Prefer: 'return=representation'}
     }).then( res => {
       event.target.parentNode.classList.remove('disable');
-      return true;
+      return res;
     }).catch( err => {
       //model.save = { err: true, msg: errMsg(err) };
       event.target.parentNode.classList.remove('disable');
@@ -1207,11 +1220,12 @@ const fieldFrom = function (fromObj, field, data, to_attrs={}) {
 // label = [class, text]
 // input = tag = [class, type, required]
 
+/*
 const month = function () {
     let d = new Date();
     return d.getMonth() + 1;
  };
-
+*/
 const talonField = {
 
   open_date: { label: ['', "Открыт"], input: {
@@ -1228,7 +1242,7 @@ const talonField = {
       tag: ['.pure-u-12-24.tal_month', 'number', 3, true],
       attrs: {
         style: "height: 45%", min: 1, max: 12,
-        fval: v => v ? v : month()
+        //fval: v => v ? v : month()
       }
     }
   },
@@ -2677,6 +2691,7 @@ const talForm = function (vnode) {
   
   let { model, method }= vnode.attrs;
   let tal= model.talon;
+  //console.table(tal);
   const data= talonOpt.data;
   //console.log(data);
   const check= {};
@@ -2756,11 +2771,15 @@ const talForm = function (vnode) {
       vuDialog.open();
       return false;
     }
-    return false;
+    //console.table(tal);
+    //return false;
     //model.save= null;
-    return moTalon.saveTalon(e, model, method).then(t=>
-       m.route.set([clinicApi.talons])
-    ).catch(err=> {
+    return moTalon.saveTalon(e, model, method).then(res=>{
+       let t= res[0], r= `${clinicApi.talons}/${t.tal_num}/${t.crd_num}`;
+       tal.tal_num= t.tal_num;
+       m.route.set(clinicApi.talon_id, { tal: t.tal_num, crd: t.crd_num });
+       //return true;
+    }).catch(err=> {
       model.save = err;
       vuDialog.open();
     });

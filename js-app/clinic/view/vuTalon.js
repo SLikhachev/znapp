@@ -94,6 +94,7 @@ const talForm = function (vnode) {
   
   let { model, method }= vnode.attrs;
   let tal= model.talon;
+  //console.table(tal);
   const data= talonOpt.data;
   //console.log(data);
   const check= {};
@@ -173,15 +174,19 @@ const talForm = function (vnode) {
       vuDialog.open();
       return false;
     }
+    //console.table(tal);
     //return false;
     //model.save= null;
-    return moTalon.saveTalon(e, model, method).then(t=>
-       m.route.set([clinicApi.talons])
-    ).catch(err=> {
+    return moTalon.saveTalon(e, model, method).then(res=>{
+       let t= res[0], r= `${clinicApi.talons}/${t.tal_num}/${t.crd_num}`;
+       tal.tal_num= t.tal_num;
+       m.route.set(clinicApi.talon_id, { tal: t.tal_num, crd: t.crd_num });
+       //return true;
+    }).catch(err=> {
       model.save = err;
       vuDialog.open();
     });
-  };
+  }
   
   return {
     view() {
