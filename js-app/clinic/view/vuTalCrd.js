@@ -17,24 +17,25 @@ export const talCrd = function (vnode) {
   //console.log(card);
   let ff = [
     'fam', 'im', 'ot', 'birth_date',
-    'polis_ser', 'polis_num'];  //, 'smo'];
+    'crd_polis_ser', 'crd_polis_num'];  //, 'smo'];
   
   const toSave= card=> {
     let dost= checkDost(card);
     if ( Boolean(dost) )
       return dost;
-    if ( !card.smo && !card.smo_okato)
+    if ( !card.crd_smo && !card.crd_smo_okato)
       return 'Укажите либо СМО либо СМО ОКАТО';
+    // to save card 
     return '';
   };
   
   const _set_smo = e=> {
     if ( Boolean( e.target.value) ) {
-      card.smo= e.target.value;
-      card.smo_okato= data.get('smo_local')[0].okato;
+      card.crd_smo= e.target.value;
+      card.crd_smo_okato= data.get('smo_local')[0].okato;
     } else {
-      card.smo= null;
-      card.smo_okato= null;
+      card.crd_smo= null;
+      card.crd_smo_okato= null;
     }
   };
 
@@ -47,7 +48,11 @@ export const talCrd = function (vnode) {
       vuDialog.open();
       return false;
     }
-    return moCard.saveCard(e, card, model, method).catch(err=> {
+    let _card= Object.assign( {}, card );
+    ['crd_polis_num', 'crd_polis_ser', 'crd_smo', 'crd_smo_okato'].map( f=> delete _card[f] );
+    _card.smo= card.crd_smo;
+    _card.smo_okato= card.crd_smo_okato;
+    return moCard.saveCard(e, _card, model, method).catch(err=> {
       model.save = err;
       vuDialog.open();
     });
@@ -67,9 +72,9 @@ export const talCrd = function (vnode) {
           //m(".legnd", `Карта № ${card.crd_num}`),
           ff.map( f => m(".pure-control-group", ctf(f, card)) ),
           m(".pure-control-group", [
-            m('label', { for: "smo"}, "Страховщик"),
+            m('label', { for: "crd_smo"}, "Страховщик"),
             m('select[name="smo"]',
-              {value: card.smo, onchange: _set_smo}, [
+              {value: card.crd_smo, onchange: _set_smo}, [
               m('option[value=""]', ""),
               data.get('smo_local').map(s=> m('option', {value: s.code}, s.short_name))
             ])

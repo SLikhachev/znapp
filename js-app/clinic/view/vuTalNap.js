@@ -1,6 +1,6 @@
 
 import { fieldFrom } from '../../apps/form/foForm.js';
-import { _Num } from './vuClinic';
+import { talNum } from './vuClinic';
 
 const talNapr= {
  npr_mo: { label: ['', "Код МО"], input: {
@@ -46,8 +46,8 @@ export const talNap = function(vnode) {
     view() {
       return m("form.pure-form.pure-form-stacked.tcard",
         {style: "font-size: 1.2em;", id: "tal_nap"}, [
-          m('fieldset', [
-            m('legend', `Талон № ${_Num(tal.tal_num)}`),
+          m('fieldset', [ talNum(tal),
+            //m('legend', `Талон № ${_Num(tal.tal_num)}`),
             m('legend.leg-sec', "Направление: лечение. диагностика, консультация"),
 
             m(".pure-g", [

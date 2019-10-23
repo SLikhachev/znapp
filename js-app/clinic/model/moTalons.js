@@ -112,7 +112,7 @@ export const moTalon = {
   prepare( model ) {
    const card_fileds = [
     'id', 'crd_num', 'fam', 'im', 'ot', 'birth_date',
-    'polis_ser', 'polis_num', 'smo',
+    'crd_polis_ser', 'crd_polis_num', 'crd_smo',
     'dul_serial', 'dul_number',
     'mo_att' ];
     // prepare card
@@ -145,7 +145,10 @@ export const moTalon = {
     }
      ['created', 'modified', 'cuser'].forEach( k=> delete to_save[k] );
     Object.keys(to_save).map( k=> {
-      if ( !to_save[k] ) delete to_save[k] //= null; // include 0 "" null
+      if ( to_save[k] === "" || to_save[k] === null ) {
+        console.log(k);
+        delete to_save[k] //= null; // include 0 "" null
+      }
     })
     return m.request({
       url: url,

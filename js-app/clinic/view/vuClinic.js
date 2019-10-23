@@ -40,3 +40,5 @@ export const getFIO= s=> {
 
 export const _Num= num=> num ? num: ''; //talon number
 export const _notEdit= moTalonsList.year == moTalonsList._year ? false: true; //talon editable
+export const talNum= tal=> 
+  m('legend', `Талон № ${_Num(tal.tal_num)}`, m('span', {style: "padding: 3em"}, ' ') , `Год ${moTalonsList._year}`);

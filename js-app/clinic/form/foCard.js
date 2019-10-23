@@ -118,15 +118,15 @@ export const talCard = {
       tag: ['', "date"],
       //attrs: {}
     }},
-    polis_ser: { label: ['', 'Полис (редактируем в карте)'], input: {
+    crd_polis_ser: { label: ['', 'Полис (редактируем в карте)'], input: {
       tag: ['', "text"],
       attrs: { placeholder: 'Серия', readonly: true }
     }},
-    polis_num: { label: [], input: {
+    crd_polis_num: { label: [], input: {
       tag: ['', "text"],
       attrs: { placeholder: 'Номер', readonly: true}
     }},
-    smo: {label: ['', 'СМО'], input: {
+    crd_smo: {label: ['', 'СМО'], input: {
       tag: ['', "text"],
       attrs: {},
     }},   

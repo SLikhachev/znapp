@@ -28,7 +28,7 @@ export const fieldFrom = function (fromObj, field, data, to_attrs={}) {
     lt = `label${label[0]}[for=${field}]`;
     // third elem only for checkbox
     if (label.length > 2) {
-      attrs.checked = attrs.checked ? attrs.checked :
+      attrs.checked = //attrs.checked ? attrs.checked :
         attrs.fcheck ? attrs.fcheck(data[field]) : Boolean(data[field]);
       return m(lt, m(tg, attrs), label[1]);
     }

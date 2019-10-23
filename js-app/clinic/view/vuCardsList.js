@@ -35,7 +35,7 @@ const cardFind= function (vnode) {
             m(".pure-g", [
               m(".pure-u-1-5",
                 m("input.input-find.pure-u-3-4[name=q_crd][type='text']",
-                  {placeholder: "Номер карты",
+                  {placeholder: "Номер карты", style: "font-size: 1.2em"
                   //onkeyup: m.withAttr("value", vmFind.setFind ),
                   //value: vmFind.toFind
                   }
@@ -43,23 +43,23 @@ const cardFind= function (vnode) {
               ),
               m(".pure-u-1-5",
                 m("input.input-find.pure-u-2-3[name=q_fam][type='text']",
-                  {placeholder:"Фамилия"}
+                  {placeholder:"Фамилия", style: "font-size: 1.2em"}
                 )
               ),
               m(".pure-u-1-5",
                 m("input.input-find.pure-u-2-3[name=q_im][type='text']",
-                  {placeholder:"Имя"}
+                  {placeholder:"Имя", style: "font-size: 1.2em"}
                 )
               ),
               m(".pure-u-1-5",
                 m('button.pure-button[type="button"]', {
                     //value: 0,
-                    onclick: findCards
+                    onclick: findCards, style: "font-size: 1.2em"
                   }, "Найти" ),
                 m(m.route.Link, { selector: 'a.pure-button.pure-button-primary', 
                   href: href,
                   //oncreate: m.route.link,
-                  style: "margin-left: 2em;"
+                  style: "margin-left: 2em; font-size: 1.2em"
                   }, "Новая карта" )
               ),
             ])

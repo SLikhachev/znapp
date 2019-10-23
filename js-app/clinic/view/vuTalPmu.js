@@ -163,6 +163,7 @@ export const talPmu = function(vnode) {
   let model= vnode.attrs.model;
   let talon= model.talon;
   let pmu = model.pmu ? model.pmu: [];
+  let para_table= moTalonsList.pmuTable();
   //tal_num int, date_usl date, code_usl varchar, kol_usl smallint,
   //exec_spec int, exec_doc int, exec_podr int, name varchar
   let _Disabled= _notEdit || !Boolean( _Num(talon.tal_num) );
@@ -188,7 +189,7 @@ export const talPmu = function(vnode) {
   const kol_usl= e=> {
     let id= e.target.getAttribute('data');
     let p= pmu.find( el => el.id == id );
-    let url= `${restClinic.para_clin.url}?id=eq.${id}`;
+    let url= `${para_table}?id=eq.${id}`;
     return { p, url };
   };
   
@@ -226,8 +227,9 @@ export const talPmu = function(vnode) {
       m('th', "Удалить"),
     ]);
   };
+  //return s.kol_usl > 0 ? m('tr', { key: s.id }, [
   const listMap= function (s) {
-      return s.kol_usl > 0 ? m('tr', { key: s.id }, [
+      return s.kol_usl > 0 ? m('tr', [
         Object.keys(pmu_hdr).map( (column) => m('td', s[column])),
         m('td', m('i.fa.fa-plus-circle.choice', {
           style: "color: green;",

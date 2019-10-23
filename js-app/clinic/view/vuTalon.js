@@ -14,7 +14,8 @@ import { talNap } from './vuTalNap.js';
 import { talPmu } from './vuTalPmu.js';
 import { talDs } from './vuTalDs.js';
 import { talPolis } from './vuTalPolis';
-import { _Num, _notEdit } from './vuClinic'; //tal number
+import { talNum, _notEdit } from './vuClinic'; //tal number
+
 
 const toSaveTalon= async function (tal, check) {
   // Doct Oms
@@ -97,6 +98,13 @@ const talForm = function (vnode) {
   //console.table(tal);
   const data= talonOpt.data;
   //console.log(data);
+  
+  const set_chk= (e, f)=> {
+    tal[f]= e.target.checked ? 1: 0;
+    console.log(tal[f]);
+    return false;
+  };
+  
   const check= {};
   const dsp= "^[A-Z][0-9]{2}(\.[0-9]{1,2})?$";
   const diag= new RegExp( dsp );
@@ -169,7 +177,7 @@ const talForm = function (vnode) {
   const talonSave = async function(e) {
     e.preventDefault();
     model.save= await toSaveTalon(tal, check);
-    console.log( model.save );
+    //console.log( model.save );
     if ( Boolean( model.save ) ) {
       vuDialog.open();
       return false;
@@ -178,8 +186,8 @@ const talForm = function (vnode) {
     //return false;
     //model.save= null;
     return moTalon.saveTalon(e, model, method).then(res=>{
-       let t= res[0], r= `${clinicApi.talons}/${t.tal_num}/${t.crd_num}`;
-       tal.tal_num= t.tal_num;
+       let t= res[0]; //r= `${clinicApi.talons}/${t.tal_num}/${t.crd_num}`;
+       tal= Object.assign(tal, t);
        m.route.set(clinicApi.talon_id, { tal: t.tal_num, crd: t.crd_num });
        //return true;
     }).catch(err=> {
@@ -194,8 +202,7 @@ const talForm = function (vnode) {
     return m(".pure-u-18-24", [
 		m("form.pure-form.pure-form-stacked.tcard", { style: "font-size: 1.2em;",
       id: "talon", oncreate: forTabs, onsubmit: talonSave}, [
-			m('fieldset', [
-        m('legend', `Талон № ${_Num(tal.tal_num)}`),
+			m('fieldset', [ talNum(tal),
         //
         m(".pure-g", [
           m(".pure-u-4-24", tof('open_date', tal)),
@@ -203,8 +210,12 @@ const talForm = function (vnode) {
           m('.pure-u-3-24', tof('talon_month', tal)),
           m('.pure-u-3-24', {
             style: "padding-top: 2em ; font-size: 1.1em; font-weight: 500"
-          }, `Год ${moTalonsList._year}`),
-          m(".pure-u-6-24", [ tof('first_vflag', tal), tof('for_pom', tal), tof('finality', tal) ]),
+          }, ''),
+          m(".pure-u-6-24", [
+            tof('first_vflag', tal, { onclick: e=> set_chk(e, 'first_vflag') }),
+            tof('for_pom', tal),
+            tof('finality', tal)
+          ]),
         ]),
         //
         m(".pure-g", [
