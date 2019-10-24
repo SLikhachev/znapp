@@ -658,7 +658,24 @@ const moTalonsList = {
   },
   pmuTable() {
     return `${moTalonsList._pmu}${moTalonsList._year.slice(2)}`;
-  }
+  },
+  
+  markDelete(event, num) {
+    let pg_rest =  _schema('pg_rest');
+    let table= moTalonsList.talTable();
+    let url=`${pg_rest}${table}?tal_num=eq.${num}`;
+    return m.request({
+      url: url,
+      method: 'PATCH',
+      body: { talon_type: 0 },
+    }).then( () => {
+      return num;
+    }).catch( err => {
+      //model.save = { err: true, msg: errMsg(err) };
+      throw ( errMsg (err) );
+    });
+  },
+  
 };
 
 const talonOpt= {
@@ -763,10 +780,10 @@ const moTalon = {
       url += `?tal_num=eq.${tal_num}`;
       delete to_save.tal_num;
     }
-     ['created', 'modified', 'cuser'].forEach( k=> delete to_save[k] );
+    ['created', 'modified', 'cuser'].forEach( k=> delete to_save[k] );
     Object.keys(to_save).map( k=> {
       if ( to_save[k] === "" || to_save[k] === null ) {
-        console.log(k);
+        //console.log(k);
         delete to_save[k]; //= null; // include 0 "" null
       }
     });
@@ -783,7 +800,8 @@ const moTalon = {
       event.target.parentNode.classList.remove('disable');
       throw ( errMsg (err) );
     });
-  }
+  },
+  
 };
 
 // src/clinic/model/moCards.js
@@ -1200,7 +1218,7 @@ const fieldFrom = function (fromObj, field, data, to_attrs={}) {
   let t = tag[2] ? `[tabindex=${tag[2]}]`: '';
   let r = tag[3] ? '[required]' : '';
   let tg = `input${tag[0]}[name=${field}][type=${tag[1]}]${t}${r}`;
-
+  
   attrs.value = attrs.fval === undefined ? fval( data[field] ) : attrs.fval(data[field]);
   //attrs.value= data[field] ? data[field] : '';
   attrs.onblur = attrs.fblur === undefined ? fblur: null;
@@ -1211,9 +1229,12 @@ const fieldFrom = function (fromObj, field, data, to_attrs={}) {
   if (label.length > 0 ) {
     lt = `label${label[0]}[for=${field}]`;
     // third elem only for checkbox
-    if (label.length > 2) {
+    if (label.length > 2) { //firstly on first render time
+      
       attrs.checked = //attrs.checked ? attrs.checked :
         attrs.fcheck ? attrs.fcheck(data[field]) : Boolean(data[field]);
+      delete attrs.value;
+      delete attrs.onblur;
       return m(lt, m(tg, attrs), label[1]);
     }
     return [ m(lt, label[1]),  m(tg, attrs)];
@@ -1251,21 +1272,29 @@ const talonField = {
       }
     }
   },
-  first_vflag: { label: ['', "Первичный", 'check'], input: {
-      tag: ['', "checkbox", 4, false],
+  mek: { label: ['', "МЭК", 'check'], input: {
+      tag: ['', "checkbox", 4,  false],
       attrs: {style: "margin-right: 0.7em"}
     }
   },
   for_pom: { label: ['', "Неотложный", 'check'], input: {
       tag: ['', "checkbox", 5, false],
-      attrs: {style: "margin-right: 0.7em", fcheck: v => v == 2 } // type coercion
+      attrs: {style: "margin-right: 0.7em" } //, fcheck: v => v == 2 } // type coercion
     }
   },
+  
+  first_vflag: { label: ['', "Первичный", 'check'], input: {
+      tag: ['', "checkbox", 6, false],
+      attrs: {style: "margin-right: 0.7em"}
+    }
+  },
+  /*
   finality: { label: ['', "Закончен", 'check'], input: {
       tag: ['', "checkbox", 6,  false],
       attrs: {style: "margin-right: 0.7em"}
     }
   },
+  */
   ist_fin: { label: ['', "Оплата"], input: {
       tag: ['.pure-u-18-24', "text", 7, true],
       //attrs: { min: 1, max: 9}
@@ -2043,6 +2072,16 @@ const vuTalonsList = function (vnode) {
   //console.log(yy);
   moModel.getViewRpc(model, { _tbl: yy }, restClinic.talons_cnt.url, restClinic.talons_cnt.method );
   
+  const markDeleted= (e, num)=> {
+    e.preventDefault();
+    if (window.confirm(`Пометить талон №${num} на удаление?`)) { 
+      return moTalonsList.markDelete(e, num).then( num=> {
+        model.list= model.list.filter( t=> t.tal_num != num  ); 
+      });
+    }
+    return false;
+  };
+  
   const sort= '';
   
   const hdrMap= function(){
@@ -2055,7 +2094,7 @@ const vuTalonsList = function (vnode) {
         ) : m('th', field[0]);
       }),
       m('th', "Удалить")
-    ])
+    ]);
   };
   
   const listMap= function(s) {
@@ -2079,19 +2118,13 @@ const vuTalonsList = function (vnode) {
         return td;
       }),
       m('td', m('i.fa.fa-minus-circle.choice.red', {
-        data: s.tal_num,
-        //onclick: m.withAttr( "data", vuForm.ddel)
+        onclick: e=> markDeleted (e, s.tal_num),
       }) )
     ]);
   };
   
   
   return {
-    
-    oninit () {
-      //this.model = moCardsList.getModel();
-      //moCardsList.getList(model);
-    },
     view () {
     //return m(tableView, {model: this.model , header: this.header }, [
     return model.error ? [ m(".error", model.error) ] :
@@ -2625,6 +2658,12 @@ const talPolis = function(vnode) {
 
 // src/clinic/view/vuTalon.js
 
+const num_fields= ['mek','visit_pol', 'pol_days', 'visit_home', 'home_days',
+  'visit_homstac', 'visit_daystac', 'days_at_homstac', 'days_at_daystac',
+  'npr_mo', 'npr_spec', 'hosp_mo', 'extr', 'prof_k',
+  'char1', 'char2', 
+  'travma_type', 'patient_age',
+];
 
 const toSaveTalon= async function (tal, check) {
   // Doct Oms
@@ -2673,14 +2712,18 @@ const toSaveTalon= async function (tal, check) {
       if (cons)
         if (_mdl.data.get(_spec_url).length === 0)
           r += 'Неверный код Специалиста направления';
-      console.log(r);
+      //console.log(r);
       if ( Boolean (r) )
         return r;
     } catch (e) {
       return e;
     }
   }
+  num_fields.map(f=> {
+    if (tal[f] === "") tal[f]= 0;
+  });
   return '';
+
 };
 
 /*
@@ -2710,7 +2753,8 @@ const talForm = function (vnode) {
   
   const set_chk= (e, f)=> {
     tal[f]= e.target.checked ? 1: 0;
-    console.log(tal[f]);
+    //console.log(`${f}->${tal[f]}`);
+    //console.log( e.target.checked, e.target.value );
     return false;
   };
   
@@ -2791,7 +2835,7 @@ const talForm = function (vnode) {
       vuDialog.open();
       return false;
     }
-    //console.table(tal);
+    //console.log(tal);
     //return false;
     //model.save= null;
     return moTalon.saveTalon(e, model, method).then(res=>{
@@ -2817,13 +2861,13 @@ const talForm = function (vnode) {
           m(".pure-u-4-24", tof('open_date', tal)),
           m(".pure-u-4-24", tof('close_date', tal)),
           m('.pure-u-3-24', tof('talon_month', tal)),
-          m('.pure-u-3-24', {
-            style: "padding-top: 2em ; font-size: 1.1em; font-weight: 500"
-          }, ''),
-          m(".pure-u-6-24", [
+          m('.pure-u-3-24', {style: "padding-top: 2em"},
+            tof('mek', tal, { onclick: e=> set_chk(e, 'mek') }) ),
+          m(".pure-u-6-24", {style: "padding-top: 2em"}, [
+            tof('for_pom', tal, { onclick: e=> set_chk(e, 'for_pom') }),
             tof('first_vflag', tal, { onclick: e=> set_chk(e, 'first_vflag') }),
-            tof('for_pom', tal),
-            tof('finality', tal)
+            
+            //tof('finality', tal)
           ]),
         ]),
         //

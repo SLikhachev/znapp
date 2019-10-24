@@ -3,7 +3,7 @@
 import { vuLoading } from '../../apps/view/vuApp.js';
 import { moModel } from '../../apps/model/moModel.js';
 import { restClinic, clinicApi } from '../clinicApi.js';
-import { moTalonsList } from '../model/moTalons.js';
+import { moTalonsList,  } from '../model/moTalons.js';
 import { getFIO } from './vuClinic.js';
 /*
 IN tbl varchar,
@@ -131,6 +131,16 @@ export const vuTalonsList = function (vnode) {
   //console.log(yy);
   moModel.getViewRpc(model, { _tbl: yy }, restClinic.talons_cnt.url, restClinic.talons_cnt.method );
   
+  const markDeleted= (e, num)=> {
+    e.preventDefault();
+    if (window.confirm(`Пометить талон №${num} на удаление?`)) { 
+      return moTalonsList.markDelete(e, num).then( num=> {
+        model.list= model.list.filter( t=> t.tal_num != num  ); 
+      });
+    }
+    return false;
+  };
+  
   const sort= '';
   
   const hdrMap= function(){
@@ -143,7 +153,7 @@ export const vuTalonsList = function (vnode) {
         ) : m('th', field[0]);
       }),
       m('th', "Удалить")
-    ])
+    ]);
   };
   
   const listMap= function(s) {
@@ -167,19 +177,13 @@ export const vuTalonsList = function (vnode) {
         return td;
       }),
       m('td', m('i.fa.fa-minus-circle.choice.red', {
-        data: s.tal_num,
-        //onclick: m.withAttr( "data", vuForm.ddel)
+        onclick: e=> markDeleted (e, s.tal_num),
       }) )
     ]);
   };
   
   
   return {
-    
-    oninit () {
-      //this.model = moCardsList.getModel();
-      //moCardsList.getList(model);
-    },
     view () {
     //return m(tableView, {model: this.model , header: this.header }, [
     return model.error ? [ m(".error", model.error) ] :

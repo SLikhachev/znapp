@@ -29,21 +29,29 @@ export const talonField = {
       }
     }
   },
-  first_vflag: { label: ['', "Первичный", 'check'], input: {
-      tag: ['', "checkbox", 4, false],
+  mek: { label: ['', "МЭК", 'check'], input: {
+      tag: ['', "checkbox", 4,  false],
       attrs: {style: "margin-right: 0.7em"}
     }
   },
   for_pom: { label: ['', "Неотложный", 'check'], input: {
       tag: ['', "checkbox", 5, false],
-      attrs: {style: "margin-right: 0.7em", fcheck: v => v == 2 } // type coercion
+      attrs: {style: "margin-right: 0.7em" } //, fcheck: v => v == 2 } // type coercion
     }
   },
+  
+  first_vflag: { label: ['', "Первичный", 'check'], input: {
+      tag: ['', "checkbox", 6, false],
+      attrs: {style: "margin-right: 0.7em"}
+    }
+  },
+  /*
   finality: { label: ['', "Закончен", 'check'], input: {
       tag: ['', "checkbox", 6,  false],
       attrs: {style: "margin-right: 0.7em"}
     }
   },
+  */
   ist_fin: { label: ['', "Оплата"], input: {
       tag: ['.pure-u-18-24', "text", 7, true],
       //attrs: { min: 1, max: 9}

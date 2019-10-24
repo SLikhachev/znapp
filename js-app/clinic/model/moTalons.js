@@ -38,7 +38,24 @@ export const moTalonsList = {
   },
   pmuTable() {
     return `${moTalonsList._pmu}${moTalonsList._year.slice(2)}`;
-  }
+  },
+  
+  markDelete(event, num) {
+    let pg_rest =  _schema('pg_rest');
+    let table= moTalonsList.talTable();
+    let url=`${pg_rest}${table}?tal_num=eq.${num}`;
+    return m.request({
+      url: url,
+      method: 'PATCH',
+      body: { talon_type: 0 },
+    }).then( () => {
+      return num;
+    }).catch( err => {
+      //model.save = { err: true, msg: errMsg(err) };
+      throw ( errMsg (err) );
+    });
+  },
+  
 };
 
 export const talonOpt= {
@@ -143,10 +160,10 @@ export const moTalon = {
       url += `?tal_num=eq.${tal_num}`;
       delete to_save.tal_num;
     }
-     ['created', 'modified', 'cuser'].forEach( k=> delete to_save[k] );
+    ['created', 'modified', 'cuser'].forEach( k=> delete to_save[k] );
     Object.keys(to_save).map( k=> {
       if ( to_save[k] === "" || to_save[k] === null ) {
-        console.log(k);
+        //console.log(k);
         delete to_save[k] //= null; // include 0 "" null
       }
     })
@@ -163,7 +180,8 @@ export const moTalon = {
       event.target.parentNode.classList.remove('disable');
       throw ( errMsg (err) );
     });
-  }
+  },
+  
 };
 
 

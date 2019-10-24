@@ -16,6 +16,12 @@ import { talDs } from './vuTalDs.js';
 import { talPolis } from './vuTalPolis';
 import { talNum, _notEdit } from './vuClinic'; //tal number
 
+const num_fields= ['mek','visit_pol', 'pol_days', 'visit_home', 'home_days',
+  'visit_homstac', 'visit_daystac', 'days_at_homstac', 'days_at_daystac',
+  'npr_mo', 'npr_spec', 'hosp_mo', 'extr', 'prof_k',
+  'char1', 'char2', 
+  'travma_type', 'patient_age',
+]
 
 const toSaveTalon= async function (tal, check) {
   // Doct Oms
@@ -64,14 +70,18 @@ const toSaveTalon= async function (tal, check) {
       if (cons)
         if (_mdl.data.get(_spec_url).length === 0)
           r += 'Неверный код Специалиста направления';
-      console.log(r);
+      //console.log(r);
       if ( Boolean (r) )
         return r;
     } catch (e) {
       return e;
     }
   }
+  num_fields.map(f=> {
+    if (tal[f] === "") tal[f]= 0;
+  });
   return '';
+
 }
 
 /*
@@ -101,7 +111,8 @@ const talForm = function (vnode) {
   
   const set_chk= (e, f)=> {
     tal[f]= e.target.checked ? 1: 0;
-    console.log(tal[f]);
+    //console.log(`${f}->${tal[f]}`);
+    //console.log( e.target.checked, e.target.value );
     return false;
   };
   
@@ -182,7 +193,7 @@ const talForm = function (vnode) {
       vuDialog.open();
       return false;
     }
-    //console.table(tal);
+    //console.log(tal);
     //return false;
     //model.save= null;
     return moTalon.saveTalon(e, model, method).then(res=>{
@@ -208,13 +219,13 @@ const talForm = function (vnode) {
           m(".pure-u-4-24", tof('open_date', tal)),
           m(".pure-u-4-24", tof('close_date', tal)),
           m('.pure-u-3-24', tof('talon_month', tal)),
-          m('.pure-u-3-24', {
-            style: "padding-top: 2em ; font-size: 1.1em; font-weight: 500"
-          }, ''),
-          m(".pure-u-6-24", [
+          m('.pure-u-3-24', {style: "padding-top: 2em"},
+            tof('mek', tal, { onclick: e=> set_chk(e, 'mek') }) ),
+          m(".pure-u-6-24", {style: "padding-top: 2em"}, [
+            tof('for_pom', tal, { onclick: e=> set_chk(e, 'for_pom') }),
             tof('first_vflag', tal, { onclick: e=> set_chk(e, 'first_vflag') }),
-            tof('for_pom', tal),
-            tof('finality', tal)
+            
+            //tof('finality', tal)
           ]),
         ]),
         //
