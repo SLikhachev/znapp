@@ -8,6 +8,7 @@ import { vuDialog } from '../view/vuDialog.js';
 
 export const errMsg= function(error){
   //console.log(error);
+  //console.log(' error ');
   //let e = JSON.parse(error.message);
   let e= error.response;
   let m= e.details ? e.details : e.message ? e.message: e;
@@ -102,6 +103,7 @@ export const moModel = {
       url: url,
       headers: model.headers ? model.headers: null
     }).then(function(res) {
+      //console.log(res);
       if ( ! Boolean(res) ) return false;
       if (res.length && res.length > 0) {
         model.list = Array.from( res ); // list of objects
@@ -110,6 +112,7 @@ export const moModel = {
         model.list= []; 
       return true;
     }).catch(function(err) { 
+      //console.log(err);
       model.error = errMsg(err);
     });
   },

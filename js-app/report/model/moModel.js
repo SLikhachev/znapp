@@ -1,46 +1,10 @@
 
 // src/report/model/moModel.js
 
-export const pg_rest = window.localStorage.getItem('pg_rest'); //task schemaRest;
-export const task_rest = window.localStorage.getItem('task_rest'); //task schemaRest;
+import { _schema, errMsg  } from '../../apps/model/moModel.js';
 
 export const moModel = {
   
-  getModel( url=null, sort_by=null ) {
-    //console.log(url);
-    return {
-      pg_url: url,
-      //task_rest: task_rest,
-      //task_get_url: null,
-      //task_post_url: null,
-      field: sort_by,
-      list: null,
-      error: null,
-      message: null,
-      file: null,
-      done: false
-    };  
-  },
-  
-  getList (model) {
-    // filed - sort by with SELECT, default 'id' field
-    //let schema = window.localStorage.getItem('pg_rest');
-    //let id = model.field ? model.field : 'id',
-    //order = `?order=${id}.asc`;
-    let url = pg_rest + model.pg_url; // + order;
-    //console.log(url);
-    return m.request({
-      method: 'GET',
-      url: url
-    }).then(function(res) {
-      model.list = res; // list of objects
-      model.order = true;
-    }).catch(function(e) {
-      model.error = e.message;
-      console.log(model.error);
-    });
-  },
-
     doSubmit: function (form, model, method) {
         //console.log(form);
         let upurl = form.getAttribute('action');
@@ -62,11 +26,12 @@ export const moModel = {
         //data.append("file", file);
         //console.log(data.getAll('test')[0], data.getAll('month')[0]);
         //data.append("")
+        let url= `${_schema('task')}${upurl}${get_param}`;
         m.request({
             method: method,
-            url: task_rest + upurl + get_param,
+            url: url,
             body: data,
-        }).then((res) => {
+        }).then( res=> {
             if (res.file) {
                 model.file = res.file;
             }
@@ -74,9 +39,8 @@ export const moModel = {
             model.done = res.done;
             //console.log(` msg: ${model.message}, file: ${model.file}, done: ${model.done}`);
             form.classList.remove('disable');
-        }).catch((err) => {
-            model.error = err.message;
-            console.log(model.error);
+        }).catch( err=> {
+            model.error = errMsg(err);
             form.classList.remove('disable');
         });
         return false;

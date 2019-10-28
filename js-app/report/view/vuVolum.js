@@ -1,9 +1,9 @@
 // src/report/view/vuVolum.js
 
-import { _month } from '../../apps/model/moModel.js';
+import { _month, _schema } from '../../apps/model/moModel.js';
 import { taskReport } from '../reportApi.js';
-import { task_rest, moModel } from '../model/moModel.js';
-import { vuDataSheet } from './vuDataSheet.js';
+import { moModel } from '../model/moModel.js';
+import { vuReportSheet } from './vuDataSheet.js';
 
 const Form = function(vnode) {
   
@@ -29,7 +29,7 @@ const Form = function(vnode) {
     return moModel.doSubmit(form, model, "GET");
   };
 
-  const get_href = file=> `${task_rest}${data._get}${file}`;
+  const get_href = file=> `${_schema('task')}${data._get}${file}`;
   
   return {
   
@@ -85,12 +85,11 @@ const Form = function(vnode) {
 
 
 // clojure
-const vuVolum = function (vnode) {
+export const vuVolum = function (vnode) {
   //console.log(vnode.attrs.model.pg_url);
-  let view = vuDataSheet(vnode);
+  let view = vuReportSheet(vnode);
   view.form = Form;
   return view;
 }
 
-export { vuVolum };
 

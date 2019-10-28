@@ -10,7 +10,7 @@ import { roSurvey } from './router/roSurvey.js';
 
 const reportRouter = { [reportApi.root]: {
     render: function() {
-       return vuView( appMenu,
+       return vuView( reportMenu,
           m(vuApp, { text: "Медстатистика: Отчеты" }));
     }
   }

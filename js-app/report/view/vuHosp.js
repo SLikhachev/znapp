@@ -1,9 +1,9 @@
 // src/report/view/vuHosp.js
 
-import { _month } from '../../apps/model/moModel.js';
+import { _month, _schema } from '../../apps/model/moModel.js';
 import { vuTheader } from '../../apps/view/vuApp.js';
 import { taskReport } from '../reportApi.js';
-import { task_rest, moModel } from '../model/moModel.js';
+import { moModel } from '../model/moModel.js';
 
 const fileForm = function(vnode) {
   
@@ -40,7 +40,7 @@ const fileForm = function(vnode) {
     vnode.dom.addEventListener('submit', on_form_submit);
   };
   
-  const get_href = file=> `${task_rest}${data._get}${file}`;
+  const get_href = file=> `${_schema('task')}${data._get}${file}`;
   
   return {
   
@@ -100,30 +100,14 @@ const fileForm = function(vnode) {
 }
 
 
-// clojure
-const vuHosp = function (vnode) {
-    
+export const vuHosp = function (vnode) {
   return {
-  /*  
-  oninit () {
-  }
-  /*
-  oncreate() {
-  },
-  
-  onupdate() {
-  },
-  */
-  view (vnode) {
-    
-    return [
+    view () {
+      return [
         m(vuTheader, { header: vnode.attrs.header } ),
         m(fileForm, { model: vnode.attrs.model } )
-    ];
-  }    
-        
-  }; //return this object
+      ];
+    }    
+  }; 
 }
-
-export { vuHosp };
 

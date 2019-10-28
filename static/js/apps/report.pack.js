@@ -158,7 +158,64 @@ const vuMain = {
 
 // src/apps/view/vuDialog.js
 
+// https://github.com/GoogleChrome/dialog-polyfill
+// https://html5test.com/
+// Fifix since 53 about:config
+// dom.dialog_element.enabled
+
+//import { moModel } from '../model/moModel.js';
+
+const vuDialog = {
+  
+  dialog: null,
+  //dialog: document.getElementById('dialog'),
+  
+  oncreate(vnode) {
+      vuDialog.dialog = vnode.dom;
+      //console.log(dialogView.dialog);
+  },
+  
+  view(vnode) {
+    return m('dialog#dialog', m('.dialog-content', [
+      m('i.fa fa-times.dclose', { onclick: vuDialog.close }),
+        m('span.dheader', `${vnode.attrs.header} (${vnode.attrs.word})`),
+          vnode.children
+        ])
+    );
+  },
+  
+  open () {
+    vuDialog.dialog.showModal();
+    return false;
+  },
+  
+  close (reload=false) { //e - EventObject
+    //let srverr = document.getElementById('srv-error');
+    //let srverr = vuDialog.dialog.querySelector('#srv-error');
+    //if ( !!srverr ) srverr.parentNode.removeChild(srverr);
+    f= vuDialog.dialog.querySelector('form');
+    if (Boolean(f)) f.reset();
+    vuDialog.dialog.close();
+    if ( reload ) m.redraw();
+    return false;
+  },
+};
+
 // src/apps/model/moModel.js
+
+//const pg_rest = window.localStorage.getItem('pg_rest'); //postgest schemaRest;
+//console.log(schema);
+
+const errMsg= function(error){
+  //console.log(error);
+  //console.log(' error ');
+  //let e = JSON.parse(error.message);
+  let e= error.response;
+  let m= e.details ? e.details : e.message ? e.message: e;
+  //let m= e.message ? e.message : error;
+  console.log(m);
+  return m;
+};
 
 // return date in yyyy-mm format
 const _month= () => {
@@ -166,6 +223,295 @@ const _month= () => {
     m= m < 10 ? `0${m}`: `${m}`;
     return `${y}-${m}`;
   };
+
+// return posgrest url if pg_rest else task url
+const _schema= type=> {
+  if (type === 'task')
+    return window.localStorage.getItem('task_rest');
+  return window.localStorage.getItem('pg_rest');
+};
+
+const moModel = {
+  
+  // :: String -> Array -> String -> Object
+  // ret models object (POJO)
+  getModel(
+    {url=null, method="GET", options=null, order_by='id', editable=null, change=null, key='id' } = {}
+  ) {
+/*
+  url - string of model's REST API url
+  method - string of model's REST method
+  options - array of strings of option tables names, required for complex views of this model
+    need for form data select/option if any
+  order_by - string "order by" with initially SELECT 
+  editable - array defines is model could changed
+  change - array editable fields names
+  key - primary key for sql model table dafault id
+*/
+    let model = {
+      url: url,
+      method: method,
+      order_by: order_by,
+      options: options,
+      editable: editable,
+      change: change,
+      key: key,
+      list: null, // main data list (showing in table page)
+      data: new Map(), // every idx corresponds with index of options array
+      item: null,
+      error: null, // Promise all error
+      order: true, // for list
+      sort: null, // for list
+      save: null,
+    };  
+    model.sort= field => moModel.sort(model, field);
+    model.getItem= id => {
+      model.item= {};
+      if (id === null) return false; 
+      let key= model.key;
+      for ( let it of model.list ) {
+        if (it[key] == id) {
+          model.item= Object.assign({}, it);
+          break;
+        }
+      }
+      return false;
+    };
+    
+    return model;
+  },
+  // :: Object -> Promise
+  // ret Promise
+  // model = {field, url, method,  }
+  getList (model) {
+    model.list= null;
+    let method= model.method ? model.method : 'GET';
+    // filed - sort by with SELECT, default 'id' field
+    //let schema = window.localStorage.getItem('pg_rest');
+    let schema = _schema('pg_rest');
+    let id = model.order_by ? model.order_by : 'id',
+    sign= model.url.includes('?') ? '&': '?';
+    order = `${sign}order=${id}.asc`;
+    let url = schema + model.url + order;
+    console.log(url);
+    return m.request({
+      method: method,
+      url: url,
+      headers: model.headers ? model.headers: null
+    }).then(function(res) {
+      //console.log(res);
+      if ( ! Boolean(res) ) return false;
+      if (res.length && res.length > 0) {
+        model.list = Array.from( res ); // list of objects
+        model.order = true;
+      } else
+        model.list= []; 
+      return true;
+    }).catch(function(err) { 
+      //console.log(err);
+      model.error = errMsg(err);
+    });
+  },
+  // :: Object -> undef
+  // return Promise all
+  getData(model){
+    if ( model.options === null ) return false;
+    //let schema = window.localStorage.getItem('pg_rest');
+    let schema= _schema('pg_rest');
+    let data = [];
+    //morder= model.order ? model.order : 'id';
+    //order= `?order=${morder}.asc`;
+    model.options.forEach ( t => {
+      let id= t.order_by ? t.order_by : 'id';
+      let sign= t.url.includes('?') ? '&': '?';
+      let order = `${sign}order=${id}.asc`;
+      
+      let r = m.request({
+        method: t.method ? t.method : "GET" ,
+        url: schema + t.url + order
+      });
+      data.push(r);
+    });
+    // order should preserved
+    return Promise.all(data).then( (lists) => {
+      model.data.clear(); // = new Map();
+      
+      for ( let el of model.options.entries() ) {
+        // entries [ idx, value ]
+        if ( ! Boolean( lists[ el[0] ] ) ) continue; // no data for this option
+        model.data.set( el[1].url, lists[ el[0] ]); // el[1] option object
+      }
+      //window.localStorage.setItem(model.opt_name, model.data);
+      //model.data = _.zipObject( model.options, lists);
+      //console.log( model.list );
+      return true;
+    }).catch(function(err) {
+      model.error = errMsg(err);
+      throw model.error;
+    });
+    
+  },
+  
+  // :: Object -> String -> String -> Object -> Promise
+  // return Promise
+  getViewRpc (model, data, url=null, method=null) {
+    //let schema = window.localStorage.getItem('pg_rest');
+    let schema = _schema('pg_rest');
+    let _url = url ? url : model.url;
+    let _method = method ? method : model.method;
+    let headers= model.headers ? model.headers : null;
+    return m.request({
+      url: schema + _url,
+      method: _method,
+      body: data,
+      headers: headers
+    }).then( res=> {
+      if ( ! Boolean(res) ) return false;
+      if (res.length && res.length > 0) {
+        model.list= Array.from( res ); // list of objects
+        model.order = true;
+        return true;
+      } else
+        model.list= [];
+        return false;
+    }).catch( err=> {
+      let msg=  errMsg(err);
+      model.error= msg;
+      return Promise.reject(msg);
+    });
+  },
+
+  getViewRpcMap (model, data) {
+    let schema= _schema('pg_rest');
+    let reqs = [];
+    for (let [idx, url] of model.url.entries()) {
+      let r = m.request({
+        method: model.method[idx],
+        url: schema + url,
+        body: data[idx]
+      });
+      reqs.push(r);
+    }
+    // order should preserved
+    return Promise.all(reqs).then( (lists) => {
+      // map data must be Map
+      //model.map_data.clear(); // = new Map();
+      for ( let [idx, key] of model.map_keys.entries() ) {
+        //model.map_data.set( name, lists[ idx ]);
+        if ( ! Boolean( lists[idx] ) ) continue;
+        if (lists[idx].length && lists[idx].length > 0) {
+          //model[key]= lists[ idx ];
+          model[key] = Array.from( lists[idx] );
+          //console.log(lists[idx]);
+        } else
+          model[key]= [];
+      } 
+      return true;
+      return Promise.resolve(true);
+    }).catch(function (err) {
+      model.error = errMsg(err);
+    });
+  },
+
+  sort(model, id=null) {
+    //console.log(id);
+    let order = model.order ? 'desc' : 'asc';
+    let field = id ? id : 'id'; 
+    model.list = _.orderBy(model.list, [ field ], [ order ]);
+    //console.log(model.list);
+    model.order = !model.order;
+  },
+  
+  /** getFormData
+    return item's data object 
+  */
+  
+  getFormData(form, isSetOnly=false) {
+    // form - dom form
+    // isSetOnly - set out only
+    let data = {};
+    //let da = [];
+    let text  = $(':input', form);
+    Array.from(text).forEach( ( el ) => {
+      if ( !!el.name )
+        data[ el.name ] = el.value;
+    } );
+    return data;
+  },
+  
+  /** formSubmit
+    return false    
+  */
+  
+  formSubmit(event, model, method) {
+    //console.log(model);
+    event.target.parentNode.classList.add('disable');
+    let schema= _schema('pg_rest');
+    let url = schema + model.url;
+    let key= model.key ? model.key : 'id';
+    let data= Object.assign({}, model.item);
+    let sign= model.url.includes('?') ? '&': '?';
+    if ( method == 'DELETE' || method == 'PATCH' ) {
+      url += `${sign}${key}=eq.${data[key]}`; 
+      if (data[key]) delete data[key];
+    }
+    for ( let k of Object.keys(data) ){
+      if (model.change && model.change.indexOf(k) < 0) {
+        delete data[k];
+        continue;
+      }
+      if ( data[k] === '' ) delete data[k];  //data[k] = null;
+    }
+    model.save = { err: false, msg: '' };
+    return m.request({
+      url: url,
+      method: method,
+      body: data,
+      //async: false,
+      headers: model.headers
+    }).then( res => {
+      event.target.parentNode.classList.remove('disable');
+      if (model.list) moModel.getList(model);
+      if ( vuDialog.dialog && vuDialog.dialog.open) vuDialog.close();
+      return res; 
+    }).catch( err => {
+      let msg= errMsg(err);
+      model.save = { err: true, msg: msg };
+      event.target.parentNode.classList.remove('disable');
+      return Promise.reject(msg);
+    });
+  }
+/*
+  formSubmit (model, form) {  
+    // form - jQuery object
+    // model - model object 
+    //let schema = window.localStorage.getItem('pg_rest');
+    let pg_rest = window.localStorage.getItem('pg_rest');
+    let data = moModel.getFormData( form ),
+    url = pg_rest + model.url,
+    method = data.method;
+    //console.log ( data );
+    //return false;
+    vuDialog.form = form;
+    delete data.method;
+    if ( method == 'DELETE' || method == 'PATCH' )
+      url += '?' + 'id=eq.' + data.id;
+    $.ajax({
+      url: url,
+      type: method,
+      async: false,
+      data: data,
+      //context: form,
+      //contentType: 'application/json',
+      dataType: 'json',
+      beforeSend: vuDialog.offForm,
+      error: vuDialog.xError,
+      success: vuDialog.xSuccess
+    });
+    return false;
+  }
+*/
+};
 
 // src/apps/view/vuApp.js
 
@@ -193,10 +539,19 @@ const vuView = function(appMenu, view) {
   return m(vuMain, appMenu, view);
 };
 
+const vuLoading = {
+  view() { 
+    return m(".loading-icon", 
+      m('.i.fa.fa-refresh.fa-spin.fa-3x.fa-fw'),
+      m('span.sr-only', 'Loading...')
+    );
+  }
+};
+
 // src/report/reportApi.js
 
 const restReport = {
-    volum: 'p146_report?insurer=eq.999&this_year=eq.2019&order=this_month.asc',
+    volum: {url: 'p146_report?insurer=eq.999&this_year=eq.2019', order_by: 'this_month' }
 };
 
 const taskReport = {
@@ -230,90 +585,6 @@ const reportMenu = { subAppMenu: {
     ]
   }
 }
-};
-
-// src/report/model/moModel.js
-
-const pg_rest = window.localStorage.getItem('pg_rest'); //task schemaRest;
-const task_rest = window.localStorage.getItem('task_rest'); //task schemaRest;
-
-const moModel$1 = {
-  
-  getModel( url=null, sort_by=null ) {
-    //console.log(url);
-    return {
-      pg_url: url,
-      //task_rest: task_rest,
-      //task_get_url: null,
-      //task_post_url: null,
-      field: sort_by,
-      list: null,
-      error: null,
-      message: null,
-      file: null,
-      done: false
-    };  
-  },
-  
-  getList (model) {
-    // filed - sort by with SELECT, default 'id' field
-    //let schema = window.localStorage.getItem('pg_rest');
-    //let id = model.field ? model.field : 'id',
-    //order = `?order=${id}.asc`;
-    let url = pg_rest + model.pg_url; // + order;
-    //console.log(url);
-    return m.request({
-      method: 'GET',
-      url: url
-    }).then(function(res) {
-      model.list = res; // list of objects
-      model.order = true;
-    }).catch(function(e) {
-      model.error = e.message;
-      console.log(model.error);
-    });
-  },
-
-    doSubmit: function (form, model, method) {
-        //console.log(form);
-        let upurl = form.getAttribute('action');
-        //console.log(upurl);
-        //let finput = form.elements.namedItem('file'),
-        //file = finput.files[0],
-        let data = new FormData(form);
-        let get_param = '';
-        if (method == "GET") {
-            let get_data = {};
-            data.forEach( (v, k) => { get_data[k] = v; } );
-            get_param = '?' + m.buildQueryString(get_data);
-        }
-        //console.log(get_param);
-        form.classList.add('disable');
-
-        //data.append("test", form.elements.namedItem('test'));
-        //data.append("month", form.elements.namedItem('month'));
-        //data.append("file", file);
-        //console.log(data.getAll('test')[0], data.getAll('month')[0]);
-        //data.append("")
-        m.request({
-            method: method,
-            url: task_rest + upurl + get_param,
-            body: data,
-        }).then((res) => {
-            if (res.file) {
-                model.file = res.file;
-            }
-            model.message = res.message;
-            model.done = res.done;
-            //console.log(` msg: ${model.message}, file: ${model.file}, done: ${model.done}`);
-            form.classList.remove('disable');
-        }).catch((err) => {
-            model.error = err.message;
-            console.log(model.error);
-            form.classList.remove('disable');
-        });
-        return false;
-    }
 };
 
 // src/report/model/moStruct.js
@@ -361,6 +632,50 @@ const moStruct = function() {
   };
 };
 
+const moModel$1 = {
+  
+    doSubmit: function (form, model, method) {
+        //console.log(form);
+        let upurl = form.getAttribute('action');
+        //console.log(upurl);
+        //let finput = form.elements.namedItem('file'),
+        //file = finput.files[0],
+        let data = new FormData(form);
+        let get_param = '';
+        if (method == "GET") {
+            let get_data = {};
+            data.forEach( (v, k) => { get_data[k] = v; } );
+            get_param = '?' + m.buildQueryString(get_data);
+        }
+        //console.log(get_param);
+        form.classList.add('disable');
+
+        //data.append("test", form.elements.namedItem('test'));
+        //data.append("month", form.elements.namedItem('month'));
+        //data.append("file", file);
+        //console.log(data.getAll('test')[0], data.getAll('month')[0]);
+        //data.append("")
+        let url= `${_schema('task')}${upurl}${get_param}`;
+        m.request({
+            method: method,
+            url: url,
+            body: data,
+        }).then( res=> {
+            if (res.file) {
+                model.file = res.file;
+            }
+            model.message = res.message;
+            model.done = res.done;
+            //console.log(` msg: ${model.message}, file: ${model.file}, done: ${model.done}`);
+            form.classList.remove('disable');
+        }).catch( err=> {
+            model.error = errMsg(err);
+            form.classList.remove('disable');
+        });
+        return false;
+    }
+};
+
 // src/report/view/vuHosp.js
 
 const fileForm = function(vnode) {
@@ -398,7 +713,7 @@ const fileForm = function(vnode) {
     vnode.dom.addEventListener('submit', on_form_submit);
   };
   
-  const get_href$$1 = file=> `${task_rest}${data._get}${file}`;
+  const get_href$$1 = file=> `${_schema('task')}${data._get}${file}`;
   
   return {
   
@@ -458,53 +773,29 @@ const fileForm = function(vnode) {
 };
 
 
-// clojure
 const vuHosp = function (vnode) {
-    
   return {
-  /*  
-  oninit () {
-  }
-  /*
-  oncreate() {
-  },
-  
-  onupdate() {
-  },
-  */
-  view (vnode) {
-    
-    return [
+    view () {
+      return [
         m(vuTheader, { header: vnode.attrs.header } ),
         m(fileForm, { model: vnode.attrs.model } )
-    ];
-  }    
-        
-  }; //return this object
+      ];
+    }    
+  }; 
 };
 
 // src/report/view/vuDataSheet.js
 
 // clojure
-const vuDataSheet = function (vnode) {
+const vuReportSheet = function (vnode) {
   
-  var modelObject = vnode.attrs.model, // model Object
-    structObject = vnode.attrs.struct, // the struct Object
-    headerString = vnode.attrs.header;
+  var { model, struct, header } = vnode.attrs;
+  // model Object
+  // struct Object
+  // header String;
+  moModel.getList( model );
   
-  return {
-    
-  oninit () {
-    moModel$1.getList( vnode.attrs.model );
-  },
-  /*
-  oncreate() {
-  },
-  
-  onupdate() {
-  },
-  */
-  listMap (s) {
+  const listMap = s=> {
     //let id = s.code + ' ' + s.spec;
     let first = true;
     return m('tr', [
@@ -517,37 +808,32 @@ const vuDataSheet = function (vnode) {
         return td;
       })
     ]);
-  },
-
-  view (vnode) {
+  };
+  
+  const hdr= c=> {
+    let field = struct[c];
+    return field[2] ? m('th.sortable', // 3rd el sortable bool
+      { onclick: ()=> model.sort (c) },
+      [field[0], m('i.fa.fa-sort.pl10')]
+    ) : m('th', field[0]);
+  };
+  
+  return {
+    view () {
     
     //return m(tableView, {model: this.model , header: this.header }, [
-    return modelObject.error ? [ m(".error", modelObject.error) ] :
-      modelObject.list ? [
-        m(vuTheader, { header: headerString} ),
-        this.form ? m(this.form, {model:  vnode.attrs.model}) : '',
-        
+    return model.error ? [ m(".error", model.error) ] :
+      model.list ? [
+        m(vuTheader, { header: header} ),
+        this.form ? m(this.form, {model:  model}) : '',
         
         m('table.pure-table.pure-table-bordered[id=find_table]', [
-          m('thead', [
-            m('tr', [
-              Object.keys(structObject).map( (column) => {
-                let field = structObject[column];
-                return field[2] ? m('th.sortable', // 3rd el sortable bool
-                  { data: column, onclick: m.withAttr('data', modelObject.sort) },
-                  [field[0], m('i.fa.fa-sort.pl10')]
-                  ) : m('th', field[0]);
-              }),
-            ])
-          ]),
-          m('tbody', [modelObject.list.map( this.listMap )] )
-        ]),
-      ] : m(".loading-icon", [
-            m('.i.fa.fa-refresh.fa-spin.fa-3x.fa-fw'),
-            m('span.sr-only', 'Loading...')
-          ]); 
-  }
-  }; //return this object
+          m('thead', m('tr', [ Object.keys(struct).map( hdr ) ]) ),
+          m('tbody', [modelObject.list.map( listMap )] )
+        ])
+      ] : m(vuLoading);
+    }
+  };
 };
 
 // src/report/view/vuVolum.js
@@ -576,7 +862,7 @@ const Form = function(vnode) {
     return moModel$1.doSubmit(form, model, "GET");
   };
 
-  const get_href = file=> `${task_rest}${data._get}${file}`;
+  const get_href = file=> `${_schema('task')}${data._get}${file}`;
   
   return {
   
@@ -634,7 +920,7 @@ const Form = function(vnode) {
 // clojure
 const vuVolum = function (vnode) {
   //console.log(vnode.attrs.model.pg_url);
-  let view = vuDataSheet(vnode);
+  let view = vuReportSheet(vnode);
   view.form = Form;
   return view;
 };
@@ -651,7 +937,7 @@ const roSurvey = {
     render: function() {
       let view = m(vuHosp, {
         header: "Госпитализация отчет из файда ЕИР",
-        model: moModel$1.getModel()
+        model: moModel.getModel()
         
       });
       return vuView(reportMenu, view);
@@ -662,7 +948,7 @@ const roSurvey = {
       //console.log(pgRest.volum);
       let view = m(vuVolum, {
         header: "Обемы помощи приказ 146",
-        model: moModel$1.getModel( restReport.volum ),
+        model: moModel.getModel( restReport.volum ),
         struct: moStruct().p146_report,
         //form: true
       });
@@ -677,7 +963,7 @@ const roSurvey = {
 
 const reportRouter = { [reportApi.root]: {
     render: function() {
-       return vuView( appMenu,
+       return vuView( reportMenu,
           m(vuApp, { text: "Медстатистика: Отчеты" }));
     }
   }

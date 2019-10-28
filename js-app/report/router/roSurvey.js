@@ -2,7 +2,7 @@
 
 // common
 import { vuApp, vuView } from '../../apps/view/vuApp.js';
-import { moModel } from '../model/moModel.js';
+import { moModel } from '../../apps/model/moModel.js';
 import { moStruct } from '../model/moStruct.js';
 //report
 import { restReport, reportApi, reportMenu } from '../reportApi.js';
