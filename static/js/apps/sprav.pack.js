@@ -171,7 +171,7 @@ const restSprav = {
     division: { url:"division"},
     sp_podr: { url:"sp_podr", order_by: 'mo_code' },
     sp_para: { url:"sp_para"},
-    //purp: { url: 'purpose'},
+    purp: { url: 'purpose'},
     mo_local: { url:"mo_local"},
     smo_local: { url:"smo_local"},
     // prof
@@ -185,10 +185,11 @@ const restSprav = {
     pmu_grup: { url: 'pmu_grup', editable: ['add'] },
     grc: { url: 'rpc/get_grc'},
     mkb: { url: 'mkb10', order_by: 'code'},
-    //type: {url: 'spec_case'},
-    //insur: {url: 'kategor'},
-    //istfin: {url: 'ist_fin'},
-    //errors: {url: 'errors_code'},
+    chm: { url: 'char_main'},
+    travma: { url: 'travma_type'},
+    ist_fin: { url: 'ist_fin'},
+    cishod: { url: 'cishod'},
+    cresult: { url: 'cresult'},
     
     // onko
     onko_n1: {url: 'n1_protkaz'},
@@ -413,7 +414,8 @@ const errMsg= function(error){
   //console.log(error);
   //let e = JSON.parse(error.message);
   let e= error.response;
-  let m= e.details ? e.details : e.message ? e.message: error;
+  let m= e.details ? e.details : e.message ? e.message: e;
+  //let m= e.message ? e.message : error;
   console.log(m);
   return m;
 };
@@ -490,7 +492,8 @@ const moModel = {
     console.log(url);
     return m.request({
       method: method,
-      url: url
+      url: url,
+      headers: model.headers ? model.headers: null
     }).then(function(res) {
       if ( ! Boolean(res) ) return false;
       if (res.length && res.length > 0) {
@@ -513,8 +516,10 @@ const moModel = {
     //morder= model.order ? model.order : 'id';
     //order= `?order=${morder}.asc`;
     model.options.forEach ( t => {
-      let morder= t.order_by ? t.order_by : 'id';
-      let order= `?order=${morder}.asc`;
+      let id= t.order_by ? t.order_by : 'id';
+      let sign= t.url.includes('?') ? '&': '?';
+      let order = `${sign}order=${id}.asc`;
+      
       let r = m.request({
         method: t.method ? t.method : "GET" ,
         url: schema + t.url + order
@@ -526,14 +531,17 @@ const moModel = {
       model.data.clear(); // = new Map();
       
       for ( let el of model.options.entries() ) {
-        if ( ! Boolean( lists[ el[0] ] ) ) continue;
-        model.data.set( el[1].url, lists[ el[0] ]);
+        // entries [ idx, value ]
+        if ( ! Boolean( lists[ el[0] ] ) ) continue; // no data for this option
+        model.data.set( el[1].url, lists[ el[0] ]); // el[1] option object
       }
       //window.localStorage.setItem(model.opt_name, model.data);
       //model.data = _.zipObject( model.options, lists);
       //console.log( model.list );
+      return true;
     }).catch(function(err) {
       model.error = errMsg(err);
+      throw model.error;
     });
     
   },
@@ -547,7 +555,7 @@ const moModel = {
     let _method = method ? method : model.method;
     let headers= model.headers ? model.headers : null;
     return m.request({
-      url: pg_rest + _url,
+      url: schema + _url,
       method: _method,
       body: data,
       headers: headers
@@ -1228,7 +1236,7 @@ const fieldFrom = function (fromObj, field, data, to_attrs={}) {
   let t = tag[2] ? `[tabindex=${tag[2]}]`: '';
   let r = tag[3] ? '[required]' : '';
   let tg = `input${tag[0]}[name=${field}][type=${tag[1]}]${t}${r}`;
-
+  
   attrs.value = attrs.fval === undefined ? fval( data[field] ) : attrs.fval(data[field]);
   //attrs.value= data[field] ? data[field] : '';
   attrs.onblur = attrs.fblur === undefined ? fblur: null;
@@ -1239,9 +1247,12 @@ const fieldFrom = function (fromObj, field, data, to_attrs={}) {
   if (label.length > 0 ) {
     lt = `label${label[0]}[for=${field}]`;
     // third elem only for checkbox
-    if (label.length > 2) {
-      attrs.checked = attrs.checked ? attrs.checked :
-        attrs.fcheck ? attrs.fcheck(data[field]) : data[field] === 0;
+    if (label.length > 2) { //firstly on first render time
+      
+      attrs.checked = //attrs.checked ? attrs.checked :
+        attrs.fcheck ? attrs.fcheck(data[field]) : Boolean(data[field]);
+      delete attrs.value;
+      delete attrs.onblur;
       return m(lt, m(tg, attrs), label[1]);
     }
     return [ m(lt, label[1]),  m(tg, attrs)];
@@ -1615,7 +1626,7 @@ const pmuForm = function (vnode) {
   
   return {
 
-    view(vnode) {
+    view() {
 
       return m(".pure-g",
         m(".pure-u-1-2",
@@ -1675,8 +1686,8 @@ const grcForm = function (vnode) {
   let fld= ['grup', ];
   let on_submit = function (event) {
     event.preventDefault();
-    moModel.formSubmit(event, _model, 'POST');
-    moModel.getViewRpcMap(model, [ null, {code: item.code_usl}] );
+    return moModel.formSubmit(event, _model, 'POST').then( ()=> 
+      moModel.getViewRpcMap(model, [ null, {code: item.code_usl}] ) );
     //console.log(model);
   };
   
@@ -1722,8 +1733,8 @@ const vuGrups= function(vnode){
       key: 'grup',
       item: { grup: grup },
     };
-    moModel.formSubmit(e, _model, 'DELETE');
-    moModel.getViewRpcMap(model, [ null, {code: item.code_usl}] );
+    return moModel.formSubmit(e, _model, 'DELETE').then(()=>
+      moModel.getViewRpcMap(model, [ null, {code: item.code_usl}] ) );
     //m.redraw();
   };
   let thdr= [['id', 'Номер группы'], ['name', 'Описание'], [null, 'Удалить из группы'] ];

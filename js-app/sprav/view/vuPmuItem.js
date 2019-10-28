@@ -37,7 +37,7 @@ const pmuForm = function (vnode) {
   
   return {
 
-    view(vnode) {
+    view() {
 
       return m(".pure-g",
         m(".pure-u-1-2",
@@ -98,8 +98,8 @@ const grcForm = function (vnode) {
   let fld= ['grup', ];
   let on_submit = function (event) {
     event.preventDefault();
-    moModel.formSubmit(event, _model, 'POST');
-    moModel.getViewRpcMap(model, [ null, {code: item.code_usl}] );
+    return moModel.formSubmit(event, _model, 'POST').then( ()=> 
+      moModel.getViewRpcMap(model, [ null, {code: item.code_usl}] ) );
     //console.log(model);
   };
   
@@ -145,8 +145,8 @@ const vuGrups= function(vnode){
       key: 'grup',
       item: { grup: grup },
     };
-    moModel.formSubmit(e, _model, 'DELETE');
-    moModel.getViewRpcMap(model, [ null, {code: item.code_usl}] );
+    return moModel.formSubmit(e, _model, 'DELETE').then(()=>
+      moModel.getViewRpcMap(model, [ null, {code: item.code_usl}] ) );
     //m.redraw();
   };
   let thdr= [['id', 'Номер группы'], ['name', 'Описание'], [null, 'Удалить из группы'] ];
