@@ -107,11 +107,21 @@ export const moTalon = {
       url: url
     }).then(function(res) {
       // there are no talon and pmu keys
-      model.card = res; // res is list
+      model.card =  moTalon.set_polis( res ); // res is list
       moTalon.prepare( model ); 
     }).catch(function(err) {
       model.error = errMsg(err);
     });
+  },
+  
+  set_polis( res ) {
+    if (res.length === 0)
+      throw 'Empty card for new talon';
+    const card= Object.assign({}, res[0]);
+    card.crd_polis_ser= card.polis_ser;
+    card.crd_polis_num= card.polis_num;
+    card.crd_smo= card.smo;
+    return [card];
   },
   
   // delete from talon cards fields
@@ -122,6 +132,7 @@ export const moTalon = {
     });
     t.crd_num = data.crd_num;
     if ( !t.talon_month ) t.talon_month= tmonth();
+    if (!t.tal_num) t.first_vflag= 1; // new talon with first visit always
     return t;
   },
   

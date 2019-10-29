@@ -42,6 +42,10 @@ const toSaveTalon= async function (tal, check) {
   //console.log( amb, ds);
   if ( Boolean(amb) && Boolean(ds) )
     return 'Амбулвторный и ДС прием одновременно';
+  if ( Boolean( amb ) )
+    tal.usl_ok= 3;
+  else
+    tal.usl_ok= 2;
     
   // napr ambul, stac together
   let cons= Boolean(tal.naprlech), hosp= Boolean(tal.nsndhosp);
@@ -161,21 +165,23 @@ const talForm = function (vnode) {
   const set_result= e=> set_data(e, 'rslt', 'cresult', 'id');
   const set_travma= e=> set_data(e, 'travma_type', 'travma_type', 'id');
   
-  let ds1= tal.ds1, ds2= tal.ds2;
+  //let ds1= tal.ds1, ds2= tal.ds2;
   const ds1_model= { mkb: 'mkb10?code=like.', order_by: 'code', list: null, headers: { Range: '0-20' } };
   const ds2_model= { mkb: 'mkb10?code=like.', order_by: 'code', list: null, headers: { Range: '0-20' } };
   //const ds_check= { url: 'mkb10?code=eq.', order_by: 'code', list: null };
   const set_ds= (ds, _model)=> e=> {
-    ds = e.target.value;
-    if ( diag.test(ds) ) {
-      _model.url = `${_model.mkb}${ds}*`;
+    tal[ds] = e.target.value;
+    //console.log(e.target.value);
+    if ( diag.test(tal[ds]) ) {
+      _model.url = `${_model.mkb}${tal[ds]}*`;
       //console.log(ds);
       return moModel.getList(_model);// .then(t=> console.log( ds_model.list ));
     }
+    //return true;
     return false;
   };
-  const set_ds1= set_ds(ds1, ds1_model);
-  const set_ds2= set_ds(ds2, ds2_model);
+  const set_ds1= set_ds('ds1', ds1_model);
+  const set_ds2= set_ds('ds2', ds2_model);
   
   const ds_show= tds=> {
     //console.log(tds);
@@ -253,11 +259,9 @@ const talForm = function (vnode) {
         //m('legend.leg-sec', "Диагноз, результат"),
         m('.pure-g', [
           m('.pure-u-3-24', [
-            tof('ds1', tal, {
-              list: 'ds1',
-              value: ds1,
-              oninput: set_ds1
-              //onchange: set_diag
+            m('label', "Осн. диагноз"),
+            m('input.input.pure-u-20-24[type=text][tabindex=13][required]', {
+              list: 'ds1', value: tal.ds1, oninput: set_ds1
             }),
             m('datalist[id="ds1"]',
               ds1_model.list ? ds1_model.list.map(d=> m('option', {value: d.code.trim()})) : []
@@ -282,10 +286,10 @@ const talForm = function (vnode) {
           ),
         ]),
         m('.pure-g', [
-          m('.pure-u-3-24', [tof('ds2', tal, {
-            list: 'ds2',
-            value: ds2,
-            oninput: set_ds2
+          m('.pure-u-3-24', [
+            m('label', "Доп. диагноз"),
+            m('input.input.pure-u-20-24[type=text][tabindex=17]', {
+              list: 'ds2', value: tal.ds2, oninput: set_ds2
             }),
             m('datalist[id="ds2"]',
               ds2_model.list ? ds2_model.list.map(d=> m('option', {value: d.code.trim()})) : []
@@ -302,7 +306,7 @@ const talForm = function (vnode) {
       m('fieldset', { style: "padding-left: 0%;" }, [
 				m('.pure-u-3-24', { style: "margin-top: 5px;" }, 
           m('button.pure-button.pure-button-primary[type="submit"]',
-            { style: "font-size: 1.1em", disabled: _notEdit
+            { style: "font-size: 1.1em", disabled: _notEdit()
               //onclick: talonSave
             },
           "Сохранить" )

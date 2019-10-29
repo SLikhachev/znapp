@@ -6,12 +6,12 @@ import { moTalonsList, talonOpt } from '../model/moTalons.js';
 import { ptf } from '../form/foForm.js';
 import { _Num, _notEdit } from './vuClinic'; //tal number
 
+const _disabled= tal=> { return _notEdit() || !Boolean( _Num(tal.tal_num) ); };
 
 const pmuForm = function (vnode) {
   
   let { talon, pmu }= vnode.attrs.model;
   // form fields
-  const _Disabled= _notEdit || !Boolean( _Num(talon.tal_num) );
   const fld= ['code_usl', 'ccode', 'grup'];
   // local form pmu obj
   const _pmu= {}, data= talonOpt.data;
@@ -141,7 +141,7 @@ const pmuForm = function (vnode) {
               fld.map( f => m(".pure-u-1-4", ptf(f, _pmu) ) ),
               m(".pure-u-1-5", 
                 m('button.pure-button.pure-button-primary[type="submit"]',
-                  {style: 'margin-top: 1.7em', disabled: _Disabled},
+                  {style: 'margin-top: 1.7em', disabled: _disabled(talon) },
                   "Добавить")
               )
             ]))
@@ -166,7 +166,7 @@ export const talPmu = function(vnode) {
   let para_table= moTalonsList.pmuTable();
   //tal_num int, date_usl date, code_usl varchar, kol_usl smallint,
   //exec_spec int, exec_doc int, exec_podr int, name varchar
-  let _Disabled= _notEdit || !Boolean( _Num(talon.tal_num) );
+
   let pmu_hdr = {
       ccode: ['Номер'],
       code_usl: ['Код услуги'],
@@ -179,7 +179,7 @@ export const talPmu = function(vnode) {
   };
   
   const caption= ()=>{
-    if (_notEdit)
+    if ( _notEdit() )
       return 'Талоны прошлых лет не редактируем';
     if ( ! Boolean( _Num(talon.tal_num) ) )
       return 'Талон без номера, сначала сохраните новый талон';
@@ -234,11 +234,11 @@ export const talPmu = function(vnode) {
         m('td', m('i.fa.fa-plus-circle.choice', {
           style: "color: green;",
           data: s.id,
-          onclick: _Disabled ? null: add_kol_usl
+          onclick: _disabled(talon) ? null: add_kol_usl
         }) ),
         m('td', m('i.fa.fa-minus-circle.choice.red', {
           data: s.id,
-          onclick: _Disabled ? null: del_kol_usl
+          onclick: _disabled(talon) ? null: del_kol_usl
         }) )
       ]) : '';
   };
