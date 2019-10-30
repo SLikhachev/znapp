@@ -1,12 +1,9 @@
 
 // src/clinic/view/vuTabs.js
 import { vuDialog } from '../../apps/view/vuDialog.js';
-//import { moCard } from '../model/moCards.js';
-//import { moTalon } from '../model/moTalons.js';
+import { moCard } from '../model/moCards.js';
+import { moTalon } from '../model/moTalons.js';
 
-export const ErrDialog= model=> m(vuDialog,
-  { header: 'Ошибка обработки', word: model.word },
-  model.save ? m('span', { style: " font-size: 1.3em; color: red; "}, model.save.msg): '');
 
 export const toFocus = function (vnode) {
   vnode.dom.focus();
@@ -48,7 +45,7 @@ export const tabsView = function(vnode) {
 
   };
   return {
-    oncreate(vnode) {
+    oncreate() {
       //console.log(vnode.attrs.data);
       tabs = document.getElementsByClassName('tab');
       tabs_cont=document.getElementsByClassName('tab-content');
@@ -58,9 +55,9 @@ export const tabsView = function(vnode) {
       hideTabs(1); // other hide
     },
     
-    view(vnode) {
+    view() {
       let idx=0;
-      return m('div#tabs', [
+      return [ m('div#tabs', [
         tab_names.map( (name) => {
           return m('.tab',
               { idx: idx++,
@@ -74,9 +71,14 @@ export const tabsView = function(vnode) {
             //{ oncreate: (vnode => tabs_cont.push(vnode.dom)) },
             
             m(cont, {model: vnode.attrs.model, method: vnode.attrs.method}) );
-        }),
-        ErrDialog(vnode.attrs.model)
-      ]);
+        })
+      ]),
+      m(vuDialog, { header: 'Ошибка бработки', word: vnode.attrs.model.word },
+        m('span.red', {style: "font-size: 1.2em; font-weight: 600"},
+          vnode.attrs.model.save ? vnode.attrs.model.save: 'No messages'
+        )
+      )
+    ];
   }
 }
 }

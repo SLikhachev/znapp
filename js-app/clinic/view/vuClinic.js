@@ -2,7 +2,7 @@
 // src/clinic/view/vuClinic.js
 
 import { moCard } from '../model/moCards.js';
-import { moTalon } from '../model/moTalons.js';
+import { moTalonsList, moTalon } from '../model/moTalons.js';
 
 export const vuClinic = function(vnode) {
   return {
@@ -32,3 +32,16 @@ export const vuClinic = function(vnode) {
     }
   }
 }
+
+export const getFIO= s=> {
+   let f= ['fam', 'im', 'ot'].map(k=> s[k]? s[k]: '');
+   return `${f[0]} ${f[1]} ${f[2]}`;
+}
+
+export const _Num= num=> num ? num: ''; //talon number
+
+//talon editable
+export const _notEdit= ()=> moTalonsList.year == moTalonsList._year ? false: true;
+
+export const talNum= tal=> 
+  m('legend', `Талон № ${_Num(tal.tal_num)}`, m('span', {style: "padding: 3em"}, ' ') , `Год ${moTalonsList._year}`);

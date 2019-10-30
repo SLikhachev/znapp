@@ -13,12 +13,12 @@ item - item to edit
 const Profil= {
   id: { label: ['', "Код"], input: {
       tag: ['.lcode', "number"],
-      attrs: { disabled: true }
+      attrs: { readonly: true }
     }
   },
   name: { label: ['', 'Профиль'], input: {
       tag: ['.fname[size=54]', 'text'],
-      attrs: { disabled: true }
+      attrs: { readonly: true }
     }
   },
   one_visit: { label: ['', "ПМУ посещение"], input: {

@@ -31,7 +31,6 @@ const vuSmoLocal = function(vnode){
   return vuSheet(vnode);
 }
 
-
 export const roLocal = {
   [spravApi.mo]: {
     render: function() {
@@ -90,7 +89,8 @@ export const roLocal = {
           model:  moModel.getModel( restSprav.sp_para),
           header: "Коды диагностических подразделений",
           name: "Подазделение",
-          struct: idName
+          struct: idName,
+          filter: 2,
       });
       return vuView(view);
     }

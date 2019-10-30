@@ -1,8 +1,9 @@
 // src/reestr/view/vuInvimp.js
 
+import { _month, _schema } from '../../apps/model/moModel.js';
 import { vuTheader, foResp } from '../../apps/view/vuApp.js';
 import { file_field, form_file_dom } from '../../apps/form/customFields.js';
-import { _month, _schema, moModel } from '../model/moModel.js';
+import { moModel } from '../model/moModel.js';
 import { taskReestr } from '../reestrApi.js';
 
 const Form = function(vnode) {
@@ -19,7 +20,7 @@ const Form = function(vnode) {
     imp.classList.add('disable');
     //console.log(resp.getAttribute('display'));
     moModel.formSubmit(event, _schema('task'), model, "POST").then((t) => {
-      //console.log(model);
+      //console.log(imp);
       imp.classList.remove('disable');
     });
   };
@@ -50,6 +51,7 @@ const Form = function(vnode) {
                   m('option[value=3]', 'Дневной стационар'),
                   m('option[value=4]', 'Профосмотр'),
                   m('option[value=5]', 'Инокраевые'),
+                  m('option[value=6]', 'Тарифы ПМУ'),
                 ]),
               ]),
               m('.pure-controls', [

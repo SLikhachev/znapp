@@ -14,12 +14,10 @@ export const restSprav = {
     division: { url:"division"},
     sp_podr: { url:"sp_podr", order_by: 'mo_code' },
     sp_para: { url:"sp_para"},
-    istfin: {url: 'ist_fin'},
     purp: { url: 'purpose'},
-    charm: { url: 'char_main'},
+
     mo_local: { url:"mo_local"},
     smo_local: { url:"smo_local"},
-    
     // prof
     doc_spec : { url:"spec_prvs_profil", order_by: 'spec', key: 'spec'}, 
     profil: { url: 'profil', editable: ['edit'], change: ['one_visit', 'two_visit', 'podr'], },
@@ -31,9 +29,11 @@ export const restSprav = {
     pmu_grup: { url: 'pmu_grup', editable: ['add'] },
     grc: { url: 'rpc/get_grc'},
     mkb: { url: 'mkb10', order_by: 'code'},
-    //type: {url: 'spec_case'},
-    //insur: {url: 'kategor'},
-    //errors: {url: 'errors_code'},
+    chm: { url: 'char_main'},
+    travma: { url: 'travma_type'},
+    ist_fin: { url: 'ist_fin'},
+    cishod: { url: 'cishod'},
+    cresult: { url: 'cresult'},
     
     // onko
     onko_n1: {url: 'n1_protkaz'},

@@ -1,6 +1,8 @@
 
 // src/report/model/moModel.js
 
+import { errMsg } from '../../apps/model/moModel.js';
+
 export const _month= () => {
     let d = new Date(), y = d.getFullYear(), m = d.getMonth() + 1;
     m= m < 10 ? `0${m}`: `${m}`;
@@ -46,7 +48,7 @@ export const moModel = {
       model.list = res; // list of objects
       model.order = true;
     }).catch(function(e) {
-      model.error = e.message;
+      model.error = errMsg(e);
       console.log(model.error);
     });
   },
@@ -86,7 +88,7 @@ export const moModel = {
       form.classList.remove('disable');
       return true;
     }).catch((err) => {
-      model.error = err.message;
+      model.error = errMsg(e);
       console.log(model.error);
       form.classList.remove('disable');
       return false;
@@ -120,7 +122,7 @@ export const moModel = {
       event.target.parentNode.classList.remove('disable');
       return true;
     }).catch((err) => {
-      model.error = err.message;
+      model.error = errMsg(e);
       console.log(model.error);
       event.target.parentNode.classList.remove('disable');
       return false;

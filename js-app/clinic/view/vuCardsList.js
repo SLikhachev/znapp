@@ -1,9 +1,11 @@
 // src/clinic/view/vuCardsList.js
 
 import { vuLoading } from '../../apps/view/vuApp.js';
-import { restClinic, clinicApi } from '../clinicApi.js';
 import { moModel } from '../../apps/model/moModel.js';
+import { restClinic, clinicApi } from '../clinicApi.js';
 import { moCardsList } from '../model/moCards.js';
+import { getFIO } from './vuClinic.js';
+
 
 const cardFind= function (vnode) {
 
@@ -33,7 +35,7 @@ const cardFind= function (vnode) {
             m(".pure-g", [
               m(".pure-u-1-5",
                 m("input.input-find.pure-u-3-4[name=q_crd][type='text']",
-                  {placeholder: "Номер карты",
+                  {placeholder: "Номер карты", style: "font-size: 1.2em"
                   //onkeyup: m.withAttr("value", vmFind.setFind ),
                   //value: vmFind.toFind
                   }
@@ -41,22 +43,23 @@ const cardFind= function (vnode) {
               ),
               m(".pure-u-1-5",
                 m("input.input-find.pure-u-2-3[name=q_fam][type='text']",
-                  {placeholder:"Фамилия"}
+                  {placeholder:"Фамилия", style: "font-size: 1.2em"}
                 )
               ),
               m(".pure-u-1-5",
                 m("input.input-find.pure-u-2-3[name=q_im][type='text']",
-                  {placeholder:"Имя"}
+                  {placeholder:"Имя", style: "font-size: 1.2em"}
                 )
               ),
               m(".pure-u-1-5",
                 m('button.pure-button[type="button"]', {
                     //value: 0,
-                    onclick: findCards
+                    onclick: findCards, style: "font-size: 1.2em"
                   }, "Найти" ),
-                m(m.route.Link, { selector: 'a.pure-button.pure-button-primary',
+                m(m.route.Link, { selector: 'a.pure-button.pure-button-primary', 
                   href: href,
-                  style: "margin-left: 2em;"
+                  //oncreate: m.route.link,
+                  style: "margin-left: 2em; font-size: 1.2em"
                   }, "Новая карта" )
               ),
             ])
@@ -110,15 +113,14 @@ export const vuCardsList = function (vnode) {
   };
   
   const listMap= function(s) {
-    let fio = `${s['fam']} ${s['im']} ${s['ot']}`;
-    let first = true;
+    let fio = getFIO(s), first = true;
     return m('tr', [
       Object.keys(cardz_hdr).map( (column) => {
         let cell = column === 'fam' ? fio : s[column];
-        let td = first ? m('td.choice.blue', m(m.route.Link, {
+        let td = first ? m('td.choice.blue', m (m.route.Link, {
           href: `${clinicApi.cards}/${cell}`,
           //oncreate: m.route.link
-        }, cell)) : m('td', cell);
+        }, cell)) : m('td', cell ? cell: '');
         first = false;
         return td;
       }),

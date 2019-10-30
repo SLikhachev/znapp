@@ -1,29 +1,27 @@
 // src/reestr/view/vuReestr.js
 
-import { vuTheader, foResp } from '../../apps/view/vuApp.js';
+import { vuTheader } from '../../apps/view/vuApp.js';
 import { _month, _schema, moModel } from '../model/moModel.js';
-import { taskReestr } from '../reestrApi.js';
+//import { taskReestr } from '../reestrApi.js';
 //import { task_rest, moModel } from '../model/moModel.js';
 
-const Form = function(vnode) {
+const reestrForm = function(vnode) {
   
   const model= vnode.attrs.model;
-  model.href= taskReestr.pack.get_url;
   const data= { month: _month(), pack: 1 };
-  const schema= _schema('task');
+  const schema= _schema('task');  
   
   const on_submit = event=> {
+    //console.log(data);
     event.preventDefault();
-    let imp= document.getElementById('imp');
-    imp.classList.add('disable');
-    return moModel.doSubmit(event, schema, 'simple', model, data, "POST").then((t) => {
-      imp.classList.remove('disable');
-    });
+    //console.log(data);
+    //return false;
+    return moModel.doSubmit(event, schema, 'simple', model, data, "POST");
   };
   
   return {
     view() {
-      return m('div#imp.pure-g', [
+      return m('.pure-g', [
         m('.pure-u-1-3', [
           m('form.pure-form.pure-form-stacked', { onsubmit: on_submit }, [
             m('fieldset', [
@@ -55,7 +53,18 @@ const Form = function(vnode) {
             ])
           ])
         ]),
-        m('.pure-u-2-3', foResp(model) )
+        m('.pure-u-2-3', [
+          model.error ? m('.error', model.error) :
+            model.message ? m('.legend', ["Статус обработки", 
+              m('div', [
+
+                m('h4.blue', model.message),
+                m('span.blue', {style: "font-size: 1.2em"}, "Файл пакета: ", model.file ),
+                model.detail ? m('h4.red', model.detail) : '',
+
+              ])
+            ]) : m('div')
+        ])
       ]);
     }
   };
@@ -69,7 +78,7 @@ export const vuReestr = function (vnode) {
     view () {
       return [
         m(vuTheader, { header: vnode.attrs.header } ),
-        m(Form, { model: vnode.attrs.model } )
+        m(reestrForm, { model: vnode.attrs.model } )
       ];
     }    
         

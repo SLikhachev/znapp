@@ -1,12 +1,12 @@
 // src/clinic/model/moCards.js
 
 import { vuDialog } from '../../apps/view/vuDialog.js';
-//import { schemaRest } from '../../apps/apiConf.js';
+import { moModel, errMsg, _schema, _region } from '../../apps/model/moModel.js';
 import { restSprav } from '../../sprav/spravApi.js';
 import { restClinic } from '../clinicApi.js';
-import { moModel, errMsg } from '../../apps/model/moModel.js';
+import { moTalonsList } from './moTalons';
 
-//let schema = schemaRest;
+const _reg= _region();
 
 export const moCardsList = {
   // return model object 
@@ -68,18 +68,20 @@ export const moCard = {
   
   getCard(model, crd) {
     let c= { crd_num: String(crd) };
+    let t= Object.assign( { tal_tbl: moTalonsList.talTable()}, c );
     //console.log(crd);
     return moModel.getViewRpcMap(
-      model, [c, c]
+      model, [c, t]
     );
   },
   
   saveCard(event, card, model, method) {
     //event.preventDefault();
     event.target.parentNode.classList.add('disable');
+    //let { crd_num } = model.card[0];
     //model.card = Object.assign(model.card, card);
     const to_save= Object.assign({}, card);
-    //console.log(card.crd_num);
+    //console.log(moCard.model.card);
     /*
     testCase(2000, true).then( (res) => {
       //console.log('ggg ', res);
@@ -93,28 +95,31 @@ export const moCard = {
         m.redraw();
     });
     */
-    let pg_rest = window.localStorage.getItem('pg_rest');
+    let schema = _schema('pg_rest');
     //let method = event.target.getAttribute('method');
-    let { crd_num } = to_save;
-    let table = `${pg_rest}cardz_clin`;
-    let url = crd_num ? `${table}?crd_num=eq.${crd_num}`: table;
-    if ( Boolean(crd_num) ) delete to_save.crd_num;
-    
+    let { crd_num, id, old_card } = card;
+    let table = `${schema}cardz_clin`;
+    let url = id ? `${table}?id=eq.${id}`: table;
+    ['id', 'created', 'modified', 'cuser'].forEach( k=> delete to_save[k] );
+    if ( method === 'PATCH' && (crd_num == old_card) )
+      // same card number 
+      delete to_save.crd_num; // primary key duplication
+    // else change card number
+    delete to_save.old_card; // no that field in table
+    //to_save.smo = parseInt(to_save.smo) + _reg;
     return m.request({
       url: url,
       method: method,
-      body: to_save,
-      responseType: "json"
+      body: to_save
     }).then( res => {
       //console.log(card.crd_num);
       event.target.parentNode.classList.remove('disable');
+      return true;
     }).catch( err => {
-      //console.log (err);
-      model.save = { err: true, msg: errMsg(err) };
-      //alert( model.save.msg );
+      //model.save = errMsg(err);
       event.target.parentNode.classList.remove('disable');
-      vuDialog.open();
+      throw ( errMsg (err) );
+      //vuDialog.open();
     });
-    //return false;
   }
 };

@@ -1,59 +1,76 @@
 // src/clinic/view/vuTalonsList.js
 
 import { vuLoading } from '../../apps/view/vuApp.js';
-import { restClinic, clinicApi } from '../clinicApi.js';
 import { moModel } from '../../apps/model/moModel.js';
-import { moTalonsList } from '../model/moTalons.js';
-//import { toCard } from './vuCardsList.js';
-//import { vuTalon } from './vuTalon.js';
-
+import { restClinic, clinicApi } from '../clinicApi.js';
+import { moTalonsList,  } from '../model/moTalons.js';
+import { getFIO } from './vuClinic.js';
+/*
+IN tbl varchar,
+IN q_tal integer,
+IN q_crd character varying,
+IN q_date date,
+IN lim integer,
+IN offs integer)
+*/
 const talonFind = function(vnode){
   
   let { model } = vnode.attrs;
-  
+  //let yy= moTalonsList._year;
   const findTalons= function(event) {  
     event.preventDefault();
-    let data = moModel.getFormData( $('form#talon_find') );
-    //console.log ( data );
+    //let data = moModel.getFormData( $('form#talon_find') );
+    let data = moModel.getFormData( event.target );
+    //console.log ( data.q_year );
     //moTalonsList.model.list=[];
     //return false;
-    if (data.q_tal === "")
+    if ( !data.q_tal)
       data.q_tal = 1;
-    if ( data.q_crd === "" && (data.q_date !== "" || data.q_dspec !== "" ) )
+    if ( !data.q_crd && Boolean(data.q_date) ) // || data.q_dspec !== "" ) )
       data.q_crd = ".*";
-    if (data.q_date === "" && data.q_dspec !== "")
+    if ( !data.q_date) //&& data.q_dspec !== "")
       data.q_date = '2010-01-01';
-    data.q_date = data.q_date === "" ? null : data.q_date;
-    data.q_dspec = null;
-    //if (data.q_dspec === "")
-    //  data.q_dspec = null;
+    //data.q_date = data.q_date === "" ? null : data.q_date;
+    /*
+    if (data.q_dspec === "")
+      data.q_dspec = null;
+    */
+    //data.q_dspec= null;
     data.lim = 50;
     data.offs = 0;
+    data.tbl= moTalonsList.talTable();
+    delete data.q_year;
     //console.log ( data );
-    moModel.getViewRpc( model, data );
-    return false;
+    return moModel.getViewRpc( model, data );
+    //return false;
   };
+  const changeYear= e=> {
+    moTalonsList._year= e.target.value;
+    m.route.set([clinicApi.lalons]);
+  };
+  
   return { 
     view () { return m(".pure-g",
       m(".pure-u-1-1", // data gets from this FORM fieldsl
-        m("form.pure-form[id=talon_find]",
+        m("form.pure-form[id=talon_find]", { onsubmit: findTalons },
           m("fieldset",
             m(".pure-g", [
               m(".pure-u-1-5",
-                m("input.input-find.pure-u-3-4[name=q_tal][type='number']",
+                m("input.input-find.pure-u-2-3[name=q_tal][type='number']",
                   { placeholder: "Номер талона",
-                    onupdate: v => v.dom.value = '' 
+                    onupdate: v => v.dom.value = '', //vnode hook
+                    style: "font-size: 1.2em"
                   }
                 )
               ),
               m(".pure-u-1-5",
-                m("input.input-find.pure-u-2-3[name=q_crd][type='search']",
-                  {placeholder:"Номер карты"}
+                m("input.input-find.pure-u-2-3[name=q_crd][type='text']",
+                  {placeholder:"Номер карты", style: "font-size: 1.2em"}
                 )
               ),
               m(".pure-u-1-5",
                 m("input.input-find.pure-u-2-3[name=q_date][type='date']",
-                  {placeholder:"С даты"}
+                  //{placeholder:"С даты"}
                 )
               ),
               /*
@@ -69,13 +86,23 @@ const talonFind = function(vnode){
                 )
               ),
               */
-              m(".pure-u-1-5",
-                m('button.pure-button.pure-button-primary[type="button"]', {
-                    onclick: findTalons
+              m(".pure-u-1-8",
+                m('button.pure-button.pure-button-primary[type=submit"]', {
+                    //onclick: findTalons
+                    style: "font-size: 1.2em"
                   },
                 "Найти"
                 )
-              )
+              ),
+              m(".pure-u-1-5", [ // {style: "float: left"}, [
+                m('label[for=q_year]', { style: "padding-right: 2em; font-size: 1.2em" }, 'Год талонов'),
+                m("input.input-find.pure-u-1-3[name=q_year][type='number']",
+                  { value: moTalonsList._year, onchange: changeYear,
+                    style: "font-size: 1.2em; font-weight: 600",
+                    min: 2010, max: 2030
+                  }
+                )
+              ]),
             ]) // pure-g
           ) //fieldset
         ) //form
@@ -99,8 +126,20 @@ export const vuTalonsList = function (vnode) {
     code: ['Код'],
     family: ['Врач']
   };
-  let model = moTalonsList.getModel();  
-  moModel.getViewRpc(model, {}, restClinic.talons_cnt.url, restClinic.talons_cnt.method );
+  let model = moTalonsList.getModel();
+  let yy= moTalonsList.talTable();
+  //console.log(yy);
+  moModel.getViewRpc(model, { _tbl: yy }, restClinic.talons_cnt.url, restClinic.talons_cnt.method );
+  
+  const markDeleted= (e, num)=> {
+    e.preventDefault();
+    if (window.confirm(`Пометить талон №${num} на удаление?`)) { 
+      return moTalonsList.markDelete(e, num).then( num=> {
+        model.list= model.list.filter( t=> t.tal_num != num  ); 
+      });
+    }
+    return false;
+  };
   
   const sort= '';
   
@@ -114,11 +153,11 @@ export const vuTalonsList = function (vnode) {
         ) : m('th', field[0]);
       }),
       m('th', "Удалить")
-    ])
+    ]);
   };
   
   const listMap= function(s) {
-    let fio = `${s['fam']} ${s['im']} ${s['ot']}`
+    let fio = getFIO(s);
     let tal= s.tal_num, crd= s.crd_num;
     return m('tr', [
       Object.keys(talonz_hdr).map( (column) => {
@@ -134,24 +173,17 @@ export const vuTalonsList = function (vnode) {
         }, cell) */
         m('td.choice.blue', m(m.route.Link, {
           href: column == 'crd_num' ? `${clinicApi.cards}/${crd}`: `${clinicApi.talons}/${tal}/${crd}`,
-          //oncreate: m.route.link
         }, cell)) : m('td', cell);
         return td;
       }),
       m('td', m('i.fa.fa-minus-circle.choice.red', {
-        data: s.tal_num,
-        //onclick: m.withAttr( "data", vuForm.ddel)
+        onclick: e=> markDeleted (e, s.tal_num),
       }) )
     ]);
   };
   
   
   return {
-    
-    oninit () {
-      //this.model = moCardsList.getModel();
-      //moCardsList.getList(model);
-    },
     view () {
     //return m(tableView, {model: this.model , header: this.header }, [
     return model.error ? [ m(".error", model.error) ] :
