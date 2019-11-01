@@ -18,6 +18,7 @@ const cardFind= function (vnode) {
     let data = moModel.getFormData( $('form#card_find') );
     //console.log ( data );
     //return false;
+    data._tbl= moCardsList.crdTable();
     data.lim = 50;
     data.offs = 1;
     moModel.getViewRpc( model, data );
@@ -87,8 +88,8 @@ export const vuCardsList = function (vnode) {
    };
   
   const model= moCardsList.getModel();
-  const table_id = 'cards_list';
-  moModel.getViewRpc(model, {}, restClinic.cards_cnt.url, restClinic.cards_cnt.method );
+  const table_id= moCardsList.crdTable();
+  moModel.getViewRpc(model, {_tbl: table_id}, restClinic.cards_cnt.url, restClinic.cards_cnt.method );
   const sort= '';
   
   const newTalon= (e) => {

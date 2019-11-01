@@ -156,8 +156,13 @@ const crdMain = function(vnode) {
   let { model, method }= vnode.attrs;
   const data= cardOpt.data;
   //const card = model.card ? Object.assign({}, model.card[0]) : {};
-  const card= model.card ? model.card[0] : {};
-  card.old_card= card.crd_num;
+  let card;
+  if (model.card.length > 0) {
+    card= model.card[0];
+    card.old_card= card.crd_num;
+  } else {
+    card= {};
+  }
   /*
   if (card.smo !== null)
     if( card.smo >= _reg)
@@ -336,7 +341,11 @@ const crdMain = function(vnode) {
 }; //func
 const crdViz = function(vnode) {
 
-  let crd = vnode.attrs.model.card[0].crd_num;
+  let crd;
+  if ( vnode.attrs.model.card.length > 0 )
+    crd= vnode.attrs.model.card[0].crd_num;
+  else
+    crd= '';
   //console.log(crd);
   let tal = vnode.attrs.model.talons ? vnode.attrs.model.talons: [];
   // tal_num int, open_date date, close_date date, purp smallint,
@@ -417,7 +426,7 @@ export const vuCard = function(vnode) {
   const model= moCard.getModel();
   model.word= 'Карты';
   moCard.getCard( model, crd );
-  const method = isNaN(crd) || crd === 0 ? "POST": "PATCH";
+  const method = Number.isNaN(crd) || crd === 0 ? "POST": "PATCH";
   
   return {  
     oninit () {

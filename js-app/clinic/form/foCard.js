@@ -49,7 +49,7 @@ export const cardField = {
     }
   },
   dul_date: {label: ['', 'Дата'], input: {
-      tag: ['', 'text', 9, false],
+      tag: ['', 'date', 9, false],
       //attrs: { placeholder: "Номер" }
     }
   },

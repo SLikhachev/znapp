@@ -29,6 +29,10 @@ export const moCardsList = {
     model.list = _.orderBy(model.list, [ field ], [ order ]);
     model.order = !model.order;
   },
+  _table: 'cardz_clin',
+  crdTable() {
+    return `${moCardsList._table}`;
+  },
 };
 
 const testCase = function(time, test) {
@@ -67,8 +71,8 @@ export const moCard = {
   },
   
   getCard(model, crd) {
-    let c= { crd_num: String(crd) };
-    let t= Object.assign( { tal_tbl: moTalonsList.talTable()}, c );
+    let c= { _tbl: moCardsList.crdTable(), crd_num: String(crd) };
+    let t= { tal_tbl: moTalonsList.talTable(), crd_num: String(crd) };
     //console.log(crd);
     return moModel.getViewRpcMap(
       model, [c, t]

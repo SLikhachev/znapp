@@ -3,8 +3,8 @@
 
 export const restClinic = {
 
-    cards_cnt: { url:"count_cards_clin", method:"GET" }, 
-    card_find: { url:"rpc/clin_cards", method:"POST" },
+    cards_cnt: { url:"rpc/get_crd_count", method:"POST" }, 
+    card_find: { url:"rpc/cards_list", method:"POST" },
     get_card: { url:"rpc/clin_card_by_num", method:"POST"},
     get_crd_talons: {url: 'rpc/crd_talons', method: 'POST'},
     

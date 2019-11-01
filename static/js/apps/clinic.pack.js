@@ -160,8 +160,8 @@ const vuMain = {
 
 const restClinic = {
 
-    cards_cnt: { url:"count_cards_clin", method:"GET" }, 
-    card_find: { url:"rpc/clin_cards", method:"POST" },
+    cards_cnt: { url:"rpc/get_crd_count", method:"POST" }, 
+    card_find: { url:"rpc/cards_list", method:"POST" },
     get_card: { url:"rpc/clin_card_by_num", method:"POST"},
     get_crd_talons: {url: 'rpc/crd_talons', method: 'POST'},
     
@@ -755,8 +755,11 @@ const moTalon = {
     });
     t.crd_num = data.crd_num;
     if ( !t.talon_month ) t.talon_month= tmonth();
-    if (!t.tal_num) t.first_vflag= 1; // new talon with first visit always
-    if (!data.ot) t.d_type= '5'; // d_type only one case here NET OT
+    if (!t.tal_num) {
+        t.first_vflag= 1; // new talon with first visit always
+        t.talon_type= 1; // open talon
+    }
+    if (!data.ot) t.d_type= '5'; // d_type only one case here NET OTCHESYVA
     return t;
   },
   
@@ -777,10 +780,12 @@ const moTalon = {
     //c.old_card= c.crd_num;
     model.card= c; // rewrites and this is not a list
     // prepare talon
-    model.talon= model.talon ? moTalon.to_talon(model.talon[0], card_fileds) :
-      moTalon.to_talon( c, card_fileds );
-    if ( ! Boolean(model.pmu) )
-      model.pmu=[];
+    if ( Boolean(model.talon) && model.talon.length > 0)
+      model.talon= moTalon.to_talon(model.talon[0], card_fileds);
+    else
+      model.talon= moTalon.to_talon( c, card_fileds );
+    //if ( model.pmu.length  )
+    //  model.pmu=[];
   },
   
   saveTalon(event, model, method) {
@@ -842,6 +847,10 @@ const moCardsList = {
     model.list = _.orderBy(model.list, [ field ], [ order ]);
     model.order = !model.order;
   },
+  _table: 'cardz_clin',
+  crdTable() {
+    return `${moCardsList._table}`;
+  },
 };
 
 const cardOpt= {
@@ -871,8 +880,8 @@ const moCard = {
   },
   
   getCard(model, crd) {
-    let c= { crd_num: String(crd) };
-    let t= Object.assign( { tal_tbl: moTalonsList.talTable()}, c );
+    let c= { _tbl: moCardsList.crdTable(), crd_num: String(crd) };
+    let t= { tal_tbl: moTalonsList.talTable(), crd_num: String(crd) };
     //console.log(crd);
     return moModel.getViewRpcMap(
       model, [c, t]
@@ -1001,6 +1010,7 @@ const cardFind= function (vnode) {
     let data = moModel.getFormData( $('form#card_find') );
     //console.log ( data );
     //return false;
+    data._tbl= moCardsList.crdTable();
     data.lim = 50;
     data.offs = 1;
     moModel.getViewRpc( model, data );
@@ -1065,8 +1075,8 @@ const vuCardsList = function (vnode) {
    };
   
   const model= moCardsList.getModel();
-  const table_id = 'cards_list';
-  moModel.getViewRpc(model, {}, restClinic.cards_cnt.url, restClinic.cards_cnt.method );
+  const table_id= moCardsList.crdTable();
+  moModel.getViewRpc(model, {_tbl: table_id}, restClinic.cards_cnt.url, restClinic.cards_cnt.method );
   const sort= '';
   
   const newTalon= (e) => {
@@ -1446,55 +1456,65 @@ const cardField = {
       attrs: { placeholder: "Номер" }
     }
   },
+  dul_date: {label: ['', 'Дата'], input: {
+      tag: ['', 'date', 9, false],
+      //attrs: { placeholder: "Номер" }
+    }
+  },
+  dul_org: {label: ['', 'Выдан'], input: {
+      tag: ['', 'text', 10, false],
+      //attrs: { placeholder: "Номер" }
+    }
+  },
   polis_ser: {label: ['', "Полис серия"], input: {
       //tag: ['.pure-u-1-6', 'text', 9, false],
-      tag: ['', 'text', 9, false],
+      tag: ['', 'text', 11, false],
       //attrs: {  placeholder:"Серия" }
   }},
   polis_num: {label: ['', "Номер"], input: {
       //tag: ['.pure-u-3-6', 'text', 10, false],
-      tag: ['', 'number', 10, true],
+      tag: ['', 'number', 12, true],
       attrs: { min : 1 }
   }},
   smo: {label: ['', "Страховщик"], input: {
-      //tag: ['.pure-u-1-6', 'text', 11, false],
+      //tag: ['.pure-u-1-6', 'text', 13, false],
       //attrs: { pattern: "[0-9]*" }
   }},
   smo_okato: {label: ['', "Регион"], input: {
-      tag: ['', 'text', 12, false],
+      tag: ['', 'text', 14, false],
       attrs: { list:  "okato", fblur: true }
   }},
   mo_att: {label: ['',  "Прикреплен к МО"], input: {
-      tag: ['.pure-u-1-6', 'number', 13, false],
+      tag: ['.pure-u-1-6', 'number', 15, false],
       //attrs: { }
     }
   },
   city_g: {label: [], input: {
-      tag: ['', 'text', 14, false],
+      tag: ['', 'text', 16, false],
       attrs: { placeholder: "Город" }
   }},
   street_g: {label: [], input: {
-      tag: ['', 'text', 15, false],
+      tag: ['', 'text', 17, false],
       attrs: { placeholder: "Улица" }
   }},
   home_g: {label: [], input: {
-      tag: ['.pure-u-1-8', 'text', 16, false ],
+      tag: ['.pure-u-1-8', 'text', 18, false ],
       attrs: { placeholder: "Дом" }
   }},
   corp_g: {label: [], input: {
-    tag: ['.pure-u-1-8', 'text',  17, false ],
+    tag: ['.pure-u-1-8', 'text',  19, false ],
     attrs: { placeholder: "Корпус" }
   }},
   flat_g: {label: [], input: {
-    tag: ['.pure-u-1-8', 'text',  18, false ],
+    tag: ['.pure-u-1-8', 'text',  20, false ],
     attrs: { placeholder: "Кв" }
   }},
   phone_wrk: {label: [], input: {
-    tag: ['', 'text',  19, false ],
+    tag: ['', 'text',  21, false ],
     attrs: { placeholder: "Мобильный тел" }
   }},
   phone_hom: {label: [], input: {
-    tag: ['', 'text',  20, false ],
+    tag: ['', 'text',  22, false ],
     attrs: { placeholder: "Контактный тел" }
   }},
 };
@@ -1663,7 +1683,7 @@ const toSaveCard= card=> {
     if ( !card.dul_serial && !card.dul_number )
       card.dul_type= null;
     if ( Boolean(card.polis_type) && card.polis_type < 3 && !Boolean(card.dul_type) )
-      return 'Для этого типа полиса требуются данные ДУЛ';
+      return 'Для этого типа полиса требуются полные данные ДУЛ';
     
     // SMO
     if ( !card.smo && !card.smo_okato)
@@ -1690,8 +1710,13 @@ const crdMain = function(vnode) {
   let { model, method }= vnode.attrs;
   const data= cardOpt.data;
   //const card = model.card ? Object.assign({}, model.card[0]) : {};
-  const card= model.card ? model.card[0] : {};
-  card.old_card= card.crd_num;
+  let card;
+  if (model.card.length > 0) {
+    card= model.card[0];
+    card.old_card= card.crd_num;
+  } else {
+    card= {};
+  }
   /*
   if (card.smo !== null)
     if( card.smo >= _reg)
@@ -1774,6 +1799,8 @@ const crdMain = function(vnode) {
               ]),
               m(".pure-control-group", cof('dul_serial', card)),
               m(".pure-control-group", cof('dul_number', card)),
+              m(".pure-control-group", cof('dul_date', card)),
+              m(".pure-control-group", cof('dul_org', card)),
             ]), // u-7-24
 // ============================			
             m(".pure-u-8-24", [m('legend', "ОМС"),
@@ -1791,7 +1818,7 @@ const crdMain = function(vnode) {
               m(".pure-control-group", [
                 m('label', { for: "smo"}, "Страховщик"),
                 m('select[name="smo"]',
-                  {tabindex: 11, value: card.smo, onchange: _set_smo}, [
+                  {tabindex: 13, value: card.smo, onchange: _set_smo}, [
                   m('option[value=""]', ""),
                   data.get('smo_local').map(s=> m('option', {value: s.code}, s.short_name))
                 ])
@@ -1868,7 +1895,11 @@ const crdMain = function(vnode) {
 }; //func
 const crdViz = function(vnode) {
 
-  let crd = vnode.attrs.model.card[0].crd_num;
+  let crd;
+  if ( vnode.attrs.model.card.length > 0 )
+    crd= vnode.attrs.model.card[0].crd_num;
+  else
+    crd= '';
   //console.log(crd);
   let tal = vnode.attrs.model.talons ? vnode.attrs.model.talons: [];
   // tal_num int, open_date date, close_date date, purp smallint,
@@ -1949,7 +1980,7 @@ const vuCard = function(vnode) {
   const model= moCard.getModel();
   model.word= 'Карты';
   moCard.getCard( model, crd );
-  const method = isNaN(crd) || crd === 0 ? "POST": "PATCH";
+  const method = Number.isNaN(crd) || crd === 0 ? "POST": "PATCH";
   
   return {  
     oninit () {
@@ -2487,7 +2518,7 @@ const pmuForm = function (vnode) {
 const talPmu = function(vnode) {
   
   let model= vnode.attrs.model;
-  let talon= model.talon;
+  let tal= model.talon;
   let pmu = model.pmu ? model.pmu: [];
   let para_table= moTalonsList.pmuTable();
   //tal_num int, date_usl date, code_usl varchar, kol_usl smallint,
@@ -2507,7 +2538,7 @@ const talPmu = function(vnode) {
   const caption= ()=>{
     if ( _notEdit(tal) )
       return 'Закрытые талоны не редактируем';
-    if ( ! Boolean( _Num(talon.tal_num) ) )
+    if ( ! Boolean( _Num(tal.tal_num) ) )
       return 'Талон без номера, сначала сохраните новый талон';
     return 'ПМУ текущего талона';
   };
@@ -2560,11 +2591,11 @@ const talPmu = function(vnode) {
         m('td', m('i.fa.fa-plus-circle.choice', {
           style: "color: green;",
           data: s.id,
-          onclick: _disabled(talon) ? null: add_kol_usl
+          onclick: _disabled(tal) ? null: add_kol_usl
         }) ),
         m('td', m('i.fa.fa-minus-circle.choice.red', {
           data: s.id,
-          onclick: _disabled(talon) ? null: del_kol_usl
+          onclick: _disabled(tal) ? null: del_kol_usl
         }) )
       ]) : '';
   };
