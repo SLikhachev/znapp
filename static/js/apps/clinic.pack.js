@@ -756,6 +756,7 @@ const moTalon = {
     t.crd_num = data.crd_num;
     if ( !t.talon_month ) t.talon_month= tmonth();
     if (!t.tal_num) t.first_vflag= 1; // new talon with first visit always
+    if (!data.ot) t.d_type= '5'; // d_type only one case here NET OT
     return t;
   },
   
@@ -962,10 +963,18 @@ const getFIO= s=> {
 const _Num= num=> num ? num: ''; //talon number
 
 //talon editable
-const _notEdit= ()=> moTalonsList.year == moTalonsList._year ? false: true;
+const _notEdit= tal=> {
+  // 0- deleted 1- open (may edit) 2- closed
+  if (tal.talon_type === null || tal.talon_type === 1)
+    // same year may edit
+    if( moTalonsList.year == moTalonsList._year )
+      return false; // may edit
+  return true;
+};
 
 const talNum= tal=> 
-  m('legend', `Талон № ${_Num(tal.tal_num)}`, m('span', {style: "padding: 3em"}, ' ') , `Год ${moTalonsList._year}`);
+  m('legend', `Талон № ${_Num(tal.tal_num)}`,
+    m('span', {style: "padding: 3em"}, _notEdit(tal) ? 'закрыт': 'открыт') , `Год ${moTalonsList._year}`);
 
 // src/apps/view/vuApp.js
 
@@ -2134,9 +2143,10 @@ const vuTalonsList = function (vnode) {
         }, cell)) : m('td', cell);
         return td;
       }),
-      m('td', m('i.fa.fa-minus-circle.choice.red', {
+      m('td', _notEdit(s) ? 
+        m('i.fa.fa-minus-circle.choice.red', {
         onclick: e=> markDeleted (e, s.tal_num),
-      }) )
+      }): '' )
     ]);
   };
   
@@ -2300,8 +2310,10 @@ const talNap = function(vnode) {
         {style: "font-size: 1.2em;", id: "tal_nap"}, [
           m('fieldset', [ talNum(tal),
             //m('legend', `Талон № ${_Num(tal.tal_num)}`),
+            m('label[for="npr_date"]', 'Дата направления'),
+            m('input[type=date][name="npr_date"]', { value: tal.npr_date, onblur: e=> tal.npr_date= e.target.value }),
             m('legend.leg-sec', "Направление: лечение. диагностика, консультация"),
-
+            
             m(".pure-g", [
               m(".pure-u-2-24", tnf('npr_mo', tal)),
               m(".pure-u-2-24", tnf('npr_spec', tal)),
@@ -2320,7 +2332,7 @@ const talNap = function(vnode) {
   };
 };
 
-const _disabled= tal=> { return _notEdit() || !Boolean( _Num(tal.tal_num) ); };
+const _disabled= tal=> { return _notEdit(tal) || !Boolean( _Num(tal.tal_num) ); };
 
 const pmuForm = function (vnode) {
   
@@ -2493,8 +2505,8 @@ const talPmu = function(vnode) {
   };
   
   const caption= ()=>{
-    if ( _notEdit() )
-      return 'Талоны прошлых лет не редактируем';
+    if ( _notEdit(tal) )
+      return 'Закрытые талоны не редактируем';
     if ( ! Boolean( _Num(talon.tal_num) ) )
       return 'Талон без номера, сначала сохраните новый талон';
     return 'ПМУ текущего талона';
@@ -2701,7 +2713,7 @@ const toSaveTalon= async function (tal, check) {
   let ds=  Number(tal.visit_daystac) + Number(tal.visit_homstac);
   //console.log( amb, ds);
   if ( Boolean(amb) && Boolean(ds) )
-    return 'Амбулвторный и ДС прием одновременно';
+    return 'Амбулвторный прием и ДСтац в одном талоне';
   if ( Boolean( amb ) )
     tal.usl_ok= 3;
   else
@@ -2710,7 +2722,7 @@ const toSaveTalon= async function (tal, check) {
   // napr ambul, stac together
   let cons= Boolean(tal.naprlech), hosp= Boolean(tal.nsndhosp);
   if ( cons && hosp ) 
-    return 'Госпиьализация и Консутльтация одновременно';
+    return 'Госпитализация и Консультация в одном талоне';
   
   // napr MO code
   // napr spec ambul
@@ -2879,7 +2891,7 @@ const talForm = function (vnode) {
     return m(".pure-u-18-24", [
 		m("form.pure-form.pure-form-stacked.tcard", { style: "font-size: 1.2em;",
       id: "talon", oncreate: forTabs, onsubmit: talonSave}, [
-			m('fieldset', [ talNum(tal),
+			m('fieldset', [ talNum(tal), 
         //
         m(".pure-g", [
           m(".pure-u-4-24", tof('open_date', tal)),
@@ -2966,7 +2978,7 @@ const talForm = function (vnode) {
       m('fieldset', { style: "padding-left: 0%;" }, [
 				m('.pure-u-3-24', { style: "margin-top: 5px;" }, 
           m('button.pure-button.pure-button-primary[type="submit"]',
-            { style: "font-size: 1.1em", disabled: _notEdit()
+            { style: "font-size: 1.1em", disabled: _notEdit(tal)
               //onclick: talonSave
             },
           "Сохранить" )

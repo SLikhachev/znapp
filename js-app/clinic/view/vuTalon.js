@@ -41,7 +41,7 @@ const toSaveTalon= async function (tal, check) {
   let ds=  Number(tal.visit_daystac) + Number(tal.visit_homstac);
   //console.log( amb, ds);
   if ( Boolean(amb) && Boolean(ds) )
-    return 'Амбулвторный и ДС прием одновременно';
+    return 'Амбулвторный прием и ДСтац в одном талоне';
   if ( Boolean( amb ) )
     tal.usl_ok= 3;
   else
@@ -50,7 +50,7 @@ const toSaveTalon= async function (tal, check) {
   // napr ambul, stac together
   let cons= Boolean(tal.naprlech), hosp= Boolean(tal.nsndhosp);
   if ( cons && hosp ) 
-    return 'Госпиьализация и Консутльтация одновременно';
+    return 'Госпитализация и Консультация в одном талоне';
   
   // napr MO code
   // napr spec ambul
@@ -219,7 +219,7 @@ const talForm = function (vnode) {
     return m(".pure-u-18-24", [
 		m("form.pure-form.pure-form-stacked.tcard", { style: "font-size: 1.2em;",
       id: "talon", oncreate: forTabs, onsubmit: talonSave}, [
-			m('fieldset', [ talNum(tal),
+			m('fieldset', [ talNum(tal), 
         //
         m(".pure-g", [
           m(".pure-u-4-24", tof('open_date', tal)),
@@ -306,7 +306,7 @@ const talForm = function (vnode) {
       m('fieldset', { style: "padding-left: 0%;" }, [
 				m('.pure-u-3-24', { style: "margin-top: 5px;" }, 
           m('button.pure-button.pure-button-primary[type="submit"]',
-            { style: "font-size: 1.1em", disabled: _notEdit()
+            { style: "font-size: 1.1em", disabled: _notEdit(tal)
               //onclick: talonSave
             },
           "Сохранить" )

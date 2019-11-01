@@ -129,7 +129,7 @@ export const toSaveCard= card=> {
     if ( !card.dul_serial && !card.dul_number )
       card.dul_type= null;
     if ( Boolean(card.polis_type) && card.polis_type < 3 && !Boolean(card.dul_type) )
-      return 'Для этого типа полиса требуются данные ДУЛ';
+      return 'Для этого типа полиса требуются полные данные ДУЛ';
     
     // SMO
     if ( !card.smo && !card.smo_okato)
@@ -240,6 +240,8 @@ const crdMain = function(vnode) {
               ]),
               m(".pure-control-group", cof('dul_serial', card)),
               m(".pure-control-group", cof('dul_number', card)),
+              m(".pure-control-group", cof('dul_date', card)),
+              m(".pure-control-group", cof('dul_org', card)),
             ]), // u-7-24
 // ============================			
             m(".pure-u-8-24", [m('legend', "ОМС"),
@@ -257,7 +259,7 @@ const crdMain = function(vnode) {
               m(".pure-control-group", [
                 m('label', { for: "smo"}, "Страховщик"),
                 m('select[name="smo"]',
-                  {tabindex: 11, value: card.smo, onchange: _set_smo}, [
+                  {tabindex: 13, value: card.smo, onchange: _set_smo}, [
                   m('option[value=""]', ""),
                   data.get('smo_local').map(s=> m('option', {value: s.code}, s.short_name))
                 ])

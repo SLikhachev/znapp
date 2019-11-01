@@ -4,7 +4,7 @@ import { vuLoading } from '../../apps/view/vuApp.js';
 import { moModel } from '../../apps/model/moModel.js';
 import { restClinic, clinicApi } from '../clinicApi.js';
 import { moTalonsList,  } from '../model/moTalons.js';
-import { getFIO } from './vuClinic.js';
+import { getFIO, _notEdit } from './vuClinic.js';
 /*
 IN tbl varchar,
 IN q_tal integer,
@@ -176,9 +176,10 @@ export const vuTalonsList = function (vnode) {
         }, cell)) : m('td', cell);
         return td;
       }),
-      m('td', m('i.fa.fa-minus-circle.choice.red', {
+      m('td', _notEdit(s) ? 
+        m('i.fa.fa-minus-circle.choice.red', {
         onclick: e=> markDeleted (e, s.tal_num),
-      }) )
+      }): '' )
     ]);
   };
   

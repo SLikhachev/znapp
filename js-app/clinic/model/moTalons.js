@@ -133,6 +133,7 @@ export const moTalon = {
     t.crd_num = data.crd_num;
     if ( !t.talon_month ) t.talon_month= tmonth();
     if (!t.tal_num) t.first_vflag= 1; // new talon with first visit always
+    if (!data.ot) t.d_type= '5'; // d_type only one case here NET OT
     return t;
   },
   

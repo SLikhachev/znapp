@@ -6,7 +6,7 @@ import { moTalonsList, talonOpt } from '../model/moTalons.js';
 import { ptf } from '../form/foForm.js';
 import { _Num, _notEdit } from './vuClinic'; //tal number
 
-const _disabled= tal=> { return _notEdit() || !Boolean( _Num(tal.tal_num) ); };
+const _disabled= tal=> { return _notEdit(tal) || !Boolean( _Num(tal.tal_num) ); };
 
 const pmuForm = function (vnode) {
   
@@ -179,8 +179,8 @@ export const talPmu = function(vnode) {
   };
   
   const caption= ()=>{
-    if ( _notEdit() )
-      return 'Талоны прошлых лет не редактируем';
+    if ( _notEdit(tal) )
+      return 'Закрытые талоны не редактируем';
     if ( ! Boolean( _Num(talon.tal_num) ) )
       return 'Талон без номера, сначала сохраните новый талон';
     return 'ПМУ текущего талона';
