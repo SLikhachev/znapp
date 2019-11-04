@@ -176,10 +176,10 @@ export const vuTalonsList = function (vnode) {
         }, cell)) : m('td', cell);
         return td;
       }),
-      m('td', _notEdit(s) ? 
+      m('td', _notEdit(s) ? '':
         m('i.fa.fa-minus-circle.choice.red', {
         onclick: e=> markDeleted (e, s.tal_num),
-      }): '' )
+      }) )
     ]);
   };
   

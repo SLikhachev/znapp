@@ -46,6 +46,7 @@ export const _notEdit= tal=> {
   if (tal.talon_type === null || tal.talon_type === 1)
     // same year may edit
     if( moTalonsList.year == moTalonsList._year )
+      //console.log(tal.tal_num, tal.talon_type);
       return false; // may edit
   return true;
 };

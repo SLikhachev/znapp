@@ -62,8 +62,16 @@ const toSaveTalon= async function (tal, check) {
     let _mo_url= `${restSprav.mo_local.url}?scode=eq.${mo}`;
     let _spec_url= `${restSprav.doc_spec.url}?spec=eq.${spec}`;
     let opt= [ { url: _mo_url } ];
-    if ( cons )
-      opt.push( { url: _spec_url, order_by: 'spec' } );
+    if ( cons ) {
+        if (!tal.npr_date)
+            tal.npr_date = tal.open_date;
+
+        opt.push({url: _spec_url, order_by: 'spec'});
+    //hospital
+    } else {
+        if (!tal.npr_date)
+            tal.npr_date = tal.close_date;
+    }
     let _mdl= { options: opt, data: new Map() };
     try {
       let r= '';

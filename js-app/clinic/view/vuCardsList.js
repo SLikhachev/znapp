@@ -52,7 +52,7 @@ const cardFind= function (vnode) {
                   {placeholder:"Имя", style: "font-size: 1.2em"}
                 )
               ),
-              m(".pure-u-1-5",
+              m(".pure-u-1-3",
                 m('button.pure-button[type="button"]', {
                     //value: 0,
                     onclick: findCards, style: "font-size: 1.2em"
