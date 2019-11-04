@@ -24,6 +24,10 @@ const num_fields= ['mek','visit_pol', 'pol_days', 'visit_home', 'home_days',
 ]
 
 const toSaveTalon= async function (tal, check) {
+  // mek and talon_type
+  if ( Boolean( tal.mek ) )
+    tal.tolon_type=1;
+
   // Doct Oms
   let e1= { fin: 'Укажите способ оплаты ', doct: 'Укажите доктора '};
   let r1= Object.keys(e1).map( p=> !check[p] ? e1[p] : '').join('');

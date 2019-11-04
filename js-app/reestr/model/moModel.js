@@ -88,7 +88,7 @@ export const moModel = {
       form.classList.remove('disable');
       return true;
     }).catch((err) => {
-      model.error = errMsg(e);
+      model.error = errMsg(err);
       console.log(model.error);
       form.classList.remove('disable');
       return false;
@@ -122,7 +122,7 @@ export const moModel = {
       event.target.parentNode.classList.remove('disable');
       return true;
     }).catch((err) => {
-      model.error = errMsg(e);
+      model.error = errMsg(err);
       console.log(model.error);
       event.target.parentNode.classList.remove('disable');
       return false;
