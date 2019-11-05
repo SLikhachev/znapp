@@ -974,9 +974,12 @@ const _Num= num=> num ? num: ''; //talon number
 //talon editable
 const _notEdit= tal=> {
   // 0- deleted 1- open (may edit) 2- closed
-  if (tal.talon_type === null || tal.talon_type === 1)
+  //if (tal.talon_type === null || tal.talon_type === 1)
+    // talon of the same year may edit
+    // case of 1. mek else we can not send it twice in same year
     // same year may edit
     if( moTalonsList.year == moTalonsList._year )
+      //console.log(tal.tal_num, tal.talon_type);
       return false; // may edit
   return true;
 };
@@ -1044,7 +1047,7 @@ const cardFind= function (vnode) {
                   {placeholder:"Имя", style: "font-size: 1.2em"}
                 )
               ),
-              m(".pure-u-1-5",
+              m(".pure-u-1-3",
                 m('button.pure-button[type="button"]', {
                     //value: 0,
                     onclick: findCards, style: "font-size: 1.2em"
@@ -2174,10 +2177,10 @@ const vuTalonsList = function (vnode) {
         }, cell)) : m('td', cell);
         return td;
       }),
-      m('td', _notEdit(s) ? 
+      m('td', _notEdit(s) ? '':
         m('i.fa.fa-minus-circle.choice.red', {
         onclick: e=> markDeleted (e, s.tal_num),
-      }): '' )
+      }) )
     ]);
   };
   
@@ -2727,6 +2730,10 @@ const num_fields= ['mek','visit_pol', 'pol_days', 'visit_home', 'home_days',
 ];
 
 const toSaveTalon= async function (tal, check) {
+  // mek and talon_type
+  if ( Boolean( tal.mek ) )
+    tal.tolon_type=1;
+
   // Doct Oms
   let e1= { fin: 'Укажите способ оплаты ', doct: 'Укажите доктора '};
   let r1= Object.keys(e1).map( p=> !check[p] ? e1[p] : '').join('');
@@ -2765,8 +2772,16 @@ const toSaveTalon= async function (tal, check) {
     let _mo_url= `${restSprav.mo_local.url}?scode=eq.${mo}`;
     let _spec_url= `${restSprav.doc_spec.url}?spec=eq.${spec}`;
     let opt= [ { url: _mo_url } ];
-    if ( cons )
-      opt.push( { url: _spec_url, order_by: 'spec' } );
+    if ( cons ) {
+        if (!tal.npr_date)
+            tal.npr_date = tal.open_date;
+
+        opt.push({url: _spec_url, order_by: 'spec'});
+    //hospital
+    } else {
+        if (!tal.npr_date)
+            tal.npr_date = tal.close_date;
+    }
     let _mdl= { options: opt, data: new Map() };
     try {
       let r= '';

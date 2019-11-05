@@ -65,3 +65,17 @@ export const vuLoading = {
     );
   }
 }
+
+
+export const taskResponse= (model, href=null) => {
+  return model.error ? m('.error', model.error) :
+    model.message ? m('.legend', ["Статус обработки",
+      model.done ? m('div', [
+        m('h4.blue', model.message),
+        m('span.blue', {style: "font-size: 1.2em"}, "Файл: "),
+        href ? m('a.pure-button', {href: href, style: "font-size: 1.2 em"}, model.file ):
+          ('span', model.file)
+      ]) : m('div', m('h4.red', model.message))
+    ]) : '';
+}
+  

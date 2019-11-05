@@ -165,13 +165,23 @@ const vuMain = {
 
 const errMsg= function(error){
   //console.log(error);
+  //console.log(' error ');
   //let e = JSON.parse(error.message);
-  let e= error.response;
-  //let m= e.details ? e.details : e.message ? e.message: error;
-  let m= e.message ? e.message : error;
+  if ( !error)
+    return 'Ошибка сервера (детали в журнале)'
+  let e= error.response ? error.response: 'Ошибка сервера (пустой ответ)' ;
+  let m= e.details ? e.details : e.message ? e.message: e;
+  //let m= e.message ? e.message : error;
   console.log(m);
   return m;
 };
+
+// return date in yyyy-mm format
+const _month= () => {
+    let d = new Date(), y = d.getFullYear(), m = d.getMonth() + 1;
+    m= m < 10 ? `0${m}`: `${m}`;
+    return `${y}-${m}`;
+  };
 
 // return posgrest url if pg_rest else task url
 const _schema= type=> {
@@ -238,6 +248,19 @@ const vuLoading = {
       m('span.sr-only', 'Loading...')
     );
   }
+};
+
+
+const taskResponse= (model, href=null) => {
+  return model.error ? m('.error', model.error) :
+    model.message ? m('.legend', ["Статус обработки",
+      model.done ? m('div', [
+        m('h4.blue', model.message),
+        m('span.blue', {style: "font-size: 1.2em"}, "Файл: "),
+        href ? m('a.pure-button', {href: href, style: "font-size: 1.2 em"}, model.file ):
+          (model.file)
+      ]) : m('div', m('h4.red', model.message))
+    ]) : '';
 };
 
 // src/reestr/reestrApi.js
@@ -315,18 +338,6 @@ const reestrMenu = { subAppMenu: {
 }
 };
 
-const _month$1= () => {
-    let d = new Date(), y = d.getFullYear(), m = d.getMonth() + 1;
-    m= m < 10 ? `0${m}`: `${m}`;
-    return `${y}-${m}`;
-  };
-
-const _schema$1= type=> {
-  if (type === 'task')
-    return window.localStorage.getItem('task_rest');
-  return window.localStorage.getItem('pg_rest');
-};
-
 const moModel$1 = {
   
   getModel( url=null, order_by=null ) {
@@ -400,7 +411,7 @@ const moModel$1 = {
       form.classList.remove('disable');
       return true;
     }).catch((err) => {
-      model.error = errMsg(e);
+      model.error = errMsg(err);
       console.log(model.error);
       form.classList.remove('disable');
       return false;
@@ -434,7 +445,7 @@ const moModel$1 = {
       event.target.parentNode.classList.remove('disable');
       return true;
     }).catch((err) => {
-      model.error = errMsg(e);
+      model.error = errMsg(err);
       console.log(model.error);
       event.target.parentNode.classList.remove('disable');
       return false;
@@ -444,14 +455,12 @@ const moModel$1 = {
 };
 
 // src/reestr/view/vuReestr.js
-//import { taskReestr } from '../reestrApi.js';
-//import { task_rest, moModel } from '../model/moModel.js';
 
 const reestrForm = function(vnode) {
   
   const model= vnode.attrs.model;
-  const data= { month: _month$1(), pack: 1 };
-  const schema= _schema$1('task');  
+  const data= { month: _month(), pack: 1 };
+  const schema= _schema('task');  
   
   const on_submit = event=> {
     //console.log(data);
@@ -495,18 +504,7 @@ const reestrForm = function(vnode) {
             ])
           ])
         ]),
-        m('.pure-u-2-3', [
-          model.error ? m('.error', model.error) :
-            model.message ? m('.legend', ["Статус обработки", 
-              m('div', [
-
-                m('h4.blue', model.message),
-                m('span.blue', {style: "font-size: 1.2em"}, "Файл пакета: ", model.file ),
-                model.detail ? m('h4.red', model.detail) : '',
-
-              ])
-            ]) : m('div')
-        ])
+        m('.pure-u-2-3', [ taskResponse(model) ] )
       ]);
     }
   };
@@ -630,14 +628,12 @@ const form_file_dom= vnode=>  {
 };
 
 // src/reestr/view/vuReestr.js
-//import { taskReestr } from '../reestrApi.js';
-//import { task_rest, moModel } from '../model/moModel.js';
 
 const errorsForm = function(vnode) {
   
   const model= vnode.attrs.model;
   const data= {};
-  const schema= _schema$1('task');  
+  const schema= _schema('task');  
   const get_type= el=> el.options[ el.selectedIndex].value;
   
   const on_submit = function (event) {
@@ -720,7 +716,7 @@ const vuDataSheet = function (vnode) {
   //getList (schema, model, params=null, method='GET') {
   let { model, struct, header, params } = vnode.attrs;
   
-  moModel$1.getList( _schema$1('pg_rest'), model, params);
+  moModel$1.getList( _schema('pg_rest'), model, params);
   
   return {
 
@@ -1042,8 +1038,8 @@ const roInvoice = {
 const importForm = function(vnode) {
   
   const model= vnode.attrs.model;
-  const data= { month: _month$1() };
-  const schema= _schema$1('task');  
+  const data= { month: _month() };
+  const schema= _schema('task');  
   //console.log(model);
   
   const on_submit = function (event) {

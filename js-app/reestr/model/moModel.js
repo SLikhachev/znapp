@@ -3,17 +3,6 @@
 
 import { errMsg } from '../../apps/model/moModel.js';
 
-export const _month= () => {
-    let d = new Date(), y = d.getFullYear(), m = d.getMonth() + 1;
-    m= m < 10 ? `0${m}`: `${m}`;
-    return `${y}-${m}`;
-  };
-
-export const _schema= type=> {
-  if (type === 'task')
-    return window.localStorage.getItem('task_rest');
-  return window.localStorage.getItem('pg_rest');
-}
 
 export const moModel = {
   

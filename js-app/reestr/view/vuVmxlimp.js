@@ -2,9 +2,8 @@
 
 import { vuTheader } from '../../apps/view/vuApp.js';
 import { file_field, form_file_dom } from '../../apps/form/customFields.js'
-import { _month, _schema, moModel } from '../model/moModel.js';
-//import { taskReestr } from '../reestrApi.js';
-//import { task_rest, moModel } from '../model/moModel.js';
+import { _month, _schema } from '../../apps/model/moModel.js';
+import { moModel } from '../model/moModel.js';
 
 const errorsForm = function(vnode) {
   
