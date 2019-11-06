@@ -253,7 +253,9 @@ const errMsg= function(error){
   //console.log(error);
   //console.log(' error ');
   //let e = JSON.parse(error.message);
-  let e= error.response;
+  if ( !error)
+    return 'Ошибка сервера (детали в журнале)'
+  let e= error.response ? error.response: 'Ошибка сервера (пустой ответ)' ;
   let m= e.details ? e.details : e.message ? e.message: e;
   //let m= e.message ? e.message : error;
   console.log(m);
@@ -528,36 +530,6 @@ const moModel = {
       return Promise.reject(msg);
     });
   }
-/*
-  formSubmit (model, form) {  
-    // form - jQuery object
-    // model - model object 
-    //let schema = window.localStorage.getItem('pg_rest');
-    let pg_rest = window.localStorage.getItem('pg_rest');
-    let data = moModel.getFormData( form ),
-    url = pg_rest + model.url,
-    method = data.method;
-    //console.log ( data );
-    //return false;
-    vuDialog.form = form;
-    delete data.method;
-    if ( method == 'DELETE' || method == 'PATCH' )
-      url += '?' + 'id=eq.' + data.id;
-    $.ajax({
-      url: url,
-      type: method,
-      async: false,
-      data: data,
-      //context: form,
-      //contentType: 'application/json',
-      dataType: 'json',
-      beforeSend: vuDialog.offForm,
-      error: vuDialog.xError,
-      success: vuDialog.xSuccess
-    });
-    return false;
-  }
-*/
 };
 
 // src/sparv/spravApi.js
@@ -758,6 +730,10 @@ const moTalon = {
     if (!t.tal_num) {
         t.first_vflag= 1; // new talon with first visit always
         t.talon_type= 1; // open talon
+        t.urgent= 0;
+    }
+    if( Boolean(t.for_pom) ) {
+        t.urgent= t.for_pom == 2 ? 1: 0;
     }
     if (!data.ot) t.d_type= '5'; // d_type only one case here NET OTCHESYVA
     return t;
@@ -800,7 +776,7 @@ const moTalon = {
       url += `?tal_num=eq.${tal_num}`;
       delete to_save.tal_num;
     }
-    ['created', 'modified', 'cuser'].forEach( k=> delete to_save[k] );
+    ['created', 'modified', 'cuser', 'urgent'].forEach( k=> delete to_save[k] );
     Object.keys(to_save).map( k=> {
       if ( to_save[k] === "" || to_save[k] === null ) {
         //console.log(k);
@@ -1316,7 +1292,7 @@ const talonField = {
       attrs: {style: "margin-right: 0.7em"}
     }
   },
-  for_pom: { label: ['', "Неотложный", 'check'], input: {
+  urgent: { label: ['', "Неотложный", 'check'], input: {
       tag: ['', "checkbox", 5, false],
       attrs: {style: "margin-right: 0.7em" } //, fcheck: v => v == 2 } // type coercion
     }
@@ -2733,6 +2709,8 @@ const toSaveTalon= async function (tal, check) {
   // mek and talon_type
   if ( Boolean( tal.mek ) )
     tal.tolon_type=1;
+  
+  tal.for_pom= Boolean(tal.urgent) ? 2: 3;
 
   // Doct Oms
   let e1= { fin: 'Укажите способ оплаты ', doct: 'Укажите доктора '};
@@ -2946,7 +2924,7 @@ const talForm = function (vnode) {
           m('.pure-u-3-24', {style: "padding-top: 2em"},
             tof('mek', tal, { onclick: e=> set_chk(e, 'mek') }) ),
           m(".pure-u-6-24", {style: "padding-top: 2em"}, [
-            tof('for_pom', tal, { onclick: e=> set_chk(e, 'for_pom') }),
+            tof('urgent', tal, { onclick: e=> set_chk(e, 'urgent') }),
             tof('first_vflag', tal, { onclick: e=> set_chk(e, 'first_vflag') }),
             
             //tof('finality', tal)

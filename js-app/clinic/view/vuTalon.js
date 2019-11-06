@@ -27,6 +27,8 @@ const toSaveTalon= async function (tal, check) {
   // mek and talon_type
   if ( Boolean( tal.mek ) )
     tal.tolon_type=1;
+  
+  tal.for_pom= Boolean(tal.urgent) ? 2: 3;
 
   // Doct Oms
   let e1= { fin: 'Укажите способ оплаты ', doct: 'Укажите доктора '};
@@ -240,7 +242,7 @@ const talForm = function (vnode) {
           m('.pure-u-3-24', {style: "padding-top: 2em"},
             tof('mek', tal, { onclick: e=> set_chk(e, 'mek') }) ),
           m(".pure-u-6-24", {style: "padding-top: 2em"}, [
-            tof('for_pom', tal, { onclick: e=> set_chk(e, 'for_pom') }),
+            tof('urgent', tal, { onclick: e=> set_chk(e, 'urgent') }),
             tof('first_vflag', tal, { onclick: e=> set_chk(e, 'first_vflag') }),
             
             //tof('finality', tal)
