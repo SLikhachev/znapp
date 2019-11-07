@@ -6,7 +6,7 @@ import { moTalonsList, talonOpt } from '../model/moTalons.js';
 import { ptf } from '../form/foForm.js';
 import { _Num, _notEdit } from './vuClinic'; //tal number
 
-const _disabled= tal=> { return _notEdit() || !Boolean( _Num(tal.tal_num) ); };
+const _disabled= tal=> { return _notEdit(tal) || !Boolean( _Num(tal.tal_num) ); };
 
 const pmuForm = function (vnode) {
   
@@ -161,7 +161,7 @@ const pmuForm = function (vnode) {
 export const talPmu = function(vnode) {
   
   let model= vnode.attrs.model;
-  let talon= model.talon;
+  let tal= model.talon;
   let pmu = model.pmu ? model.pmu: [];
   let para_table= moTalonsList.pmuTable();
   //tal_num int, date_usl date, code_usl varchar, kol_usl smallint,
@@ -179,9 +179,9 @@ export const talPmu = function(vnode) {
   };
   
   const caption= ()=>{
-    if ( _notEdit() )
-      return 'Талоны прошлых лет не редактируем';
-    if ( ! Boolean( _Num(talon.tal_num) ) )
+    if ( _notEdit(tal) )
+      return 'Закрытые талоны не редактируем';
+    if ( ! Boolean( _Num(tal.tal_num) ) )
       return 'Талон без номера, сначала сохраните новый талон';
     return 'ПМУ текущего талона';
   };
@@ -234,11 +234,11 @@ export const talPmu = function(vnode) {
         m('td', m('i.fa.fa-plus-circle.choice', {
           style: "color: green;",
           data: s.id,
-          onclick: _disabled(talon) ? null: add_kol_usl
+          onclick: _disabled(tal) ? null: add_kol_usl
         }) ),
         m('td', m('i.fa.fa-minus-circle.choice.red', {
           data: s.id,
-          onclick: _disabled(talon) ? null: del_kol_usl
+          onclick: _disabled(tal) ? null: del_kol_usl
         }) )
       ]) : '';
   };

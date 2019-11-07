@@ -1,7 +1,8 @@
 // src/report/view/vuDataSheet.js
 
 import { vuLoading, vuTheader } from '../../apps/view/vuApp.js';
-import { _schema, moModel } from '../model/moModel.js';
+import { _schema } from '../../apps/model/moModel.js';
+import { moModel } from '../model/moModel.js';
 
 
 export const vuDataSheet = function (vnode) {

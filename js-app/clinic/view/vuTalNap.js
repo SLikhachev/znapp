@@ -48,8 +48,10 @@ export const talNap = function(vnode) {
         {style: "font-size: 1.2em;", id: "tal_nap"}, [
           m('fieldset', [ talNum(tal),
             //m('legend', `Талон № ${_Num(tal.tal_num)}`),
+            m('label[for="npr_date"]', 'Дата направления'),
+            m('input[type=date][name="npr_date"]', { value: tal.npr_date, onblur: e=> tal.npr_date= e.target.value }),
             m('legend.leg-sec', "Направление: лечение. диагностика, консультация"),
-
+            
             m(".pure-g", [
               m(".pure-u-2-24", tnf('npr_mo', tal)),
               m(".pure-u-2-24", tnf('npr_spec', tal)),

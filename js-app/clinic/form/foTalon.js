@@ -34,7 +34,7 @@ export const talonField = {
       attrs: {style: "margin-right: 0.7em"}
     }
   },
-  for_pom: { label: ['', "Неотложный", 'check'], input: {
+  urgent: { label: ['', "Неотложный", 'check'], input: {
       tag: ['', "checkbox", 5, false],
       attrs: {style: "margin-right: 0.7em" } //, fcheck: v => v == 2 } // type coercion
     }

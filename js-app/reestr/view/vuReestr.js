@@ -1,9 +1,8 @@
 // src/reestr/view/vuReestr.js
 
-import { vuTheader } from '../../apps/view/vuApp.js';
-import { _month, _schema, moModel } from '../model/moModel.js';
-//import { taskReestr } from '../reestrApi.js';
-//import { task_rest, moModel } from '../model/moModel.js';
+import { vuTheader, taskResponse } from '../../apps/view/vuApp.js';
+import { _month, _schema } from '../../apps/model/moModel.js';
+import { moModel } from '../model/moModel.js';
 
 const reestrForm = function(vnode) {
   
@@ -53,18 +52,7 @@ const reestrForm = function(vnode) {
             ])
           ])
         ]),
-        m('.pure-u-2-3', [
-          model.error ? m('.error', model.error) :
-            model.message ? m('.legend', ["Статус обработки", 
-              m('div', [
-
-                m('h4.blue', model.message),
-                m('span.blue', {style: "font-size: 1.2em"}, "Файл пакета: ", model.file ),
-                model.detail ? m('h4.red', model.detail) : '',
-
-              ])
-            ]) : m('div')
-        ])
+        m('.pure-u-2-3', [ taskResponse(model) ] )
       ]);
     }
   };

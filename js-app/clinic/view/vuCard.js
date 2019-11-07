@@ -129,7 +129,7 @@ export const toSaveCard= card=> {
     if ( !card.dul_serial && !card.dul_number )
       card.dul_type= null;
     if ( Boolean(card.polis_type) && card.polis_type < 3 && !Boolean(card.dul_type) )
-      return 'Для этого типа полиса требуются данные ДУЛ';
+      return 'Для этого типа полиса требуются полные данные ДУЛ';
     
     // SMO
     if ( !card.smo && !card.smo_okato)
@@ -156,8 +156,13 @@ const crdMain = function(vnode) {
   let { model, method }= vnode.attrs;
   const data= cardOpt.data;
   //const card = model.card ? Object.assign({}, model.card[0]) : {};
-  const card= model.card ? model.card[0] : {};
-  card.old_card= card.crd_num;
+  let card;
+  if (model.card.length > 0) {
+    card= model.card[0];
+    card.old_card= card.crd_num;
+  } else {
+    card= {};
+  }
   /*
   if (card.smo !== null)
     if( card.smo >= _reg)
@@ -240,6 +245,8 @@ const crdMain = function(vnode) {
               ]),
               m(".pure-control-group", cof('dul_serial', card)),
               m(".pure-control-group", cof('dul_number', card)),
+              m(".pure-control-group", cof('dul_date', card)),
+              m(".pure-control-group", cof('dul_org', card)),
             ]), // u-7-24
 // ============================			
             m(".pure-u-8-24", [m('legend', "ОМС"),
@@ -257,7 +264,7 @@ const crdMain = function(vnode) {
               m(".pure-control-group", [
                 m('label', { for: "smo"}, "Страховщик"),
                 m('select[name="smo"]',
-                  {tabindex: 11, value: card.smo, onchange: _set_smo}, [
+                  {tabindex: 13, value: card.smo, onchange: _set_smo}, [
                   m('option[value=""]', ""),
                   data.get('smo_local').map(s=> m('option', {value: s.code}, s.short_name))
                 ])
@@ -327,16 +334,18 @@ const crdMain = function(vnode) {
               }, "Добавить новую")*/
             ])
           ]) // pure-g
-        ]),// form
-        //ErrDialog(model)
-        ];
+        ]);// form
 //=========================
     } // view
   }; // return
 }; //func
 const crdViz = function(vnode) {
 
-  let crd = vnode.attrs.model.card[0].crd_num;
+  let crd;
+  if ( vnode.attrs.model.card.length > 0 )
+    crd= vnode.attrs.model.card[0].crd_num;
+  else
+    crd= '';
   //console.log(crd);
   let tal = vnode.attrs.model.talons ? vnode.attrs.model.talons: [];
   // tal_num int, open_date date, close_date date, purp smallint,
@@ -417,7 +426,7 @@ export const vuCard = function(vnode) {
   const model= moCard.getModel();
   model.word= 'Карты';
   moCard.getCard( model, crd );
-  const method = isNaN(crd) || crd === 0 ? "POST": "PATCH";
+  const method = Number.isNaN(crd) || crd === 0 ? "POST": "PATCH";
   
   return {  
     oninit () {

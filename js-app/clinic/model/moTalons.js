@@ -132,7 +132,15 @@ export const moTalon = {
     });
     t.crd_num = data.crd_num;
     if ( !t.talon_month ) t.talon_month= tmonth();
-    if (!t.tal_num) t.first_vflag= 1; // new talon with first visit always
+    if (!t.tal_num) {
+        t.first_vflag= 1; // new talon with first visit always
+        t.talon_type= 1; // open talon
+        t.urgent= 0;
+    }
+    if( Boolean(t.for_pom) ) {
+        t.urgent= t.for_pom == 2 ? 1: 0;
+    }
+    if (!data.ot) t.d_type= '5'; // d_type only one case here NET OTCHESYVA
     return t;
   },
   
@@ -153,10 +161,12 @@ export const moTalon = {
     //c.old_card= c.crd_num;
     model.card= c; // rewrites and this is not a list
     // prepare talon
-    model.talon= model.talon ? moTalon.to_talon(model.talon[0], card_fileds) :
-      moTalon.to_talon( c, card_fileds );
-    if ( ! Boolean(model.pmu) )
-      model.pmu=[];
+    if ( Boolean(model.talon) && model.talon.length > 0)
+      model.talon= moTalon.to_talon(model.talon[0], card_fileds);
+    else
+      model.talon= moTalon.to_talon( c, card_fileds );
+    //if ( model.pmu.length  )
+    //  model.pmu=[];
   },
   
   saveTalon(event, model, method) {
@@ -171,7 +181,7 @@ export const moTalon = {
       url += `?tal_num=eq.${tal_num}`;
       delete to_save.tal_num;
     }
-    ['created', 'modified', 'cuser'].forEach( k=> delete to_save[k] );
+    ['created', 'modified', 'cuser', 'urgent'].forEach( k=> delete to_save[k] );
     Object.keys(to_save).map( k=> {
       if ( to_save[k] === "" || to_save[k] === null ) {
         //console.log(k);

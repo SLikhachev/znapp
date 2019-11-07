@@ -1,6 +1,5 @@
 // src/clinic/view/vuTalon.js
 
-import { vuDialog } from '../../apps/view/vuDialog.js';
 import { vuLoading } from '../../apps/view/vuApp.js';
 import { vuDialog } from '../../apps/view/vuDialog.js';
 import { moModel } from '../../apps/model/moModel.js';
@@ -27,6 +26,12 @@ const num_fields= ['mek','visit_pol', 'pol_days', 'visit_home', 'home_days',
 ]
 
 const toSaveTalon= async function (tal, check) {
+  // mek and talon_type
+  if ( Boolean( tal.mek ) )
+    tal.tolon_type=1;
+  
+  tal.for_pom= Boolean(tal.urgent) ? 2: 3;
+
   // Doct Oms
   let e1= { fin: 'Укажите способ оплаты ', doct: 'Укажите доктора '};
   let r1= Object.keys(e1).map( p=> !check[p] ? e1[p] : '').join('');
@@ -44,7 +49,7 @@ const toSaveTalon= async function (tal, check) {
   let ds=  Number(tal.visit_daystac) + Number(tal.visit_homstac);
   //console.log( amb, ds);
   if ( Boolean(amb) && Boolean(ds) )
-    return 'Амбулвторный и ДС прием одновременно';
+    return 'Амбулвторный прием и ДСтац в одном талоне';
   if ( Boolean( amb ) )
     tal.usl_ok= 3;
   else
@@ -53,7 +58,7 @@ const toSaveTalon= async function (tal, check) {
   // napr ambul, stac together
   let cons= Boolean(tal.naprlech), hosp= Boolean(tal.nsndhosp);
   if ( cons && hosp ) 
-    return 'Госпиьализация и Консутльтация одновременно';
+    return 'Госпитализация и Консультация в одном талоне';
   
   // napr MO code
   // napr spec ambul
@@ -65,8 +70,16 @@ const toSaveTalon= async function (tal, check) {
     let _mo_url= `${restSprav.mo_local.url}?scode=eq.${mo}`;
     let _spec_url= `${restSprav.doc_spec.url}?spec=eq.${spec}`;
     let opt= [ { url: _mo_url } ];
-    if ( cons )
-      opt.push( { url: _spec_url, order_by: 'spec' } );
+    if ( cons ) {
+        if (!tal.npr_date)
+            tal.npr_date = tal.open_date;
+
+        opt.push({url: _spec_url, order_by: 'spec'});
+    //hospital
+    } else {
+        if (!tal.npr_date)
+            tal.npr_date = tal.close_date;
+    }
     let _mdl= { options: opt, data: new Map() };
     try {
       let r= '';
@@ -222,7 +235,7 @@ const talForm = function (vnode) {
     return m(".pure-u-18-24", [
 		m("form.pure-form.pure-form-stacked.tcard", { style: "font-size: 1.2em;",
       id: "talon", oncreate: forTabs, onsubmit: talonSave}, [
-			m('fieldset', [ talNum(tal),
+			m('fieldset', [ talNum(tal), 
         //
         m(".pure-g", [
           m(".pure-u-4-24", tof('open_date', tal)),
@@ -232,7 +245,7 @@ const talForm = function (vnode) {
           m('.pure-u-3-24', {style: "padding-top: 2em"},
             tof('mek', tal, { onclick: e=> set_chk(e, 'mek') }) ),
           m(".pure-u-6-24", {style: "padding-top: 2em"}, [
-            tof('for_pom', tal, { onclick: e=> set_chk(e, 'for_pom') }),
+            tof('urgent', tal, { onclick: e=> set_chk(e, 'urgent') }),
             tof('first_vflag', tal, { onclick: e=> set_chk(e, 'first_vflag') }),
             
             //tof('finality', tal)
@@ -316,7 +329,7 @@ const talForm = function (vnode) {
       m('fieldset', { style: "padding-left: 0%;" }, [
 				m('.pure-u-3-24', { style: "margin-top: 5px;" }, 
           m('button.pure-button.pure-button-primary[type="submit"]',
-            { style: "font-size: 1.1em", disabled: _notEdit()
+            { style: "font-size: 1.1em", disabled: _notEdit(tal)
               //onclick: talonSave
             },
           "Сохранить" )
