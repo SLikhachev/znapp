@@ -11,6 +11,7 @@ export const moModel = {
     const model= {
       url: url,
       order_by: order_by,
+      href: null,
       list: null,
       error: null,
       message: null,

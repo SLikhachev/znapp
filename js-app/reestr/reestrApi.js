@@ -6,7 +6,10 @@ export const taskReestr = {
     impo_dbf: {
         post_url: "/reestr/import/dbf", //POST date, upload file
     },
-    pack: { post_url: "/reestr/xml/pack" },
+    pack: {
+      post_url: "/reestr/xml/pack",
+      get_url: "/utils/file/reestr/xml/"  
+    },
     vmx: {
       post_url: "/reestr/xml/vmx",
       get_url: "/utils/file/reestr/vmx/", //GET report file  

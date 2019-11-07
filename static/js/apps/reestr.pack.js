@@ -200,12 +200,12 @@ const get_href= model=> {
 
 const get_route= model=> {
   return m('a.pure-button', { 
-    href: `${model.route}`,oncreate: m.route.link,
+    href: `${model.route}`,oncreate: m.route.Link,
     style: "font-size: 1.2 em"}, model.file );
 };
            
 // func return chunk of hyper-script of form to post get task
-const foResp= model=> m('#resp',
+const taskResp= model=> m('#resp',
   model.error ? m('.error', model.error) :
     model.message ? m('.legend', ["Статус обработки",
       model.done ? m('div', [
@@ -213,11 +213,11 @@ const foResp= model=> m('#resp',
         m('span.blue', {style: "font-size: 1.2em"}, "Результат, Файл : "),
         model.route ? get_route(model) : model.href ? get_href(model) :
           m('span.blue', {style: "font-size: 1.2em"}, model.file)
-      ]) : m('div', m('h4.blue', model.message))
+      ]) : m('div', m('h4.red', model.message))
     ]) : ''
   );
 
-const vuTheader$1 = {
+const vuTheader = {
   view (vnode) {
     return m(".pure-g",
       m(".pure-u-1-1.box-1",
@@ -250,19 +250,6 @@ const vuLoading = {
   }
 };
 
-
-const taskResponse= (model, href=null) => {
-  return model.error ? m('.error', model.error) :
-    model.message ? m('.legend', ["Статус обработки",
-      model.done ? m('div', [
-        m('h4.blue', model.message),
-        m('span.blue', {style: "font-size: 1.2em"}, "Файл: "),
-        href ? m('a.pure-button', {href: href, style: "font-size: 1.2 em"}, model.file ):
-          (model.file)
-      ]) : m('div', m('h4.red', model.message))
-    ]) : '';
-};
-
 // src/reestr/reestrApi.js
 
 const taskReestr = {
@@ -270,7 +257,10 @@ const taskReestr = {
     impo_dbf: {
         post_url: "/reestr/import/dbf", //POST date, upload file
     },
-    pack: { post_url: "/reestr/xml/pack" },
+    pack: {
+      post_url: "/reestr/xml/pack",
+      get_url: "/utils/file/reestr/xml/"  
+    },
     vmx: {
       post_url: "/reestr/xml/vmx",
       get_url: "/utils/file/reestr/vmx/", //GET report file  
@@ -345,6 +335,7 @@ const moModel$1 = {
     const model= {
       url: url,
       order_by: order_by,
+      href: null,
       list: null,
       error: null,
       message: null,
@@ -460,19 +451,21 @@ const reestrForm = function(vnode) {
   
   const model= vnode.attrs.model;
   const data= { month: _month(), pack: 1 };
-  const schema= _schema('task');  
+  model.href= taskReestr.pack.get_url;
   
   const on_submit = event=> {
     //console.log(data);
     event.preventDefault();
-    //console.log(data);
-    //return false;
-    return moModel$1.doSubmit(event, schema, 'simple', model, data, "POST");
+    let task= document.getElementById('task');
+    task.setAttribute('display', 'none');
+    return moModel$1.doSubmit(event, _schema('task'), 'simple', model, data, "POST").then(()=> {
+      task.setAttribute('display', 'block');
+    });
   };
   
   return {
     view() {
-      return m('.pure-g', [
+      return m('div#task.pure-g', { style: "margin-bottom: 1.3em;" }, [
         m('.pure-u-1-3', [
           m('form.pure-form.pure-form-stacked', { onsubmit: on_submit }, [
             m('fieldset', [
@@ -504,7 +497,7 @@ const reestrForm = function(vnode) {
             ])
           ])
         ]),
-        m('.pure-u-2-3', [ taskResponse(model) ] )
+        m('.pure-u-2-3', [ taskResp(model) ] )
       ]);
     }
   };
@@ -517,7 +510,7 @@ const vuReestr = function (vnode) {
   return {
     view () {
       return [
-        m(vuTheader$1, { header: vnode.attrs.header } ),
+        m(vuTheader, { header: vnode.attrs.header } ),
         m(reestrForm, { model: vnode.attrs.model } )
       ];
     }    
@@ -627,23 +620,26 @@ const form_file_dom= vnode=>  {
   });
 };
 
-// src/reestr/view/vuReestr.js
+// src/reestr/view/vuVmxlImp.js
 
 const errorsForm = function(vnode) {
   
   const model= vnode.attrs.model;
   const data= {};
-  const schema= _schema('task');  
   const get_type= el=> el.options[ el.selectedIndex].value;
   
   const on_submit = function (event) {
     event.preventDefault();
-    return moModel$1.formSubmit(event, schema, model, "POST");
+    let task= document.getElementById('task');
+    task.setAttribute('display', 'none');
+    return moModel$1.formSubmit(event, _schema('task'), model, "POST").then(()=> {
+      task.setAttribute('display', 'block');
+    });
   };
   
   return {
     view() {
-      return m('.pure-g', [
+      return m('div#task.pure-g', { style: "margin-bottom: 1.3em;" }, [
         m('.pure-u-1-3', [
           m('form.pure-form.pure-form-stacked',
             { onsubmit: on_submit, oncreate: form_file_dom }, [
@@ -665,19 +661,7 @@ const errorsForm = function(vnode) {
             ])
           ])
         ]),
-        m('.pure-u-2-3', [
-          //m('progress[value=50][max=100]'),
-          model.error ? m('.error', model.error) :
-            model.message ? m('.legend', ["Статус обработки", 
-              m('div', [
-
-                m('h4.blue', model.message),
-                m('span.blue', {style: "font-size: 1.2em"}, "Файл пакета: ", model.file ),
-                model.detail ? m('h4.red', model.detail) : '',
-
-              ])
-            ]) : m('div')
-        ])
+        m('.pure-u-2-3', [ taskResp(model) ] )
       ]);
     }
   };
@@ -690,7 +674,7 @@ const vuVmxlimp = function (vnode) {
   return {
     view () {
       return [
-        m(vuTheader$1, { header: vnode.attrs.header } ),
+        m(vuTheader, { header: vnode.attrs.header } ),
         m(errorsForm, { model: vnode.attrs.model } )
       ];
     }    
@@ -740,7 +724,7 @@ const vuDataSheet = function (vnode) {
     //return m(tableView, {model: this.model , header: this.header }, [
     return model.error ? [ m(".error", model.error) ] :
       model.list ? [
-        m(vuTheader$1, { header: header} ),
+        m(vuTheader, { header: header} ),
         this.form ? m(this.form, {model:  model}) : '',
         m('table.pure-table.pure-table-bordered[id=find_table]', [
           m('thead', [
@@ -770,13 +754,12 @@ const Form = function(vnode) {
   //console.log(model);
   const md= { url: taskReestr.vmx.post_url, href: taskReestr.vmx.get_url };
   const upload= event=> {
-    //console.log('report');
     event.preventDefault();
-    let resp= document.getElementById('resp');
-    resp.setAttribute('display', 'none');
-    return moModel$1.formSubmit(event, _schema('task'), md, "GET").then((t) => {
+    let task= document.getElementById('task');
+    task.setAttribute('display', 'none');
+    return moModel$1.formSubmit(event, _schema('task'), md, "GET").then(() => {
       //console.log(r);
-      resp.setAttribute('display', 'block');
+      task.setAttribute('display', 'block');
     });
   };
   
@@ -784,7 +767,7 @@ const Form = function(vnode) {
   
     view() {
       //console.log(model);
-      return [ m('.pure-g', { style: "margin-bottom: 1.3em;" }, [
+      return [ m('div#task.pure-g', { style: "margin-bottom: 1.3em;" }, [
         m('.pure-u-1-3', [
         m('form.pure-form.pure-form-stacked', {onsubmit: upload},
           m('fieldset', [
@@ -798,7 +781,7 @@ const Form = function(vnode) {
           ])
         )
       ]),
-      m('.pure-u-2-3', foResp(md) )
+      m('.pure-u-2-3', taskResp(md) )
     ])
   ];
   }
@@ -874,24 +857,22 @@ const Form$1 = function(vnode) {
   
   const model= vnode.attrs.model;
   const data= { type: 1 };
-  //const schema= _schema('task');  
+
   const get_type= el=> el.options[ el.selectedIndex].value;
   model.href= taskReestr.invoice.get_url;
+  
   const download= event=> {
-    //console.log('report');
     event.preventDefault();
-    let imp= document.getElementById('imp');
-    imp.classList.add('disable');
-    //console.log(resp.getAttribute('display'));
-    moModel$1.formSubmit(event, _schema('task'), model, "POST").then((t) => {
-      //console.log(imp);
-      imp.classList.remove('disable');
+    let task= document.getElementById('task');
+    task.classList.add('disable');
+    moModel$1.formSubmit(event, _schema('task'), model, "POST").then(() => {
+      task.classList.remove('disable');
     });
   };
   
   return {
     view() {
-      return m('div#imp.pure-g', { style: "margin-bottom: 1.3em;" }, [
+      return m('div#task.pure-g', { style: "margin-bottom: 1.3em;" }, [
         m('.pure-u-1-3', [
           m('form.pure-form.pure-form-stacked',
             { onsubmit: download, oncreate: form_file_dom }, [
@@ -925,7 +906,7 @@ const Form$1 = function(vnode) {
             ])
           ])
         ]),
-        m('.pure-u-2-3',  foResp(model) )
+        m('.pure-u-2-3',  taskResp(model) )
       ]);
     }
   };
@@ -938,7 +919,7 @@ const vuInvimp = function (vnode) {
   return {
     view () {
       return [
-        m(vuTheader$1, { header: vnode.attrs.header } ),
+        m(vuTheader, { header: vnode.attrs.header } ),
         m(Form$1, { model: vnode.attrs.model } )
       ];
     }    
@@ -957,11 +938,10 @@ const Form$2 = function(vnode) {
   const upload= event=> {
     //console.log('report');
     event.preventDefault();
-    let resp= document.getElementById('resp');
-    resp.setAttribute('display', 'none');
-    return moModel$1.formSubmit(event, _schema('task'), md, "GET").then((t) => {
-      //console.log(r);
-      resp.setAttribute('display', 'block');
+    let task= document.getElementById('task');
+    task.setAttribute('display', 'none');
+    return moModel$1.formSubmit(event, _schema('task'), md, "GET").then(() => {
+      task.setAttribute('display', 'block');
     });
   };
   
@@ -969,7 +949,7 @@ const Form$2 = function(vnode) {
   
     view() {
       //console.log(model);
-      return [ m('.pure-g', { style: "margin-bottom: 1.3em;" }, [
+      return [ m('div#task.pure-g', { style: "margin-bottom: 1.3em;" }, [
         m('.pure-u-1-3', [
         m('form.pure-form.pure-form-stacked', {onsubmit: upload},
           m('fieldset', [
@@ -983,7 +963,7 @@ const Form$2 = function(vnode) {
           ])
         )
       ]),
-      m('.pure-u-2-3', foResp(md) )
+      m('.pure-u-2-3', taskResp(md) )
     ])
   ];
   }
@@ -1102,7 +1082,7 @@ const vuRdbf = function (vnode) {
   return {
     view () {
       return [
-        m(vuTheader$1, { header: vnode.attrs.header } ),
+        m(vuTheader, { header: vnode.attrs.header } ),
         m(importForm, { model: vnode.attrs.model } )
       ];
     }    
