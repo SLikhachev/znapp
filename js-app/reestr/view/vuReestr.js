@@ -1,17 +1,18 @@
 // src/reestr/view/vuReestr.js
+// make reestr zip
 
 import { vuTheader, taskResp } from '../../apps/view/vuApp.js';
 import { _month, _schema } from '../../apps/model/moModel.js';
 import { taskReestr } from '../reestrApi';
 import { moModel } from '../model/moModel.js';
 
-const reestrForm = function(vnode) {
+const Form = function(vnode) {
   
   const model= vnode.attrs.model;
   const data= { month: _month(), pack: 1 };
   model.href= taskReestr.pack.get_url;
   
-  const on_submit = event=> {
+  const _submit = event=> {
     //console.log(data);
     event.preventDefault();
     let task= document.getElementById('task');
@@ -25,7 +26,7 @@ const reestrForm = function(vnode) {
     view() {
       return m('div#task.pure-g', { style: "margin-bottom: 1.3em;" }, [
         m('.pure-u-1-3', [
-          m('form.pure-form.pure-form-stacked', { onsubmit: on_submit }, [
+          m('form.pure-form.pure-form-stacked', { onsubmit: _submit }, [
             m('fieldset', [
               m('legend', "Параметры реестра"),
               m('.pure-control-group', [
@@ -61,15 +62,13 @@ const reestrForm = function(vnode) {
   };
 }
 
-
-// clojure
 export const vuReestr = function (vnode) {
   
   return {
     view () {
       return [
         m(vuTheader, { header: vnode.attrs.header } ),
-        m(reestrForm, { model: vnode.attrs.model } )
+        m(Form, { model: vnode.attrs.model } )
       ];
     }    
         

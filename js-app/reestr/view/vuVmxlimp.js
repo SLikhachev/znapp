@@ -1,17 +1,18 @@
-// src/reestr/view/vuVmxlImp.js
+// src/reestr/view/vuVmxlimp.js
+// import errors from VM xml file
 
 import { vuTheader, taskResp } from '../../apps/view/vuApp.js';
 import { file_field, form_file_dom } from '../../apps/form/customFields.js';
 import { _schema } from '../../apps/model/moModel.js';
 import { moModel } from '../model/moModel.js';
 
-const errorsForm = function(vnode) {
+const Form = function(vnode) {
   
   const model= vnode.attrs.model;
   const data= {};
   const get_type= el=> el.options[ el.selectedIndex].value;
   
-  const on_submit = function (event) {
+  const _submit = function (event) {
     event.preventDefault();
     let task= document.getElementById('task');
     task.setAttribute('display', 'none');
@@ -25,7 +26,7 @@ const errorsForm = function(vnode) {
       return m('div#task.pure-g', { style: "margin-bottom: 1.3em;" }, [
         m('.pure-u-1-3', [
           m('form.pure-form.pure-form-stacked',
-            { onsubmit: on_submit, oncreate: form_file_dom }, [
+            { onsubmit: _submit, oncreate: form_file_dom }, [
             m('fieldset', [
               m('legend', "Тип файла ошибок"),
               m('.pure-control-group', file_field(data) ),
@@ -58,7 +59,7 @@ export const vuVmxlimp = function (vnode) {
     view () {
       return [
         m(vuTheader, { header: vnode.attrs.header } ),
-        m(errorsForm, { model: vnode.attrs.model } )
+        m(Form, { model: vnode.attrs.model } )
       ];
     }    
         

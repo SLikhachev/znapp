@@ -1,4 +1,5 @@
 // src/report/view/vuVmxlast.js
+// show the last imported errors and download errors csv file 
 
 import { taskResp } from '../../apps/view/vuApp.js';
 import { _schema } from '../../apps/model/moModel.js';
@@ -10,10 +11,10 @@ import { vuDataSheet } from './vuDataSheet.js';
 
 const Form = function(vnode) {
   
-  const model = vnode.attrs.model;
+  //const model = vnode.attrs.model;
   //console.log(model);
   const md= { url: taskReestr.vmx.post_url, href: taskReestr.vmx.get_url };
-  const upload= event=> {
+  const download= event=> {
     event.preventDefault();
     let task= document.getElementById('task');
     task.setAttribute('display', 'none');
@@ -29,7 +30,7 @@ const Form = function(vnode) {
       //console.log(model);
       return [ m('div#task.pure-g', { style: "margin-bottom: 1.3em;" }, [
         m('.pure-u-1-3', [
-        m('form.pure-form.pure-form-stacked', {onsubmit: upload},
+        m('form.pure-form.pure-form-stacked', {onsubmit: download},
           m('fieldset', [
             m('legend', "Выгрузить в CSV файл"),
             m('.pure-controls', [

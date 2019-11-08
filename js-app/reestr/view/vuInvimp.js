@@ -1,6 +1,7 @@
 // src/reestr/view/vuInvimp.js
+// import BARS invoice -> transform it into xlsx book and download it
 
-import { _month, _schema } from '../../apps/model/moModel.js';
+import { _schema } from '../../apps/model/moModel.js';
 import { vuTheader, taskResp } from '../../apps/view/vuApp.js';
 import { file_field, form_file_dom } from '../../apps/form/customFields.js';
 import { moModel } from '../model/moModel.js';
@@ -66,7 +67,6 @@ const Form = function(vnode) {
 }
 
 
-// clojure
 export const vuInvimp = function (vnode) {
   
   return {
@@ -77,6 +77,6 @@ export const vuInvimp = function (vnode) {
       ];
     }    
         
-  }; //return this object
+  }; 
 }
 

@@ -447,13 +447,13 @@ const moModel$1 = {
 
 // src/reestr/view/vuReestr.js
 
-const reestrForm = function(vnode) {
+const Form = function(vnode) {
   
   const model= vnode.attrs.model;
   const data= { month: _month(), pack: 1 };
   model.href= taskReestr.pack.get_url;
   
-  const on_submit = event=> {
+  const _submit = event=> {
     //console.log(data);
     event.preventDefault();
     let task= document.getElementById('task');
@@ -467,7 +467,7 @@ const reestrForm = function(vnode) {
     view() {
       return m('div#task.pure-g', { style: "margin-bottom: 1.3em;" }, [
         m('.pure-u-1-3', [
-          m('form.pure-form.pure-form-stacked', { onsubmit: on_submit }, [
+          m('form.pure-form.pure-form-stacked', { onsubmit: _submit }, [
             m('fieldset', [
               m('legend', "Параметры реестра"),
               m('.pure-control-group', [
@@ -503,15 +503,13 @@ const reestrForm = function(vnode) {
   };
 };
 
-
-// clojure
 const vuReestr = function (vnode) {
   
   return {
     view () {
       return [
         m(vuTheader, { header: vnode.attrs.header } ),
-        m(reestrForm, { model: vnode.attrs.model } )
+        m(Form, { model: vnode.attrs.model } )
       ];
     }    
         
@@ -620,15 +618,15 @@ const form_file_dom= vnode=>  {
   });
 };
 
-// src/reestr/view/vuVmxlImp.js
+// src/reestr/view/vuVmxlimp.js
 
-const errorsForm = function(vnode) {
+const Form$1 = function(vnode) {
   
   const model= vnode.attrs.model;
   const data= {};
   const get_type= el=> el.options[ el.selectedIndex].value;
   
-  const on_submit = function (event) {
+  const _submit = function (event) {
     event.preventDefault();
     let task= document.getElementById('task');
     task.setAttribute('display', 'none');
@@ -642,7 +640,7 @@ const errorsForm = function(vnode) {
       return m('div#task.pure-g', { style: "margin-bottom: 1.3em;" }, [
         m('.pure-u-1-3', [
           m('form.pure-form.pure-form-stacked',
-            { onsubmit: on_submit, oncreate: form_file_dom }, [
+            { onsubmit: _submit, oncreate: form_file_dom }, [
             m('fieldset', [
               m('legend', "Тип файла ошибок"),
               m('.pure-control-group', file_field(data) ),
@@ -675,7 +673,7 @@ const vuVmxlimp = function (vnode) {
     view () {
       return [
         m(vuTheader, { header: vnode.attrs.header } ),
-        m(errorsForm, { model: vnode.attrs.model } )
+        m(Form$1, { model: vnode.attrs.model } )
       ];
     }    
         
@@ -748,12 +746,12 @@ const vuDataSheet = function (vnode) {
 // src/report/view/vuVmxlast.js
 
 
-const Form = function(vnode) {
+const Form$2 = function(vnode) {
   
-  const model = vnode.attrs.model;
+  //const model = vnode.attrs.model;
   //console.log(model);
   const md= { url: taskReestr.vmx.post_url, href: taskReestr.vmx.get_url };
-  const upload= event=> {
+  const download= event=> {
     event.preventDefault();
     let task= document.getElementById('task');
     task.setAttribute('display', 'none');
@@ -769,7 +767,7 @@ const Form = function(vnode) {
       //console.log(model);
       return [ m('div#task.pure-g', { style: "margin-bottom: 1.3em;" }, [
         m('.pure-u-1-3', [
-        m('form.pure-form.pure-form-stacked', {onsubmit: upload},
+        m('form.pure-form.pure-form-stacked', {onsubmit: download},
           m('fieldset', [
             m('legend', "Выгрузить в CSV файл"),
             m('.pure-controls', [
@@ -816,7 +814,7 @@ const vuVmxlast = function (vnode) {
   
   const view = vuDataSheet(vnode);
   const v= Object.assign( view, { listMap: listMap } );
-  v.form = Form;
+  v.form = Form$2;
   return v;
 };
 
@@ -853,7 +851,7 @@ const roErrors = {
 
 // src/reestr/view/vuInvimp.js
 
-const Form$1 = function(vnode) {
+const Form$3 = function(vnode) {
   
   const model= vnode.attrs.model;
   const data= { type: 1 };
@@ -913,24 +911,23 @@ const Form$1 = function(vnode) {
 };
 
 
-// clojure
 const vuInvimp = function (vnode) {
   
   return {
     view () {
       return [
         m(vuTheader, { header: vnode.attrs.header } ),
-        m(Form$1, { model: vnode.attrs.model } )
+        m(Form$3, { model: vnode.attrs.model } )
       ];
     }    
         
-  }; //return this object
+  }; 
 };
 
-// src/report/view/vuInvexp.js
+// src/report/view/vuInvcalc.js
 
 
-const Form$2 = function(vnode) {
+const Form$4 = function(vnode) {
   
   const model = vnode.attrs.model;
   //console.log(model);
@@ -976,7 +973,7 @@ const vuInvcalc = function (vnode) {
     view () {
       return [
         m(vuTheader, { header: vnode.attrs.header } ),
-        m(Form$2, { model: vnode.attrs.model } )
+        m(Form$4, { model: vnode.attrs.model } )
       ];
     }    
         

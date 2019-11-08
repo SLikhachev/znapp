@@ -1,4 +1,4 @@
-// src/report/view/vuInvexp.js
+// src/report/view/vuInvcalc.js
 
 import { vuTheader, taskResp } from '../../apps/view/vuApp.js';
 import { _schema } from '../../apps/model/moModel.js';
