@@ -210,7 +210,9 @@ const errMsg= function(error){
   //console.log(error);
   //console.log(' error ');
   //let e = JSON.parse(error.message);
-  let e= error.response;
+  if ( !error)
+    return 'Ошибка сервера (детали в журнале)'
+  let e= error.response ? error.response: 'Ошибка сервера (пустой ответ)' ;
   let m= e.details ? e.details : e.message ? e.message: e;
   //let m= e.message ? e.message : error;
   console.log(m);
@@ -407,7 +409,6 @@ const moModel = {
           model[key]= [];
       } 
       return true;
-      return Promise.resolve(true);
     }).catch(function (err) {
       model.error = errMsg(err);
     });
@@ -481,36 +482,6 @@ const moModel = {
       return Promise.reject(msg);
     });
   }
-/*
-  formSubmit (model, form) {  
-    // form - jQuery object
-    // model - model object 
-    //let schema = window.localStorage.getItem('pg_rest');
-    let pg_rest = window.localStorage.getItem('pg_rest');
-    let data = moModel.getFormData( form ),
-    url = pg_rest + model.url,
-    method = data.method;
-    //console.log ( data );
-    //return false;
-    vuDialog.form = form;
-    delete data.method;
-    if ( method == 'DELETE' || method == 'PATCH' )
-      url += '?' + 'id=eq.' + data.id;
-    $.ajax({
-      url: url,
-      type: method,
-      async: false,
-      data: data,
-      //context: form,
-      //contentType: 'application/json',
-      dataType: 'json',
-      beforeSend: vuDialog.offForm,
-      error: vuDialog.xError,
-      success: vuDialog.xSuccess
-    });
-    return false;
-  }
-*/
 };
 
 // src/apps/view/vuApp.js
@@ -713,7 +684,7 @@ const fileForm = function(vnode) {
     vnode.dom.addEventListener('submit', on_form_submit);
   };
   
-  const get_href$$1 = file=> `${_schema('task')}${data._get}${file}`;
+  const get_href = file=> `${_schema('task')}${data._get}${file}`;
   
   return {
   
@@ -759,7 +730,7 @@ const fileForm = function(vnode) {
             model.done ? m('div', [
               m('h4.blue', model.message),
               m('span.blue', {style: "font-size: 1.2em"}, "Файл отчета: "),
-              m('a.pure-button', {href: get_href$$1( model.file ), style: "font-size: 1.2 em"}, model.file ) 
+              m('a.pure-button', {href: get_href( model.file ), style: "font-size: 1.2 em"}, model.file ) 
            ]) : m('div', [
               m('h4.blue', model.message),
               m('span.blue', {style: "font-size: 1.2em"}, "Исходный файл: ", model.file )

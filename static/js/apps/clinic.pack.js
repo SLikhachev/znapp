@@ -456,7 +456,6 @@ const moModel = {
           model[key]= [];
       } 
       return true;
-      return Promise.resolve(true);
     }).catch(function (err) {
       model.error = errMsg(err);
     });
@@ -962,7 +961,7 @@ const _notEdit= tal=> {
 
 const talNum= tal=> 
   m('legend', `Талон № ${_Num(tal.tal_num)}`,
-    m('span', {style: "padding: 3em"}, _notEdit(tal) ? 'закрыт': 'открыт') , `Год ${moTalonsList._year}`);
+    m('span', {style: "padding: 3em"}, _notEdit() ? 'закрыт': 'открыт') , `Год ${moTalonsList._year}`);
 
 // src/apps/view/vuApp.js
 
@@ -2153,7 +2152,7 @@ const vuTalonsList = function (vnode) {
         }, cell)) : m('td', cell);
         return td;
       }),
-      m('td', _notEdit(s) ? '':
+      m('td', _notEdit() ? '':
         m('i.fa.fa-minus-circle.choice.red', {
         onclick: e=> markDeleted (e, s.tal_num),
       }) )
@@ -2342,7 +2341,7 @@ const talNap = function(vnode) {
   };
 };
 
-const _disabled= tal=> { return _notEdit(tal) || !Boolean( _Num(tal.tal_num) ); };
+const _disabled= tal=> { return _notEdit() || !Boolean( _Num(tal.tal_num) ); };
 
 const pmuForm = function (vnode) {
   
@@ -2515,7 +2514,7 @@ const talPmu = function(vnode) {
   };
   
   const caption= ()=>{
-    if ( _notEdit(tal) )
+    if ( _notEdit() )
       return 'Закрытые талоны не редактируем';
     if ( ! Boolean( _Num(tal.tal_num) ) )
       return 'Талон без номера, сначала сохраните новый талон';
@@ -2553,7 +2552,6 @@ const talPmu = function(vnode) {
          return true;
       });
     }
-    return false;    
   };
   
   let hdrMap= function(){
@@ -3002,7 +3000,7 @@ const talForm = function (vnode) {
       m('fieldset', { style: "padding-left: 0%;" }, [
 				m('.pure-u-3-24', { style: "margin-top: 5px;" }, 
           m('button.pure-button.pure-button-primary[type="submit"]',
-            { style: "font-size: 1.1em", disabled: _notEdit(tal)
+            { style: "font-size: 1.1em", disabled: _notEdit()
               //onclick: talonSave
             },
           "Сохранить" )

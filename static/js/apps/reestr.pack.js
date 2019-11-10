@@ -156,8 +156,6 @@ const vuMain = {
   }
 };
 
-// src/apps/view/vuDialog.js
-
 // src/apps/model/moModel.js
 
 //const pg_rest = window.localStorage.getItem('pg_rest'); //postgest schemaRest;
@@ -328,7 +326,7 @@ const reestrMenu = { subAppMenu: {
 }
 };
 
-const moModel$1 = {
+const moModel = {
   
   getModel( url=null, order_by=null ) {
     //console.log(url);
@@ -458,7 +456,7 @@ const Form = function(vnode) {
     event.preventDefault();
     let task= document.getElementById('task');
     task.setAttribute('display', 'none');
-    return moModel$1.doSubmit(event, _schema('task'), 'simple', model, data, "POST").then(()=> {
+    return moModel.doSubmit(event, _schema('task'), 'simple', model, data, "POST").then(()=> {
       task.setAttribute('display', 'block');
     });
   };
@@ -528,7 +526,7 @@ const roReestr = {
     render: function() {
       let view = m(vuReestr, {
         header: "Формируем XML пакет для ФОМС",
-        model: moModel$1.getModel( taskReestr.pack.post_url )
+        model: moModel.getModel( taskReestr.pack.post_url )
         
       });
       return vuView(reestrMenu, view);
@@ -630,7 +628,7 @@ const Form$1 = function(vnode) {
     event.preventDefault();
     let task= document.getElementById('task');
     task.setAttribute('display', 'none');
-    return moModel$1.formSubmit(event, _schema('task'), model, "POST").then(()=> {
+    return moModel.formSubmit(event, _schema('task'), model, "POST").then(()=> {
       task.setAttribute('display', 'block');
     });
   };
@@ -698,7 +696,7 @@ const vuDataSheet = function (vnode) {
   //getList (schema, model, params=null, method='GET') {
   let { model, struct, header, params } = vnode.attrs;
   
-  moModel$1.getList( _schema('pg_rest'), model, params);
+  moModel.getList( _schema('pg_rest'), model, params);
   
   return {
 
@@ -755,7 +753,7 @@ const Form$2 = function(vnode) {
     event.preventDefault();
     let task= document.getElementById('task');
     task.setAttribute('display', 'none');
-    return moModel$1.formSubmit(event, _schema('task'), md, "GET").then(() => {
+    return moModel.formSubmit(event, _schema('task'), md, "GET").then(() => {
       //console.log(r);
       task.setAttribute('display', 'block');
     });
@@ -830,7 +828,7 @@ const roErrors = {
     render: function() {
       let view = m(vuVmxlimp, {
         header: "Импорт протокола ошибок (XML файл)",
-        model: moModel$1.getModel( taskReestr.vmx.post_url )
+        model: moModel.getModel( taskReestr.vmx.post_url )
         
       });
       return vuView(reestrMenu, view);
@@ -840,7 +838,7 @@ const roErrors = {
     render: function() {
       let view = m(vuVmxlast, {
         header: "Последние принятые ошибки",
-        model: moModel$1.getModel( restReestr.vmx.url ),
+        model: moModel.getModel( restReestr.vmx.url ),
         struct: moStruct().vmx_last,
         params: restReestr.vmx.params
       });
@@ -863,7 +861,7 @@ const Form$3 = function(vnode) {
     event.preventDefault();
     let task= document.getElementById('task');
     task.classList.add('disable');
-    moModel$1.formSubmit(event, _schema('task'), model, "POST").then(() => {
+    moModel.formSubmit(event, _schema('task'), model, "POST").then(() => {
       task.classList.remove('disable');
     });
   };
@@ -937,7 +935,7 @@ const Form$4 = function(vnode) {
     event.preventDefault();
     let task= document.getElementById('task');
     task.setAttribute('display', 'none');
-    return moModel$1.formSubmit(event, _schema('task'), md, "GET").then(() => {
+    return moModel.formSubmit(event, _schema('task'), md, "GET").then(() => {
       task.setAttribute('display', 'block');
     });
   };
@@ -992,7 +990,7 @@ const roInvoice = {
     render: function() {
       let view = m(vuInvimp, {
         header: "Реестр в СМО из ZIP файла счета БАРС",
-        model: moModel$1.getModel( taskReestr.invoice.post_url )
+        model: moModel.getModel( taskReestr.invoice.post_url )
         
       });
       return vuView(reestrMenu, view);
@@ -1021,7 +1019,7 @@ const importForm = function(vnode) {
   
   const on_submit = function (event) {
     event.preventDefault();
-    return moModel$1.formSubmit(event, schema, model, "POST");
+    return moModel.formSubmit(event, schema, model, "POST");
   };
   
   return {
@@ -1100,7 +1098,7 @@ const roImport = {
     render: function() {
       let view = m(vuRdbf, {
         header: "Импорт реестов DBF",
-        model: moModel$1.getModel( taskReestr.impo_dbf.post_url )
+        model: moModel.getModel( taskReestr.impo_dbf.post_url )
       });
       return vuView(reestrMenu, view);
     }

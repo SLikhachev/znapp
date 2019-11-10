@@ -412,8 +412,11 @@ const vuDialog = {
 
 const errMsg= function(error){
   //console.log(error);
+  //console.log(' error ');
   //let e = JSON.parse(error.message);
-  let e= error.response;
+  if ( !error)
+    return 'Ошибка сервера (детали в журнале)'
+  let e= error.response ? error.response: 'Ошибка сервера (пустой ответ)' ;
   let m= e.details ? e.details : e.message ? e.message: e;
   //let m= e.message ? e.message : error;
   console.log(m);
@@ -495,6 +498,7 @@ const moModel = {
       url: url,
       headers: model.headers ? model.headers: null
     }).then(function(res) {
+      //console.log(res);
       if ( ! Boolean(res) ) return false;
       if (res.length && res.length > 0) {
         model.list = Array.from( res ); // list of objects
@@ -503,6 +507,7 @@ const moModel = {
         model.list= []; 
       return true;
     }).catch(function(err) { 
+      //console.log(err);
       model.error = errMsg(err);
     });
   },
@@ -601,7 +606,6 @@ const moModel = {
           model[key]= [];
       } 
       return true;
-      return Promise.resolve(true);
     }).catch(function (err) {
       model.error = errMsg(err);
     });
@@ -675,36 +679,6 @@ const moModel = {
       return Promise.reject(msg);
     });
   }
-/*
-  formSubmit (model, form) {  
-    // form - jQuery object
-    // model - model object 
-    //let schema = window.localStorage.getItem('pg_rest');
-    let pg_rest = window.localStorage.getItem('pg_rest');
-    let data = moModel.getFormData( form ),
-    url = pg_rest + model.url,
-    method = data.method;
-    //console.log ( data );
-    //return false;
-    vuDialog.form = form;
-    delete data.method;
-    if ( method == 'DELETE' || method == 'PATCH' )
-      url += '?' + 'id=eq.' + data.id;
-    $.ajax({
-      url: url,
-      type: method,
-      async: false,
-      data: data,
-      //context: form,
-      //contentType: 'application/json',
-      dataType: 'json',
-      beforeSend: vuDialog.offForm,
-      error: vuDialog.xError,
-      success: vuDialog.xSuccess
-    });
-    return false;
-  }
-*/
 };
 
 // src/sprav/view/vuSprav.js
@@ -1167,7 +1141,7 @@ const vuSheet = function (vnode) {
  
   let {
     model, header, name, struct, filter=0, //filter int of fields to order
-    href='', itemForm=null, fetchForm: fetchForm$$1=null
+    href='', itemForm=null, fetchForm=null
   }= vnode.attrs;
   //console.log( typeof fetchForm );
   //console.log(href);
@@ -1187,7 +1161,7 @@ const vuSheet = function (vnode) {
   
   if (href) delete edialog.edit; 
   
-  if ( fetchForm$$1 === null ) {
+  if ( fetchForm === null ) {
     moModel.getList( model );
     moModel.getData( model );
   } else {
@@ -1202,7 +1176,7 @@ const vuSheet = function (vnode) {
       //console.log(itemForm);
       return [
         header ? m(vuTheader, {header: header}) : '',
-        fetchForm$$1 ? fetchForm$$1( model ) : '',
+        fetchForm ? fetchForm( model ) : '',
         model.error ? m(".error", model.error) :
           model.list ? [
             filter ? m(vuFilter, {cols: filter, model: model, add: edialog.add} ) : '',
@@ -1314,7 +1288,7 @@ const itemForm = function(vnode){
   const itf = function(f, d, a={}) { return fieldFrom(Item, f, d, a); };
   //return itForm( Object.assign( { flds: ['id', 'name'], ffunc: itf }, vnode.attrs ) );
   let flds= ['id', 'name'];
-  return itForm( flds, itf, vnode );
+  return itForm( flds, itf);
 };
 
 // src/sprav/view/vuDoctor.js
@@ -1365,7 +1339,7 @@ const Item$1 = {
 const itemForm$1= function(vnode){
   let flds= ['family', 'name', 'sname', 'snils', 'code', 'spec', 'division', 'district', 'tabid'];
   const itf = function(f, d, a={}) { return fieldFrom(Item$1, f, d, a); };
-  return itForm( flds, itf , vnode);
+  return itForm( flds, itf );
 };
 // clojure
 const vuDoctor = function (vnode) {
@@ -1523,7 +1497,7 @@ const itemProfil = function(vnode){
   const _it = function(f, d, a={}) { return fieldFrom(Profil, f, d, a); };
   let flds= [ 'id', 'name', 'one_visit', 'two_visit', 'podr'];
   //let flds= [ 'id', 'name', 'one_visit', 'two_visit', 'podr'];
-  return itForm( flds, _it, vnode );
+  return itForm( flds, _it);
 };
 //=================================================
 const TarifBase= {
@@ -1540,7 +1514,7 @@ const itemTarifBase = function(vnode){
   //return itForm( Object.assign( { flds: ['id', 'name'], ffunc: itf }, vnode.attrs ) );
   let flds= [ 'name', 'tarif'];
   const _it = function(f, d, a={}) { return fieldFrom(TarifBase, f, d, a); };
-  return itForm( flds, _it, vnode );
+  return itForm( flds, _it);
 };
 
 const Fetch = {
@@ -1595,7 +1569,7 @@ const vuPmu = function (vnode) {
   return view;
 };
 
-const Item$3 = {
+const Item$2 = {
   ccode: { label: ['', 'Номер ПМУ'], input: {
       tag: ['.input-find.pure-u-3-4', "number"],
       //attrs: { placeholder: 'Номер' }
@@ -1612,7 +1586,7 @@ const Item$3 = {
     }
   },
 };
-const itf$2 = function(f, d, a={}) { return fieldFrom(Item$3, f, d, a); };
+const itf = function(f, d, a={}) { return fieldFrom(Item$2, f, d, a); };
 
 const pmuForm = function (vnode) {
 
@@ -1632,7 +1606,7 @@ const pmuForm = function (vnode) {
         m(".pure-u-1-2",
           m("form.pure-form", { onsubmit: on_submit },
             m("fieldset", m(".pure-g", [
-              fld.map( f => m(".pure-u-1-4", itf$2(f, item))),
+              fld.map( f => m(".pure-u-1-4", itf(f, item))),
               m(".pure-u-1-5", 
                 m('button.pure-button.pure-button-primary[type="submit"]',
                   {style: 'margin-top: 1.7em'},
@@ -1786,14 +1760,14 @@ const vuPmuItem = function(vnode){
   };
 };
 
-const Item$4 = {
+const Item$3 = {
   name: { label: ['', 'Название группы'], input: {
       tag: ['.pure-u-3-4[size=64]', "text"],
     }
   },
 };
 
-const itf$3 = function(f, d, a={}) { return fieldFrom(Item$4, f, d, a); };
+const itf$1 = function(f, d, a={}) { return fieldFrom(Item$3, f, d, a); };
 
 // add PMU to GRUP
 const grupForm = function (vnode) {
@@ -1815,7 +1789,7 @@ const grupForm = function (vnode) {
         m(".pure-u-1-2",
           m("form.pure-form", { onsubmit: on_submit },
             m("fieldset", m(".pure-g", [
-              fld.map( f => m(".pure-u-1-3", itf$3(f, item))),
+              fld.map( f => m(".pure-u-1-3", itf$1(f, item))),
               m(".pure-u-1-5", 
                 m('button.pure-button.pure-button-primary[type="submit"]',
                   {style: 'margin-top: 1.7em'},
@@ -2254,7 +2228,7 @@ const roCom = {
 // label = [class, text], if null no label
 // input = tag = [class, type, tabindex (int), required(bool)]
 
-const Item$5 = {
+const Item$4 = {
   code: { label: ['', "Код услуги"], input: {
       tag: ['', "text"],
       attrs: { readonly: true }
@@ -2266,9 +2240,9 @@ const Item$5 = {
   },
 };
 
-const itemForm$3 = function(vnode){
+const itemForm$2 = function(vnode){
   let item; //= vnode.attrs.item;
-  const _it = function(f, d, a={}) { return fieldFrom(Item$5, f, d, a); };
+  const _it = function(f, d, a={}) { return fieldFrom(Item$4, f, d, a); };
   let fld = ['code', 'tarif'];
   const fld_fun= item=> {
     return [
@@ -2324,7 +2298,7 @@ const pmuFind$1 = function ( model ) {
 // clojure
 const vuTarifPmuVzaimo = function (vnode) {
   vnode.attrs.fetchForm= pmuFind$1;
-  vnode.attrs.itemForm= itemForm$3;
+  vnode.attrs.itemForm= itemForm$2;
   let view = vuSheet(vnode);
   return view;
 };
