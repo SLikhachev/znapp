@@ -1,6 +1,7 @@
 // src/report/view/vuVmxlast.js
+// show the last imported errors and download errors csv file 
 
-import { foResp } from '../../apps/view/vuApp.js';
+import { taskResp } from '../../apps/view/vuApp.js';
 import { _schema } from '../../apps/model/moModel.js';
 import { clinicApi } from '../../clinic/clinicApi.js';
 import { taskReestr } from '../reestrApi.js';
@@ -10,17 +11,16 @@ import { vuDataSheet } from './vuDataSheet.js';
 
 const Form = function(vnode) {
   
-  const model = vnode.attrs.model;
+  //const model = vnode.attrs.model;
   //console.log(model);
   const md= { url: taskReestr.vmx.post_url, href: taskReestr.vmx.get_url };
-  const upload= event=> {
-    //console.log('report');
+  const download= event=> {
     event.preventDefault();
-    let resp= document.getElementById('resp');
-    resp.setAttribute('display', 'none');
-    return moModel.formSubmit(event, _schema('task'), md, "GET").then((t) => {
+    let task= document.getElementById('task');
+    task.setAttribute('display', 'none');
+    return moModel.formSubmit(event, _schema('task'), md, "GET").then(() => {
       //console.log(r);
-      resp.setAttribute('display', 'block');
+      task.setAttribute('display', 'block');
     });
   };
   
@@ -28,9 +28,9 @@ const Form = function(vnode) {
   
     view() {
       //console.log(model);
-      return [ m('.pure-g', { style: "margin-bottom: 1.3em;" }, [
+      return [ m('div#task.pure-g', { style: "margin-bottom: 1.3em;" }, [
         m('.pure-u-1-3', [
-        m('form.pure-form.pure-form-stacked', {onsubmit: upload},
+        m('form.pure-form.pure-form-stacked', {onsubmit: download},
           m('fieldset', [
             m('legend', "Выгрузить в CSV файл"),
             m('.pure-controls', [
@@ -42,7 +42,7 @@ const Form = function(vnode) {
           ])
         )
       ]),
-      m('.pure-u-2-3', foResp(md) )
+      m('.pure-u-2-3', taskResp(md) )
     ])
   ];
   }

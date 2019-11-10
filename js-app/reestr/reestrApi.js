@@ -8,7 +8,7 @@ export const taskReestr = {
     },
     pack: {
       post_url: "/reestr/xml/pack",
-      get_url: ""
+      get_url: "/utils/file/reestr/xml/"  
     },
     vmx: {
       post_url: "/reestr/xml/vmx",
@@ -18,10 +18,6 @@ export const taskReestr = {
       post_url: "/reestr/inv/impex",
       get_url: "/utils/file/reestr/inv/" //GET reestr file  
     },
-    calc:{
-        post_url: "/reestr/inv/calc",
-        get_url: "/utils/file/reestr/inv/" //GET reestr file  
-    }
 
 }
 

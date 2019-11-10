@@ -1,12 +1,14 @@
 
+import { _month } from '../../apps/model/moModel.js';
 // label = [class, text]
 // input = tag = [class, type, required]
 
+/*
 const month = function () {
     let d = new Date();
     return d.getMonth() + 1;
  };
-
+*/
 export const talonField = {
 
   open_date: { label: ['', "Открыт"], input: {
@@ -19,57 +21,62 @@ export const talonField = {
       attrs: {style: "height: 45%",}
     }
   },
-  talon_month: { label: ['.leg-sec.red', "Месяц талона"], input: {
-      tag: ['.pure-u-6-24.tal_month', 'number', 3, true],
+  talon_month: { label: ['.leg_sec.red', "Месяц талона"], input: {
+      tag: ['.pure-u-12-24.tal_month', 'number', 3, true],
       attrs: {
         style: "height: 45%", min: 1, max: 12,
-        fval: v => v ? v : month()
+        //fval: v => v ? v : month()
       }
     }
   },
-  first_vflag: { label: ['', "Первичный", 'check'], input: {
-      tag: ['', "checkbox", 4, false],
+  mek: { label: ['', "МЭК", 'check'], input: {
+      tag: ['', "checkbox", 4,  false],
       attrs: {style: "margin-right: 0.7em"}
     }
   },
-  for_pom: { label: ['', "Неотложный", 'check'], input: {
+  urgent: { label: ['', "Неотложный", 'check'], input: {
       tag: ['', "checkbox", 5, false],
-      attrs: {style: "margin-right: 0.7em", fcheck: v => v == 2 } // type coercion
+      attrs: {style: "margin-right: 0.7em" } //, fcheck: v => v == 2 } // type coercion
     }
   },
+  
+  first_vflag: { label: ['', "Первичный", 'check'], input: {
+      tag: ['', "checkbox", 6, false],
+      attrs: {style: "margin-right: 0.7em"}
+    }
+  },
+  /*
   finality: { label: ['', "Закончен", 'check'], input: {
       tag: ['', "checkbox", 6,  false],
       attrs: {style: "margin-right: 0.7em"}
     }
   },
+  */
   ist_fin: { label: ['', "Оплата"], input: {
-      tag: ['.pure-u-18-24', "number", 7, true],
-      attrs: { min: 1, max: 9, value: 1 }
+      tag: ['.pure-u-18-24', "text", 7, true],
+      //attrs: { min: 1, max: 9}
     }
   },
   purp: { label: ['', "Цель"], input: {
       tag: ['.pure-u-18-24', 'number', 8, true],
-      attrs: { min: 0, max: 33, value: 1 }
+      attrs: { min: 0, max: 33}
     }
   },
   doc_spec: { label: ['', "Врач"], input: {
       tag: ['.pure-u-22-24', "number", 9, true],
-      attrs: { placeholder: "Спец", min: 1, max: 961}
+      attrs: { placeholder: "Спец"}
     }
   },
   doc_code: { label: ['', "Код"], input: {
-      tag: ['.pure-u-22-24', "number", 10, true],
-      attrs: { min: 1 }
+      tag: ['.pure-u-22-24', "number", 10, true]
     }
   },
   visit_pol: {label: ['', "Амбул"], input: {
-    tag: ['.pure-u-20-24', 'number', 11],
-    attrs: { min: 0}
+    tag: ['.pure-u-20-24', 'number', 11]
     }
   },
   visit_home: {label: ['', "На дом"], input: {
-      tag: ['.input.pure-u-20-24', "number", 12],
-       attrs: { min: 0}
+      tag: ['.input.pure-u-20-24', "number", 12]
     }
   },
   ds1: {label: ['', "Осн. диагноз"], input: {
@@ -85,8 +92,8 @@ export const talonField = {
       tag: ['.input.pure-u-16-24', "text", 15, true]
     }
   },
-  travma_type: {label: ['', "Травма"], input: {
-      tag: ['.input.pure-u-14-24', "text", 16]
+  rslt: {label: ['', "Результат"], input: {
+      tag: ['.input.pure-u-16-24', "text", 16, true]
     }
   },
   ds2: {label: ['', "Доп. диагноз"], input: {
@@ -97,7 +104,10 @@ export const talonField = {
       tag: ['.input.pure-u-16-24', "text", 18]
     }
   },
-
+  travma_type: {label: ['', "Травма"], input: {
+      tag: ['.input.pure-u-14-24', "text", 19]
+    }
+  },
 };
 
 export const pmuAdd = {

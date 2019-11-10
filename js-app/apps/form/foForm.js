@@ -16,7 +16,7 @@ export const fieldFrom = function (fromObj, field, data, to_attrs={}) {
   let t = tag[2] ? `[tabindex=${tag[2]}]`: '';
   let r = tag[3] ? '[required]' : '';
   let tg = `input${tag[0]}[name=${field}][type=${tag[1]}]${t}${r}`;
-
+  
   attrs.value = attrs.fval === undefined ? fval( data[field] ) : attrs.fval(data[field]);
   //attrs.value= data[field] ? data[field] : '';
   attrs.onblur = attrs.fblur === undefined ? fblur: null;
@@ -27,9 +27,12 @@ export const fieldFrom = function (fromObj, field, data, to_attrs={}) {
   if (label.length > 0 ) {
     lt = `label${label[0]}[for=${field}]`;
     // third elem only for checkbox
-    if (label.length > 2) {
-      attrs.checked = attrs.checked ? attrs.checked :
-        attrs.fcheck ? attrs.fcheck(data[field]) : data[field] === 0;
+    if (label.length > 2) { //firstly on first render time
+      
+      attrs.checked = //attrs.checked ? attrs.checked :
+        attrs.fcheck ? attrs.fcheck(data[field]) : Boolean(data[field]);
+      delete attrs.value;
+      delete attrs.onblur;
       return m(lt, m(tg, attrs), label[1]);
     }
     return [ m(lt, label[1]),  m(tg, attrs)];

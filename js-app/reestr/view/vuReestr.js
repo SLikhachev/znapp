@@ -1,31 +1,32 @@
 // src/reestr/view/vuReestr.js
+// make reestr zip
 
-import { vuTheader, foResp } from '../../apps/view/vuApp.js';
-import { _month, _schema, moModel } from '../model/moModel.js';
-import { taskReestr } from '../reestrApi.js';
-//import { task_rest, moModel } from '../model/moModel.js';
+import { vuTheader, taskResp } from '../../apps/view/vuApp.js';
+import { _month, _schema } from '../../apps/model/moModel.js';
+import { taskReestr } from '../reestrApi';
+import { moModel } from '../model/moModel.js';
 
 const Form = function(vnode) {
   
   const model= vnode.attrs.model;
-  model.href= taskReestr.pack.get_url;
   const data= { month: _month(), pack: 1 };
-  const schema= _schema('task');
+  model.href= taskReestr.pack.get_url;
   
-  const on_submit = event=> {
+  const _submit = event=> {
+    //console.log(data);
     event.preventDefault();
-    let imp= document.getElementById('imp');
-    imp.classList.add('disable');
-    return moModel.doSubmit(event, schema, 'simple', model, data, "POST").then((t) => {
-      imp.classList.remove('disable');
+    let task= document.getElementById('task');
+    task.setAttribute('display', 'none');
+    return moModel.doSubmit(event, _schema('task'), 'simple', model, data, "POST").then(()=> {
+      task.setAttribute('display', 'block');
     });
   };
   
   return {
     view() {
-      return m('div#imp.pure-g', [
+      return m('div#task.pure-g', { style: "margin-bottom: 1.3em;" }, [
         m('.pure-u-1-3', [
-          m('form.pure-form.pure-form-stacked', { onsubmit: on_submit }, [
+          m('form.pure-form.pure-form-stacked', { onsubmit: _submit }, [
             m('fieldset', [
               m('legend', "Параметры реестра"),
               m('.pure-control-group', [
@@ -55,14 +56,12 @@ const Form = function(vnode) {
             ])
           ])
         ]),
-        m('.pure-u-2-3', foResp(model) )
+        m('.pure-u-2-3', [ taskResp(model) ] )
       ]);
     }
   };
 }
 
-
-// clojure
 export const vuReestr = function (vnode) {
   
   return {

@@ -49,9 +49,9 @@ export const Item= {
   },
 }
 // represent item form
-const itf = function(f, d, a={}) { return fieldFrom(Item, f, d, a); };
 
 export const itemForm = function(vnode){
+  const itf = function(f, d, a={}) { return fieldFrom(Item, f, d, a); };
   //return itForm( Object.assign( { flds: ['id', 'name'], ffunc: itf }, vnode.attrs ) );
   let flds= ['id', 'name'];
   return itForm( flds, itf, vnode );

@@ -1,17 +1,8 @@
 
 // src/report/model/moModel.js
 
-export const _month= () => {
-    let d = new Date(), y = d.getFullYear(), m = d.getMonth() + 1;
-    m= m < 10 ? `0${m}`: `${m}`;
-    return `${y}-${m}`;
-  };
+import { errMsg } from '../../apps/model/moModel.js';
 
-export const _schema= type=> {
-  if (type === 'task')
-    return window.localStorage.getItem('task_rest');
-  return window.localStorage.getItem('pg_rest');
-}
 
 export const moModel = {
   
@@ -20,6 +11,7 @@ export const moModel = {
     const model= {
       url: url,
       order_by: order_by,
+      href: null,
       list: null,
       error: null,
       message: null,
@@ -46,7 +38,7 @@ export const moModel = {
       model.list = res; // list of objects
       model.order = true;
     }).catch(function(e) {
-      model.error = e.message;
+      model.error = errMsg(e);
       console.log(model.error);
     });
   },
@@ -86,7 +78,7 @@ export const moModel = {
       form.classList.remove('disable');
       return true;
     }).catch((err) => {
-      model.error = err.message;
+      model.error = errMsg(err);
       console.log(model.error);
       form.classList.remove('disable');
       return false;
@@ -120,7 +112,7 @@ export const moModel = {
       event.target.parentNode.classList.remove('disable');
       return true;
     }).catch((err) => {
-      model.error = err.message;
+      model.error = errMsg(err);
       console.log(model.error);
       event.target.parentNode.classList.remove('disable');
       return false;

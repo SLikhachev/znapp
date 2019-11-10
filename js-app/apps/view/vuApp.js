@@ -11,12 +11,12 @@ export const get_href= model=> {
 
 export const get_route= model=> {
   return m('a.pure-button', { 
-    href: `${model.route}`,oncreate: m.route.link,
+    href: `${model.route}`,oncreate: m.route.Link,
     style: "font-size: 1.2 em"}, model.file );
 }
            
 // func return chunk of hyper-script of form to post get task
-export const foResp= model=> m('#resp',
+export const taskResp= model=> m('#resp',
   model.error ? m('.error', model.error) :
     model.message ? m('.legend', ["Статус обработки",
       model.done ? m('div', [
@@ -24,9 +24,10 @@ export const foResp= model=> m('#resp',
         m('span.blue', {style: "font-size: 1.2em"}, "Результат, Файл : "),
         model.route ? get_route(model) : model.href ? get_href(model) :
           m('span.blue', {style: "font-size: 1.2em"}, model.file)
-      ]) : m('div', m('h4.blue', model.message))
+      ]) : m('div', m('h4.red', model.message))
     ]) : ''
   );
+ 
 
 export const foMonth= data=> [m('label[for=month]', 'Месяц'),
   m('input.fname[id="month"][type="month"][name="month"][reqired=required]',
@@ -65,3 +66,17 @@ export const vuLoading = {
     );
   }
 }
+
+
+export const taskResponse= (model, href=null) => {
+  return model.error ? m('.error', model.error) :
+    model.message ? m('.legend', ["Статус обработки",
+      model.done ? m('div', [
+        m('h4.blue', model.message),
+        m('span.blue', {style: "font-size: 1.2em"}, "Файл: "),
+        href ? m('a.pure-button', {href: href, style: "font-size: 1.2 em"}, model.file ):
+          ('span', model.file)
+      ]) : m('div', m('h4.red', model.message))
+    ]) : '';
+}
+  

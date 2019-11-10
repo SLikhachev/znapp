@@ -105,7 +105,7 @@ export const roProf = {
           header: "Вид помощи",
           name: "Вид",
           struct: idName,
-          //filter: 2
+          filter: 2
       });
       return vuView(view);
     }
