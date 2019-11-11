@@ -412,8 +412,11 @@ const vuDialog = {
 
 const errMsg= function(error){
   //console.log(error);
+  //console.log(' error ');
   //let e = JSON.parse(error.message);
-  let e= error.response;
+  if ( !error)
+    return 'Ошибка сервера (детали в журнале)'
+  let e= error.response ? error.response: 'Ошибка сервера (пустой ответ)' ;
   let m= e.details ? e.details : e.message ? e.message: e;
   //let m= e.message ? e.message : error;
   console.log(m);
@@ -495,6 +498,7 @@ const moModel = {
       url: url,
       headers: model.headers ? model.headers: null
     }).then(function(res) {
+      //console.log(res);
       if ( ! Boolean(res) ) return false;
       if (res.length && res.length > 0) {
         model.list = Array.from( res ); // list of objects
@@ -503,6 +507,7 @@ const moModel = {
         model.list= []; 
       return true;
     }).catch(function(err) { 
+      //console.log(err);
       model.error = errMsg(err);
     });
   },
@@ -675,36 +680,6 @@ const moModel = {
       return Promise.reject(msg);
     });
   }
-/*
-  formSubmit (model, form) {  
-    // form - jQuery object
-    // model - model object 
-    //let schema = window.localStorage.getItem('pg_rest');
-    let pg_rest = window.localStorage.getItem('pg_rest');
-    let data = moModel.getFormData( form ),
-    url = pg_rest + model.url,
-    method = data.method;
-    //console.log ( data );
-    //return false;
-    vuDialog.form = form;
-    delete data.method;
-    if ( method == 'DELETE' || method == 'PATCH' )
-      url += '?' + 'id=eq.' + data.id;
-    $.ajax({
-      url: url,
-      type: method,
-      async: false,
-      data: data,
-      //context: form,
-      //contentType: 'application/json',
-      dataType: 'json',
-      beforeSend: vuDialog.offForm,
-      error: vuDialog.xError,
-      success: vuDialog.xSuccess
-    });
-    return false;
-  }
-*/
 };
 
 // src/sprav/view/vuSprav.js
