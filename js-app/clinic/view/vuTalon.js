@@ -28,7 +28,7 @@ const num_fields= ['mek','visit_pol', 'pol_days', 'visit_home', 'home_days',
 const toSaveTalon= async function (tal, check) {
   // mek and talon_type
   if ( Boolean( tal.mek ) )
-    tal.tolon_type=1;
+    tal.talon_type=1;
   
   tal.for_pom= Boolean(tal.urgent) ? 2: 3;
 

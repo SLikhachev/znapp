@@ -1,7 +1,8 @@
 // src/reestr/view/vuInvimp.js
+// import BARS invoice -> transform it into xlsx book and download it
 
-import { _month, _schema } from '../../apps/model/moModel.js';
-import { vuTheader, foResp } from '../../apps/view/vuApp.js';
+import { _schema } from '../../apps/model/moModel.js';
+import { vuTheader, taskResp } from '../../apps/view/vuApp.js';
 import { file_field, form_file_dom } from '../../apps/form/customFields.js';
 import { moModel } from '../model/moModel.js';
 import { taskReestr } from '../reestrApi.js';
@@ -10,24 +11,22 @@ const Form = function(vnode) {
   
   const model= vnode.attrs.model;
   const data= { type: 1 };
-  //const schema= _schema('task');  
+
   const get_type= el=> el.options[ el.selectedIndex].value;
   model.href= taskReestr.invoice.get_url;
+  
   const download= event=> {
-    //console.log('report');
     event.preventDefault();
-    let imp= document.getElementById('imp');
-    imp.classList.add('disable');
-    //console.log(resp.getAttribute('display'));
-    moModel.formSubmit(event, _schema('task'), model, "POST").then((t) => {
-      //console.log(imp);
-      imp.classList.remove('disable');
+    let task= document.getElementById('task');
+    task.classList.add('disable');
+    moModel.formSubmit(event, _schema('task'), model, "POST").then(() => {
+      task.classList.remove('disable');
     });
   };
   
   return {
     view() {
-      return m('div#imp.pure-g', { style: "margin-bottom: 1.3em;" }, [
+      return m('div#task.pure-g', { style: "margin-bottom: 1.3em;" }, [
         m('.pure-u-1-3', [
           m('form.pure-form.pure-form-stacked',
             { onsubmit: download, oncreate: form_file_dom }, [
@@ -61,14 +60,13 @@ const Form = function(vnode) {
             ])
           ])
         ]),
-        m('.pure-u-2-3',  foResp(model) )
+        m('.pure-u-2-3',  taskResp(model) )
       ]);
     }
   };
 }
 
 
-// clojure
 export const vuInvimp = function (vnode) {
   
   return {
@@ -79,6 +77,6 @@ export const vuInvimp = function (vnode) {
       ];
     }    
         
-  }; //return this object
+  }; 
 }
 
