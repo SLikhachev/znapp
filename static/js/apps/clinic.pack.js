@@ -250,9 +250,6 @@ const vuDialog = {
 //console.log(schema);
 
 const errMsg= function(error){
-  //console.log(error);
-  //console.log(' error ');
-  //let e = JSON.parse(error.message);
   if ( !error)
     return 'Ошибка сервера (детали в журнале)'
   let e= error.response ? error.response: 'Ошибка сервера (пустой ответ)' ;
@@ -1444,18 +1441,18 @@ const cardField = {
     }
   },
   dul_org: {label: ['', 'Выдан'], input: {
-      tag: ['', 'text', 10, false],
+      tag: ['', 'text', 11, false],
       //attrs: { placeholder: "Номер" }
     }
   },
   polis_ser: {label: ['', "Полис серия"], input: {
       //tag: ['.pure-u-1-6', 'text', 9, false],
-      tag: ['', 'text', 11, false],
+      tag: ['', 'text', 12, false],
       //attrs: {  placeholder:"Серия" }
   }},
   polis_num: {label: ['', "Номер"], input: {
       //tag: ['.pure-u-3-6', 'text', 10, false],
-      tag: ['', 'number', 12, true],
+      tag: ['', 'number', 13, true],
       attrs: { min : 1 }
   }},
   smo: {label: ['', "Страховщик"], input: {
@@ -1472,31 +1469,31 @@ const cardField = {
     }
   },
   city_g: {label: [], input: {
-      tag: ['', 'text', 16, false],
+      tag: ['', 'text', 15, false],
       attrs: { placeholder: "Город" }
   }},
   street_g: {label: [], input: {
-      tag: ['', 'text', 17, false],
+      tag: ['', 'text', 16, false],
       attrs: { placeholder: "Улица" }
   }},
   home_g: {label: [], input: {
-      tag: ['.pure-u-1-8', 'text', 18, false ],
+      tag: ['.pure-u-1-8', 'text', 17, false ],
       attrs: { placeholder: "Дом" }
   }},
   corp_g: {label: [], input: {
-    tag: ['.pure-u-1-8', 'text',  19, false ],
+    tag: ['.pure-u-1-8', 'text',  18, false ],
     attrs: { placeholder: "Корпус" }
   }},
   flat_g: {label: [], input: {
-    tag: ['.pure-u-1-8', 'text',  20, false ],
+    tag: ['.pure-u-1-8', 'text',  19, false ],
     attrs: { placeholder: "Кв" }
   }},
   phone_wrk: {label: [], input: {
-    tag: ['', 'text',  21, false ],
+    tag: ['', 'text',  20, false ],
     attrs: { placeholder: "Мобильный тел" }
   }},
   phone_hom: {label: [], input: {
-    tag: ['', 'text',  22, false ],
+    tag: ['', 'text',  21, false ],
     attrs: { placeholder: "Контактный тел" }
   }},
 };
@@ -1691,7 +1688,6 @@ const crdMain = function(vnode) {
 
   let { model, method }= vnode.attrs;
   const data= cardOpt.data;
-  //const card = model.card ? Object.assign({}, model.card[0]) : {};
   let card;
   if (model.card.length > 0) {
     card= model.card[0];
@@ -1699,14 +1695,23 @@ const crdMain = function(vnode) {
   } else {
     card= {};
   }
-  /*
-  if (card.smo !== null)
-    if( card.smo >= _reg)
-      card.smo -= _reg;
-  */
-  //console.log(card.smo);
-  //const crd= Boolean(card.crd_num);
-  
+  const ufms_test= v=> {
+    if (v.length < 6) return false;
+    let u= parseInt(v);
+    if ( isNaN(u) ) return false;
+    return u;
+  };
+  const ufms_model= { ufms: 'ufms?code=eq.', order_by: 'code', list: null, headers: { Range: '0-20' } };
+  const set_ufms= e=> {
+    card.ufms = e.target.value;
+    //console.log(e.target.value);
+    let u= ufms_test(card.ufms);
+    if ( Boolean(u) ) {
+      ufms_model.url = `${ufms_model.ufms}${u}`;
+      return moModel.getList(ufms_model);// .then(t=> console.log( ds_model.list ));
+    }
+    return false;
+  };
   const cardSave= function(e) {
     e.preventDefault();
     // form send with forTabs onCreate function
@@ -1782,6 +1787,17 @@ const crdMain = function(vnode) {
               m(".pure-control-group", cof('dul_serial', card)),
               m(".pure-control-group", cof('dul_number', card)),
               m(".pure-control-group", cof('dul_date', card)),
+              // UFMS
+              m(".pure-control-group", [
+                m('label[for=ufms]', 'УФМС'),
+                m('input[type=text][tabindex=10][name=ufms]', {
+                  list: 'ufms', value: card.ufms, oninput: set_ufms
+                }),
+                m('datalist[id="ufms"]',
+                  ufms_model.list ? ufms_model.list.map(d=> m('option', {
+                    value: d.name } ) ) : []
+                ),
+              ]),
               m(".pure-control-group", cof('dul_org', card)),
             ]), // u-7-24
 // ============================			

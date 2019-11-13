@@ -2,7 +2,7 @@
 
 import { vuDialog } from '../../apps/view/vuDialog.js';
 import { vuLoading } from '../../apps/view/vuApp.js';
-import { _region } from '../../apps/model/moModel.js';
+import { moModel, _region } from '../../apps/model/moModel.js';
 import { moCard, cardOpt } from '../model/moCards.js';
 import { clinicApi } from '../clinicApi.js';
 import { tabsView, forTabs } from './vuTabs.js';
@@ -155,7 +155,6 @@ const crdMain = function(vnode) {
 
   let { model, method }= vnode.attrs;
   const data= cardOpt.data;
-  //const card = model.card ? Object.assign({}, model.card[0]) : {};
   let card;
   if (model.card.length > 0) {
     card= model.card[0];
@@ -163,14 +162,29 @@ const crdMain = function(vnode) {
   } else {
     card= {};
   }
-  /*
-  if (card.smo !== null)
-    if( card.smo >= _reg)
-      card.smo -= _reg;
-  */
-  //console.log(card.smo);
-  //const crd= Boolean(card.crd_num);
-  
+  const ufms_test= v=> {
+    if (v.length < 6) return false;
+    let u= parseInt(v);
+    if ( isNaN(u) ) return false;
+    return u;
+  };
+  const ufms_model= { ufms: 'ufms?code=eq.', order_by: 'code', list: null, headers: { Range: '0-20' } };
+  const set_ufms= e=> {
+    card.ufms = e.target.value;
+    //console.log(e.target.value);
+    let u= ufms_test(card.ufms);
+    if ( Boolean(u) ) {
+      ufms_model.url = `${ufms_model.ufms}${u}`;
+      return moModel.getList(ufms_model);// .then(t=> console.log( ds_model.list ));
+    }
+    return false;
+  };
+  const ufms_show= uid=> {
+    let ufl= ufms_model.list ? ufms_model.list: [];
+    let uf= ufl.find(d=> uid == d.id );
+    //console.log(ds);
+    return uf ? uf.name: '';
+  };
   const cardSave= function(e) {
     e.preventDefault();
     // form send with forTabs onCreate function
@@ -246,7 +260,19 @@ const crdMain = function(vnode) {
               m(".pure-control-group", cof('dul_serial', card)),
               m(".pure-control-group", cof('dul_number', card)),
               m(".pure-control-group", cof('dul_date', card)),
+              // UFMS
+              m(".pure-control-group", [
+                m('label[for=ufms]', 'УФМС'),
+                m('input[type=text][tabindex=10][name=ufms]', {
+                  list: 'ufms', value: card.ufms, oninput: set_ufms
+                }),
+                m('datalist[id="ufms"]',
+                  ufms_model.list ? ufms_model.list.map(d=> m('option', {
+                    value: d.code } ) ) : []
+                ),
+              ]),
               m(".pure-control-group", cof('dul_org', card)),
+              show_ufms()
             ]), // u-7-24
 // ============================			
             m(".pure-u-8-24", [m('legend', "ОМС"),
