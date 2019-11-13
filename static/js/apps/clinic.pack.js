@@ -695,6 +695,10 @@ const moTalon = {
       ).then( t => moTalon.prepare( model )  );//.catch(e => alert(e));
     }
     // get card only to new talon
+    if ( isNaN(crd) || crd === 0) {
+      model.error = 'Нужно выбрать карту';
+      return false;
+    }
     let pg_rest = _schema('pg_rest');
     let url = `${pg_rest}cardz_clin?crd_num=eq.${crd}`;
     return m.request({
@@ -703,6 +707,7 @@ const moTalon = {
     }).then(function(res) {
       // there are no talon and pmu keys
       model.card =  moTalon.set_polis( res ); // res is list
+      model.pmu= [];
       moTalon.prepare( model ); 
     }).catch(function(err) {
       model.error = errMsg(err);
@@ -760,8 +765,6 @@ const moTalon = {
       model.talon= moTalon.to_talon(model.talon[0], card_fileds);
     else
       model.talon= moTalon.to_talon( c, card_fileds );
-    //if ( model.pmu.length  )
-    //  model.pmu=[];
   },
   
   saveTalon(event, model, method) {
@@ -785,7 +788,7 @@ const moTalon = {
     });
     return m.request({
       url: url,
-      method: method,
+      method: Boolean(tal_num) ? 'PATCH': 'POST',
       body: to_save,
       headers: {Prefer: 'return=representation'}
     }).then( res => {
@@ -2403,7 +2406,7 @@ const pmuForm = function (vnode) {
     if ( q == 'grup' ) {
       _pmu.url= restSprav.grc.url;
       _pmu.method= 'POST';
-      return moModel.getViewRpc(_pmu, { grup: _pmu[q] } ).then(t=> {
+      return moModel.getViewRpc(_pmu, { grup: _pmu[q] } ).then(()=> {
         if (_pmu.list.length === 0)
           return Promise.reject('Нет такой группы');
        
@@ -2421,7 +2424,7 @@ const pmuForm = function (vnode) {
         // bulk insert to table
         md.headers= {Prefer: 'return=representation'};
         return moModel.getViewRpc(md, items);
-      }).then(t=> {
+      }).then(()=> {
         if ( ! Boolean(md.list) ) return Promise.reject('Empty response after PMU GRUP POST ');
         //let list= Arroy.from(md.list);
         for (let [idx, it] of md.list.entries() ){
@@ -2440,7 +2443,7 @@ const pmuForm = function (vnode) {
     
     _pmu.url= `${restSprav.pmu.url}?${q}=eq.${_pmu[q]}`;
     
-    return moModel.getList( _pmu ).then( t=>{
+    return moModel.getList( _pmu ).then( ()=>{
       // anyway returns Promise
       if (_pmu.list.length === 0) return Promise.reject('Нет таких ПМУ');
       md.item= preparePara( _pmu.list[0] );
@@ -2532,7 +2535,7 @@ const talPmu = function(vnode) {
   const add_kol_usl= e=> {
     let { p, url } = kol_usl(e);
     let md= {};
-    return moModel.getViewRpc( md, { kol_usl: p.kol_usl }, url, 'PATCH' ).then( t=> {
+    return moModel.getViewRpc( md, { kol_usl: p.kol_usl+1 }, url, 'PATCH' ).then( t=> {
        p.kol_usl += 1;
        return true;
     });
@@ -2548,7 +2551,7 @@ const talPmu = function(vnode) {
         return true;
       });
     } else {
-      return moModel.getViewRpc( md, { kol_usl: p.kol_usl }, url, 'PATCH' ).then( t=> {
+      return moModel.getViewRpc( md, { kol_usl: p.kol_usl-1 }, url, 'PATCH' ).then( t=> {
          p.kol_usl -= 1;
          return true;
       });
