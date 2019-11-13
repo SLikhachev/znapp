@@ -7,7 +7,6 @@ import { vuDialog } from '../view/vuDialog.js';
 //console.log(schema);
 
 export const errMsg= function(error){
-  //console.log(' error ');
   if ( !error)
     return 'Ошибка сервера (детали в журнале)'
   let e= error.response ? error.response: 'Ошибка сервера (пустой ответ)' ;

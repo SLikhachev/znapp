@@ -54,18 +54,18 @@ export const cardField = {
     }
   },
   dul_org: {label: ['', 'Выдан'], input: {
-      tag: ['', 'text', 10, false],
+      tag: ['', 'text', 11, false],
       //attrs: { placeholder: "Номер" }
     }
   },
   polis_ser: {label: ['', "Полис серия"], input: {
       //tag: ['.pure-u-1-6', 'text', 9, false],
-      tag: ['', 'text', 11, false],
+      tag: ['', 'text', 12, false],
       //attrs: {  placeholder:"Серия" }
   }},
   polis_num: {label: ['', "Номер"], input: {
       //tag: ['.pure-u-3-6', 'text', 10, false],
-      tag: ['', 'number', 12, true],
+      tag: ['', 'number', 13, true],
       attrs: { min : 1 }
   }},
   smo: {label: ['', "Страховщик"], input: {
@@ -82,31 +82,31 @@ export const cardField = {
     }
   },
   city_g: {label: [], input: {
-      tag: ['', 'text', 16, false],
+      tag: ['', 'text', 15, false],
       attrs: { placeholder: "Город" }
   }},
   street_g: {label: [], input: {
-      tag: ['', 'text', 17, false],
+      tag: ['', 'text', 16, false],
       attrs: { placeholder: "Улица" }
   }},
   home_g: {label: [], input: {
-      tag: ['.pure-u-1-8', 'text', 18, false ],
+      tag: ['.pure-u-1-8', 'text', 17, false ],
       attrs: { placeholder: "Дом" }
   }},
   corp_g: {label: [], input: {
-    tag: ['.pure-u-1-8', 'text',  19, false ],
+    tag: ['.pure-u-1-8', 'text',  18, false ],
     attrs: { placeholder: "Корпус" }
   }},
   flat_g: {label: [], input: {
-    tag: ['.pure-u-1-8', 'text',  20, false ],
+    tag: ['.pure-u-1-8', 'text',  19, false ],
     attrs: { placeholder: "Кв" }
   }},
   phone_wrk: {label: [], input: {
-    tag: ['', 'text',  21, false ],
+    tag: ['', 'text',  20, false ],
     attrs: { placeholder: "Мобильный тел" }
   }},
   phone_hom: {label: [], input: {
-    tag: ['', 'text',  22, false ],
+    tag: ['', 'text',  21, false ],
     attrs: { placeholder: "Контактный тел" }
   }},
 };
