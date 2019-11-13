@@ -1346,8 +1346,7 @@ const talonField = {
     }
   },
   char1: {label: ['', "Характер"], input: {
-      tag: ['.input.pure-u-16-24', "number", 14, true],
-      attrs: { min: 1, max: 12}
+      tag: ['.input.pure-u-16-24', "text", 14, true],
     }
   },
   ishod: {label: ['', "Исход"], input: {
@@ -3004,13 +3003,6 @@ const talForm = function (vnode) {
         ]),
 
       ]),
-      m('.pure-g',
-        m(".pure-u-6-24", {
-            style: "padding-top: 0em ; font-size: 1.2em; font-weight: 600"
-            },
-            diag_charm()
-          )
-      ),
       m('fieldset', { style: "padding-left: 0%;" }, [
 				m('.pure-u-3-24', { style: "margin-top: 5px;" }, 
           m('button.pure-button.pure-button-primary[type="submit"]',

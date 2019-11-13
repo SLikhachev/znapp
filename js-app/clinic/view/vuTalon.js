@@ -319,13 +319,6 @@ const talForm = function (vnode) {
         ]),
 
       ]),
-      m('.pure-g',
-        m(".pure-u-6-24", {
-            style: "padding-top: 0em ; font-size: 1.2em; font-weight: 600"
-            },
-            diag_charm()
-          )
-      ),
       m('fieldset', { style: "padding-left: 0%;" }, [
 				m('.pure-u-3-24', { style: "margin-top: 5px;" }, 
           m('button.pure-button.pure-button-primary[type="submit"]',
