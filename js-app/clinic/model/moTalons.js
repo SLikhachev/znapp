@@ -100,6 +100,10 @@ export const moTalon = {
       ).then( t => moTalon.prepare( model )  );//.catch(e => alert(e));
     }
     // get card only to new talon
+    if ( isNaN(crd) || crd === 0) {
+      model.error = 'Нужно выбрать карту';
+      return false;
+    }
     let pg_rest = _schema('pg_rest');
     let url = `${pg_rest}cardz_clin?crd_num=eq.${crd}`;
     return m.request({
@@ -108,6 +112,7 @@ export const moTalon = {
     }).then(function(res) {
       // there are no talon and pmu keys
       model.card =  moTalon.set_polis( res ); // res is list
+      model.pmu= [];
       moTalon.prepare( model ); 
     }).catch(function(err) {
       model.error = errMsg(err);
@@ -165,8 +170,6 @@ export const moTalon = {
       model.talon= moTalon.to_talon(model.talon[0], card_fileds);
     else
       model.talon= moTalon.to_talon( c, card_fileds );
-    //if ( model.pmu.length  )
-    //  model.pmu=[];
   },
   
   saveTalon(event, model, method) {
@@ -190,7 +193,7 @@ export const moTalon = {
     })
     return m.request({
       url: url,
-      method: method,
+      method: Boolean(tal_num) ? 'PATCH': 'POST',
       body: to_save,
       headers: {Prefer: 'return=representation'}
     }).then( res => {
