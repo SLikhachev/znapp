@@ -163,27 +163,39 @@ const crdMain = function(vnode) {
     card= {};
   }
   const ufms_test= v=> {
-    if (v.length < 6) return false;
+    if (v.length < 5) return false;
     let u= parseInt(v);
     if ( isNaN(u) ) return false;
     return u;
   };
-  const ufms_model= { ufms: 'ufms?code=eq.', order_by: 'code', list: null, headers: { Range: '0-20' } };
+  const ufms_model= { ufms: 'ufms?code=eq.', order_by: 'code', list: null,
+    headers: { Range: '0-1' }, uf: null};
   const set_ufms= e=> {
+    
     card.ufms = e.target.value;
     //console.log(e.target.value);
     let u= ufms_test(card.ufms);
     if ( Boolean(u) ) {
       ufms_model.url = `${ufms_model.ufms}${u}`;
-      return moModel.getList(ufms_model);// .then(t=> console.log( ds_model.list ));
+      return moModel.getList(ufms_model).then( t=> {
+        if ( t ) {
+          ufms_model.uf= ufms_model.list[0] ? ufms_model.list[0]: { code: null, name: 'Нет такого кода' };
+          card.dul_org= ufms_model.uf.code ? ufms_model.uf.name: null;
+        } else {
+          ufms_model.uf= { code: null, name: 'Пустой ответ сервера' };
+        }
+      });
     }
     return false;
   };
-  const ufms_show= uid=> {
-    let ufl= ufms_model.list ? ufms_model.list: [];
-    let uf= ufl.find(d=> uid == d.id );
-    //console.log(ds);
-    return uf ? uf.name: '';
+  const ufms_show= ()=> {
+    if ( Boolean( ufms_model.error ) )
+      return m('span.red', ufms_model.error);
+    if ( Boolean( ufms_model.uf ) ) {
+      console.log(ufms_model.uf);
+      return m('span', { class: ufms_model.uf.code ? '': 'red' }, ufms_model.uf.name);
+    }
+    return '';
   };
   const cardSave= function(e) {
     e.preventDefault();
@@ -264,15 +276,11 @@ const crdMain = function(vnode) {
               m(".pure-control-group", [
                 m('label[for=ufms]', 'УФМС'),
                 m('input[type=text][tabindex=10][name=ufms]', {
-                  list: 'ufms', value: card.ufms, oninput: set_ufms
+                  value: card.ufms, onblur: set_ufms
                 }),
-                m('datalist[id="ufms"]',
-                  ufms_model.list ? ufms_model.list.map(d=> m('option', {
-                    value: d.code } ) ) : []
-                ),
               ]),
               m(".pure-control-group", cof('dul_org', card)),
-              show_ufms()
+              ufms_show()
             ]), // u-7-24
 // ============================			
             m(".pure-u-8-24", [m('legend', "ОМС"),
