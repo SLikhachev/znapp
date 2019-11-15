@@ -104,7 +104,7 @@ export const moCard = {
     let { crd_num, id, old_card } = card;
     let table = `${schema}cardz_clin`;
     let url = id ? `${table}?id=eq.${id}`: table;
-    ['id', 'created', 'modified', 'cuser'].forEach( k=> delete to_save[k] );
+    ['id', 'created', 'modified', 'cuser', 'ufms'].forEach( k=> delete to_save[k] );
     if ( method === 'PATCH' && (crd_num == old_card) )
       // same card number 
       delete to_save.crd_num; // primary key duplication

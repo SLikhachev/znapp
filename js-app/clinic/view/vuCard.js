@@ -7,6 +7,7 @@ import { moCard, cardOpt } from '../model/moCards.js';
 import { clinicApi } from '../clinicApi.js';
 import { tabsView, forTabs } from './vuTabs.js';
 import { cof } from '../form/foForm.js';
+import { upper } from './vuClinic';
 
 const _Reg= _region();
 
@@ -162,6 +163,9 @@ const crdMain = function(vnode) {
   } else {
     card= {};
   }
+  
+  const fio= field=> event=> card[field] = upper(event.target.value); 
+  
   const ufms_test= v=> {
     if (v.length < 5) return false;
     let u= parseInt(v);
@@ -192,10 +196,10 @@ const crdMain = function(vnode) {
     if ( Boolean( ufms_model.error ) )
       return m('span.red', ufms_model.error);
     if ( Boolean( ufms_model.uf ) ) {
-      console.log(ufms_model.uf);
+      //console.log(ufms_model.uf);
       return m('span', { class: ufms_model.uf.code ? '': 'red' }, ufms_model.uf.name);
     }
-    return '';
+    return m('span', card.dul_org);
   };
   const cardSave= function(e) {
     e.preventDefault();
@@ -243,9 +247,9 @@ const crdMain = function(vnode) {
 // --        // -- TODO check for card.card_type to process card number    
               m(".pure-control-group", cof('crd_num', card,
                   { readonly: Boolean (model.talons.length) } )),
-              m(".pure-control-group", cof('fam', card)),
-              m(".pure-control-group", cof('im', card)),
-              m('.pure-control-group', cof('ot', card)),
+              m(".pure-control-group", cof('fam', card, { onblur: fio('fam') } ) ),
+              m(".pure-control-group", cof('im', card, { onblur: fio('im') } ) ),
+              m('.pure-control-group', cof('ot', card, { onblur: fio('ot') } ) ),
               m(".pure-control-group", cof('birth_date', card)),
 
               m(".pure-control-group", [
@@ -275,7 +279,7 @@ const crdMain = function(vnode) {
               // UFMS
               m(".pure-control-group", [
                 m('label[for=ufms]', 'УФМС'),
-                m('input[type=text][tabindex=10][name=ufms]', {
+                m('input.pure-u-6-24[type=number][tabindex=10][name=ufms]', {
                   value: card.ufms, onblur: set_ufms
                 }),
               ]),
