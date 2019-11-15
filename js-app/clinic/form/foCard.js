@@ -54,8 +54,8 @@ export const cardField = {
     }
   },
   dul_org: {label: ['', 'Выдан'], input: {
-      tag: ['', 'text', 11, false],
-      //attrs: { placeholder: "Номер" }
+      tag: ['.pure-u-7-12', 'text', 11, false],
+      attrs: { style: "fonf-size: 1em; font-weight: normal"}
     }
   },
   polis_ser: {label: ['', "Полис серия"], input: {

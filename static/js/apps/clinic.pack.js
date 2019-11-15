@@ -888,7 +888,7 @@ const moCard = {
     let { crd_num, id, old_card } = card;
     let table = `${schema}cardz_clin`;
     let url = id ? `${table}?id=eq.${id}`: table;
-    ['id', 'created', 'modified', 'cuser'].forEach( k=> delete to_save[k] );
+    ['id', 'created', 'modified', 'cuser', 'ufms'].forEach( k=> delete to_save[k] );
     if ( method === 'PATCH' && (crd_num == old_card) )
       // same card number 
       delete to_save.crd_num; // primary key duplication
@@ -963,6 +963,16 @@ const _notEdit= tal=> {
 const talNum= tal=> 
   m('legend', `Талон № ${_Num(tal.tal_num)}`,
     m('span', {style: "padding: 3em"}, _notEdit(tal) ? 'закрыт': 'открыт') , `Год ${moTalonsList._year}`);
+  
+String.prototype.transLit = String.prototype.translit || function () {
+    let rus = 'ЙЦУКЕНГШЩЗФЫВАПРОЛДЯЧСМИТЬ';
+    let eng = 'QWERTYUIOPASDFGHJKLZXCVBNM';
+    if ( rus.indexOf(this) < 0 )  return this;
+    return eng[ rus.indexOf(this) ];
+  };
+  
+const dupper = s=> s.length > 0 ? s.charAt(0).toUpperCase().transLit() + s.substring(1): s;
+const upper = s=> s.charAt(0).toUpperCase() + s.substring(1).toLowerCase();
 
 // src/apps/view/vuApp.js
 
@@ -1441,8 +1451,8 @@ const cardField = {
     }
   },
   dul_org: {label: ['', 'Выдан'], input: {
-      tag: ['', 'text', 11, false],
-      //attrs: { placeholder: "Номер" }
+      tag: ['.pure-u-7-12', 'text', 11, false],
+      attrs: { style: "fonf-size: 1em; font-weight: normal"}
     }
   },
   polis_ser: {label: ['', "Полис серия"], input: {
@@ -1695,22 +1705,43 @@ const crdMain = function(vnode) {
   } else {
     card= {};
   }
+  
+  const fio= field=> event=> card[field] = upper(event.target.value); 
+  
   const ufms_test= v=> {
-    if (v.length < 6) return false;
+    if (v.length < 5) return false;
     let u= parseInt(v);
     if ( isNaN(u) ) return false;
     return u;
   };
-  const ufms_model= { ufms: 'ufms?code=eq.', order_by: 'code', list: null, headers: { Range: '0-20' } };
+  const ufms_model= { ufms: 'ufms?code=eq.', order_by: 'code', list: null,
+    headers: { Range: '0-1' }, uf: null};
   const set_ufms= e=> {
+    
     card.ufms = e.target.value;
     //console.log(e.target.value);
     let u= ufms_test(card.ufms);
     if ( Boolean(u) ) {
       ufms_model.url = `${ufms_model.ufms}${u}`;
-      return moModel.getList(ufms_model);// .then(t=> console.log( ds_model.list ));
+      return moModel.getList(ufms_model).then( t=> {
+        if ( t ) {
+          ufms_model.uf= ufms_model.list[0] ? ufms_model.list[0]: { code: null, name: 'Нет такого кода' };
+          card.dul_org= ufms_model.uf.code ? ufms_model.uf.name: null;
+        } else {
+          ufms_model.uf= { code: null, name: 'Пустой ответ сервера' };
+        }
+      });
     }
     return false;
+  };
+  const ufms_show= ()=> {
+    if ( Boolean( ufms_model.error ) )
+      return m('span.red', ufms_model.error);
+    if ( Boolean( ufms_model.uf ) ) {
+      //console.log(ufms_model.uf);
+      return m('span', { class: ufms_model.uf.code ? '': 'red' }, ufms_model.uf.name);
+    }
+    return m('span', card.dul_org);
   };
   const cardSave= function(e) {
     e.preventDefault();
@@ -1758,9 +1789,9 @@ const crdMain = function(vnode) {
 // --        // -- TODO check for card.card_type to process card number    
               m(".pure-control-group", cof('crd_num', card,
                   { readonly: Boolean (model.talons.length) } )),
-              m(".pure-control-group", cof('fam', card)),
-              m(".pure-control-group", cof('im', card)),
-              m('.pure-control-group', cof('ot', card)),
+              m(".pure-control-group", cof('fam', card, { onblur: fio('fam') } ) ),
+              m(".pure-control-group", cof('im', card, { onblur: fio('im') } ) ),
+              m('.pure-control-group', cof('ot', card, { onblur: fio('ot') } ) ),
               m(".pure-control-group", cof('birth_date', card)),
 
               m(".pure-control-group", [
@@ -1790,15 +1821,12 @@ const crdMain = function(vnode) {
               // UFMS
               m(".pure-control-group", [
                 m('label[for=ufms]', 'УФМС'),
-                m('input[type=text][tabindex=10][name=ufms]', {
-                  list: 'ufms', value: card.ufms, oninput: set_ufms
+                m('input.pure-u-6-24[type=number][tabindex=10][name=ufms]', {
+                  value: card.ufms, onblur: set_ufms
                 }),
-                m('datalist[id="ufms"]',
-                  ufms_model.list ? ufms_model.list.map(d=> m('option', {
-                    value: d.name } ) ) : []
-                ),
               ]),
               m(".pure-control-group", cof('dul_org', card)),
+              ufms_show()
             ]), // u-7-24
 // ============================			
             m(".pure-u-8-24", [m('legend', "ОМС"),
@@ -2885,7 +2913,7 @@ const talForm = function (vnode) {
   const ds2_model= { mkb: 'mkb10?code=like.', order_by: 'code', list: null, headers: { Range: '0-20' } };
   //const ds_check= { url: 'mkb10?code=eq.', order_by: 'code', list: null };
   const set_ds= (ds, _model)=> e=> {
-    tal[ds] = e.target.value;
+    tal[ds] = dupper(e.target.value);
     //console.log(e.target.value);
     if ( diag.test(tal[ds]) ) {
       _model.url = `${_model.mkb}${tal[ds]}*`;

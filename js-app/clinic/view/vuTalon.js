@@ -14,7 +14,7 @@ import { talNap } from './vuTalNap.js';
 import { talPmu } from './vuTalPmu.js';
 import { talDs } from './vuTalDs.js';
 import { talPolis } from './vuTalPolis';
-import { talNum, _notEdit } from './vuClinic'; //tal number
+import { talNum, _notEdit, dupper } from './vuClinic'; //tal number
 
 const num_fields= ['mek','visit_pol', 'pol_days', 'visit_home', 'home_days',
   'visit_homstac', 'visit_daystac', 'days_at_homstac', 'days_at_daystac',
@@ -184,7 +184,7 @@ const talForm = function (vnode) {
   const ds2_model= { mkb: 'mkb10?code=like.', order_by: 'code', list: null, headers: { Range: '0-20' } };
   //const ds_check= { url: 'mkb10?code=eq.', order_by: 'code', list: null };
   const set_ds= (ds, _model)=> e=> {
-    tal[ds] = e.target.value;
+    tal[ds] = dupper(e.target.value);
     //console.log(e.target.value);
     if ( diag.test(tal[ds]) ) {
       _model.url = `${_model.mkb}${tal[ds]}*`;

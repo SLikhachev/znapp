@@ -57,4 +57,13 @@ export const talNum= tal=>
   m('legend', `Талон № ${_Num(tal.tal_num)}`,
     m('span', {style: "padding: 3em"}, _notEdit(tal) ? 'закрыт': 'открыт') , `Год ${moTalonsList._year}`);
   
+String.prototype.transLit = String.prototype.translit || function () {
+    let rus = 'ЙЦУКЕНГШЩЗФЫВАПРОЛДЯЧСМИТЬ';
+    let eng = 'QWERTYUIOPASDFGHJKLZXCVBNM';
+    if ( rus.indexOf(this) < 0 )  return this;
+    return eng[ rus.indexOf(this) ];
+  };
   
+export const dupper = s=> s.length > 0 ? s.charAt(0).toUpperCase().transLit() + s.substring(1): s;
+export const upper = s=> s.charAt(0).toUpperCase() + s.substring(1).toLowerCase();
+
