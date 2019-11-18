@@ -67,7 +67,7 @@ const pmuForm = function (vnode) {
     if ( q == 'grup' ) {
       _pmu.url= restSprav.grc.url;
       _pmu.method= 'POST'
-      return moModel.getViewRpc(_pmu, { grup: _pmu[q] } ).then(t=> {
+      return moModel.getViewRpc(_pmu, { grup: _pmu[q] } ).then(()=> {
         if (_pmu.list.length === 0)
           return Promise.reject('Нет такой группы');
        
@@ -85,7 +85,7 @@ const pmuForm = function (vnode) {
         // bulk insert to table
         md.headers= {Prefer: 'return=representation'};
         return moModel.getViewRpc(md, items);
-      }).then(t=> {
+      }).then(()=> {
         if ( ! Boolean(md.list) ) return Promise.reject('Empty response after PMU GRUP POST ');
         //let list= Arroy.from(md.list);
         for (let [idx, it] of md.list.entries() ){
@@ -104,7 +104,7 @@ const pmuForm = function (vnode) {
     
     _pmu.url= `${restSprav.pmu.url}?${q}=eq.${_pmu[q]}`;
     
-    return moModel.getList( _pmu ).then( t=>{
+    return moModel.getList( _pmu ).then( ()=>{
       // anyway returns Promise
       if (_pmu.list.length === 0) return Promise.reject('Нет таких ПМУ');
       md.item= preparePara( _pmu.list[0] );
@@ -196,7 +196,7 @@ export const talPmu = function(vnode) {
   const add_kol_usl= e=> {
     let { p, url } = kol_usl(e);
     let md= {};
-    return moModel.getViewRpc( md, { kol_usl: p.kol_usl }, url, 'PATCH' ).then( t=> {
+    return moModel.getViewRpc( md, { kol_usl: p.kol_usl+1 }, url, 'PATCH' ).then( t=> {
        p.kol_usl += 1;
        return true;
     });
@@ -212,7 +212,7 @@ export const talPmu = function(vnode) {
         return true;
       });
     } else {
-      return moModel.getViewRpc( md, { kol_usl: p.kol_usl }, url, 'PATCH' ).then( t=> {
+      return moModel.getViewRpc( md, { kol_usl: p.kol_usl-1 }, url, 'PATCH' ).then( t=> {
          p.kol_usl -= 1;
          return true;
       });

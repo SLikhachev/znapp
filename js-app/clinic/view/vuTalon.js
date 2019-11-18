@@ -1,6 +1,5 @@
 // src/clinic/view/vuTalon.js
 
-import { vuDialog } from '../../apps/view/vuDialog.js';
 import { vuLoading } from '../../apps/view/vuApp.js';
 import { moModel } from '../../apps/model/moModel.js';
 import { restSprav } from '../../sprav/spravApi.js';
@@ -14,7 +13,7 @@ import { talNap } from './vuTalNap.js';
 import { talPmu } from './vuTalPmu.js';
 import { talDs } from './vuTalDs.js';
 import { talPolis } from './vuTalPolis';
-import { talNum, _notEdit } from './vuClinic'; //tal number
+import { talNum, _notEdit, dupper } from './vuClinic'; //tal number
 
 const num_fields= ['mek','visit_pol', 'pol_days', 'visit_home', 'home_days',
   'visit_homstac', 'visit_daystac', 'days_at_homstac', 'days_at_daystac',
@@ -184,7 +183,7 @@ const talForm = function (vnode) {
   const ds2_model= { mkb: 'mkb10?code=like.', order_by: 'code', list: null, headers: { Range: '0-20' } };
   //const ds_check= { url: 'mkb10?code=eq.', order_by: 'code', list: null };
   const set_ds= (ds, _model)=> e=> {
-    tal[ds] = e.target.value;
+    tal[ds] = dupper(e.target.value);
     //console.log(e.target.value);
     if ( diag.test(tal[ds]) ) {
       _model.url = `${_model.mkb}${tal[ds]}*`;
@@ -239,6 +238,7 @@ const talForm = function (vnode) {
           m(".pure-u-4-24", tof('open_date', tal)),
           m(".pure-u-4-24", tof('close_date', tal)),
           m('.pure-u-3-24', tof('talon_month', tal)),
+          
           m('.pure-u-3-24', {style: "padding-top: 2em"},
             tof('mek', tal, { onclick: e=> set_chk(e, 'mek') }) ),
           m(".pure-u-6-24", {style: "padding-top: 2em"}, [
@@ -316,13 +316,6 @@ const talForm = function (vnode) {
         ]),
 
       ]),
-      m('.pure-g',
-        m(".pure-u-6-24", {
-            style: "padding-top: 0em ; font-size: 1.2em; font-weight: 600"
-            },
-            diag_charm()
-          )
-      ),
       m('fieldset', { style: "padding-left: 0%;" }, [
 				m('.pure-u-3-24', { style: "margin-top: 5px;" }, 
           m('button.pure-button.pure-button-primary[type="submit"]',

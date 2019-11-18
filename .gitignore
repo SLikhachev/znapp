@@ -1,0 +1,11 @@
+*.komodoproject
+*.txt
+*.bat
+*.pyc
+*.pyo
+.idea/
+.komodotools/
+__pycache__/
+manage.py
+wsgi.py
+static/js/

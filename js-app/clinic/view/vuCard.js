@@ -2,11 +2,12 @@
 
 import { vuDialog } from '../../apps/view/vuDialog.js';
 import { vuLoading } from '../../apps/view/vuApp.js';
-import { _region } from '../../apps/model/moModel.js';
+import { moModel, _region } from '../../apps/model/moModel.js';
 import { moCard, cardOpt } from '../model/moCards.js';
 import { clinicApi } from '../clinicApi.js';
 import { tabsView, forTabs } from './vuTabs.js';
 import { cof } from '../form/foForm.js';
+import { upper } from './vuClinic';
 
 const _Reg= _region();
 
@@ -155,7 +156,6 @@ const crdMain = function(vnode) {
 
   let { model, method }= vnode.attrs;
   const data= cardOpt.data;
-  //const card = model.card ? Object.assign({}, model.card[0]) : {};
   let card;
   if (model.card.length > 0) {
     card= model.card[0];
@@ -163,14 +163,44 @@ const crdMain = function(vnode) {
   } else {
     card= {};
   }
-  /*
-  if (card.smo !== null)
-    if( card.smo >= _reg)
-      card.smo -= _reg;
-  */
-  //console.log(card.smo);
-  //const crd= Boolean(card.crd_num);
   
+  const fio= field=> event=> card[field] = upper(event.target.value); 
+  
+  const ufms_test= v=> {
+    if (v.length < 5) return false;
+    let u= parseInt(v);
+    if ( isNaN(u) ) return false;
+    return u;
+  };
+  const ufms_model= { ufms: 'ufms?code=eq.', order_by: 'code', list: null,
+    headers: { Range: '0-1' }, uf: null};
+  const set_ufms= e=> {
+    
+    card.ufms = e.target.value;
+    //console.log(e.target.value);
+    let u= ufms_test(card.ufms);
+    if ( Boolean(u) ) {
+      ufms_model.url = `${ufms_model.ufms}${u}`;
+      return moModel.getList(ufms_model).then( t=> {
+        if ( t ) {
+          ufms_model.uf= ufms_model.list[0] ? ufms_model.list[0]: { code: null, name: 'Нет такого кода' };
+          card.dul_org= ufms_model.uf.code ? ufms_model.uf.name: null;
+        } else {
+          ufms_model.uf= { code: null, name: 'Пустой ответ сервера' };
+        }
+      });
+    }
+    return false;
+  };
+  const ufms_show= ()=> {
+    if ( Boolean( ufms_model.error ) )
+      return m('span.red', ufms_model.error);
+    if ( Boolean( ufms_model.uf ) ) {
+      //console.log(ufms_model.uf);
+      return m('span', { class: ufms_model.uf.code ? '': 'red' }, ufms_model.uf.name);
+    }
+    return m('span', card.dul_org);
+  };
   const cardSave= function(e) {
     e.preventDefault();
     // form send with forTabs onCreate function
@@ -217,9 +247,9 @@ const crdMain = function(vnode) {
 // --        // -- TODO check for card.card_type to process card number    
               m(".pure-control-group", cof('crd_num', card,
                   { readonly: Boolean (model.talons.length) } )),
-              m(".pure-control-group", cof('fam', card)),
-              m(".pure-control-group", cof('im', card)),
-              m('.pure-control-group', cof('ot', card)),
+              m(".pure-control-group", cof('fam', card, { onblur: fio('fam') } ) ),
+              m(".pure-control-group", cof('im', card, { onblur: fio('im') } ) ),
+              m('.pure-control-group', cof('ot', card, { onblur: fio('ot') } ) ),
               m(".pure-control-group", cof('birth_date', card)),
 
               m(".pure-control-group", [
@@ -246,7 +276,15 @@ const crdMain = function(vnode) {
               m(".pure-control-group", cof('dul_serial', card)),
               m(".pure-control-group", cof('dul_number', card)),
               m(".pure-control-group", cof('dul_date', card)),
+              // UFMS
+              m(".pure-control-group", [
+                m('label[for=ufms]', 'УФМС'),
+                m('input.pure-u-6-24[type=number][tabindex=10][name=ufms]', {
+                  value: card.ufms, onblur: set_ufms
+                }),
+              ]),
               m(".pure-control-group", cof('dul_org', card)),
+              ufms_show()
             ]), // u-7-24
 // ============================			
             m(".pure-u-8-24", [m('legend', "ОМС"),
@@ -335,7 +373,6 @@ const crdMain = function(vnode) {
             ])
           ]) // pure-g
         ]);// form
-        //ErrDialog(model)
 //=========================
     } // view
   }; // return

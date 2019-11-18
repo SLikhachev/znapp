@@ -84,8 +84,7 @@ export const talonField = {
     }
   },
   char1: {label: ['', "Характер"], input: {
-      tag: ['.input.pure-u-16-24', "number", 14, true],
-      attrs: { min: 1, max: 12}
+      tag: ['.input.pure-u-16-24', "text", 14, true],
     }
   },
   ishod: {label: ['', "Исход"], input: {
