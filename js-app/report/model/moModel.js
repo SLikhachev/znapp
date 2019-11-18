@@ -27,7 +27,7 @@ export const moModel = {
         //console.log(data.getAll('test')[0], data.getAll('month')[0]);
         //data.append("")
         let url= `${_schema('task')}${upurl}${get_param}`;
-        m.request({
+        return m.request({
             method: method,
             url: url,
             body: data,
@@ -39,10 +39,10 @@ export const moModel = {
             model.done = res.done;
             //console.log(` msg: ${model.message}, file: ${model.file}, done: ${model.done}`);
             form.classList.remove('disable');
+            return true;
         }).catch( err=> {
             model.error = errMsg(err);
             form.classList.remove('disable');
         });
-        return false;
     }
 }

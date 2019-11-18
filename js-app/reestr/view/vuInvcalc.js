@@ -1,20 +1,18 @@
-// src/report/view/vuInvcalc.js
+// ./report/view/vuInvcalc.js
+// calculate PMUs by code and items numbers from bars invoice
 
 import { vuTheader, taskResp } from '../../apps/view/vuApp.js';
 import { _schema } from '../../apps/model/moModel.js';
-import { clinicApi } from '../../clinic/clinicApi.js';
 import { taskReestr } from '../reestrApi.js';
 import { moModel } from '../model/moModel.js';
-import { vuDataSheet } from './vuDataSheet.js';
 
 
 const Form = function(vnode) {
   
   const model = vnode.attrs.model;
-  //console.log(model);
+
   const md= { url: taskReestr.vmx.post_url, href: taskReestr.vmx.get_url };
   const upload= event=> {
-    //console.log('report');
     event.preventDefault();
     let task= document.getElementById('task');
     task.setAttribute('display', 'none');

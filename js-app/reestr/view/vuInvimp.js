@@ -1,4 +1,4 @@
-// src/reestr/view/vuInvimp.js
+// ./reestr/view/vuInvimp.js
 // import BARS invoice -> transform it into xlsx book and download it
 
 import { _schema } from '../../apps/model/moModel.js';
@@ -19,7 +19,7 @@ const Form = function(vnode) {
     event.preventDefault();
     let task= document.getElementById('task');
     task.classList.add('disable');
-    moModel.formSubmit(event, _schema('task'), model, "POST").then(() => {
+    return moModel.formSubmit(event, _schema('task'), model, "POST").then(() => {
       task.classList.remove('disable');
     });
   };

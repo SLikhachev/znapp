@@ -1,4 +1,4 @@
-// src/reestr/view/vuVmxlimp.js
+// ./reestr/view/vuVmxlimp.js
 // import errors from VM xml file
 
 import { vuTheader, taskResp } from '../../apps/view/vuApp.js';

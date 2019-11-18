@@ -58,10 +58,11 @@ export const talNum= tal=>
     m('span', {style: "padding: 3em"}, _notEdit(tal) ? 'закрыт': 'открыт') , `Год ${moTalonsList._year}`);
   
 String.prototype.transLit = String.prototype.translit || function () {
-    let rus = 'ЙЦУКЕНГШЩЗФЫВАПРОЛДЯЧСМИТЬ';
-    let eng = 'QWERTYUIOPASDFGHJKLZXCVBNM';
-    if ( rus.indexOf(this) < 0 )  return this;
-    return eng[ rus.indexOf(this) ];
+    const rus = 'ЙЦУКЕНГШЩЗФЫВАПРОЛДЯЧСМИТЬ';
+    const eng = 'QWERTYUIOPASDFGHJKLZXCVBNM';
+    let i = rus.indexOf(this);
+    if ( i < 0 )  return this;
+    return eng[ i ];
   };
   
 export const dupper = s=> s.length > 0 ? s.charAt(0).toUpperCase().transLit() + s.substring(1): s;
