@@ -16,7 +16,10 @@ const Form = function(vnode) {
     //console.log(data);
     event.preventDefault();
     let task= document.getElementById('task');
+    
+    //task.setAttribute('display', 'hidden');
     task.setAttribute('display', 'none');
+    console.log( task.getAttribute('display')  );
     return moModel.doSubmit(event, _schema('task'), 'simple', model, data, "POST").then(()=> {
       task.setAttribute('display', 'block');
     });

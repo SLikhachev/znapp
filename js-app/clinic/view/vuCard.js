@@ -96,7 +96,7 @@ export const set_smo_okato = (data, card)=> {
 
 export const getName = function(data, val, key, prop, name, text, first_word=false) {
     // data - optional data MAP
-    // val - String fofom input tag value
+    // val - String foForm input tag value
     // key - String key in data MAP to check
     // prop - String table's column name to check
     // name - String name of table's column to output from

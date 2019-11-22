@@ -33,7 +33,7 @@ const toSaveTalon= async function (tal, check) {
   tal.for_pom= Boolean(tal.urgent) ? 2: 3;
 
   // Doct Oms
-  let e1= { fin: 'Укажите способ оплаты ', doct: 'Укажите доктора '};
+  let e1= { fin: 'Укажите способ оплаты ', purp: 'Укажите цель ',  doct: 'Укажите доктора '};
   let r1= Object.keys(e1).map( p=> !check[p] ? e1[p] : '').join('');
   if ( Boolean(r1) )
     return r1;
@@ -144,14 +144,17 @@ const talForm = function (vnode) {
   
   const doc_fam= ()=> {
     let doc;
-    check.fin= data.get('ist_fin').find( f=> tal.ist_fin == f.id );
+    check.fin= data.get('ist_fin').find( f=> tal.ist_fin == f.id ) ? true: false;
     let purp= get_name(tal.purp, 'purpose', 'id', 'name', 'Цель?', true);
-    check.doct= data.get('doctor').find( d=> d.spec == tal.doc_spec && d.code == tal.doc_code );
-    if ( Boolean(check.doct) && Boolean(check.doct.family) )
+    check.purp= purp.tag == 'span.red' ? false: true;
+    let doct= data.get('doctor').find( d=> d.spec == tal.doc_spec && d.code == tal.doc_code );
+    check.doct= true;
+    if ( Boolean(doct) && Boolean(doct.family) )
       doc= m('span', check.doct.family);
-    else 
+    else {
       doc= m('span.red', ' Доктор? ');
-    
+      check.doct= false;
+    }          
     return Array.of('', purp, doc);
   };
   // c_zab (1,2,3) if ds1 <> Z
