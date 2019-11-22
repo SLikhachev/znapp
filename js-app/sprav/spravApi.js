@@ -15,7 +15,6 @@ export const restSprav = {
     sp_podr: { url:"sp_podr", order_by: 'mo_code' },
     sp_para: { url:"sp_para"},
     purp: { url: 'purpose'},
-
     mo_local: { url:"mo_local"},
     smo_local: { url:"smo_local"},
     // prof
@@ -34,7 +33,7 @@ export const restSprav = {
     ist_fin: { url: 'ist_fin'},
     cishod: { url: 'cishod'},
     cresult: { url: 'cresult'},
-    
+
     // onko
     onko_n1: {url: 'n1_protkaz'},
     onko_n2: {url: 'n2_stady'},

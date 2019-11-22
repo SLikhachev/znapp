@@ -9,7 +9,6 @@ const Form = function(vnode) {
   
   const model = vnode.attrs.model;
   //console.log(model);
-
   const data= {
     month: _month(),
     _get: taskReport.volum.get_url,

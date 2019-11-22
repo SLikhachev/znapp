@@ -4,7 +4,7 @@ import { restSprav } from '../../sprav/spravApi';
 import { restClinic } from '../clinicApi.js';
 import { moTalonsList, talonOpt } from '../model/moTalons.js';
 import { ptf } from '../form/foForm.js';
-import { _Num, _notEdit } from './vuClinic'; //tal number
+import { _Num, _notEdit, dupper } from './vuClinic'; //tal number
 
 const _disabled= tal=> { return _notEdit(tal) || !Boolean( _Num(tal.tal_num) ); };
 
@@ -13,7 +13,9 @@ const pmuForm = function (vnode) {
   let { talon, pmu }= vnode.attrs.model;
   // form fields
   const fld= ['code_usl', 'ccode', 'grup'];
-  // local form pmu obj
+  const set_code= e=> _pmu.code_usl = dupper(e.target.value);
+
+    // local form pmu obj
   const _pmu= {}, data= talonOpt.data;
   // local model obj
   const md= { url: moTalonsList.pmuTable(), method: 'POST' };
@@ -138,7 +140,13 @@ const pmuForm = function (vnode) {
         m(".pure-u-1-2",
           m("form.pure-form", { onsubmit: on_submit },
             m("fieldset", m(".pure-g", [
-              fld.map( f => m(".pure-u-1-4", ptf(f, _pmu) ) ),
+              m(".pure-u-1-4", [
+                m('label', "Код ПМУ"),
+                m('input.input-find.input.pure-u-3-4[type=text]', {
+                  value: _pmu.code_usl, oninput: set_code
+                }),
+              ]),
+              ['ccode', 'grup'].map( f => m(".pure-u-1-4", ptf(f, _pmu) ) ),
               m(".pure-u-1-5", 
                 m('button.pure-button.pure-button-primary[type="submit"]',
                   {style: 'margin-top: 1.7em', disabled: _disabled(talon) },

@@ -1,12 +1,11 @@
-// src/reestr/view/vuRdbf.js
-
+// ./reestr/view/vuRdbf.js
+// import dbf reestrs files to sql tables for pavlenkov and stale files
 import { vuTheader } from '../../apps/view/vuApp.js';
-import { taskReestr } from '../reestrApi.js';
 import { file_field, form_file_dom } from '../../apps/form/customFields.js';
 import { _month, _schema } from '../../apps/model/moModel.js';
 import { moModel } from '../model/moModel.js';
 
-const importForm = function(vnode) {
+const Form = function(vnode) {
   
   const model= vnode.attrs.model;
   const data= { month: _month() };
@@ -74,7 +73,7 @@ export const vuRdbf = function (vnode) {
     view () {
       return [
         m(vuTheader, { header: vnode.attrs.header } ),
-        m(importForm, { model: vnode.attrs.model } )
+        m(Form, { model: vnode.attrs.model } )
       ];
     }    
         

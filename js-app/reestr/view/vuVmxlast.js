@@ -1,4 +1,4 @@
-// src/report/view/vuVmxlast.js
+// ./report/view/vuVmxlast.js
 // show the last imported errors and download errors csv file 
 
 import { taskResp } from '../../apps/view/vuApp.js';
@@ -19,7 +19,6 @@ const Form = function(vnode) {
     let task= document.getElementById('task');
     task.setAttribute('display', 'none');
     return moModel.formSubmit(event, _schema('task'), md, "GET").then(() => {
-      //console.log(r);
       task.setAttribute('display', 'block');
     });
   };

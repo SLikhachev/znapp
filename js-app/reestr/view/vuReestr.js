@@ -1,4 +1,4 @@
-// src/reestr/view/vuReestr.js
+// ./reestr/view/vuReestr.js
 // make reestr zip
 
 import { vuTheader, taskResp } from '../../apps/view/vuApp.js';

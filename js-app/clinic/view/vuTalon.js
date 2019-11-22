@@ -1,14 +1,11 @@
 // src/clinic/view/vuTalon.js
 
 import { vuLoading } from '../../apps/view/vuApp.js';
-import { vuDialog } from '../../apps/view/vuDialog.js';
 import { moModel } from '../../apps/model/moModel.js';
 import { restSprav } from '../../sprav/spravApi.js';
 import { clinicApi, restClinic } from '../clinicApi.js';
 import { moTalonsList, moTalon, talonOpt } from '../model/moTalons.js';
 import { tabsView, forTabs } from './vuTabs.js';
-//import { tof, ctf, ptf } from '../form/foForm.js';
-
 import { getName } from './vuCard.js';
 import { tof } from '../form/foForm.js';
 import { talCrd } from './vuTalCrd.js';
@@ -379,5 +376,3 @@ export const vuTalon = function(vnode) {
     } 
   }; 
 };
-
-
