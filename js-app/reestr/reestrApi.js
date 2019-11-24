@@ -8,7 +8,8 @@ export const taskReestr = {
     },
     pack: {
       post_url: "/reestr/xml/pack",
-      get_url: "/utils/file/reestr/xml/"  
+      get_url: "/utils/file/reestr/xml/",
+      errors: "error_pack"
     },
     vmx: {
       post_url: "/reestr/xml/vmx",
@@ -22,6 +23,7 @@ export const taskReestr = {
 }
 
 export const restReestr = {
+    xml: { url: 'error_pack', params: { order: 'tal_num.asc' }},
     vmx: { url:"vmx_errors", params: { limit: 50 } }
 }
    

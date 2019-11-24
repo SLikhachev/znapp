@@ -14,18 +14,23 @@ export const get_route= model=> {
     href: `${model.route}`,oncreate: m.route.Link,
     style: "font-size: 1.2 em"}, model.file );
 }
-           
+
+const file = model=>  [
+    m('span.blue', {style: "font-size: 1.2em"}, "Результат, Файл : "),
+    model.route ?
+        get_route(model) :
+          model.href ? get_href(model) :
+              m('span.blue', {style: "font-size: 1.2em"}, model.file)
+];
+
 // func return chunk of hyper-script of form to post get task
 export const taskResp= model=> m('#resp',
   model.error ? m('.error', model.error) :
-    model.message ? m('.legend', ["Статус обработки",
-      model.done ? m('div', [
-        m('h4.blue', model.message),
-        m('span.blue', {style: "font-size: 1.2em"}, "Результат, Файл : "),
-        model.route ? get_route(model) : model.href ? get_href(model) :
-          m('span.blue', {style: "font-size: 1.2em"}, model.file)
-      ]) : m('div', m('h4.red', model.message))
-    ]) : ''
+    model.message ? [
+      m('.legend', "Статус обработки"),
+      m('h4', { class: model.done ? 'blue' : 'red'}, model.message),
+      model.file ? file(model): ''
+     ] : ''  //message
   );
  
 

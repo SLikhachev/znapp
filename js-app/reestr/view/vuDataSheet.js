@@ -2,15 +2,45 @@
 
 import { vuLoading, vuTheader } from '../../apps/view/vuApp.js';
 import { _schema } from '../../apps/model/moModel.js';
+import { clinicApi } from '../../clinic/clinicApi.js';
 import { moModel } from '../model/moModel.js';
+
+export const doTask= async function ( event, promise ) {
+  event.preventDefault();
+  let task= document.getElementById('task');
+  task.classList.add('disable');
+  let res= await promise;
+  task.classList.remove('disable');
+  return res;
+}
+
+export const get_fref= ()=> {
+    //card_id: "/cards/:crd",
+    const card_id = clinicApi.card_id.split(':')[0];
+    //talon_id: "/talons/:tal/:crd",
+    const talon_id = clinicApi.talon_id.split(':')[0];
+    let clinic = location.href.split('/').slice(0, 3);
+    clinic[1] = '/';
+    clinic.push('clinic/#!');
+    let root = clinic.join('/');
+    const link = (val, ref) => m('a', {href: `${root}${ref}`, target: '_blank'}, val);
+
+    return (obj, fild) => {
+        if (fild == 'crd_num')
+            return link(obj.crd_num, `${card_id}${obj.crd_num}`);
+        if (fild == 'tal_num')
+            return link(obj.tal_num, `${talon_id}${obj.tal_num}/${obj.crd_num}`);
+        return s[f];
+    }
+};
 
 
 export const vuDataSheet = function (vnode) {
   
   //getList (schema, model, params=null, method='GET') {
   let { model, struct, header, params } = vnode.attrs;
-  
-  moModel.getList( _schema('pg_rest'), model, params);
+  //if ( !model.list )
+    moModel.getList( _schema('pg_rest'), model, params);
   
   return {
 

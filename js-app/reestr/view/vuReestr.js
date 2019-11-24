@@ -3,8 +3,9 @@
 
 import { vuTheader, taskResp } from '../../apps/view/vuApp.js';
 import { _month, _schema } from '../../apps/model/moModel.js';
-import { taskReestr } from '../reestrApi';
+import {reestrApi, taskReestr, restReestr} from '../reestrApi';
 import { moModel } from '../model/moModel.js';
+import { doTask, get_fref, vuDataSheet } from "./vuDataSheet"
 
 const Form = function(vnode) {
   
@@ -12,19 +13,9 @@ const Form = function(vnode) {
   const data= { month: _month(), pack: 1 };
   model.href= taskReestr.pack.get_url;
   
-  const _submit = event=> {
-    //console.log(data);
-    event.preventDefault();
-    let task= document.getElementById('task');
-    
-    //task.setAttribute('display', 'hidden');
-    task.setAttribute('display', 'none');
-    console.log( task.getAttribute('display')  );
-    return moModel.doSubmit(event, _schema('task'), 'simple', model, data, "POST").then(()=> {
-      task.setAttribute('display', 'block');
-    });
-  };
-  
+  const _submit = event=> doTask(event,
+      moModel.doSubmit(event, _schema('task'), 'simple', model, data, "POST")
+  );
   return {
     view() {
       return m('div#task.pure-g', { style: "margin-bottom: 1.3em;" }, [
@@ -65,16 +56,40 @@ const Form = function(vnode) {
   };
 }
 
+const vuErrors = function (vnode) {
+
+  const { struct } = vnode.attrs;
+  const fref= get_fref();
+
+  const listMap= s=> m('tr', [ Object.keys(struct).map(
+    column=> m('td', fref( s, column ))
+  ) ] );
+  //model, struct, header, params
+  const _vnode= { attrs: {
+    struct: struct,
+    header: 'Ошибки при формировании',
+    params: restReestr.xml.params,
+    model: {
+      url: restReestr.xml.url,
+      list: null ,
+      error: null
+    }
+  } }
+  const view = vuDataSheet(_vnode);
+  return Object.assign( view, { listMap: listMap } );
+}
+
 export const vuReestr = function (vnode) {
   
   return {
     view () {
       return [
         m(vuTheader, { header: vnode.attrs.header } ),
-        m(Form, { model: vnode.attrs.model } )
+        m(Form, { model: vnode.attrs.model } ),
+        m(vuErrors, { struct: vnode.attrs.struct } )
       ];
     }    
         
-  }; //return this object
+  };
 }
 

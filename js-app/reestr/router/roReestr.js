@@ -3,7 +3,7 @@
 // common
 import { vuApp, vuView } from '../../apps/view/vuApp.js';
 import { moModel } from '../model/moModel.js';
-//import { moStruct } from '../model/moStruct.js';
+import { moStruct } from '../model/moStruct.js';
 //reestr
 import { taskReestr, reestrApi, reestrMenu } from '../reestrApi.js';
 // import
@@ -19,7 +19,8 @@ export const roReestr = {
     render: function() {
       let view = m(vuReestr, {
         header: "Формируем XML пакет для ФОМС",
-        model: moModel.getModel( taskReestr.pack.post_url )
+        model: moModel.getModel( taskReestr.pack.post_url ),
+        struct: moStruct().error_pack
         
       });
       return vuView(reestrMenu, view);

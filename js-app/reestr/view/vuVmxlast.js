@@ -6,7 +6,7 @@ import { _schema } from '../../apps/model/moModel.js';
 import { clinicApi } from '../../clinic/clinicApi.js';
 import { taskReestr } from '../reestrApi.js';
 import { moModel } from '../model/moModel.js';
-import { vuDataSheet } from './vuDataSheet.js';
+import { vuDataSheet, get_fref } from './vuDataSheet.js';
 
 
 const Form = function(vnode) {
@@ -48,27 +48,11 @@ const Form = function(vnode) {
 };  
 }
 
-export const vuVmxlast = function (vnode) {
-  //card_id: "/cards/:crd",
-  const card_id= clinicApi.card_id.split(':')[0];
-  //talon_id: "/talons/:tal/:crd",
-  const talon_id= clinicApi.talon_id.split(':')[0];
-  
-  const { struct }= vnode.attrs;
-  let clinic= location.href.split('/').slice(0,3);
-  clinic[1]= '/';
-  clinic.push('clinic/#!');
-  const root= clinic.join('/');
-  //console.log(root);
-  const link= (val, ref)=> m('a', {href: `${root}${ref}`, target: '_blank' }, val);
 
-  const fref= (s, f)=> {
-    if (f == 'crd_num')
-      return link (s.crd_num, `${card_id}${s.crd_num}`);
-    if (f == 'tal_num')
-      return link(s.tal_num, `${talon_id}${s.tal_num}/${s.crd_num}`);
-    return s[f];
-  }
+export const vuVmxlast = function (vnode) {
+
+  const { struct }= vnode.attrs;
+  const fref= get_fref();
 
   const listMap= s=> m('tr', [ Object.keys(struct).map(
     column=> m('td', fref( s, column ))

@@ -46,6 +46,11 @@ export const moStruct = function() {
       close_date: ['Закрыт'],
       error: ['Номер ошибки'],
       cmt: ['Текст ошибки']
+    },
+    error_pack: {
+      tal_num: ['Талон'],
+      crd_num: ['Карта'],
+      error: ['Ошибка']
     }
   };
 };
