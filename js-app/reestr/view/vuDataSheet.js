@@ -12,7 +12,7 @@ export const doTask= async function ( event, promise ) {
   let res= await promise;
   task.classList.remove('disable');
   return res;
-}
+};
 
 export const get_fref= ()=> {
     //card_id: "/cards/:crd",
@@ -30,8 +30,8 @@ export const get_fref= ()=> {
             return link(obj.crd_num, `${card_id}${obj.crd_num}`);
         if (fild == 'tal_num')
             return link(obj.tal_num, `${talon_id}${obj.tal_num}/${obj.crd_num}`);
-        return s[f];
-    }
+        return obj[fild];
+    };
 };
 
 
@@ -39,7 +39,7 @@ export const vuDataSheet = function (vnode) {
   
   //getList (schema, model, params=null, method='GET') {
   let { model, struct, header, params } = vnode.attrs;
-  //if ( !model.list )
+  if ( !model.quiet )
     moModel.getList( _schema('pg_rest'), model, params);
   
   return {
@@ -80,7 +80,7 @@ export const vuDataSheet = function (vnode) {
           ]),
           m('tbody', [model.list.map( this.listMap )] )
         ]),
-      ] : m(vuLoading);
+      ] : model.quiet ? '': m(vuLoading);
   }
   }; //return this object
 }

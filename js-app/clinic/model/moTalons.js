@@ -66,6 +66,7 @@ export const talonOpt= {
   getOptions: async function() {
     if (this.data && this.data.size && this.data.size !== 0) return true;
     await moModel.getData( talonOpt );
+
   }
 }
 

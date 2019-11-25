@@ -1,5 +1,6 @@
 // src/clinic/view/vuTalon.js
 
+import { vuDialog } from '../../apps/view/vuDialog.js';
 import { vuLoading } from '../../apps/view/vuApp.js';
 import { moModel } from '../../apps/model/moModel.js';
 import { restSprav } from '../../sprav/spravApi.js';
