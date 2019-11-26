@@ -27,8 +27,10 @@ const Form = function(vnode) {
   model.href= taskReestr.pack.get_url;
   
   const _submit = event=> doTask(event,
-      moModel.doSubmit(event, _schema('task'), 'simple', model, data, "POST").then(() => {
-        moModel.getList( _schema('pg_rest'), list_model, restReestr.xml.params);
+      moModel.doSubmit(event, _schema('task'), 'simple', model, data, "POST").then((done) => {
+        if ( !done )
+          return moModel.getList( _schema('pg_rest'), list_model, restReestr.xml.params);
+        return true;
       })
   );
   return {
@@ -49,6 +51,14 @@ const Form = function(vnode) {
                 m('input.fname[id="pack"][type="number"][min=1][name="pack"]',
                   { value: data.pack, onblur: e=> data.pack = e.target.value }
                 )
+              ]),
+              m('.pure-controls', [
+                m('label.pure-checkbox[for="check"]', [ 
+                  m('input[id="check"][type="checkbox"][name="check"]',
+                    { value: data.check, onblur: e=> data.check = e.target.value }
+                  ),
+                  m('span', { style: "padding: 0px 5px 3px;"}, "Проверка")
+                ])
               ]),
               m('.pure-controls', [
                 m('label.pure-checkbox[for="sent"]', [ 

@@ -110,7 +110,7 @@ export const moModel = {
       model.detail = res.detail ? res.detail: null;
       model.done = res.done ? res.done : null;
       event.target.parentNode.classList.remove('disable');
-      return true;
+      return res.done;
     }).catch((err) => {
       model.error = errMsg(err);
       console.log(model.error);
