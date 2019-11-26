@@ -18,10 +18,12 @@ import { talNum, _notEdit, dupper } from './vuClinic'; //tal number
 
 const num_fields= ['mek','visit_pol', 'pol_days', 'visit_home', 'home_days',
   'visit_homstac', 'visit_daystac', 'days_at_homstac', 'days_at_daystac',
-  'npr_mo', 'npr_spec', 'hosp_mo', 'extr', 'prof_k',
+  //'npr_mo', 'npr_spec', 'hosp_mo',
+  'extr', 'prof_k',
   'char1', 'char2', 
   'travma_type', 'patient_age',
-]
+];
+const none_fields= ['naprlech', 'nsndhosp'];
 
 const toSaveTalon= async function (tal, check) {
   // mek and talon_type
@@ -43,12 +45,14 @@ const toSaveTalon= async function (tal, check) {
       return 'Укажите либо СМО либо СМО ОКАТО';
     
   // ambul - stac days together
-  let amb= Number(tal.visit_pol) + Number(tal.visit_home);
-  let ds=  Number(tal.visit_daystac) + Number(tal.visit_homstac);
+  let amb=  Boolean (Number(tal.visit_pol) + Number(tal.visit_home) );
+  let ds=  Boolean (Number(tal.visit_daystac) + Number(tal.visit_homstac));
   //console.log( amb, ds);
-  if ( Boolean(amb) && Boolean(ds) )
+  if ( !( amb || ds ) )
+    return 'Укажите количество посещений';
+  if ( amb && ds )
     return 'Амбулвторный прием и ДСтац в одном талоне';
-  if ( Boolean( amb ) )
+  if ( amb )
     tal.usl_ok= 3;
   else
     tal.usl_ok= 2;
@@ -96,8 +100,13 @@ const toSaveTalon= async function (tal, check) {
     }
   }
   num_fields.map(f=> {
-    if (tal[f] === "") tal[f]= 0;
+    if (tal[f] === "" || !tal[f] ) tal[f]= 0;
   });
+  /*
+  none_fields.map(f=> {
+    if (tal[f] === "" || !tal[f] ) tal[f]= null;
+  });
+  */
   return '';
 
 }
@@ -148,7 +157,7 @@ const talForm = function (vnode) {
     let doct= data.get('doctor').find( d=> d.spec == tal.doc_spec && d.code == tal.doc_code );
     check.doct= true;
     if ( Boolean(doct) && Boolean(doct.family) )
-      doc= m('span', check.doct.family);
+      doc= m('span', doct.family);
     else {
       doc= m('span.red', ' Доктор? ');
       check.doct= false;

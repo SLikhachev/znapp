@@ -132,6 +132,10 @@ export const toSaveCard= card=> {
     if ( Boolean(card.polis_type) && card.polis_type < 3 && !Boolean(card.dul_type) )
       return 'Для этого типа полиса требуются полные данные ДУЛ';
     
+    //polis type
+    if ( !card.polis_type )
+      return 'Неизвестный тип полиса'
+    
     // SMO
     if ( !card.smo && !card.smo_okato)
       return 'Укажите либо СМО либо СМО ОКАТО';

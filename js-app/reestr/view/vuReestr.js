@@ -23,16 +23,18 @@ const vuErrorsList = function (vnode) {
 const Form = function(vnode) {
   
   const {model, list_model }= vnode.attrs;
-  const data= { month: _month(), pack: 1 };
+  const data= { month: _month(), pack: 1, check: null };
   model.href= taskReestr.pack.get_url;
   
-  const _submit = event=> doTask(event,
+  const _submit = event=> {
+    console.log( data.check ); return false;
+    return doTask(event,
       moModel.doSubmit(event, _schema('task'), 'simple', model, data, "POST").then((done) => {
         if ( !done )
           return moModel.getList( _schema('pg_rest'), list_model, restReestr.xml.params);
         return true;
       })
-  );
+  ); };
   return {
     view() {
       return m('div#task.pure-g', { style: "margin-bottom: 1.3em;" }, [
@@ -52,6 +54,24 @@ const Form = function(vnode) {
                   { value: data.pack, onblur: e=> data.pack = e.target.value }
                 )
               ]),
+              m(".pure-control-group", [
+                m('label', {for: "check"}, "Ошибки"),
+                m('span', {style: "line-height: 1em;"}, "Проверить"),
+                m('input[name="check"][type="radio"]', {
+                  style: "margin: 0 14px 0 7px;",
+                  //value: 0,
+                  //checked: data.check ? gnd(card) === 0 : false,
+                  onchange: e => e.target.checked ? data.check = 'check' : data.check = 'ignore'
+                }),
+                m('span', "Игнорировать ошибки"),
+                m('input[name="check"][type="radio"]', {
+                  style: "margin: 0 0 0 7px;",
+                  //value: 1,
+                  //checked: card.gender ? gnd(card) === 1 : false,
+                  onchange: e => e.target.checked ? data.check = 'ignore' : data.check = 'check'
+                })
+              ]),
+              /*
               m('.pure-controls', [
                 m('label.pure-checkbox[for="check"]', [ 
                   m('input[id="check"][type="checkbox"][name="check"]',
@@ -60,6 +80,7 @@ const Form = function(vnode) {
                   m('span', { style: "padding: 0px 5px 3px;"}, "Проверка")
                 ])
               ]),
+              */
               m('.pure-controls', [
                 m('label.pure-checkbox[for="sent"]', [ 
                   m('input[id="sent"][type="checkbox"][name="sent"]',

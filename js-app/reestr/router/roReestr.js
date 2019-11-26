@@ -26,4 +26,15 @@ export const roReestr = {
       return vuView(reestrMenu, view);
     }
   },
+  [reestrApi.pack_errors]: {
+    render: function() {
+      let view = m(vuPackErrors, {
+        header: "Последние ошибки формирования реестра",
+        model: moModel.getModel( restReestr.xml.url ),
+        struct: moStruct().vmx_last,
+        params: restReestr.vmx.params
+      });
+      return vuView(reestrMenu, view);
+    }
+  },
 }
