@@ -8,8 +8,7 @@ export const taskReestr = {
     },
     pack: {
       post_url: "/reestr/xml/pack",
-      get_url: "/utils/file/reestr/xml/",
-      errors: "error_pack"
+      get_url: "/utils/file/reestr/xml/", // get xml zip pack
     },
     vmx: {
       post_url: "/reestr/xml/vmx",
@@ -33,7 +32,7 @@ export const reestrApi = {
     
     pack: "/pack",
     pack_xml: "/pack/xml",
-    pack_errors: "/pack/errors",
+    //pack_errors: "/pack/errors",
     
     vmxl: "/vmxl",
     vmxl_imp: "/vmxl/imp",
@@ -54,7 +53,7 @@ export const reestrMenu = { subAppMenu: {
     nref: [`#!${reestrApi.pack}`, "Пакеты"],
     items: [
       [`#!${reestrApi.pack_xml}`, "Сформировать"],
-      [`#!${reestrApi.pack_errors}`, "Последние ошибки"],
+      //[`#!${reestrApi.pack_errors}`, "Последние ошибки"],
     ]
   },
   vmxl: {

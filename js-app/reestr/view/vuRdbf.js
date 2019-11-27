@@ -37,7 +37,7 @@ const Form = function(vnode) {
             m('.pure-controls', [
               m('label.pure-checkbox[for="test"]', [ 
                 m('input[id="test"][type="checkbox"][name="test"]',
-                  { value: data.sent, onblur: e=> data.sent = e.target.value }
+                  { value: data.test, onblur: e=> data.test = e.target.value }
                 ),
                 m('span', { style: "padding: 0px 5px 3px;"}, "Тест")
               ])

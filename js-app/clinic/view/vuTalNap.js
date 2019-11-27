@@ -4,27 +4,27 @@ import { talNum } from './vuClinic';
 
 const talNapr= {
  npr_mo: { label: ['', "Код МО"], input: {
-      tag: ['.pure-u-22-24', 'number', 1, true],
+      tag: ['.pure-u-22-24', 'number', 1, false],
       //attrs: { min: 0, max: 33}
     }
   },
   npr_spec: { label: ['', "Спец"], input: {
-      tag: ['.pure-u-22-24', 'number', 1, true],
+      tag: ['.pure-u-22-24', 'number', 2, false],
       //attrs: { min: 0, max: 33}
     }
   },
   naprlech: { label: ['', "Номер направления"], input: {
-      tag: ['.pure-u-22-24', 'number', 1, true],
+      tag: ['.pure-u-22-24', 'number', 3, false],
       //attrs: { min: 0, max: 33}
     }
   },
   hosp_mo: { label: ['', "Код МО"], input: {
-      tag: ['.pure-u-22-24', 'number', 1, true],
+      tag: ['.pure-u-22-24', 'number', 4, false],
       //attrs: { min: 0, max: 33}
     }
   },
   nsndhosp: { label: ['', "Номер направления"], input: {
-      tag: ['.pure-u-22-24', 'number', 1, true],
+      tag: ['.pure-u-22-24', 'number', 5, false],
       //attrs: { min: 0, max: 33}
     }
   },

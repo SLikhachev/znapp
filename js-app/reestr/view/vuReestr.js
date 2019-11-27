@@ -23,13 +23,15 @@ const vuErrorsList = function (vnode) {
 const Form = function(vnode) {
   
   const {model, list_model }= vnode.attrs;
-  const data= { month: _month(), pack: 1, check: null };
+  const data= { month: _month(), pack: 1};
   model.href= taskReestr.pack.get_url;
   
   const _submit = event=> {
-    console.log( data.check ); return false;
+    data.check= document.getElementById("check").checked ? 'check': '';
+    data.sent= document.getElementById("sent").checked ? 'sent': '';
+    //console.log( data.check ); //return false;
     return doTask(event,
-      moModel.doSubmit(event, _schema('task'), 'simple', model, data, "POST").then((done) => {
+      moModel.doSubmit(event, _schema('task'), 'simple', model, data, "POST").then( done => {
         if ( !done )
           return moModel.getList( _schema('pg_rest'), list_model, restReestr.xml.params);
         return true;
@@ -37,7 +39,7 @@ const Form = function(vnode) {
   ); };
   return {
     view() {
-      return m('div#task.pure-g', { style: "margin-bottom: 1.3em;" }, [
+      return m('div.pure-g', { style: "margin-bottom: 1.3em;" }, [
         m('.pure-u-1-3', [
           m('form.pure-form.pure-form-stacked', { onsubmit: _submit }, [
             m('fieldset', [
@@ -54,6 +56,7 @@ const Form = function(vnode) {
                   { value: data.pack, onblur: e=> data.pack = e.target.value }
                 )
               ]),
+              /*
               m(".pure-control-group", [
                 m('label', {for: "check"}, "Ошибки"),
                 m('span', {style: "line-height: 1em;"}, "Проверить"),
@@ -71,20 +74,20 @@ const Form = function(vnode) {
                   onchange: e => e.target.checked ? data.check = 'ignore' : data.check = 'check'
                 })
               ]),
-              /*
+              */
               m('.pure-controls', [
                 m('label.pure-checkbox[for="check"]', [ 
                   m('input[id="check"][type="checkbox"][name="check"]',
-                    { value: data.check, onblur: e=> data.check = e.target.value }
+                    //{ value: data.check, onchange: e=> data.check = !e.target.value }
                   ),
-                  m('span', { style: "padding: 0px 5px 3px;"}, "Проверка")
+                  m('span', { style: "padding: 0px 5px 3px;"}, "Только проверить")
                 ])
               ]),
-              */
+              
               m('.pure-controls', [
                 m('label.pure-checkbox[for="sent"]', [ 
                   m('input[id="sent"][type="checkbox"][name="sent"]',
-                    { value: data.sent, onblur: e=> data.sent = e.target.value }
+                    //{ value: data.sent, onblur: e=> data.sent = e.target.value }
                   ),
                   m('span', { style: "padding: 0px 5px 3px;"}, "Не отправлять принятые")
                 ])

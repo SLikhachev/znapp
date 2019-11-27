@@ -24,10 +24,11 @@ const file = model=>  [
 ];
 
 // func return chunk of hyper-script of form to post get task
-export const taskResp= model=> m('#resp',
+export const taskResp= model=> m('details#resp',
+  m('summary.legend', "Статус обработки"),
   model.error ? m('.error', model.error) :
     model.message ? [
-      m('.legend', "Статус обработки"),
+      
       m('h4', { class: model.done ? 'blue' : 'red'}, model.message),
       model.file ? file(model): ''
      ] : ''  //message

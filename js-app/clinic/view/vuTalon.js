@@ -196,7 +196,7 @@ const talForm = function (vnode) {
   const ds2_model= { mkb: 'mkb10?code=like.', order_by: 'code', list: null, headers: { Range: '0-20' } };
   //const ds_check= { url: 'mkb10?code=eq.', order_by: 'code', list: null };
   const set_ds= (ds, _model)=> e=> {
-    tal[ds] = dupper(e.target.value);
+    tal[ds] = dupper(e.target.value.split('~')[0]);
     //console.log(e.target.value);
     if ( diag.test(tal[ds]) ) {
       _model.url = `${_model.mkb}${tal[ds]}*`;
@@ -291,7 +291,7 @@ const talForm = function (vnode) {
               list: 'ds1', value: tal.ds1, oninput: set_ds1
             }),
             m('datalist[id="ds1"]',
-              ds1_model.list ? ds1_model.list.map(d=> m('option', {value: d.code.trim()})) : []
+              ds1_model.list ? ds1_model.list.map(d=> m('option', {value: `${d.code.trim()}~${d.name}` } )) : []
             )
           ]),
           m('.pure-u-3-24', [ tof('char1', tal, { list:  "char", onblur: set_char1 } ),
