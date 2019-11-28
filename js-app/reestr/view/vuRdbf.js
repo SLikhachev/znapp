@@ -1,21 +1,23 @@
 // ./reestr/view/vuRdbf.js
 // import dbf reestrs files to sql tables for pavlenkov and stale files
-import { vuTheader } from '../../apps/view/vuApp.js';
+import { vuTheader, taskResp } from '../../apps/view/vuApp.js';
 import { file_field, form_file_dom } from '../../apps/form/customFields.js';
 import { _month, _schema } from '../../apps/model/moModel.js';
-import { moModel } from '../model/moModel.js';
+import { moModel } from '../../apps/model/moFormModel.js';
+import { doTask } from "../../apps/view/vuDataSheet";
+
 
 const Form = function(vnode) {
   
   const model= vnode.attrs.model;
   const data= { month: _month() };
-  const schema= _schema('task');  
   //console.log(model);
   
-  const on_submit = function (event) {
-    event.preventDefault();
-    return moModel.formSubmit(event, schema, model, "POST");
-  };
+  const _submit = event=> {
+    //data.test= document.getElementById("test").checked ? 'test': '';
+    return doTask(event,
+      moModel.formSubmit(event, _schema('task'), schema, model, "POST")
+    ); };
   
   return {
 
@@ -24,7 +26,7 @@ const Form = function(vnode) {
     return m('.pure-g', [
       m('.pure-u-1-3', [
         m('form.pure-form.pure-form-stacked', 
-            { onsubmit: on_submit, oncreate: form_file_dom }, [
+            { onsubmit: _submit, oncreate: form_file_dom }, [
           m('fieldset', [
             m('legend', "Импорт файлов реестров DBF"),
             m('.pure-control-group', file_field(data) ),
@@ -49,18 +51,8 @@ const Form = function(vnode) {
           ])
         ])
       ]),
-      m('.pure-u-2-3', [
-        model.error ? m('.error', model.error) :
-          model.message ? m('.legend', ["Статус обработки", 
-            m('div', [
-
-              m('h4.blue', model.message),
-              m('span.blue', {style: "font-size: 1.2em"}, "Исходный файл: ", model.file ),
-              model.detail ? m('h4.red', model.detail) : '',
-
-            ])
-          ]) : m('div')
-      ])
+      m('.pure-u-2-3', [ taskResp(model) ])
+        
     ]);
   }
 }

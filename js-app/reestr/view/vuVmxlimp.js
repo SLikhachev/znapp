@@ -4,7 +4,9 @@
 import { vuTheader, taskResp } from '../../apps/view/vuApp.js';
 import { file_field, form_file_dom } from '../../apps/form/customFields.js';
 import { _schema } from '../../apps/model/moModel.js';
-import { moModel } from '../model/moModel.js';
+import { moModel } from '../../apps/model/moFormModel.js';
+import { doTask } from '../../apps/view/vuDataSheet';
+
 
 const Form = function(vnode) {
   
@@ -12,14 +14,9 @@ const Form = function(vnode) {
   const data= {};
   const get_type= el=> el.options[ el.selectedIndex].value;
   
-  const _submit = function (event) {
-    event.preventDefault();
-    let task= document.getElementById('task');
-    task.setAttribute('display', 'none');
-    return moModel.formSubmit(event, _schema('task'), model, "POST").then(()=> {
-      task.setAttribute('display', 'block');
-    });
-  };
+  const _submit = event=> doTask(event,
+    moModel.formSubmit(event, _schema('task'), model, "POST")
+  );
   
   return {
     view() {

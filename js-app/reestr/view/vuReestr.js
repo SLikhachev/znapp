@@ -3,9 +3,10 @@
 
 import { vuTheader, taskResp } from '../../apps/view/vuApp.js';
 import { _month, _schema } from '../../apps/model/moModel.js';
-import {reestrApi, taskReestr, restReestr} from '../reestrApi';
-import { moModel } from '../model/moModel.js';
-import { doTask, get_fref, vuDataSheet } from "./vuDataSheet";
+import { moModel } from '../../apps/model/moFormModel.js';
+import { doTask, get_fref, vuDataSheet } from "../../apps/view/vuDataSheet";
+import { taskReestr, restReestr } from '../reestrApi';
+
 
 const vuErrorsList = function (vnode) {
 

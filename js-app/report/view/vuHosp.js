@@ -2,30 +2,24 @@
 // import EIR hosp file  -> transform it to XLSX book and download it
 
 import { _month, _schema } from '../../apps/model/moModel.js';
+import { moModel } from '../../apps/model/moFormModel.js';
 import { file_field, form_file_dom } from '../../apps/form/customFields.js';
 import { vuTheader, taskResp } from '../../apps/view/vuApp.js';
+import { doTask } from "../../apps/view/vuDataSheet";
 import { taskReport } from '../reportApi.js';
-import { moModel } from '../model/moModel.js';
+
 
 const Form = function(vnode) {
   
   const model = vnode.attrs.model;
   //console.log(model);
-  const data= {
-    month: _month(),
-    _get: taskReport.hosp.get_url,
-    _post: taskReport.hosp.post_url,
-  };
-
-  const upload= event=> {
-    event.preventDefault();
-    let task= document.getElementById('task');
-    task.setAttribute('display', 'none');
-    return moModel.doSubmit(event.target, model, "POST").then(() => {
-      task.setAttribute('display', 'block');
-    });
-  };
+  const data= { month: _month() };
   model.href= taskReport.hosp.get_url;
+  
+  const _submit= event=> doTask(event,
+    moModel.formSubmit(event, _schema('task'), model, "POST")
+  );
+ 
 
   return {
   
@@ -33,7 +27,7 @@ const Form = function(vnode) {
     return m('div#task.pure-g', { style: "margin-bottom: 1.3em;" }, [
       m('.pure-u-1-3', [
         m('form.pure-form.pure-form-stacked', 
-            { action: data._post, oncreate: form_file_dom,  method: 'POST', onsubmit: upload }, [
+            { oncreate: form_file_dom, onsubmit: _submit }, [
           m('fieldset', [
             m('legend', "Отчет из файла ЕИР"),
             m('.pure-control-group', file_field(data) ),
@@ -56,7 +50,7 @@ const Form = function(vnode) {
           ])
         ])
       ]),
-      m('.pure-u-2-3',  taskResp(model) )
+      m('.pure-u-2-3',  [ taskResp(model) ])
     ]);
   }
   }

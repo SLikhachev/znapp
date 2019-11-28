@@ -2,13 +2,13 @@
 
 // common
 import { vuApp, vuView } from '../../apps/view/vuApp.js';
-import { moModel } from '../model/moModel.js';
+import { moModel } from '../../apps/model/moFormModel.js';
 //import { moStruct } from '../model/moStruct.js';
 //reestr
 import { taskReestr, reestrApi, reestrMenu } from '../reestrApi.js';
 // import
 import { vuInvimp } from '../view/vuInvimp.js';
-import { vuInvcalc } from '../view/vuInvcalc.js';
+
 
 export const roInvoice = {
   [reestrApi.invoice]: {
@@ -26,9 +26,10 @@ export const roInvoice = {
       return vuView(reestrMenu, view);
     }
   },
+  /*
   [reestrApi.inv_calc]: {
     render: function() {
-      let view = m(vuInvcalc, {
+      let view = m(vuSelfcalc, {
         header: "Собственные рассчеты",
        //model: moModel.getModel()
         
@@ -36,4 +37,5 @@ export const roInvoice = {
       return vuView(reestrMenu, view);
     }
   },
+  */
 }

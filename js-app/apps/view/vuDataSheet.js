@@ -1,9 +1,10 @@
-// src/report/view/vuDataSheet.js
+// src/apps/view/vuDataSheet.js
 
-import { vuLoading, vuTheader } from '../../apps/view/vuApp.js';
-import { _schema } from '../../apps/model/moModel.js';
 import { clinicApi } from '../../clinic/clinicApi.js';
-import { moModel } from '../model/moModel.js';
+import { _schema } from '../model/moModel.js';
+import { moModel } from '../model/moFormModel.js';
+import { vuLoading, vuTheader } from './vuApp.js';
+
 
 export const doTask= async function ( event, promise ) {
   event.preventDefault();

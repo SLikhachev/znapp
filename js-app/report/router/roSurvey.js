@@ -1,11 +1,11 @@
 // src/report/router/roSurvey.js
 
 // common
+import { moModel } from '../../apps/model/moFormModel.js';
 import { vuApp, vuView } from '../../apps/view/vuApp.js';
-import { moModel } from '../../apps/model/moModel.js';
 import { moStruct } from '../model/moStruct.js';
 //report
-import { restReport, reportApi, reportMenu } from '../reportApi.js';
+import { taskReport, restReport, reportApi, reportMenu } from '../reportApi.js';
 // survey
 import { vuHosp } from '../view/vuHosp.js';
 import { vuVolum } from '../view/vuVolum.js';
@@ -20,7 +20,7 @@ export const roSurvey = {
     render: function() {
       let view = m(vuHosp, {
         header: "Госпитализация отчет из файда ЕИР",
-        model: moModel.getModel()
+        model: moModel.getModel( taskReport.hosp.post_url )
         
       });
       return vuView(reportMenu, view);

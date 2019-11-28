@@ -4,8 +4,10 @@
 import { _schema } from '../../apps/model/moModel.js';
 import { vuTheader, taskResp } from '../../apps/view/vuApp.js';
 import { file_field, form_file_dom } from '../../apps/form/customFields.js';
-import { moModel } from '../model/moModel.js';
+import { moModel } from '../../apps/model/moFormModel.js';
+import { doTask } from "../../apps/view/vuDataSheet";
 import { taskReestr } from '../reestrApi.js';
+
 
 const Form = function(vnode) {
   
@@ -15,21 +17,16 @@ const Form = function(vnode) {
   const get_type= el=> el.options[ el.selectedIndex].value;
   model.href= taskReestr.invoice.get_url;
   
-  const download= event=> {
-    event.preventDefault();
-    let task= document.getElementById('task');
-    task.classList.add('disable');
-    return moModel.formSubmit(event, _schema('task'), model, "POST").then(() => {
-      task.classList.remove('disable');
-    });
-  };
+  const _submit = event=> doTask(event,
+    moModel.formSubmit(event, _schema('task'), model, "POST")
+  );
   
   return {
     view() {
       return m('div#task.pure-g', { style: "margin-bottom: 1.3em;" }, [
         m('.pure-u-1-3', [
           m('form.pure-form.pure-form-stacked',
-            { onsubmit: download, oncreate: form_file_dom }, [
+            { onsubmit: _submit, oncreate: form_file_dom }, [
             m('fieldset', [
               m('legend', "Файл счета БАРС"),
               m('.pure-control-group', file_field(data) ),

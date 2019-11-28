@@ -1,7 +1,9 @@
 
-// src/report/model/moModel.js
+// src/apps/model/moModel.js
 
-import { errMsg } from '../../apps/model/moModel.js';
+// this models is used by REESTR, REPORT apps 
+
+import { errMsg } from './moModel.js';
 
 
 export const moModel = {
@@ -74,7 +76,7 @@ export const moModel = {
       model.message = res.message;
       model.detail = res.detail ? res.detail: null;
       model.done = res.done ? res.done : null;
-      //console.log(` msg: ${model.message}, file: ${model.file}, done: ${model.done}`);
+      console.log(` msg: ${model.message}, file: ${model.file}, done: ${model.done}`);
       form.classList.remove('disable');
       return true;
     }).catch((err) => {

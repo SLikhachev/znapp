@@ -1,10 +1,9 @@
 // src/apps/model/moModel.js
 
-//import { schemaRest } from '../apiConf.js';
+// this models is used by SPRAV CLINIC apps
+
 import { vuDialog } from '../view/vuDialog.js';
 
-//const pg_rest = window.localStorage.getItem('pg_rest'); //postgest schemaRest;
-//console.log(schema);
 
 export const errMsg= function(error){
   if ( !error)
