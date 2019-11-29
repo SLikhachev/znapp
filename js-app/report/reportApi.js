@@ -2,7 +2,10 @@
 // src/report/reportApi.js
 
 export const restReport = {
-    volum: {url: 'p146_report?insurer=eq.999&this_year=eq.2019', order_by: 'this_month' }
+    volum: {
+      url: 'p146_report',
+      params: {insurer: 'eq.999', this_year: 'eq.2019', order: 'this_month' }
+    }
 }
 
 export const taskReport = {

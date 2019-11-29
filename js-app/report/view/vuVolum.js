@@ -1,35 +1,30 @@
 // src/report/view/vuVolum.js
 
 import { _month, _schema } from '../../apps/model/moModel.js';
+import { taskResp } from '../../apps/view/vuApp.js';
+import { vuDataSheet, doTask } from '../../apps/view/vuDataSheet';
+import { moModel } from '../../apps/model/moFormModel.js';
 import { taskReport } from '../reportApi.js';
-import { moModel } from '../model/moModel.js';
-import { vuReportSheet } from './vuDataSheet.js';
+
 
 const Form = function(vnode) {
   
   const model = vnode.attrs.model;
   //console.log(model);
-  const data= {
-    month: _month(),
-    _get: taskReport.volum.get_url,
-    _post: taskReport.volum.post_url,
-  }; 
-   
-  const update = function (event) {
-    //console.log('update');
+  const md= { month: _month(), url: taskReport.volum.post_url, href: taskReport.volum.get_url };
+  const get_id= id=> document.getElementById(id);
+  const _default= ()=> true;  
+  
+  const _submit = (event, method)=> {
     event.preventDefault();
-    let form = document.getElementById("volume_form");
-    return moModel.doSubmit(form, model, "POST");
+    const _event= { target: get_id("volume_form"), preventDefault: _default  };
+    return doTask( event, moModel.formSubmit(_event, _schema('task'), md, method) );
   };
   
-  const report = function (event) {
-    //console.log('report');
-    event.preventDefault();
-    let form = document.getElementById("volume_form");
-    return moModel.doSubmit(form, model, "GET");
-  };
+  const _update= event=> _submit( event, "POST" );
+  const _report= event=> _submit( event, "GET" );  
 
-  const get_href = file=> `${_schema('task')}${data._get}${file}`;
+  
   
   return {
   
@@ -37,15 +32,13 @@ const Form = function(vnode) {
     //console.log(model);
     return [ m('.pure-g', [
       m('.pure-u-1-3', [
-        m('form.pure-form.pure-form-stacked[id="volume_form"]',
-            { action: data._post,
-            }, [
+        m('form.pure-form.pure-form-stacked[id="volume_form"]', [
           m('fieldset', [
             m('legend', "Расчет объемов"),
             m('.pure-control-group', [
               m('label[for=month]', 'Месяц'),
               m('input[id="month"][type="month"][name="month"][reqired=required]',
-                 { value: data.month }
+                { value: md.month, onchange: e=> md.month = e.target.value }
               )
             ]),
             m('.pure-controls', [
@@ -56,38 +49,24 @@ const Form = function(vnode) {
             ]),
             m('.pure-controls', [
               m('button.pure-button[type="button"]',
-                { style: "font-size: 1.2em",
-                  onclick: update
-                }, "Обновить"),
+                { style: "font-size: 1.2em", onclick: _update }, "Обновить"),
               m('button.pure-button.pure-button-primary[type="button"]',
-                { style: "font-size: 1.2em; margin-left: 2em;",
-                  onclick: report
-                }, "Отчет")
+                { style: "font-size: 1.2em; margin-left: 2em;", onclick: _report }, "Отчет")
             ])
           ])
         ])
       ]),
-      m('.pure-u-2-3',
-        model.error ? m('.error', model.error) :
-        model.message ? m('.legend', ["Статус обработки",
-          model.done ? m('div', [
-            m('h4.blue', model.message),
-            m('span.blue', {style: "font-size: 1.2em"}, "Файл отчета: "),
-            m('a.pure-button', {href: get_href( model.file ), style: "font-size: 1.2 em"}, model.file ) 
-          ]) : m('div', m('h4.blue', model.message))
-        ]) : m('div')
-      )
+      m('.pure-u-2-3', [ taskResp(md) ]  )
     ])
   ];
   }
 }  
 }
 
-
 // clojure
 export const vuVolum = function (vnode) {
   //console.log(vnode.attrs.model.pg_url);
-  let view = vuReportSheet(vnode);
+  let view = vuDataSheet(vnode);
   view.form = Form;
   return view;
 }

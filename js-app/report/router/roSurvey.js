@@ -28,12 +28,12 @@ export const roSurvey = {
   },
   [reportApi.surv_volum]: {
     render: function() {
-      //console.log(pgRest.volum);
       let view = m(vuVolum, {
         header: "Обемы помощи приказ 146",
-        model: moModel.getModel( restReport.volum ),
+        model: moModel.getModel( restReport.volum.url ),
+        params: restReport.volum.params,
         struct: moStruct().p146_report,
-        //form: true
+        
       });
       return vuView(reportMenu, view);
     }

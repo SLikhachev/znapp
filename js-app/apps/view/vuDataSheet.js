@@ -8,7 +8,7 @@ import { vuLoading, vuTheader } from './vuApp.js';
 
 export const doTask= async function ( event, promise ) {
   event.preventDefault();
-  let resp= document.getElementById('resp');
+  let resp= document.getElementById('resp'); // taskResp - view with #resp dom
   //resp.classList.add('disable');
   resp.open= false;
   let res= await promise;
