@@ -2,7 +2,7 @@
 
 import { vuDialog } from '../../apps/view/vuDialog.js';
 import { vuLoading } from '../../apps/view/vuApp.js';
-import { moModel } from '../../apps/model/moModel.js';
+import { moModel, _mo } from '../../apps/model/moModel.js';
 import { restSprav } from '../../sprav/spravApi.js';
 import { clinicApi, restClinic } from '../clinicApi.js';
 import { moTalonsList, moTalon, talonOpt } from '../model/moTalons.js';
@@ -24,6 +24,9 @@ const num_fields= ['mek','visit_pol', 'pol_days', 'visit_home', 'home_days',
   'travma_type', 'patient_age',
 ];
 const none_fields= ['naprlech', 'nsndhosp'];
+
+// specfic for cons yet
+const dcons=[63];
 
 const toSaveTalon= async function (tal, check) {
   // mek and talon_type
@@ -59,7 +62,12 @@ const toSaveTalon= async function (tal, check) {
     
   // napr ambul, stac together
   let cons= Boolean(tal.naprlech), hosp= Boolean(tal.nsndhosp);
-  if ( cons && hosp ) 
+  // no napr
+  // here not specific from dcons and not attached and not urgent and no napravl
+  if ( dcons.find( d=> d == check.doct) && !check.att  &&  !tal.urgent && !cons )
+    return 'Укажите направление';
+
+  if ( cons && hosp )
     return 'Госпитализация и Консультация в одном талоне';
   
   // napr MO code
@@ -132,6 +140,7 @@ const talForm = function (vnode) {
   
   let { model, method }= vnode.attrs;
   let tal= model.talon;
+  let card= model.card
   //console.table(tal);
   const data= talonOpt.data;
   //console.log(data);
@@ -155,13 +164,16 @@ const talForm = function (vnode) {
     let purp= get_name(tal.purp, 'purpose', 'id', 'name', 'Цель?', true);
     check.purp= purp.tag == 'span.red' ? false: true;
     let doct= data.get('doctor').find( d=> d.spec == tal.doc_spec && d.code == tal.doc_code );
-    check.doct= true;
-    if ( Boolean(doct) && Boolean(doct.family) )
-      doc= m('span', doct.family);
-    else {
+    //check.doct= true;
+    if ( Boolean(doct) && Boolean(doct.family) ) {
+        doc = m('span', doct.family);
+        check.doct = doct.spec;
+    } else {
       doc= m('span.red', ' Доктор? ');
-      check.doct= false;
-    }          
+      check.doct= null;
+    }
+
+    check.att= _mo().endsWith(card.mo_att);
     return Array.of('', purp, doc);
   };
   // c_zab (1,2,3) if ds1 <> Z
@@ -359,8 +371,8 @@ const talMain = function (vnode) {
 
 
 export const vuTalon = function(vnode) {
-  //console.log(vnode.attrs);
-  
+  console.log(_mo());
+
   let { tal, crd }= vnode.attrs;
   let model= moTalon.getModel(); //;
   let tabs= ['Талон', 'Направление', 'ДС', 'ПМУ', 'Полис на дату'];

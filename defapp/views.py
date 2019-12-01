@@ -21,6 +21,7 @@ def log_out(request):
 
 def get_app(app_name, user):
     s = MoStore.objects.get(user=user)
+    #u = User.objects.get(user=user)
     aps = {}
     for ap in s.apps.all():
         aps[ap.name] = dict(href=ap.href, name=ap.app_name)
@@ -30,6 +31,7 @@ def get_app(app_name, user):
     if aps.get(app_name, None) is None:
         return None
     return dict(
+        #this_mo=u.name,
         app_name=app_name,
         mo_name=s.mo_name,
         pg_rest=s.pg_rest,

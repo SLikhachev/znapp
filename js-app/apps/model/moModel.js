@@ -33,6 +33,8 @@ export const _schema= type=> {
 
 export const _region= ()=> '25.';
 
+export const _mo= ()=> window.localStorage.getItem('this_mo');
+
 export const moModel = {
   
   // :: String -> Array -> String -> Object
