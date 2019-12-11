@@ -22,11 +22,16 @@ const pmuForm = function (vnode) {
   
   const get_doc= spec=> {
     // if talon to this doctor spec then this doctor code
-    if ( !talon.doc_spec || !talon.doc_code) return 0; //error
-    if ( talon.doc_spec == spec) return talon.doc_code;
-    // else first doc with this spec from all doctors
-    let doc= Array.from(data.get('doctor')).find( d=> d.spec == spec);
-    if ( doc ) return doc.code;
+    if ( !!talon.doc_spec && !!talon.doc_code) { 
+      if ( talon.doc_spec == spec)
+        return talon.doc_code;
+      
+      // else first doc with this spec from all doctors
+      let doc= Array.from(data.get('doctor')).find( d=> d.spec == spec);
+      if ( Boolean(doc) )
+        return doc.code;
+      return 0; // error
+    }
     return 0; // error
   };
   
