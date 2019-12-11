@@ -69,7 +69,7 @@ const talonFind = function(vnode){
                 )
               ),
               m(".pure-u-1-5",
-                m("input.input-find.pure-u-2-3[name=q_date][type='date']",
+                m("input.input-find.pure-u-2-3[name=q_date][type='date']"
                   //{placeholder:"С даты"}
                 )
               ),

@@ -89,7 +89,7 @@ export const talCrd = function (vnode) {
             href: `${clinicApi.cards}/${card.crd_num}`,
             style: "margin-left: 2em;"
             }, "Открыть карту" )
-      ]), /*form*/
+      ]) /*form*/
       /*
       m('span#card_message',
         model.save ? model.save.err ? m('span.red', model.save.msg) : '' : ''
