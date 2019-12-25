@@ -37,6 +37,7 @@ export const get_fref= ()=> {
     };
 };
 
+export const get_type= el=> el.options[ el.selectedIndex].value;
 
 export const vuDataSheet = function (vnode) {
   

@@ -1,4 +1,4 @@
-// src/reestr/router/roImport.js
+// src/reestr/router/roInvoice.js
 
 // common
 import { vuApp, vuView } from '../../apps/view/vuApp.js';
@@ -8,12 +8,12 @@ import { moModel } from '../../apps/model/moFormModel.js';
 import { taskReestr, reestrApi, reestrMenu } from '../reestrApi.js';
 // import
 import { vuInvimp } from '../view/vuInvimp.js';
-
+import { vuSelfcalc } from  '../view/vuSelfcalc.js';
 
 export const roInvoice = {
   [reestrApi.invoice]: {
     render: function() {
-      return vuView(reestrMenu, m(vuApp, { text: "Счета и реестры для СМО и ФОМС" } ) );
+      return vuView(reestrMenu, m(vuApp, { text: "Рассчеты и реестры" } ) );
     }
   },
   [reestrApi.inv_impex]: {
@@ -26,16 +26,16 @@ export const roInvoice = {
       return vuView(reestrMenu, view);
     }
   },
-  /*
+
   [reestrApi.inv_calc]: {
     render: function() {
       let view = m(vuSelfcalc, {
         header: "Собственные рассчеты",
-       //model: moModel.getModel()
+        model: moModel.getModel(taskReestr.calc.post_url )
         
       });
       return vuView(reestrMenu, view);
     }
   },
-  */
+
 }

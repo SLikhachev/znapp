@@ -12,7 +12,7 @@ import { roImport } from './router/roImport.js';
 const reestrRouter = { [reestrApi.root]: {
     render: function () {
         return vuView(reestrMenu,
-            m(vuApp, {text: "Медстатистика: Реестры ОМС"}));
+            m(vuApp, {text: "Медстатистика: Реестры и Счета ОМС"}));
     }
 }
 };

@@ -1,4 +1,4 @@
-// src/reestr/router/roImport.js
+// src/reestr/router/roReestr.js
 
 // common
 import { vuApp, vuView } from '../../apps/view/vuApp.js';
@@ -12,7 +12,7 @@ import { vuReestr } from '../view/vuReestr.js';
 export const roReestr = {
   [reestrApi.pack]: {
     render: function() {
-      return vuView(reestrMenu, m(vuApp, { text: "Пакеты ФОМС" } ) );
+      return vuView(reestrMenu, m(vuApp, { text: "Пакеты для ФОМС" } ) );
     }
   },
   [reestrApi.pack_xml]: {

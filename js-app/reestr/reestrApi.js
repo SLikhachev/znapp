@@ -18,13 +18,16 @@ export const taskReestr = {
       post_url: "/reestr/inv/impex",
       get_url: "/utils/file/reestr/inv/" //GET reestr file  
     },
-
-}
+    calc: {
+      post_url: "/reestr/inv/calc",
+      get_url: "/utils/file/reestr/calc/" //GET calc file
+    },
+};
 
 export const restReestr = {
-    xml: { url: 'error_pack', params: { order: 'tal_num.asc' }},
-    vmx: { url:"vmx_errors", params: { limit: 50 } }
-}
+    xml: { url: 'error_pack', params: { order: 'tal_num.asc' }}, // just test pack
+    vmx: { url:"vmx_errors", params: { limit: 50 } } // show vmx errors
+};
    
 
 export const reestrApi = {
