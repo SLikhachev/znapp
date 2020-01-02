@@ -33,8 +33,8 @@ const Form = function(vnode) {
                 )
               ]),
               m('.pure-control-group', [
-                m('label[for=cmo]', 'СМО'),
-                m('select.ml10[name=cmo]',
+                m('label[for=smo]', 'СМО'),
+                m('select.ml10[name=smo]',
                   { onblur: e=> data.smo= get_type(e.target) }, [
                   m('option[value=0][selected]', 'ФОМС'),
                   m('option[value=16]', 'СВ Прим'),
