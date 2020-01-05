@@ -9,12 +9,12 @@ export const talPolis = function(vnode) {
   let tal= vnode.attrs.model.talon;
   const data= talonOpt.data;
   //let tal= { smo: null, smo_okato: null, polis_ser: null, polis_num:null, polis_type: null};
-  
+  //console.log(tal.smo, tal.smo_okato);
   const _set_smo= sel_smo(tal);
   const _set_smo_okato = set_smo_okato(data, tal);
   
   return {
-    view() { 
+    view() {
       return m("form.pure-form.pure-form-aligned.tcard",
         {style: "font-size: 1.2em;", id: "tal_polis" }, [
         m('fieldset', [

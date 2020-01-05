@@ -29,8 +29,9 @@ const none_fields= ['naprlech', 'nsndhosp'];
 const dcons=[63];
 
 const toSaveTalon= async function (tal, check) {
-  // mek and talon_type
-  if ( Boolean( tal.mek ) )
+  // month and talon_type
+  // if month have been  increased then assume talon must be ready for sent
+  if ( Number( tal.talon_month ) > Number(check.talon_month) )
     tal.talon_type=1;
   
   tal.for_pom= Boolean(tal.urgent) ? 2: 3;
@@ -152,7 +153,7 @@ const talForm = function (vnode) {
     return false;
   };
   
-  const check= {};
+  const check= { talon_month:  tal.talon_month };
   const dsp= "^[A-Z][0-9]{2}(\.[0-9]{1,2})?$";
   const diag= new RegExp( dsp );
   const get_name=
@@ -369,9 +370,8 @@ const talMain = function (vnode) {
   }
 };
 
-
 export const vuTalon = function(vnode) {
-  console.log(_mo());
+  //console.log(_mo());
 
   let { tal, crd }= vnode.attrs;
   let model= moTalon.getModel(); //;

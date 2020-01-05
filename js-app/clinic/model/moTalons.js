@@ -98,7 +98,7 @@ export const moTalon = {
       // exisiting talon? card will be fetched within talon record
       return moModel.getViewRpcMap(
         model, [ t1, t2 ]
-      ).then( t => moTalon.prepare( model )  );//.catch(e => alert(e));
+      ).then( () => moTalon.prepare( model )  );//.catch(e => alert(e));
     }
     // get card only to new talon
     if ( isNaN(crd) || crd === 0) {
@@ -140,8 +140,11 @@ export const moTalon = {
     if ( !t.talon_month ) t.talon_month= tmonth();
     if (!t.tal_num) {
         t.first_vflag= 1; // new talon with first visit always
-        t.talon_type= 1; // open talon
-        t.urgent= 0;
+        t.talon_type= 1; // open/ready talon
+        t.urgent= 0; // not urgent
+        // initially set default smo, smo_okato from card
+        t.smo = data.crd_smo;
+        t.smo_okato = data.crd_smo_okato;
     }
     if( Boolean(t.for_pom) ) {
         t.urgent= t.for_pom == 2 ? 1: 0;
