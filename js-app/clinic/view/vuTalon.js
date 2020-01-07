@@ -31,9 +31,11 @@ const dcons=[63];
 const toSaveTalon= async function (tal, check) {
   // month and talon_type
   // if month have been  increased then assume talon must be ready for sent
-  if ( Number( tal.talon_month ) > Number(check.talon_month) )
-    tal.talon_type=1;
-  
+  // no sense case with type 2 talon not edited
+  //if ( Number( tal.talon_month ) > Number(check.talon_month) )
+  //  tal.talon_type=1;
+
+  // forma pomoschi
   tal.for_pom= Boolean(tal.urgent) ? 2: 3;
 
   // Doct Oms
@@ -257,7 +259,7 @@ const talForm = function (vnode) {
     //console.log('talForm view');
     return m(".pure-u-18-24", [
 		m("form.pure-form.pure-form-stacked.tcard", { style: "font-size: 1.2em;",
-      id: "talon", oncreate: forTabs, onsubmit: talonSave}, [
+           id: "talon", oncreate: forTabs, onsubmit: talonSave}, [
 			m('fieldset', [ talNum(tal), 
         //
         m(".pure-g", [

@@ -47,7 +47,7 @@ export const _notEdit= tal=> {
     // talon of the same year may edit
     // case of 1. mek else we can not send it twice in same year
     // same year may edit
-    if( moTalonsList.year == moTalonsList._year )
+    if ( ( moTalonsList.year == moTalonsList._year ) && (tal.talon_type == 1 ) )
       //console.log(tal.tal_num, tal.talon_type);
       return false; // may edit
   return true;
