@@ -191,9 +191,9 @@ export const vuTalonsList = function (vnode) {
       model.list ? [
         //m(vuTheader, { header: headerString} ),
         m(talonFind, { model }),
-        model.list[0] ? model.list[0].recount.toString() ? //if 0 then "0"
+        model.list[0] ? !isNaN(Number( model.list[0].recount) ) ? //if 0 then "0"
           m('h1.blue', {style: "font-size: 1.5em;"},
-            `${model.list[0].recount} записей в таблице`) : 
+            `${Number( model.list[0].recount)} записей в таблице`) :
           m('table.pure-table.pure-table-bordered[id=find_table]', [
             m('thead', hdrMap() ),
             m('tbody', [model.list.map( listMap )] )

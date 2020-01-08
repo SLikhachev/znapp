@@ -16,6 +16,40 @@ import { talDs } from './vuTalDs.js';
 import { talPolis } from './vuTalPolis';
 import { talNum, _notEdit, dupper } from './vuClinic'; //tal number
 
+const talTpl = () => {
+  const _tpl= { name: ''};
+  const _set_tpl = e => {
+    console.log(e.target.selectedIndex);
+    if ( Boolean( e.target.value) )
+      _tpl.name= e.target.value;
+
+  };
+
+  return m('.pure-g', [
+    m(".pure-u-1-5", [
+      //m('label', { for: "tpl"}, ""),
+      m('select[name="tpl"]', [//{value: _tpl.name, onchange: _set_tpl}, [
+        m('option[value=""][selected]', "Шаблон талона"),
+          //data.get('smo_local').map(s=> m('option', {value: s.code}, s.short_name))
+        m('option[value="elf"]', "Елфимова"),
+        m('option[value="les"]', "Лештаев"),
+      ]),
+    ]),
+     m(".pure-u-1-5",
+       m('button.pure-button.pure-button[type="button"]',
+        { style: "margin-top: 0.3em"},
+              //onclick: talonSave
+        "Применить" )
+     ),
+     m(".pure-u-1-5",
+       m('button.pure-button.pure-button-primary[type="button"]',
+        { style: "margin-top: 0.3em"},
+              //onclick: talonSave
+        "Сохранить как шаблон" )
+     ),
+  ]);
+};
+
 const num_fields= ['mek','visit_pol', 'pol_days', 'visit_home', 'home_days',
   'visit_homstac', 'visit_daystac', 'days_at_homstac', 'days_at_daystac',
   //'npr_mo', 'npr_spec', 'hosp_mo',
@@ -260,7 +294,7 @@ const talForm = function (vnode) {
     return m(".pure-u-18-24", [
 		m("form.pure-form.pure-form-stacked.tcard", { style: "font-size: 1.2em;",
            id: "talon", oncreate: forTabs, onsubmit: talonSave}, [
-			m('fieldset', [ talNum(tal), 
+			m('fieldset', [ talNum(tal),  talTpl(),
         //
         m(".pure-g", [
           m(".pure-u-4-24", tof('open_date', tal)),
@@ -345,12 +379,12 @@ const talForm = function (vnode) {
 
       ]),
       m('fieldset', { style: "padding-left: 0%;" }, [
-				m('.pure-u-3-24', { style: "margin-top: 5px;" }, 
-          m('button.pure-button.pure-button-primary[type="submit"]',
+		m('.pure-u-3-24', { style: "margin-top: 5px;" },
+        m('button.pure-button.pure-button-primary[type="submit"]',
             { style: "font-size: 1.1em", disabled: _notEdit(tal)
               //onclick: talonSave
             },
-          "Сохранить" )
+         "Сохранить" )
         )
       ]) 
     ])//- form --
