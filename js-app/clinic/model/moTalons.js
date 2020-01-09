@@ -33,7 +33,8 @@ export const moTalonsList = {
   // only one table
   _table: 'talonz_clin_',
   _pmu: 'para_clin_',
-  talTable() {
+  talTable(tpl='') {
+    if (tpl === 'tpl') return'talonz_clin_tpl';
     return `${moTalonsList._table}${moTalonsList._year.slice(2)}`;
   },
   pmuTable() {
@@ -176,13 +177,18 @@ export const moTalon = {
       model.talon= moTalon.to_talon( c, card_fileds );
   },
   
-  saveTalon(event, model, method) {
+  saveTalon(event, model, method, tpl='') {
     //console.log(event);
-    event.target.parentNode.classList.add('disable');
+    if (tpl !== 'tpl') event.target.parentNode.classList.add('disable');
     let to_save= Object.assign({}, model.talon);
     let pg_rest =  _schema('pg_rest');
-    let { tal_num } = to_save;
-    let table= moTalonsList.talTable();
+    let tal_num;
+    //let { tal_num } = to_save;
+    if (tpl === 'tpl')
+      tal_num = to_save.tal_tpl;
+    else
+      tal_num = to_save.tal_num;
+    let table= moTalonsList.talTable(tpl);
     let url=`${pg_rest}${table}`;
     if ( Boolean(tal_num) ) {
       url += `?tal_num=eq.${tal_num}`;
@@ -201,11 +207,11 @@ export const moTalon = {
       body: to_save,
       headers: {Prefer: 'return=representation'}
     }).then( res => {
-      event.target.parentNode.classList.remove('disable');
+      if (tpl !== 'tpl') event.target.parentNode.classList.remove('disable');
       return res;
     }).catch( err => {
       //model.save = { err: true, msg: errMsg(err) };
-      event.target.parentNode.classList.remove('disable');
+      if (tpl !== 'tpl') event.target.parentNode.classList.remove('disable');
       throw ( errMsg (err) );
     });
   },

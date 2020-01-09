@@ -16,20 +16,18 @@ import { talDs } from './vuTalDs.js';
 import { talPolis } from './vuTalPolis';
 import { talNum, _notEdit, dupper } from './vuClinic'; //tal number
 
-const talTpl = () => {
-  const _tpl= { name: ''};
-  const _set_tpl = e => {
-    console.log(e.target.selectedIndex);
-    if ( Boolean( e.target.value) )
-      _tpl.name= e.target.value;
+const get_tpl = (tal) => {
 
+  const tplApply = e=> {
+    console.log( tpl['name']);
   };
+  const _tpl_name = e=> { tpl['name'] = e.target.value; console.log( tpl['name'] )};
 
   return m('.pure-g', [
     m(".pure-u-1-5", [
       //m('label', { for: "tpl"}, ""),
-      m('select[name="tpl"]', [//{value: _tpl.name, onchange: _set_tpl}, [
-        m('option[value=""][selected]', "Шаблон талона"),
+      m('select[name="stpl"]', { onchange: _tpl_name }, [//e=>  tpl.name= e.target.value }, [
+        m('option[value=""]', "Шаблон талона"),
           //data.get('smo_local').map(s=> m('option', {value: s.code}, s.short_name))
         m('option[value="elf"]', "Елфимова"),
         m('option[value="les"]', "Лештаев"),
@@ -37,18 +35,57 @@ const talTpl = () => {
     ]),
      m(".pure-u-1-5",
        m('button.pure-button.pure-button[type="button"]',
-        { style: "margin-top: 0.3em"},
-              //onclick: talonSave
+        { style: "margin-top: 0.3em", onclick: tplApply, disabled: _notEdit(tal)},
         "Применить" )
-     ),
-     m(".pure-u-1-5",
-       m('button.pure-button.pure-button-primary[type="button"]',
-        { style: "margin-top: 0.3em"},
-              //onclick: talonSave
-        "Сохранить как шаблон" )
      ),
   ]);
 };
+
+const saveTpl = function (vnode) {
+    const { model } = vnode.attrs;
+    const { talon } = model;
+    const to_save= [
+        'ist_fin', 'first_vflag', 'finality', 'doc_spec', 'doc_code', 'purp',
+        'usl_ok', 'for_pom', 'rslt', 'ishod', 'visit_pol', 'visit_daystac', 'prof_k',
+        'ksk', 'ksg', 'sh', 'ds1', 'char1']
+    const method= 'POST';
+    const tal= { name: ''};
+
+    const tplSave = e => {
+      if ( tal.name.length < 3 ) {
+        model.save = 'Имя шаблона не менее 3 символов'
+        vuDialog.open();
+        return false;
+      };
+
+      tal.crd_num = tal.name.split(' ')[0];
+      delete tal.name;
+      to_save.map( k => tal[k] = talon[k] );
+        return moTalon.saveTalon(e, { talon: tal }, method, 'tpl').then( () => {
+           model.save = 'Шаблон сохранен';
+            vuDialog.open();
+        }).catch(err=> {
+        model.save = err;
+        vuDialog.open();
+      });
+    };
+    return {
+        view() {
+            return [m('.pure-u-6-24', {style: "margin-top: 0px;"},
+                m('input.fname[name="ntpl"][placeholder="Имя шаблона"]',
+                    {value: tal.name, onblur: e => tal.name = e.target.value, style: "font-size: 1.1em"}
+                )),
+                m('.pure-u-12-24', {style: "margin-top: 5px;"},
+                    m('button.pure-button.pure-button-primary[type="button"]',
+                        {style: "font-size: 1.1em", onclick: tplSave},
+                        "Сохранить как шаблон")
+                )
+            ];
+        }
+    };
+}
+
+
 
 const num_fields= ['mek','visit_pol', 'pol_days', 'visit_home', 'home_days',
   'visit_homstac', 'visit_daystac', 'days_at_homstac', 'days_at_daystac',
@@ -294,7 +331,7 @@ const talForm = function (vnode) {
     return m(".pure-u-18-24", [
 		m("form.pure-form.pure-form-stacked.tcard", { style: "font-size: 1.2em;",
            id: "talon", oncreate: forTabs, onsubmit: talonSave}, [
-			m('fieldset', [ talNum(tal),  talTpl(),
+			m('fieldset', [ talNum(tal),  get_tpl(tal),
         //
         m(".pure-g", [
           m(".pure-u-4-24", tof('open_date', tal)),
@@ -378,15 +415,17 @@ const talForm = function (vnode) {
         ]),
 
       ]),
-      m('fieldset', { style: "padding-left: 0%;" }, [
-		m('.pure-u-3-24', { style: "margin-top: 5px;" },
-        m('button.pure-button.pure-button-primary[type="submit"]',
-            { style: "font-size: 1.1em", disabled: _notEdit(tal)
-              //onclick: talonSave
-            },
-         "Сохранить" )
-        )
-      ]) 
+      ! _notEdit(tal) ? m('fieldset', { style: "padding-left: 0%;" }, [
+		m('.pure-g', [
+          m('.pure-u-4-24', { style: "margin-top: 5px;" },
+            m('button.pure-button.pure-button-primary[type="submit"]',
+              { style: "font-size: 1.1em" } , // disabled: _notEdit(tal) },
+              "Сохранить" ),
+          ),
+          m( saveTpl, { model: model } )
+        ]) // --pure-g
+      ]) : '' // -- fieldset
+
     ])//- form --
   ]); //- 18-24 -
  } // view
