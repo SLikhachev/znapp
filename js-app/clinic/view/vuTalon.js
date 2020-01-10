@@ -16,38 +16,62 @@ import { talDs } from './vuTalDs.js';
 import { talPolis } from './vuTalPolis';
 import { talNum, _notEdit, dupper } from './vuClinic'; //tal number
 
-const get_tpl = (tal) => {
+const tpl_to_save= [
+        'ist_fin', 'first_vflag', 'finality', 'doc_spec', 'doc_code', 'purp',
+        'usl_ok', 'for_pom', 'rslt', 'ishod', 'visit_pol', 'visit_daystac', 'prof_k',
+        'ksk', 'ksg', 'sh', 'ds1', 'char1'];
 
+const applyTpl = function(vnode) {
+  const { model } = vnode.attrs;
+  const { talon } = model;
+  const tpl = {id: ""};
   const tplApply = e=> {
-    console.log( tpl['name']);
+    if ( !tpl.id )
+      return false;
+    const _model = {
+        url: `${restClinic.talonz_clin_tpl.url}${tpl.id }`,
+        order_by: restClinic.talonz_clin_tpl.order_by
+    };
+    //console.log(_model.url.toString());
+    return moModel.getList(_model).then( (t)=>{
+      if ( ! t || _model.list.length === 0 ) {
+          model.error = 'Нет такого шаблона';
+          vuDialog.open();
+      } else {
+        const tal= _model.list[0];
+        tpl_to_save.map( k=> talon[k] = tal[k] );
+      }
+    }).catch(() => {
+      model.error= _model.error;
+      vuDialog.open();
+    })
   };
-  const _tpl_name = e=> { tpl['name'] = e.target.value; console.log( tpl['name'] )};
 
-  return m('.pure-g', [
-    m(".pure-u-1-5", [
-      //m('label', { for: "tpl"}, ""),
-      m('select[name="stpl"]', { onchange: _tpl_name }, [//e=>  tpl.name= e.target.value }, [
-        m('option[value=""]', "Шаблон талона"),
-          //data.get('smo_local').map(s=> m('option', {value: s.code}, s.short_name))
-        m('option[value="elf"]', "Елфимова"),
-        m('option[value="les"]', "Лештаев"),
-      ]),
-    ]),
-     m(".pure-u-1-5",
-       m('button.pure-button.pure-button[type="button"]',
-        { style: "margin-top: 0.3em", onclick: tplApply, disabled: _notEdit(tal)},
-        "Применить" )
-     ),
-  ]);
+  return {
+      view() {
+          return m('.pure-g', [
+              m(".pure-u-1-5", [
+                  //m('label', { for: "tpl"}, ""),
+                  m('select[name="stpl"]', {value: tpl.id, onchange: e => tpl.id = e.target.value}, [
+                      m('option[value=""]', "Шаблон талона"),
+                      talonOpt.data.get('talonz_clin_tpl').map(s=> m('option', {value: s.tal_num}, s.crd_num))
+                      //m('option[value="elf"]', "Елфимова"),
+                      //m('option[value="les"]', "Лештаев"),
+                  ]),
+              ]),
+              m(".pure-u-1-5",
+                  m('button.pure-button.pure-button[type="button"]',
+                      {style: "margin-top: 0.3em", onclick: tplApply},
+                      "Применить шаблон")
+              ),
+          ]);
+      }
+  }
 };
 
 const saveTpl = function (vnode) {
     const { model } = vnode.attrs;
     const { talon } = model;
-    const to_save= [
-        'ist_fin', 'first_vflag', 'finality', 'doc_spec', 'doc_code', 'purp',
-        'usl_ok', 'for_pom', 'rslt', 'ishod', 'visit_pol', 'visit_daystac', 'prof_k',
-        'ksk', 'ksg', 'sh', 'ds1', 'char1']
     const method= 'POST';
     const tal= { name: ''};
 
@@ -60,7 +84,7 @@ const saveTpl = function (vnode) {
 
       tal.crd_num = tal.name.split(' ')[0];
       delete tal.name;
-      to_save.map( k => tal[k] = talon[k] );
+      tpl_to_save.map( k => tal[k] = talon[k] );
         return moTalon.saveTalon(e, { talon: tal }, method, 'tpl').then( () => {
            model.save = 'Шаблон сохранен';
             vuDialog.open();
@@ -331,7 +355,7 @@ const talForm = function (vnode) {
     return m(".pure-u-18-24", [
 		m("form.pure-form.pure-form-stacked.tcard", { style: "font-size: 1.2em;",
            id: "talon", oncreate: forTabs, onsubmit: talonSave}, [
-			m('fieldset', [ talNum(tal),  get_tpl(tal),
+			m('fieldset', [ talNum(tal),  m(applyTpl,  {model: model}),
         //
         m(".pure-g", [
           m(".pure-u-4-24", tof('open_date', tal)),

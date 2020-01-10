@@ -17,6 +17,9 @@ export const restClinic = {
     // now current polis in talon inclided
     //get_polis: { url:"rpc/get_tal_polis", method: "POST" },
     para_clin: { url: "para_clin"},
+    // talons templates
+    get_talon_tpls: { url: "talonz_clin_tpl?select=tal_num,crd_num", order_by: "tal_num" },
+    talonz_clin_tpl: { url: "talonz_clin_tpl?tal_num=eq.", order_by: "tal_num"}
 };
 
 export const clinicApi = {
@@ -26,7 +29,9 @@ export const clinicApi = {
     card_add:"/cards/0", // maybe /cards/0
     talons: "/talons",
     talon_id: "/talons/:tal/:crd",
-    talon_add: "/talons/0/" //crd adds by click event
+    talon_add: "/talons/0/", //crd adds by click event
+
+    talon_tpl: "/talon_tpl",
 };
 
 export const clinicMenu = { subAppMenu: {
@@ -39,5 +44,8 @@ export const clinicMenu = { subAppMenu: {
     nref: [`#!${clinicApi.talons}`, "Визиты"],
   },
 
+  tal_tpl:  {
+      nref: [`#!${clinicApi.talon_tpl}`, "Шаблоны"]
+  }
 }
 };

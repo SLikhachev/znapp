@@ -114,6 +114,7 @@ export const moModel = {
     }).catch(function(err) { 
       //console.log(err);
       model.error = errMsg(err);
+      return false;
     });
   },
   // :: Object -> undef
@@ -139,11 +140,14 @@ export const moModel = {
     // order should preserved
     return Promise.all(data).then( (lists) => {
       model.data.clear(); // = new Map();
-      
+      let key;
       for ( let el of model.options.entries() ) {
         // entries [ idx, value ]
         if ( ! Boolean( lists[ el[0] ] ) ) continue; // no data for this option
-        model.data.set( el[1].url, lists[ el[0] ]); // el[1] option object
+        key= el[1].url;
+        if ( key.includes('?') ) // only table name as key, ignore all rest query
+          key = el[1].url.split('?')[0]
+        model.data.set( key, lists[ el[0] ]); // el[1] option object
       }
       //window.localStorage.setItem(model.opt_name, model.data);
       //model.data = _.zipObject( model.options, lists);

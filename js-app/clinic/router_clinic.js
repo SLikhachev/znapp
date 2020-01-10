@@ -13,6 +13,7 @@ import { vuCard } from './view/vuCard.js';
 import { moTalon, talonOpt } from './model/moTalons.js';
 import { vuTalonsList } from './view/vuTalonsList.js';
 import { vuTalon } from './view/vuTalon.js';
+import { vuTalonsTpl }  from './view/vuTalonsTpl.js';
 
 //m.route(document.getElementById('content'), "/", {
 m.route(document.body, "/", {
@@ -54,6 +55,12 @@ m.route(document.body, "/", {
         return m(vuMain, clinicMenu, vnode );
       }
   },
-  
+
+  [clinicApi.talon_tpl]: {
+    render : function() {
+        return m(vuMain, clinicMenu, m(vuTalonsTpl) );
+      }
+  },
+  }
 });
 
