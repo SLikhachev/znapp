@@ -19,19 +19,25 @@ export const restClinic = {
     para_clin: { url: "para_clin"},
     // talons templates
     get_talon_tpls: { url: "talonz_clin_tpl?select=tal_num,crd_num", order_by: "tal_num" },
+    talon_tpls_list: { url: "talonz_clin_tpl?talon_type=gt.0", order_by: "tal_num"},
     talonz_clin_tpl: { url: "talonz_clin_tpl?tal_num=eq.", order_by: "tal_num"}
+
 };
 
 export const clinicApi = {
     root: "/",
+
     cards: "/cards",
     card_id: "/cards/:crd",
     card_add:"/cards/0", // maybe /cards/0
+
     talons: "/talons",
     talon_id: "/talons/:tal/:crd",
     talon_add: "/talons/0/", //crd adds by click event
 
-    talon_tpl: "/talon_tpl",
+    talons_tpl: "/talons_tpl",
+    tal_tpl_id : "/talons_tpl/:tpl",
+    tal_tpl_add : "/talons_tpl/:0",
 };
 
 export const clinicMenu = { subAppMenu: {
@@ -44,8 +50,8 @@ export const clinicMenu = { subAppMenu: {
     nref: [`#!${clinicApi.talons}`, "Визиты"],
   },
 
-  tal_tpl:  {
-      nref: [`#!${clinicApi.talon_tpl}`, "Шаблоны"]
+  talons_tpl:  {
+      nref: [`#!${clinicApi.talons_tpl}`, "Шаблоны"]
   }
 }
 };

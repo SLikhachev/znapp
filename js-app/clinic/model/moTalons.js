@@ -41,14 +41,17 @@ export const moTalonsList = {
     return `${moTalonsList._pmu}${moTalonsList._year.slice(2)}`;
   },
   
-  markDelete(event, num) {
+  markDelete(event, num, method='PATCH', tpl='') {
     let pg_rest =  _schema('pg_rest');
-    let table= moTalonsList.talTable();
+    let table= moTalonsList.talTable(tpl);
     let url=`${pg_rest}${table}?tal_num=eq.${num}`;
+    const body={};
+    if ( method === 'PATCH')
+      body.talon_type= 0;
     return m.request({
       url: url,
-      method: 'PATCH',
-      body: { talon_type: 0 },
+      method: method,
+      body: body,
     }).then( () => {
       return num;
     }).catch( err => {

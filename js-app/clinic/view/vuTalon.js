@@ -446,7 +446,7 @@ const talForm = function (vnode) {
               { style: "font-size: 1.1em" } , // disabled: _notEdit(tal) },
               "Сохранить" ),
           ),
-          m( saveTpl, { model: model } )
+          //m( saveTpl, { model: model } )
         ]) // --pure-g
       ]) : '' // -- fieldset
 

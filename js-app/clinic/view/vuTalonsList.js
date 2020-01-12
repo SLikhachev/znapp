@@ -112,9 +112,25 @@ const talonFind = function(vnode){
   }; //return
 }
 // clojure
+
+export const hdrMap= function(hdr){
+    const sort= '';
+    return m('tr', [
+      Object.keys(hdr).map( (column) => {
+        let field = hdr[column];
+        return field.length > 1 ? m('th.sortable',
+          { data: column, onclick: sort },
+          [field[0], m('i.fa.fa-sort.pl10')]
+        ) : m('th', field[0]);
+      }),
+      m('th', "Удалить")
+    ]);
+};
+
+
 export const vuTalonsList = function (vnode) {
-  
-  const talonz_hdr = {
+
+  const hdr = {
     crd_num: ['Карта', 'link'],
     fam: ['ФИО'],
     tal_num: ['Талон', 'link'],
@@ -140,30 +156,14 @@ export const vuTalonsList = function (vnode) {
     }
     return false;
   };
-  
-  const sort= '';
-  
-  const hdrMap= function(){
-    return m('tr', [
-      Object.keys(talonz_hdr).map( (column) => {
-        let field = talonz_hdr[column];
-        return field.length > 1 ? m('th.sortable',
-          { data: column, onclick: sort },
-          [field[0], m('i.fa.fa-sort.pl10')]
-        ) : m('th', field[0]);
-      }),
-      m('th', "Удалить")
-    ]);
-  };
-  
+
   const listMap= function(s) {
     let fio = getFIO(s);
     let tal= s.tal_num, crd= s.crd_num;
     return m('tr', [
-      Object.keys(talonz_hdr).map( (column) => {
-        //console.log(talonz_hdr[column]);
+      Object.keys(hdr).map( (column) => {
         let cell = column === 'fam' ? fio : s[column];
-        let td = talonz_hdr[column].length === 2 ?
+        let td = hdr[column].length === 2 ?
         /*
         m('td.choice.blue', {
           //data:  cell,
@@ -195,7 +195,7 @@ export const vuTalonsList = function (vnode) {
           m('h1.blue', {style: "font-size: 1.5em;"},
             `${Number( model.list[0].recount)} записей в таблице`) :
           m('table.pure-table.pure-table-bordered[id=find_table]', [
-            m('thead', hdrMap() ),
+            m('thead', hdrMap(hdr) ),
             m('tbody', [model.list.map( listMap )] )
           ]) : m('h1.blue', {style: "font-size: 1.5em;"}, "Нет таких записей")
       ] : m(vuLoading); 
