@@ -37,7 +37,7 @@ export const clinicApi = {
 
     talons_tpl: "/talons_tpl",
     tal_tpl_id : "/talons_tpl/:tpl",
-    tal_tpl_add : "/talons_tpl/:0",
+    tal_tpl_add : "/talons_tpl/0",
 };
 
 export const clinicMenu = { subAppMenu: {

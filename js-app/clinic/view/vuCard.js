@@ -116,8 +116,13 @@ export const getName = function(data, val, key, prop, name, text, first_word=fal
   
 
 export const toSaveCard= card=> {
-    //dost
     
+    // card number
+    card.crd_num= card.crd_num.replace(" ", ""); // trim spaces anywhere
+    if (! card.crd_num )
+      return ('Пустой номер карты');
+    
+    //dost
     let dost= checkDost(card);
     if ( Boolean(dost) )
       return dost;

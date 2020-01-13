@@ -152,11 +152,12 @@ const pmuForm = function (vnode) {
                 }),
               ]),
               ['ccode', 'grup'].map( f => m(".pure-u-1-4", ptf(f, _pmu) ) ),
+              _disabled(talon) ? '' :
               m(".pure-u-1-5", 
                 m('button.pure-button.pure-button-primary[type="submit"]',
-                  {style: 'margin-top: 1.7em', disabled: _disabled(talon) },
+                  {style: 'margin-top: 1.7em' }, // , disabled: _disabled(talon) },
                   "Добавить")
-              )
+              ) 
             ]))
           ) //form
         )), // u-1-2, g

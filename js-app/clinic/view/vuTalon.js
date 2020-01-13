@@ -69,48 +69,6 @@ const applyTpl = function(vnode) {
   }
 };
 
-const saveTpl = function (vnode) {
-    const { model } = vnode.attrs;
-    const { talon } = model;
-    const method= 'POST';
-    const tal= { name: ''};
-
-    const tplSave = e => {
-      if ( tal.name.length < 3 ) {
-        model.save = 'Имя шаблона не менее 3 символов'
-        vuDialog.open();
-        return false;
-      };
-
-      tal.crd_num = tal.name.split(' ')[0];
-      delete tal.name;
-      tpl_to_save.map( k => tal[k] = talon[k] );
-        return moTalon.saveTalon(e, { talon: tal }, method, 'tpl').then( () => {
-           model.save = 'Шаблон сохранен';
-            vuDialog.open();
-        }).catch(err=> {
-        model.save = err;
-        vuDialog.open();
-      });
-    };
-    return {
-        view() {
-            return [m('.pure-u-6-24', {style: "margin-top: 0px;"},
-                m('input.fname[name="ntpl"][placeholder="Имя шаблона"]',
-                    {value: tal.name, onblur: e => tal.name = e.target.value, style: "font-size: 1.1em"}
-                )),
-                m('.pure-u-12-24', {style: "margin-top: 5px;"},
-                    m('button.pure-button.pure-button-primary[type="button"]',
-                        {style: "font-size: 1.1em", onclick: tplSave},
-                        "Сохранить как шаблон")
-                )
-            ];
-        }
-    };
-}
-
-
-
 const num_fields= ['mek','visit_pol', 'pol_days', 'visit_home', 'home_days',
   'visit_homstac', 'visit_daystac', 'days_at_homstac', 'days_at_daystac',
   //'npr_mo', 'npr_spec', 'hosp_mo',
@@ -462,7 +420,7 @@ const talMain = function (vnode) {
     view () {
       //console.log('talMain view');
       return m(".pure-g", {style: "padding-left: 4em;"}, [
-        m(talCrd, {model: model} ), // only patch
+        !model.tpl ? m(talCrd, {model: model} ): '', // only patch
         m(talForm, {model: model, method: method } )
       ]);
     }
