@@ -90,7 +90,8 @@ export const moTalon = {
       polis: null,
       tosave: null,
       error: null,
-      save: null
+      save: null,
+      tpl: null
     };
     return model;
   },
@@ -184,15 +185,18 @@ export const moTalon = {
   
   saveTalon(event, model, method, tpl='') {
     //console.log(event);
-    if (tpl !== 'tpl') event.target.parentNode.classList.add('disable');
-    let to_save= Object.assign({}, model.talon);
-    let pg_rest =  _schema('pg_rest');
-    let tal_num;
-    //let { tal_num } = to_save;
+    //if (tpl !== 'tpl')
+    event.target.parentNode.classList.add('disable');
+    const to_save= Object.assign({}, model.talon);
+    const pg_rest =  _schema('pg_rest');
+    //let tal_num;
+    const { tal_num } = to_save;
+    /*
     if (tpl === 'tpl')
       tal_num = to_save.tal_tpl;
     else
       tal_num = to_save.tal_num;
+    */
     let table= moTalonsList.talTable(tpl);
     let url=`${pg_rest}${table}`;
     if ( Boolean(tal_num) ) {
@@ -212,11 +216,13 @@ export const moTalon = {
       body: to_save,
       headers: {Prefer: 'return=representation'}
     }).then( res => {
-      if (tpl !== 'tpl') event.target.parentNode.classList.remove('disable');
+      //if (tpl !== 'tpl')
+      event.target.parentNode.classList.remove('disable');
       return res;
     }).catch( err => {
       //model.save = { err: true, msg: errMsg(err) };
-      if (tpl !== 'tpl') event.target.parentNode.classList.remove('disable');
+      //if (tpl !== 'tpl')
+      event.target.parentNode.classList.remove('disable');
       throw ( errMsg (err) );
     });
   },

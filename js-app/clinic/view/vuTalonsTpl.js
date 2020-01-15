@@ -1,10 +1,11 @@
 // src/clinic/view/vuTalonsTpl.js
 
 import { vuLoading, vuTheader } from '../../apps/view/vuApp.js';
-import { vuDialog } from '../../apps/view/vuDialog.js';
+//import { vuDialog } from '../../apps/view/vuDialog.js';
 import { moModel } from '../../apps/model/moModel.js';
 import { restClinic, clinicApi } from '../clinicApi.js';
-import { moTalonsList,  } from '../model/moTalons.js';
+import { moTalonsList, talonOpt } from '../model/moTalons.js';
+import { tabsView } from './vuTabs.js';
 import { hdrMap } from './vuTalonsList';
 import { talMain } from './vuTalon';
 import { talDs } from './vuTalDs.js';
@@ -136,79 +137,37 @@ export const vuTalonsTplList = function (vnode) {
   };
 }
 
-const saveTpl = function (vnode) {
-    const { model } = vnode.attrs;
-    const { talon } = model;
-    const method= 'POST';
-    const tal= { name: ''};
-
-    const tplSave = e => {
-      if ( tal.name.length < 3 ) {
-        model.save = 'Имя шаблона не менее 3 символов'
-        vuDialog.open();
-        return false;
-      };
-
-      tal.crd_num = tal.name.split(' ')[0];
-      delete tal.name;
-      tpl_to_save.map( k => tal[k] = talon[k] );
-        return moTalon.saveTalon(e, { talon: tal }, method, 'tpl').then( () => {
-           model.save = 'Шаблон сохранен';
-            vuDialog.open();
-        }).catch(err=> {
-        model.save = err;
-        vuDialog.open();
-      });
-    };
-    return {
-        view() {
-            return [m('.pure-u-6-24', {style: "margin-top: 0px;"},
-                m('input.fname[name="ntpl"][placeholder="Имя шаблона"]',
-                    {value: tal.name, onblur: e => tal.name = e.target.value, style: "font-size: 1.1em"}
-                )),
-                m('.pure-u-12-24', {style: "margin-top: 5px;"},
-                    m('button.pure-button.pure-button-primary[type="button"]',
-                        {style: "font-size: 1.1em", onclick: tplSave},
-                        "Сохранить как шаблон")
-                )
-            ];
-        }
-    };
-}
-
 export const vuTalonTpl = function(vnode) {
 
-  let { tpl }= vnode.attrs;
-  let model= Object.create( {} ); //;
+  const { tpl }= vnode.attrs;
+  const model= Object.create({ tpl: 'tpl' }); //;
   
-  let tabs= ['Талон', 'ДС', ];
-  let conts= [talMain, talDs];
+  const tabs= ['Талон', 'ДС', ];
+  const conts= [talMain, talDs];
   model.word= 'Шаблоны';
-  let t= Number(tpl);
-  const method, _model;
-  
-  if( isNaN(t) || t === 0 ) {
-    method= "POST";
-    model.talon= Object.create({ tpl: 'tpl' });
-  } else {
-    method= "PATCH";
-    _model = {
+  const t= Number(tpl);
+  const method=  isNaN( t ) || t === 0 ? "POST" : "PATCH";
+ 
+  if (method === "PATCH") { 
+    const _model = {
       url: `${restClinic.talon_clin_tpl.url}${tpl}`,
       order_by: restClinic.talon_clin_tpl.order_by
-    };  
+    };
     moModel.getList(_model).then( (t)=>{
-      if ( ! t || _model.list.length === 0 ) {
+      if ( ! t || _model.list && _model.list.length === 0 ) {
         model.error = 'Нет таких шаблонов';
         //vuDialog.open();
       } else {
         model.talon = _model.list[0];
       }
-    }).catch( ()=> { model.error= _model.error; //vuDialog.open(); } );
+    }).catch( ()=> { model.error= _model.error; }); //vuDialog.open(); } );
+  } else {
+    model.talon= Object.create({ });
   }
   
   return {
     view () {
-      return model.error ? [ m(".error", model.error) ] :
+      return model.error ? m(".error", model.error) :
         talonOpt.data.size === 0  ? m(vuLoading) : 
           m(tabsView, {model: model, tabs: tabs, conts: conts, method: method});
     }

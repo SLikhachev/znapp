@@ -69,11 +69,16 @@ const talTpl = () => {
   )
 }
 
-export const talNum= tal=> 
-  m('legend', `Талон № ${_Num(tal.tal_num)}`,
-    m('span', {style: "padding: 3em"}, _notEdit(tal) ? 'закрыт': 'открыт') , `Год ${moTalonsList._year}`,
-  );
 
+const _Name = name=> name ? name: 'новый';
+const tplName = (tal) => m('legend', `Шаблон ${_Name(tal.crd_num)}`);
+
+export const talNum= function(tal, tpl='') { 
+  return tpl ? tplName(tal) :
+    m('legend', `Талон № ${_Num(tal.tal_num)}`,
+      m('span', {style: "padding: 3em"}, _notEdit(tal) ? 'закрыт': 'открыт') , `Год ${moTalonsList._year}`
+  );
+}
 
 
 String.prototype.transLit = String.prototype.translit || function () {

@@ -66,8 +66,48 @@ const applyTpl = function(vnode) {
               ),
           ]);
       }
-  }
+  };
 };
+
+const saveTpl = function (vnode) {
+    const { model, method } = vnode.attrs;
+    const { talon } = model;
+    //const method= 'POST';
+    const tpl= { name: talon.crd_num};
+
+    const tplSave = e => {
+      if ( tpl.name.length < 3 ) {
+        model.save = 'Имя шаблона не менее 3 символов'
+        vuDialog.open();
+        return false;
+      };
+
+      tpl.crd_num = tpl.name.split(' ')[0];
+      delete tpl.name;
+      tpl_to_save.map( k => tpl[k] = talon[k] );
+        return moTalon.saveTalon(e, { talon: tpl }, method, 'tpl').then( () => {
+           model.save = 'Шаблон сохранен';
+           vuDialog.open();
+        }).catch(err=> {
+        model.save = err;
+        vuDialog.open();
+      });
+    };
+    return {
+        view() {
+            return [m('.pure-u-6-24', {style: "margin-top: 0px;"},
+                m('input.fname[name="ntpl"][placeholder="Имя шаблона"]',
+                    {value: tpl.name, onblur: e => tpl.name = e.target.value, style: "font-size: 1.1em"}
+                )),
+                m('.pure-u-12-24', {style: "margin-top: 5px;"},
+                    m('button.pure-button.pure-button-primary[type="submit"]',
+                        {style: "font-size: 1.1em", onclick: tplSave},
+                        "Сохранить шаблон")
+                )
+            ];
+        }
+    };
+}
 
 const num_fields= ['mek','visit_pol', 'pol_days', 'visit_home', 'home_days',
   'visit_homstac', 'visit_daystac', 'days_at_homstac', 'days_at_daystac',
@@ -92,8 +132,8 @@ const toSaveTalon= async function (tal, check) {
   tal.for_pom= Boolean(tal.urgent) ? 2: 3;
 
   // Doct Oms
-  let e1= { fin: 'Укажите способ оплаты ', purp: 'Укажите цель ',  doct: 'Укажите доктора '};
-  let r1= Object.keys(e1).map( p=> !check[p] ? e1[p] : '').join('');
+  const e1= { fin: 'Укажите способ оплаты ', purp: 'Укажите цель ',  doct: 'Укажите доктора '};
+  const r1= Object.keys(e1).map( p=> !check[p] ? e1[p] : '').join('');
   if ( Boolean(r1) )
     return r1;
 
@@ -104,8 +144,8 @@ const toSaveTalon= async function (tal, check) {
       return 'Укажите либо СМО либо СМО ОКАТО';
     
   // ambul - stac days together
-  let amb=  Boolean (Number(tal.visit_pol) + Number(tal.visit_home) );
-  let ds=  Boolean (Number(tal.visit_daystac) + Number(tal.visit_homstac));
+  const amb=  Boolean (Number(tal.visit_pol) + Number(tal.visit_home) );
+  const ds=  Boolean (Number(tal.visit_daystac) + Number(tal.visit_homstac));
   //console.log( amb, ds);
   if ( !( amb || ds ) )
     return 'Укажите количество посещений';
@@ -117,7 +157,7 @@ const toSaveTalon= async function (tal, check) {
     tal.usl_ok= 2;
     
   // napr ambul, stac together
-  let cons= Boolean(tal.naprlech), hosp= Boolean(tal.nsndhosp);
+  const cons= Boolean(tal.naprlech), hosp= Boolean(tal.nsndhosp);
   // no napr
   // here not specific from dcons and not attached and not urgent and no napravl
   if ( dcons.find( d=> d == check.doct) && !check.att  &&  !tal.urgent && !cons )
@@ -133,8 +173,9 @@ const toSaveTalon= async function (tal, check) {
   if (cons || hosp) {
     mo= cons ? Number(tal.npr_mo): Number(tal.hosp_mo);
     spec= cons ? Number(tal.npr_spec): 0;
-    let _mo_url= `${restSprav.mo_local.url}?scode=eq.${mo}`;
-    let _spec_url= `${restSprav.doc_spec.url}?spec=eq.${spec}`;
+    const mo_local= restSprav.mo_local.url, doc_spec= restSprav.doc_spec.url;
+    const _mo_url= `${mo_local}?scode=eq.${mo}`;
+    let _spec_url= `${doc_spec}?spec=eq.${spec}`;
     let opt= [ { url: _mo_url } ];
     if ( cons ) {
         if (!tal.npr_date)
@@ -146,15 +187,15 @@ const toSaveTalon= async function (tal, check) {
         if (!tal.npr_date)
             tal.npr_date = tal.close_date;
     }
-    let _mdl= { options: opt, data: new Map() };
+    const _mdl= { options: opt, data: new Map() };
     try {
       let r= '';
       let t= await moModel.getData(_mdl);
       //console.log(_mdl);
-      if (_mdl.data.get(_mo_url).length === 0)
+      if (_mdl.data.get(mo_local).length === 0)
         r += 'Неверный код МО направления ';
       if (cons)
-        if (_mdl.data.get(_spec_url).length === 0)
+        if (_mdl.data.get(doc_spec).length === 0)
           r += 'Неверный код Специалиста направления';
       //console.log(r);
       if ( Boolean (r) )
@@ -194,9 +235,10 @@ const card_fileds = [
   // first_word - out only first word from named column
 const talForm = function (vnode) {
   
-  let { model, method }= vnode.attrs;
-  let tal= model.talon;
-  let card= model.card
+  const { model, method }= vnode.attrs;
+  const { tpl } = model;
+  let tal= model.talon; // reassign later in saveTalon
+  const card= model.card ? model.card : {};
   //console.table(tal);
   const data= talonOpt.data;
   //console.log(data);
@@ -217,9 +259,9 @@ const talForm = function (vnode) {
   const doc_fam= ()=> {
     let doc;
     check.fin= data.get('ist_fin').find( f=> tal.ist_fin == f.id ) ? true: false;
-    let purp= get_name(tal.purp, 'purpose', 'id', 'name', 'Цель?', true);
+    const purp= get_name(tal.purp, 'purpose', 'id', 'name', 'Цель?', true);
     check.purp= purp.tag == 'span.red' ? false: true;
-    let doct= data.get('doctor').find( d=> d.spec == tal.doc_spec && d.code == tal.doc_code );
+    const doct= data.get('doctor').find( d=> d.spec == tal.doc_spec && d.code == tal.doc_code );
     //check.doct= true;
     if ( Boolean(doct) && Boolean(doct.family) ) {
         doc = m('span', doct.family);
@@ -236,9 +278,8 @@ const talForm = function (vnode) {
   //ishod ()
   // rslt 
   const set_data= (e, attr, table, prop)=> {
-    let ch;
     if (Boolean(e.target.value )) {
-      ch = Array.from(data.get(table)).find(item => item[prop] == e.target.value.split('.')[0]);
+      const ch = Array.from(data.get(table)).find(item => item[prop] == e.target.value.split('.')[0]);
       if (Boolean(ch)) {
         tal[attr]= ch[prop];
         e.target.value= ch[prop];
@@ -279,25 +320,26 @@ const talForm = function (vnode) {
   
   const ds_show= tds=> {
     //console.log(tds);
-    let dsl= ds1_model.list ? ds1_model.list: [];
-    let ds= dsl.find(d=> tds == d.code.trim() );
+    const dsl= ds1_model.list ? ds1_model.list: [];
+    const ds= dsl.find(d=> tds == d.code.trim() );
     //console.log(ds);
     return ds ? ds.name: ''; // m('span.red', ' Диагноз? ');
   };
 
   const talonSave = async function(e) {
+    //console.log('save --');
     e.preventDefault();
     model.save= await toSaveTalon(tal, check);
-    //console.log( model.save );
+    //console.log( 'save --', model.save );
     if ( Boolean( model.save ) ) {
       vuDialog.open();
       return false;
     }
-    //console.log(tal);
+    //console.log('save --', model.save);
     //return false;
     //model.save= null;
     return moTalon.saveTalon(e, model, method).then(res=>{
-       let t= res[0]; //r= `${clinicApi.talons}/${t.tal_num}/${t.crd_num}`;
+       const t= res[0]; //r= `${clinicApi.talons}/${t.tal_num}/${t.crd_num}`;
        tal= Object.assign(tal, t);
        m.route.set(clinicApi.talon_id, { tal: t.tal_num, crd: t.crd_num });
        //return true;
@@ -313,7 +355,7 @@ const talForm = function (vnode) {
     return m(".pure-u-18-24", [
 		m("form.pure-form.pure-form-stacked.tcard", { style: "font-size: 1.2em;",
            id: "talon", oncreate: forTabs, onsubmit: talonSave}, [
-			m('fieldset', [ talNum(tal),  m(applyTpl,  {model: model}),
+			m('fieldset', [ talNum(tal, tpl),  tpl ? '': m(applyTpl,  {model: model}),
         //
         m(".pure-g", [
           m(".pure-u-4-24", tof('open_date', tal)),
@@ -395,18 +437,16 @@ const talForm = function (vnode) {
             data_list('travma', 'travma_type')
           ]),
         ]),
-
-      ]),
-      ! _notEdit(tal) ? m('fieldset', { style: "padding-left: 0%;" }, [
-		m('.pure-g', [
+      ]), tpl ? m( saveTpl, { model: model, method: method } ) :
+      _notEdit(tal) ? '' : m('fieldset', { style: "padding-left: 0%;" },
+        m('.pure-g',
           m('.pure-u-4-24', { style: "margin-top: 5px;" },
             m('button.pure-button.pure-button-primary[type="submit"]',
-              { style: "font-size: 1.1em" } , // disabled: _notEdit(tal) },
-              "Сохранить" ),
-          ),
-          //m( saveTpl, { model: model } )
-        ]) // --pure-g
-      ]) : '' // -- fieldset
+              { style: "font-size: 1.1em" }, // disabled: _notEdit(tal) },
+              "Сохранить" )
+          )
+        ) // --pure-g
+      ) // -- fieldset
 
     ])//- form --
   ]); //- 18-24 -
@@ -414,8 +454,8 @@ const talForm = function (vnode) {
  }
 };
 
-const talMain = function (vnode) {
-  let { model, method }= vnode.attrs;
+export const talMain = function (vnode) {
+  const { model, method }= vnode.attrs;
   return {
     view () {
       //console.log('talMain view');
@@ -430,12 +470,12 @@ const talMain = function (vnode) {
 export const vuTalon = function(vnode) {
   //console.log(_mo());
 
-  let { tal, crd }= vnode.attrs;
-  let model= moTalon.getModel(); //;
-  let tabs= ['Талон', 'Направление', 'ДС', 'ПМУ', 'Полис на дату'];
-  let conts= [talMain, talNap, talDs, talPmu, talPolis];
+  const { tal, crd }= vnode.attrs;
+  const model= moTalon.getModel(); //;
+  const tabs= ['Талон', 'Направление', 'ДС', 'ПМУ', 'Полис на дату'];
+   conts= [talMain, talNap, talDs, talPmu, talPolis];
   model.word= 'Талоны';
-  let t= parseInt(tal);
+  const t= Number(tal);
   const method = isNaN(t) || t === 0 ? "POST": "PATCH";
   moTalon.getTalon(model, crd, tal );
   
