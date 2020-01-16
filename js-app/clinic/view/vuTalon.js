@@ -17,9 +17,10 @@ import { talPolis } from './vuTalPolis';
 import { talNum, _notEdit, dupper } from './vuClinic'; //tal number
 
 const tpl_to_save= [
-        'ist_fin', 'first_vflag', 'finality', 'doc_spec', 'doc_code', 'purp',
-        'usl_ok', 'for_pom', 'rslt', 'ishod', 'visit_pol', 'visit_daystac', 'prof_k',
-        'ksk', 'ksg', 'sh', 'ds1', 'char1'];
+  'tal_num', 'crd_num', 'talon_type',    
+  'ist_fin', 'first_vflag', 'finality', 'doc_spec', 'doc_code', 'purp',
+  'usl_ok', 'for_pom', 'rslt', 'ishod', 'visit_pol', 'visit_daystac', 'prof_k',
+  'ksk', 'ksg', 'sh', 'ds1', 'char1'];
 
 const applyTpl = function(vnode) {
   const { model } = vnode.attrs;
@@ -35,14 +36,14 @@ const applyTpl = function(vnode) {
     //console.log(_model.url.toString());
     return moModel.getList(_model).then( (t)=>{
       if ( ! t || _model.list.length === 0 ) {
-          model.error = 'Нет такого шаблона';
+          model.save = 'Нет такого шаблона';
           vuDialog.open();
       } else {
         const tal= _model.list[0];
         tpl_to_save.map( k=> talon[k] = tal[k] );
       }
     }).catch(() => {
-      model.error= _model.error;
+      model.save= _model.error;
       vuDialog.open();
     })
   };
@@ -71,24 +72,33 @@ const applyTpl = function(vnode) {
 
 const saveTpl = function (vnode) {
     const { model, method } = vnode.attrs;
-    const { talon } = model;
-    //const method= 'POST';
-    const tpl= { name: talon.crd_num};
-
+    let tpl = Object.assign({}, model.talon);
+   
+    tpl.name= tpl.crd_num;
+    console.log('- tosave -', tpl);
+    //let tpl= Object.assign({}, { name: talon.crd_num });
+    
     const tplSave = e => {
-      if ( tpl.name.length < 3 ) {
-        model.save = 'Имя шаблона не менее 3 символов'
+      e.preventDefault();
+      const _name = tpl.name.split(' ')[0];
+      if ( _name.length < 4 ) {
+        model.save = 'Имя шаблона не менее 4 символов без пробелов'
         vuDialog.open();
         return false;
-      };
-
-      tpl.crd_num = tpl.name.split(' ')[0];
+      } 
+       
+      tpl.crd_num = _name;
       delete tpl.name;
-      tpl_to_save.map( k => tpl[k] = talon[k] );
-        return moTalon.saveTalon(e, { talon: tpl }, method, 'tpl').then( () => {
-           model.save = 'Шаблон сохранен';
-           vuDialog.open();
+      const _tpl= {};
+      tpl_to_save.map( k => _tpl[k] = tpl[k] );
+        return moTalon.saveTalon(e, { talon: _tpl }, method, 'tpl').then( res => {
+          let _t= res[0];
+          //console.log(_t);
+          tpl= Object.assign(tpl, _t);
+          tpl.name= tpl.crd_num;
+          m.route.set(clinicApi.tal_tpl_id, { tpl: _t.tal_num });
         }).catch(err=> {
+        console.log('-- Tpl save Error -- ', err);
         model.save = err;
         vuDialog.open();
       });
@@ -100,7 +110,7 @@ const saveTpl = function (vnode) {
                     {value: tpl.name, onblur: e => tpl.name = e.target.value, style: "font-size: 1.1em"}
                 )),
                 m('.pure-u-12-24', {style: "margin-top: 5px;"},
-                    m('button.pure-button.pure-button-primary[type="submit"]',
+                    m('button.pure-button.pure-button-primary[type="button"]',
                         {style: "font-size: 1.1em", onclick: tplSave},
                         "Сохранить шаблон")
                 )
@@ -225,6 +235,29 @@ const card_fileds = [
 ];
 */
 
+const templateButton= (tpl, fn) => [m('.pure-u-6-24', {style: "margin-top: 0px;"},
+  m('input.fname[name="ntpl"][placeholder="Имя шаблона"]',
+    {value: tpl.name, onblur: e => tpl.name = e.target.value, style: "font-size: 1.1em"}
+  )),
+  m('.pure-u-12-24', {style: "margin-top: 5px;"},
+    m('button.pure-button.pure-button-primary[type="submit"]',
+      {style: "font-size: 1.1em", onclick: fn},
+      "Сохранить шаблон"
+    )
+  )
+];
+
+const talonButton= () => m('fieldset', { style: "padding-left: 0%;" },
+  m('.pure-g',
+    m('.pure-u-4-24', { style: "margin-top: 5px;" },
+      m('button.pure-button.pure-button-primary[type="submit"]',
+        { style: "font-size: 1.1em" }, // disabled: _notEdit(tal) },
+        "Сохранить"
+      )
+    )
+  ) // --pure-g
+) // -- fieldset
+
 //export const getName = function(data, val, key, prop, name, text, first_word=false) {
   // data - optional data MAP
   // val - string fofom input tag value
@@ -234,12 +267,17 @@ const card_fileds = [
   // text - String text to output if item not find
   // first_word - out only first word from named column
 const talForm = function (vnode) {
-  
   const { model, method }= vnode.attrs;
-  const { tpl } = model;
-  let tal= model.talon; // reassign later in saveTalon
+  const { tpl }= model;
+  let tal= model.talon;
+  if (!!tpl) {
+    //console.count('tpl Form');
+    tal.name= tal.crd_num;
+    //console.log('- tpl model-', model);
+  } else {
+    //console.count('tal Form');
+  }  
   const card= model.card ? model.card : {};
-  //console.table(tal);
   const data= talonOpt.data;
   //console.log(data);
   
@@ -326,27 +364,59 @@ const talForm = function (vnode) {
     return ds ? ds.name: ''; // m('span.red', ' Диагноз? ');
   };
 
-  const talonSave = async function(e) {
-    //console.log('save --');
-    e.preventDefault();
-    model.save= await toSaveTalon(tal, check);
-    //console.log( 'save --', model.save );
-    if ( Boolean( model.save ) ) {
-      vuDialog.open();
-      return false;
-    }
-    //console.log('save --', model.save);
-    //return false;
-    //model.save= null;
-    return moTalon.saveTalon(e, model, method).then(res=>{
+  const _save= function(e) {
+    return moTalon.saveTalon(e, model, method, tpl).then(res=>{
        const t= res[0]; //r= `${clinicApi.talons}/${t.tal_num}/${t.crd_num}`;
        tal= Object.assign(tal, t);
-       m.route.set(clinicApi.talon_id, { tal: t.tal_num, crd: t.crd_num });
-       //return true;
+       if (tpl !== 'tpl') m.route.set(clinicApi.talon_id, { tal: t.tal_num, crd: t.crd_num });
+       // m.route.set(clinicApi.tal_tpl_id, { tpl: _t.tal_num });
+       return true;
     }).catch(err=> {
       model.save = err;
       vuDialog.open();
     });
+  };
+
+  
+  const tplSave = e => {
+    e.preventDefault();
+    const _name = tal.name.split(' ')[0];
+    if ( _name.length < 4 ) {
+      model.save = 'Имя шаблона не менее 4 символов без пробелов'
+      vuDialog.open();
+      return false;
+    } 
+       
+    tal.crd_num = _name;
+    delete tal.name;
+    /*
+      const _tpl= {};
+      tpl_to_save.map( k => _tpl[k] = tpl[k] );
+        return moTalon.saveTalon(e, { talon: _tpl }, method, 'tpl').then( res => {
+          let _t= res[0];
+          //console.log(_t);
+          tpl= Object.assign(tpl, _t);
+          tpl.name= tpl.crd_num;
+          m.route.set(clinicApi.tal_tpl_id, { tpl: _t.tal_num });
+        }).catch(err=> {
+        console.log('-- Tpl save Error -- ', err);
+        model.save = err;
+        vuDialog.open();
+      });
+    };
+    */
+    return _save(e).then( () => tal.name= tal.crd_num  );
+  };
+  
+  const talonSave = async function(e) {
+    console.count('save talon');
+    e.preventDefault();
+    model.save= await toSaveTalon(tal, check);
+    if ( Boolean( model.save ) ) {
+      vuDialog.open();
+      return false;
+    }
+    return _save(e);
   }
   
   return {
@@ -354,7 +424,7 @@ const talForm = function (vnode) {
     //console.log('talForm view');
     return m(".pure-u-18-24", [
 		m("form.pure-form.pure-form-stacked.tcard", { style: "font-size: 1.2em;",
-           id: "talon", oncreate: forTabs, onsubmit: talonSave}, [
+           id: "talon", oncreate: forTabs, onsubmit: tpl ? tplSave: talonSave}, [
 			m('fieldset', [ talNum(tal, tpl),  tpl ? '': m(applyTpl,  {model: model}),
         //
         m(".pure-g", [
@@ -437,35 +507,32 @@ const talForm = function (vnode) {
             data_list('travma', 'travma_type')
           ]),
         ]),
-      ]), tpl ? m( saveTpl, { model: model, method: method } ) :
-      _notEdit(tal) ? '' : m('fieldset', { style: "padding-left: 0%;" },
-        m('.pure-g',
-          m('.pure-u-4-24', { style: "margin-top: 5px;" },
-            m('button.pure-button.pure-button-primary[type="submit"]',
-              { style: "font-size: 1.1em" }, // disabled: _notEdit(tal) },
-              "Сохранить" )
-          )
-        ) // --pure-g
-      ) // -- fieldset
-
+      ]), tpl ? templateButton(tal, tplSave): //m( saveTpl, { model: model, method: method } ) :
+      _notEdit(tal) ? '' : talonButton(),
     ])//- form --
   ]); //- 18-24 -
  } // view
  }
 };
 
+const talonForm= (vnode) => talForm(vnode);
+const templateForm = (vnode) => talForm(vnode);
+
 export const talMain = function (vnode) {
   const { model, method }= vnode.attrs;
+  //console.count('tal main');
+  //console.log(model);
   return {
     view () {
-      //console.log('talMain view');
-      return m(".pure-g", {style: "padding-left: 4em;"}, [
-        !model.tpl ? m(talCrd, {model: model} ): '', // only patch
-        m(talForm, {model: model, method: method } )
-      ]);
+      return m(".pure-g", {style: "padding-left: 4em;"},
+        model.tpl ? m(templateForm, { model: model, method: method } ): [
+        m(talCrd, {model: model} ),// only patch
+        m(talonForm, { model: model, method: method } ) ]
+      );
     }
   }
 };
+
 
 export const vuTalon = function(vnode) {
   //console.log(_mo());
@@ -473,7 +540,7 @@ export const vuTalon = function(vnode) {
   const { tal, crd }= vnode.attrs;
   const model= moTalon.getModel(); //;
   const tabs= ['Талон', 'Направление', 'ДС', 'ПМУ', 'Полис на дату'];
-   conts= [talMain, talNap, talDs, talPmu, talPolis];
+  const conts= [talMain, talNap, talDs, talPmu, talPolis];
   model.word= 'Талоны';
   const t= Number(tal);
   const method = isNaN(t) || t === 0 ? "POST": "PATCH";

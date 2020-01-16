@@ -4,7 +4,7 @@ import { vuLoading, vuTheader } from '../../apps/view/vuApp.js';
 //import { vuDialog } from '../../apps/view/vuDialog.js';
 import { moModel } from '../../apps/model/moModel.js';
 import { restClinic, clinicApi } from '../clinicApi.js';
-import { moTalonsList, talonOpt } from '../model/moTalons.js';
+import { moTalonsList, talonOpt, moTalon } from '../model/moTalons.js';
 import { tabsView } from './vuTabs.js';
 import { hdrMap } from './vuTalonsList';
 import { talMain } from './vuTalon';
@@ -140,35 +140,41 @@ export const vuTalonsTplList = function (vnode) {
 export const vuTalonTpl = function(vnode) {
 
   const { tpl }= vnode.attrs;
-  const model= Object.create({ tpl: 'tpl' }); //;
+  const model= { tpl: 'tpl' }; //;
   
+  console.count(tpl);
   const tabs= ['Талон', 'ДС', ];
   const conts= [talMain, talDs];
+  //model.tpl= 'tpl';
   model.word= 'Шаблоны';
-  const t= Number(tpl);
-  const method=  isNaN( t ) || t === 0 ? "POST" : "PATCH";
- 
+  const _t= Number(tpl);
+  const method=  isNaN( _t ) || _t === 0 ? "POST" : "PATCH";
+  const _model = {
+      url: `${restClinic.talonz_clin_tpl.url}${tpl}`,
+      order_by: restClinic.talonz_clin_tpl.order_by
+  };
   if (method === "PATCH") { 
-    const _model = {
-      url: `${restClinic.talon_clin_tpl.url}${tpl}`,
-      order_by: restClinic.talon_clin_tpl.order_by
-    };
-    moModel.getList(_model).then( (t)=>{
-      if ( ! t || _model.list && _model.list.length === 0 ) {
-        model.error = 'Нет таких шаблонов';
-        //vuDialog.open();
+    moModel.getList(_model).then( (res)=>{
+      if ( ! res || _model.list && _model.list.length === 0 ) {
+        model.save = 'Нет таких шаблонов';
+        vuDialog.open();
       } else {
-        model.talon = _model.list[0];
+        model.talon = Object.assign({}, _model.list[0]);
       }
     }).catch( ()=> { model.error= _model.error; }); //vuDialog.open(); } );
   } else {
-    model.talon= Object.create({ });
+    const _d = new Date().toISOString().slice(0,10);
+    model.talon= {
+      tal_num: null, crd_num: "",
+      talon_type: 1, talon_month: 1,
+      open_date: _d, close_date: _d,
+      };
   }
   
   return {
     view () {
       return model.error ? m(".error", model.error) :
-        talonOpt.data.size === 0  ? m(vuLoading) : 
+        talonOpt.data.size === 0 || !model.talon ? m(vuLoading) : 
           m(tabsView, {model: model, tabs: tabs, conts: conts, method: method});
     }
   };
