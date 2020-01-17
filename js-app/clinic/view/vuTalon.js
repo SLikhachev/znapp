@@ -1,5 +1,6 @@
 // src/clinic/view/vuTalon.js
 
+import { trims } from '../../apps/utils';
 import { vuDialog } from '../../apps/view/vuDialog.js';
 import { vuLoading } from '../../apps/view/vuApp.js';
 import { moModel, _mo } from '../../apps/model/moModel.js';
@@ -16,12 +17,14 @@ import { talDs } from './vuTalDs.js';
 import { talPolis } from './vuTalPolis';
 import { talNum, _notEdit, dupper } from './vuClinic'; //tal number
 
+// fields to save to templates record
 const tpl_to_save= [
   'tal_num', 'crd_num', 'talon_type',    
   'ist_fin', 'first_vflag', 'finality', 'doc_spec', 'doc_code', 'purp',
   'usl_ok', 'for_pom', 'rslt', 'ishod', 'visit_pol', 'visit_daystac', 'prof_k',
   'ksk', 'ksg', 'sh', 'ds1', 'char1'];
 
+// apply template view
 const applyTpl = function(vnode) {
   const { model } = vnode.attrs;
   const { talon } = model;
@@ -48,77 +51,25 @@ const applyTpl = function(vnode) {
     })
   };
 
-  return {
-      view() {
-          return m('.pure-g', [
-              m(".pure-u-1-5", [
-                  //m('label', { for: "tpl"}, ""),
-                  m('select[name="stpl"]', {value: tpl.id, onchange: e => tpl.id = e.target.value}, [
-                      m('option[value=""]', "Шаблон талона"),
-                      talonOpt.data.get('talonz_clin_tpl').map(s=> m('option', {value: s.tal_num}, s.crd_num))
-                      //m('option[value="elf"]', "Елфимова"),
-                      //m('option[value="les"]', "Лештаев"),
-                  ]),
-              ]),
-              m(".pure-u-1-5",
-                  m('button.pure-button.pure-button[type="button"]',
-                      {style: "margin-top: 0.3em", onclick: tplApply},
-                      "Применить шаблон")
-              ),
-          ]);
-      }
+  return { view() {
+    return m('.pure-g', [
+      m(".pure-u-1-5", [
+        //m('label', { for: "tpl"}, ""),
+        m('select[name="stpl"]', {value: tpl.id, onchange: e => tpl.id = e.target.value}, [
+          m('option[value=""]', "Шаблон талона"),
+          talonOpt.data.get('talonz_clin_tpl').map(s=> m('option', {value: s.tal_num}, s.crd_num))
+        ]),
+      ]),
+      m(".pure-u-1-5",
+        m('button.pure-button.pure-button[type="button"]',
+          {style: "margin-top: 0.3em", onclick: tplApply},
+          "Применить шаблон")
+        ),
+      ]);
+    }
   };
 };
-
-const saveTpl = function (vnode) {
-    const { model, method } = vnode.attrs;
-    let tpl = Object.assign({}, model.talon);
-   
-    tpl.name= tpl.crd_num;
-    console.log('- tosave -', tpl);
-    //let tpl= Object.assign({}, { name: talon.crd_num });
-    
-    const tplSave = e => {
-      e.preventDefault();
-      const _name = tpl.name.split(' ')[0];
-      if ( _name.length < 4 ) {
-        model.save = 'Имя шаблона не менее 4 символов без пробелов'
-        vuDialog.open();
-        return false;
-      } 
-       
-      tpl.crd_num = _name;
-      delete tpl.name;
-      const _tpl= {};
-      tpl_to_save.map( k => _tpl[k] = tpl[k] );
-        return moTalon.saveTalon(e, { talon: _tpl }, method, 'tpl').then( res => {
-          let _t= res[0];
-          //console.log(_t);
-          tpl= Object.assign(tpl, _t);
-          tpl.name= tpl.crd_num;
-          m.route.set(clinicApi.tal_tpl_id, { tpl: _t.tal_num });
-        }).catch(err=> {
-        console.log('-- Tpl save Error -- ', err);
-        model.save = err;
-        vuDialog.open();
-      });
-    };
-    return {
-        view() {
-            return [m('.pure-u-6-24', {style: "margin-top: 0px;"},
-                m('input.fname[name="ntpl"][placeholder="Имя шаблона"]',
-                    {value: tpl.name, onblur: e => tpl.name = e.target.value, style: "font-size: 1.1em"}
-                )),
-                m('.pure-u-12-24', {style: "margin-top: 5px;"},
-                    m('button.pure-button.pure-button-primary[type="button"]',
-                        {style: "font-size: 1.1em", onclick: tplSave},
-                        "Сохранить шаблон")
-                )
-            ];
-        }
-    };
-}
-
+// numeric filds in talon
 const num_fields= ['mek','visit_pol', 'pol_days', 'visit_home', 'home_days',
   'visit_homstac', 'visit_daystac', 'days_at_homstac', 'days_at_daystac',
   //'npr_mo', 'npr_spec', 'hosp_mo',
@@ -126,17 +77,18 @@ const num_fields= ['mek','visit_pol', 'pol_days', 'visit_home', 'home_days',
   'char1', 'char2', 
   'travma_type', 'patient_age',
 ];
+//
 const none_fields= ['naprlech', 'nsndhosp'];
 
-// specfic for cons yet
+// specfic for cons yet must be pmu
 const dcons=[63];
 
 const toSaveTalon= async function (tal, check) {
-  // month and talon_type
-  // if month have been  increased then assume talon must be ready for sent
-  // no sense case with type 2 talon not edited
-  //if ( Number( tal.talon_month ) > Number(check.talon_month) )
-  //  tal.talon_type=1;
+  
+  const d1= new Date(tal.open_date);
+  const d2= new Date(tal.close_date);
+  if (d1 > d2)
+    return ('Дата закрытия меньше даты открытия талона');
 
   // forma pomoschi
   tal.for_pom= Boolean(tal.urgent) ? 2: 3;
@@ -234,7 +186,7 @@ const card_fileds = [
   'mo_att'
 ];
 */
-
+// button tosave template
 const templateButton= (tpl, fn) => [m('.pure-u-6-24', {style: "margin-top: 0px;"},
   m('input.fname[name="ntpl"][placeholder="Имя шаблона"]',
     {value: tpl.name, onblur: e => tpl.name = e.target.value, style: "font-size: 1.1em"}
@@ -246,7 +198,7 @@ const templateButton= (tpl, fn) => [m('.pure-u-6-24', {style: "margin-top: 0px;"
     )
   )
 ];
-
+// button tp save talon
 const talonButton= () => m('fieldset', { style: "padding-left: 0%;" },
   m('.pure-g',
     m('.pure-u-4-24', { style: "margin-top: 5px;" },
@@ -270,16 +222,11 @@ const talForm = function (vnode) {
   const { model, method }= vnode.attrs;
   const { tpl }= model;
   let tal= model.talon;
-  if (!!tpl) {
-    //console.count('tpl Form');
-    tal.name= tal.crd_num;
-    //console.log('- tpl model-', model);
-  } else {
-    //console.count('tal Form');
-  }  
+  
+  if (!!tpl)  tal.name= tal.crd_num;
+  
   const card= model.card ? model.card : {};
   const data= talonOpt.data;
-  //console.log(data);
   
   const set_chk= (e, f)=> {
     tal[f]= e.target.checked ? 1: 0;
@@ -376,40 +323,21 @@ const talForm = function (vnode) {
       vuDialog.open();
     });
   };
-
   
   const tplSave = e => {
     e.preventDefault();
-    const _name = tal.name.split(' ')[0];
+    const _name = trims(tal.name);
     if ( _name.length < 4 ) {
       model.save = 'Имя шаблона не менее 4 символов без пробелов'
       vuDialog.open();
       return false;
     } 
-       
     tal.crd_num = _name;
     delete tal.name;
-    /*
-      const _tpl= {};
-      tpl_to_save.map( k => _tpl[k] = tpl[k] );
-        return moTalon.saveTalon(e, { talon: _tpl }, method, 'tpl').then( res => {
-          let _t= res[0];
-          //console.log(_t);
-          tpl= Object.assign(tpl, _t);
-          tpl.name= tpl.crd_num;
-          m.route.set(clinicApi.tal_tpl_id, { tpl: _t.tal_num });
-        }).catch(err=> {
-        console.log('-- Tpl save Error -- ', err);
-        model.save = err;
-        vuDialog.open();
-      });
-    };
-    */
     return _save(e).then( () => tal.name= tal.crd_num  );
   };
   
   const talonSave = async function(e) {
-    console.count('save talon');
     e.preventDefault();
     model.save= await toSaveTalon(tal, check);
     if ( Boolean( model.save ) ) {
@@ -419,9 +347,7 @@ const talForm = function (vnode) {
     return _save(e);
   }
   
-  return {
-    view() {
-    //console.log('talForm view');
+  return { view() {
     return m(".pure-u-18-24", [
 		m("form.pure-form.pure-form-stacked.tcard", { style: "font-size: 1.2em;",
            id: "talon", oncreate: forTabs, onsubmit: tpl ? tplSave: talonSave}, [
@@ -507,12 +433,11 @@ const talForm = function (vnode) {
             data_list('travma', 'travma_type')
           ]),
         ]),
-      ]), tpl ? templateButton(tal, tplSave): //m( saveTpl, { model: model, method: method } ) :
+      ]), tpl ? templateButton(tal, tplSave) : 
       _notEdit(tal) ? '' : talonButton(),
     ])//- form --
   ]); //- 18-24 -
- } // view
- }
+ }}; // view
 };
 
 const talonForm= (vnode) => talForm(vnode);
@@ -522,20 +447,17 @@ export const talMain = function (vnode) {
   const { model, method }= vnode.attrs;
   //console.count('tal main');
   //console.log(model);
-  return {
-    view () {
-      return m(".pure-g", {style: "padding-left: 4em;"},
-        model.tpl ? m(templateForm, { model: model, method: method } ): [
-        m(talCrd, {model: model} ),// only patch
-        m(talonForm, { model: model, method: method } ) ]
-      );
-    }
-  }
+  return { view () {
+    return m(".pure-g", {style: "padding-left: 4em;"},
+      model.tpl ? m(templateForm, { model: model, method: method } ): [
+      m(talCrd, {model: model} ),// only patch
+      m(talonForm, { model: model, method: method } ) ]
+    );
+  }};
 };
 
 
 export const vuTalon = function(vnode) {
-  //console.log(_mo());
 
   const { tal, crd }= vnode.attrs;
   const model= moTalon.getModel(); //;
@@ -546,19 +468,10 @@ export const vuTalon = function(vnode) {
   const method = isNaN(t) || t === 0 ? "POST": "PATCH";
   moTalon.getTalon(model, crd, tal );
   
-  return {
-    /*
-    oninit () {
-    },
-    onbeforeupdate() {
-    },
-    */
-    view () {
-      return model.error ? [ m(".error", model.error) ] :
-        talonOpt.data.size > 0 && model.card ?
-          m(tabsView, {model: model, tabs: tabs, conts: conts, method: method})
-          //ErrDialog(model)
-        : m(vuLoading);
-    } 
-  }; 
+  return { view () {
+    return model.error ? [ m(".error", model.error) ] :
+      talonOpt.data.size > 0 && model.card ? //await
+        m(tabsView, {model: model, tabs: tabs, conts: conts, method: method})
+      : m(vuLoading);
+  }};
 };

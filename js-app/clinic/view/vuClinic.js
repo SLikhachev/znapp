@@ -53,23 +53,6 @@ export const _notEdit= tal=> {
   return true;
 };
 
-const talTpl = () => {
-  const tpl={ name: ''};
-  const _set_tpl = e => {};
-  return m('div',
-    m(".pure-control-group", [
-      m('label', { for: "tpl"}, ""),
-        m('select[name="tpl"]', {value: tpl.name, onchange: _set_tpl}, [
-          m('option[value=""]', "Шаблон талона"),
-          //data.get('smo_local').map(s=> m('option', {value: s.code}, s.short_name))
-          m('option[value="elf"]', "Елфимова"),
-          m('option[value="les"]', "Лештаев"),
-        ])
-     ]),
-  )
-}
-
-
 const _Name = name=> name ? name: 'новый';
 const tplName = (tal) => m('legend', `Шаблон ${_Name(tal.crd_num)}`);
 
@@ -79,7 +62,6 @@ export const talNum= function(tal, tpl='') {
       m('span', {style: "padding: 3em"}, _notEdit(tal) ? 'закрыт': 'открыт') , `Год ${moTalonsList._year}`
   );
 }
-
 
 String.prototype.transLit = String.prototype.translit || function () {
     const rus = 'ЙЦУКЕНГШЩЗФЫВАПРОЛДЯЧСМИТЬ';

@@ -23,13 +23,15 @@ const vuErrorsList = function (vnode) {
 
 const Form = function(vnode) {
   
-  const {model, list_model }= vnode.attrs;
+  const {model, list_model, test }= vnode.attrs;
+  //console.log(test);
   const data= { month: _month(), pack: 1};
   model.href= taskReestr.pack.get_url;
   
   const _submit = event=> {
-    data.check= document.getElementById("check").checked ? 'check': '';
-    data.sent= document.getElementById("sent").checked ? 'sent': '';
+    
+    data.check= test ? 'check': ''; //document.getElementById("check").checked ? 'check': '';
+    data.sent= test ? '': document.getElementById("sent").checked ? 'sent': '';
     //console.log( data.check ); //return false;
     return doTask(event,
       moModel.doSubmit(event, _schema('task'), 'simple', model, data, "POST").then( done => {
@@ -51,6 +53,7 @@ const Form = function(vnode) {
                   { value: data.month, onblur: e=> data.month = e.target.value }
                 )
               ]),
+              test ? '' :
               m('.pure-control-group', [
                 m('label[for=pack]', 'Номер пакета'),
                 m('input.fname[id="pack"][type="number"][min=1][name="pack"]',
@@ -75,7 +78,7 @@ const Form = function(vnode) {
                   onchange: e => e.target.checked ? data.check = 'ignore' : data.check = 'check'
                 })
               ]),
-              */
+              
               m('.pure-controls', [
                 m('label.pure-checkbox[for="check"]', [ 
                   m('input[id="check"][type="checkbox"][name="check"]',
@@ -84,10 +87,11 @@ const Form = function(vnode) {
                   m('span', { style: "padding: 0px 5px 3px;"}, "Только проверить")
                 ])
               ]),
-              
+              */
+              test ? '' :
               m('.pure-controls', [
                 m('label.pure-checkbox[for="sent"]', [ 
-                  m('input[id="sent"][type="checkbox"][name="sent"]',
+                  m('input[id="sent"][type="checkbox"][name="sent"]'
                     //{ value: data.sent, onblur: e=> data.sent = e.target.value }
                   ),
                   m('span', { style: "padding: 0px 5px 3px;"}, "Не отправлять принятые")
@@ -95,7 +99,7 @@ const Form = function(vnode) {
               ]),
               m('.pure-controls', [
                 m('button.pure-button pure-button-primary[type="submit"]',
-                  { style: 'margin-top: 0.5em'}, "Сформировать")
+                  { style: 'margin-top: 0.5em'}, test ? "Прверить" : "Сформировать")
               ])  
             ])
           ])
@@ -106,24 +110,25 @@ const Form = function(vnode) {
   };
 }
 
-
 export const vuReestr = function (vnode) {
+  const { header, model, struct, test } = vnode.attrs;
   const list_model= {
     url: restReestr.xml.url,
     list: null ,
     error: null,
     quiet: true
   };
-  const header= 'Ошибки при формировании';
+  const err_header= 'Ошибки при формировании';
   return {
     view () {
       return [
-        m(vuTheader, { header: vnode.attrs.header } ),
-        m(Form, { model: vnode.attrs.model, list_model: list_model } ),
-        m(vuErrorsList, { header: header, struct: vnode.attrs.struct, model: list_model } )
+        m(vuTheader, { header: header } ),
+        m(Form, { model: model, list_model: list_model, test: test } ),
+        m(vuErrorsList, { header: err_header, struct: struct, model: list_model } )
       ];
     }    
         
   };
 }
 
+export const vuPackTest = function(vnode) { return vuReestr(vnode); };

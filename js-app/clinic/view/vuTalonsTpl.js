@@ -1,5 +1,6 @@
 // src/clinic/view/vuTalonsTpl.js
 
+import { trims } from '../../apps/utils';
 import { vuLoading, vuTheader } from '../../apps/view/vuApp.js';
 //import { vuDialog } from '../../apps/view/vuDialog.js';
 import { moModel } from '../../apps/model/moModel.js';
@@ -28,30 +29,28 @@ const tplFind= function (vnode) {
 
   const { model } = vnode.attrs; 
   const href= [clinicApi.tal_tpl_add];
+  const _model= { order_by: restClinic.talon_tpls_list.order_by };
+  const get_url = tpl =>
+    `${restClinic.talon_tpls_list.url}&crd_num=ilike.${tpl}&select=tal_num,${select()}&limit=50`;
   
   const findTpl= function(event) {  
     event.preventDefault();
     const data = moModel.getFormData( event.target );
-    const tpl= data.tpl_name ? data.tpl_name.replace(" ", "") : "";
-    if ( !tpl )
-      return false;
-    const _model = {
-      url:
-      `${restClinic.talon_tpls_list.url}&crd_num=ilike.${tpl}&select=tal_num,${select()}&limit=50`,
-      order_by: restClinic.talon_tpls_list.order_by
-    };
+    const tpl= data.tpl_name ? trims(data.tpl_name) : "";
+    if ( !tpl ) return false;
+    _model.url = get_url(tpl);
+    
     return moModel.getList(_model).then( (t)=>{
       if ( ! t || _model.list.length === 0 ) {
-        //model.error = 'Нет таких шаблонов';
+        _model.error = 'Нет таких шаблонов';
       } else {
+        _model.error= '';
         model.list = _model.list;
       }
     }).catch( ()=> model.error= _model.error );
   };
   
-  return {
-    view () {
-    //console.log(vnode.attrs);
+  return { view () {
     return m(".pure-g", [
       m(".pure-u-18-24",
       // data gets from this FORM fieldsl
@@ -72,13 +71,15 @@ const tplFind= function (vnode) {
                   style: "margin-left: 2em; font-size: 1.2em"
                   }, "Новый шаблон" )
               ),
+              m(".pure-u-1-3", {style: "margin-left: 2em; font-size: 1.2em"},
+                _model.error
+              )
             ]) //pure-g
           ) //fieldset
         ) // form
       ), //pure-u-18-24
     ]); // pure-g
-  } // view
-}; // return
+  }}; // view
 }; // tplFind
 
 export const vuTalonsTplList = function (vnode) {
@@ -86,9 +87,9 @@ export const vuTalonsTplList = function (vnode) {
   const header = 'Список шаблонов талона';
 
   const model = {
-        url: `${restClinic.talon_tpls_list.url}&select=tal_num,${select()}`,
-        order_by: restClinic.talon_tpls_list.order_by
-    };
+    url: `${restClinic.talon_tpls_list.url}&select=tal_num,${select()}`,
+    order_by: restClinic.talon_tpls_list.order_by
+  };
   moModel.getList(model).then( (t)=>{
     //if ( ! t || model.list.length === 0 ) {
     //    model.error = 'Нет шаблонов';
@@ -121,8 +122,7 @@ export const vuTalonsTplList = function (vnode) {
     ]);
   };
 
-  return {
-    view () {
+  return { view () {
     return model.error ? [ m(".error", model.error) ] :
       model.list ? m('div', { style: "margin-left: 3em"}, [
         m(vuTheader, { header: header} ),
@@ -133,8 +133,7 @@ export const vuTalonsTplList = function (vnode) {
             m('tbody', [model.list.map( listMap )] )
           ])
       ]) : m(vuLoading);
-    }
-  };
+  }};
 }
 
 export const vuTalonTpl = function(vnode) {
@@ -171,11 +170,9 @@ export const vuTalonTpl = function(vnode) {
       };
   }
   
-  return {
-    view () {
-      return model.error ? m(".error", model.error) :
-        talonOpt.data.size === 0 || !model.talon ? m(vuLoading) : 
-          m(tabsView, {model: model, tabs: tabs, conts: conts, method: method});
-    }
-  };
+  return { view () {
+    return model.error ? m(".error", model.error) :
+      talonOpt.data.size === 0 || !model.talon ? m(vuLoading) : // awiat maybe Error if not
+        m(tabsView, {model: model, tabs: tabs, conts: conts, method: method});
+  }};
 };

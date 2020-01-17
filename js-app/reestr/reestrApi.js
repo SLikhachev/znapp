@@ -34,8 +34,9 @@ export const reestrApi = {
     root: "/",
     
     pack: "/pack",
+    pack_test: "/pack/test",
     pack_xml: "/pack/xml",
-    //pack_errors: "/pack/errors",
+    
     
     vmxl: "/vmxl",
     vmxl_imp: "/vmxl/imp",
@@ -55,8 +56,9 @@ export const reestrMenu = { subAppMenu: {
   pack: {
     nref: [`#!${reestrApi.pack}`, "Пакеты"],
     items: [
+      [`#!${reestrApi.pack_test}`, "Проверить"],
       [`#!${reestrApi.pack_xml}`, "Сформировать"],
-      //[`#!${reestrApi.pack_errors}`, "Последние ошибки"],
+     
     ]
   },
   vmxl: {

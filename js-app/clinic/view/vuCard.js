@@ -1,5 +1,6 @@
 // src/clinic/view/vuCard.js
 
+import { trims } from '../../apps/utils';
 import { vuDialog } from '../../apps/view/vuDialog.js';
 import { vuLoading } from '../../apps/view/vuApp.js';
 import { moModel, _region } from '../../apps/model/moModel.js';
@@ -118,7 +119,7 @@ export const getName = function(data, val, key, prop, name, text, first_word=fal
 export const toSaveCard= card=> {
     
     // card number
-    card.crd_num= card.crd_num.replace(" ", ""); // trim spaces anywhere
+    card.crd_num= trims(card.crd_num);
     if (! card.crd_num )
       return ('Пустой номер карты');
     

@@ -7,7 +7,14 @@ import { moStruct } from '../model/moStruct.js';
 //reestr
 import { taskReestr, reestrApi, reestrMenu } from '../reestrApi.js';
 // import
-import { vuReestr } from '../view/vuReestr.js';
+import { vuReestr, vuPackTest } from '../view/vuReestr.js';
+
+const _attrs= (hdr, test='') => { return {
+  header: hdr,
+  model: moModel.getModel( taskReestr.pack.post_url ),
+  struct: moStruct().error_pack,
+  test: test
+}}
 
 export const roReestr = {
   [reestrApi.pack]: {
@@ -15,28 +22,18 @@ export const roReestr = {
       return vuView(reestrMenu, m(vuApp, { text: "Пакеты для ФОМС" } ) );
     }
   },
+  [reestrApi.pack_test]: {
+    render: function() {
+      const view = m(vuPackTest, _attrs("Проверяем талоны", 'test') );
+      return vuView(reestrMenu, view);
+    }
+  },
+
   [reestrApi.pack_xml]: {
     render: function() {
-      let view = m(vuReestr, {
-        header: "Формируем XML пакет для ФОМС",
-        model: moModel.getModel( taskReestr.pack.post_url ),
-        struct: moStruct().error_pack
-        
-      });
+      const view = m(vuReestr, _attrs("Формируем XML пакет для ФОМС") );
       return vuView(reestrMenu, view);
     }
   },
-  /*
-  [reestrApi.pack_errors]: {
-    render: function() {
-      let view = m(vuPackErrors, {
-        header: "Последние ошибки формирования реестра",
-        model: moModel.getModel( restReestr.xml.url ),
-        struct: moStruct().error_pack,
-        params: restReestr.xml.params
-      });
-      return vuView(reestrMenu, view);
-    }
-  },
-  */
+  
 }
