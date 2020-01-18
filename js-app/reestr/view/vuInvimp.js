@@ -50,6 +50,13 @@ const Form = function(vnode) {
                 ]),
               ]),
               m('.pure-controls', [
+                m('label.pure-checkbox[for="csmo"]', [
+                  m('input[id="csmo"][type="checkbox"][name="csmo"]'
+                  ),
+                  m('span', { style: "padding: 0px 5px 3px;"}, "Корректировать СМО")
+                ])
+              ]),
+              m('.pure-controls', [
                 m('button.pure-button pure-button-primary[type="submit"]',
                   { style: 'margin-top: 0.5em'}, "Импорт")
               ])  

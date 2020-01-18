@@ -48,11 +48,11 @@ export const moModel = {
   // simple CORS request with data as multipart form data and POST/GET
   // data have been got from FORM object
   formSubmit(event, schema, model, method) {
-    let form= event.target;
+    const form= event.target;
     form.classList.add('disable');
     //let finput = form.elements.namedItem('file'),
     //file = finput.files[0],
-    let data = new FormData(form);
+    const data = new FormData(form);
     let get_param = '';
     if (method == "GET") {
       let get_data = {};
