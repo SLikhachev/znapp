@@ -19,7 +19,7 @@ import { talNum, _notEdit, dupper } from './vuClinic'; //tal number
 
 // fields to save to templates record
 const tpl_to_save= [
-  'tal_num', 'crd_num', 'talon_type',    
+  'tal_num', 'crd_num', 'talon_type',
   'ist_fin', 'first_vflag', 'finality', 'doc_spec', 'doc_code', 'purp',
   'usl_ok', 'for_pom', 'rslt', 'ishod', 'visit_pol', 'visit_daystac', 'prof_k',
   'ksk', 'ksg', 'sh', 'ds1', 'char1'];
@@ -43,7 +43,7 @@ const applyTpl = function(vnode) {
           vuDialog.open();
       } else {
         const tal= _model.list[0];
-        tpl_to_save.map( k=> talon[k] = tal[k] );
+        tpl_to_save.slice(2).map( k=> talon[k] = tal[k] );
       }
     }).catch(() => {
       model.save= _model.error;
