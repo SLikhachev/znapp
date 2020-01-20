@@ -73,7 +73,7 @@ export const reestrMenu = { subAppMenu: {
     nref: [`#!${reestrApi.invoice}`, "Счета"],
     items: [
       [`#!${reestrApi.inv_impex}`, "Реестр в СМО"],
-      [`#!${reestrApi.inv_calc}`, "Рассчеты"],
+      [`#!${reestrApi.inv_calc}`, "Расчеты"],
     ]
   },
   impo: {

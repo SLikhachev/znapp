@@ -13,7 +13,7 @@ import { vuSelfcalc } from  '../view/vuSelfcalc.js';
 export const roInvoice = {
   [reestrApi.invoice]: {
     render: function() {
-      return vuView(reestrMenu, m(vuApp, { text: "Рассчеты и реестры" } ) );
+      return vuView(reestrMenu, m(vuApp, { text: "Расчеты и реестры" } ) );
     }
   },
   [reestrApi.inv_impex]: {
@@ -30,7 +30,7 @@ export const roInvoice = {
   [reestrApi.inv_calc]: {
     render: function() {
       let view = m(vuSelfcalc, {
-        header: "Собственные рассчеты",
+        header: "Собственные расчеты",
         model: moModel.getModel(taskReestr.calc.post_url )
         
       });

@@ -104,7 +104,11 @@ const toSaveTalon= async function (tal, check) {
     // SMO
     if ( !tal.smo && !tal.smo_okato)
       return 'Укажите либо СМО либо СМО ОКАТО';
-    
+  // set smo from card if else
+  else
+    if (tal.smo !== check.crd_smo )
+      tal.smo = check.crd_smo;
+  
   // ambul - stac days together
   const amb=  Boolean (Number(tal.visit_pol) + Number(tal.visit_home) );
   const ds=  Boolean (Number(tal.visit_daystac) + Number(tal.visit_homstac));
@@ -235,7 +239,7 @@ const talForm = function (vnode) {
     return false;
   };
   
-  const check= { talon_month:  tal.talon_month };
+  const check= { talon_month:  tal.talon_month, crd_smo: card.crd_smo };
   const dsp= "^[A-Z][0-9]{2}(\.[0-9]{1,2})?$";
   const diag= new RegExp( dsp );
   const get_name=
