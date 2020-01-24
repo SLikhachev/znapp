@@ -88,7 +88,7 @@ const toSaveTalon= async function (tal, check) {
   const d1= new Date(tal.open_date);
   const d2= new Date(tal.close_date);
   if (d1 > d2)
-    return ('Дата закрытия меньше даты открытия талона');
+    return 'Дата закрытия меньше даты открытия талона';
 
   // forma pomoschi
   tal.for_pom= Boolean(tal.urgent) ? 2: 3;
@@ -118,9 +118,9 @@ const toSaveTalon= async function (tal, check) {
   if ( amb && ds )
     return 'Амбулвторный прием и ДСтац в одном талоне';
   if ( amb )
-    tal.usl_ok= 3;
+    tal.usl_ok= 3; // ambul
   else
-    tal.usl_ok= 2;
+    tal.usl_ok= 2; // day stac
     
   // napr ambul, stac together
   const cons= Boolean(tal.naprlech), hosp= Boolean(tal.nsndhosp);
@@ -202,7 +202,7 @@ const templateButton= (tpl, fn) => [m('.pure-u-6-24', {style: "margin-top: 0px;"
     )
   )
 ];
-// button tp save talon
+// button to save talon
 const talonButton= () => m('fieldset', { style: "padding-left: 0%;" },
   m('.pure-g',
     m('.pure-u-4-24', { style: "margin-top: 5px;" },
