@@ -39,6 +39,7 @@ export const moModel = {
     }).then(function(res) {
       model.list = res; // list of objects
       model.order = true;
+      return true
     }).catch(function(e) {
       model.error = errMsg(e);
       console.log(model.error);

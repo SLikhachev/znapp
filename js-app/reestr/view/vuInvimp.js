@@ -6,8 +6,8 @@ import { vuTheader, taskResp } from '../../apps/view/vuApp.js';
 import { file_field, form_file_dom } from '../../apps/form/customFields.js';
 import { moModel } from '../../apps/model/moFormModel.js';
 import { doTask, get_type } from "../../apps/view/vuDataSheet";
-import { taskReestr } from '../reestrApi.js';
-
+import { taskReestr, restReestr } from '../reestrApi.js';
+import { vuImp } from './vuImport.js';
 
 const Form = function(vnode) {
   
@@ -67,11 +67,20 @@ const Form = function(vnode) {
       ]);
     }
   };
-}
-
+};
 
 export const vuInvimp = function (vnode) {
-  
+  const url = `${restReestr.task.url}?task=eq.import_invoice&select=pack_type(descr),file_name`;
+  return vuImp(
+        vnode.attrs.model,
+        vnode.attrs.header,
+        url,
+        Form
+    );
+};
+
+export const __vuInvimp = function (vnode) {
+
   return {
     view () {
       return [
@@ -81,5 +90,5 @@ export const vuInvimp = function (vnode) {
     }    
         
   }; 
-}
+};
 

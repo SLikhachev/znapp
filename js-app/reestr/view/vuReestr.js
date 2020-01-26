@@ -1,7 +1,7 @@
 // ./reestr/view/vuReestr.js
 // make reestr zip
 
-import { vuTheader, taskResp } from '../../apps/view/vuApp.js';
+import { vuLoading, vuTheader, taskResp } from '../../apps/view/vuApp.js';
 import { _month, _schema } from '../../apps/model/moModel.js';
 import { moModel } from '../../apps/model/moFormModel.js';
 import { doTask, get_fref, vuDataSheet } from "../../apps/view/vuDataSheet";
@@ -111,23 +111,34 @@ const Form = function(vnode) {
 }
 
 export const vuReestr = function (vnode) {
-  const { header, model, struct, test } = vnode.attrs;
+  const { model, struct, test } = vnode.attrs;
+  let { header } = vnode.attrs;
   const list_model= {
     url: restReestr.xml.url,
     list: null ,
     error: null,
     quiet: true
   };
+  const _model = {url: `${restReestr.task.url}?task=eq.make_xml`, list: test ? []: null};
+  //console.log(_model);
   const err_header= 'Ошибки при формировании';
+  if ( ! test ) {
+     moModel.getList(_schema('pg_rest'), _model).then(() => {
+       if (_model.list && _model.list[0]) {
+         const file=  _model.list[0].file_name;
+         if ( !!file )
+           header = `${header} (последний пакет: ${file} )`
+       }
+   })
+  }
   return {
     view () {
-      return [
+      return _model.error ? [ m(".error", _model.error) ] : ! _model.list ?  m(vuLoading) : [
         m(vuTheader, { header: header } ),
         m(Form, { model: model, list_model: list_model, test: test } ),
         m(vuErrorsList, { header: err_header, struct: struct, model: list_model } )
       ];
     }    
-        
   };
 }
 

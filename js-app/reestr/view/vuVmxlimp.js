@@ -1,12 +1,12 @@
 // ./reestr/view/vuVmxlimp.js
 // import errors from VM xml file
 
-import { vuTheader, taskResp } from '../../apps/view/vuApp.js';
+import { vuLoading,  vuTheader, taskResp } from '../../apps/view/vuApp.js';
 import { file_field, form_file_dom } from '../../apps/form/customFields.js';
 import { _schema } from '../../apps/model/moModel.js';
 import { moModel } from '../../apps/model/moFormModel.js';
 import { doTask } from '../../apps/view/vuDataSheet';
-
+import { restReestr } from '../reestrApi';
 
 const Form = function(vnode) {
   
@@ -51,11 +51,23 @@ const Form = function(vnode) {
 
 // clojure
 export const vuVmxlimp = function (vnode) {
-  
+  let { header } = vnode.attrs;
+  const _model = {
+      url: `${restReestr.task.url}?task=eq.import_errors&select=pack_type(descr),file_name`,
+      list: null
+  };
+  moModel.getList(_schema('pg_rest'), _model).then(() => {
+    if (_model.list && _model.list[0]) {
+      const item=  _model.list[0];
+        if ( !! item.file_name )
+           header = `${header} (последний файл: ${item.file_name} - ${item.pack_type.descr} )`
+     }
+  })
+
   return {
     view () {
-      return [
-        m(vuTheader, { header: vnode.attrs.header } ),
+      return _model.error ? [ m(".error", _model.error) ] : ! _model.list ?  m(vuLoading) :  [
+        m(vuTheader, { header: header } ),
         m(Form, { model: vnode.attrs.model } )
       ];
     }    

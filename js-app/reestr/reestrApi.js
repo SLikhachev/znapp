@@ -25,6 +25,7 @@ export const taskReestr = {
 };
 
 export const restReestr = {
+    task: { url: 'task_rest'},
     xml: { url: 'error_pack', params: { order: 'tal_num.asc' }}, // just test pack
     vmx: { url:"vmx_errors", params: { limit: 50 } } // show vmx errors
 };
