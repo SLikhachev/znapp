@@ -22,12 +22,17 @@ export const taskReestr = {
       post_url: "/reestr/inv/calc",
       get_url: "/utils/file/reestr/calc/" //GET calc file
     },
+    mek: {
+      post_url: "/reestr/inv/mek",
+      get_url: "/utils/file/reestr/mek/" //GET mek file  
+    }
 };
 
 export const restReestr = {
     task: { url: 'task_rest'},
     xml: { url: 'error_pack', params: { order: 'tal_num.asc' }}, // just test pack
     vmx: { url:"vmx_errors", params: { limit: 50 } } // show vmx errors
+    
 };
    
 
@@ -46,7 +51,8 @@ export const reestrApi = {
     invoice: "/invoice",
     inv_impex: "/invoice/impex",
     inv_calc: "/invoice/calc",
-    
+    inv_mek: "/invoice/mek",
+        
     impo: "/impo",
     impo_dbf: "/impo/dbf",
 
@@ -75,6 +81,7 @@ export const reestrMenu = { subAppMenu: {
     items: [
       [`#!${reestrApi.inv_impex}`, "Реестр в СМО"],
       [`#!${reestrApi.inv_calc}`, "Расчеты"],
+      [`#!${reestrApi.inv_mek}`, "Перенести МЭК"],
     ]
   },
   impo: {

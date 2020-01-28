@@ -2,7 +2,7 @@
 // make reestr zip
 
 import { vuLoading, vuTheader, taskResp } from '../../apps/view/vuApp.js';
-import { _month, _schema } from '../../apps/model/moModel.js';
+import { _mo, _month, _schema } from '../../apps/model/moModel.js';
 import { moModel } from '../../apps/model/moFormModel.js';
 import { doTask, get_fref, vuDataSheet } from "../../apps/view/vuDataSheet";
 import { taskReestr, restReestr } from '../reestrApi';
@@ -30,8 +30,12 @@ const Form = function(vnode) {
   
   const _submit = event=> {
     
+    if ( window.prompt(`Код для пакета № ${data.pack} за ${data.month}`) !== _mo() )
+      return false;
+    
     data.check= test ? 'check': ''; //document.getElementById("check").checked ? 'check': '';
     data.sent= test ? '': document.getElementById("sent").checked ? 'sent': '';
+    data.fresh= test ? '': document.getElementById("fresh").checked ? 'fresh': '';
     //console.log( data.check ); //return false;
     return doTask(event,
       moModel.doSubmit(event, _schema('task'), 'simple', model, data, "POST").then( done => {
@@ -88,15 +92,21 @@ const Form = function(vnode) {
                 ])
               ]),
               */
-              test ? '' :
-              m('.pure-controls', [
+              test ? '' :  m('.pure-controls', [
                 m('label.pure-checkbox[for="sent"]', [ 
                   m('input[id="sent"][type="checkbox"][name="sent"]'
+                    //{ value: data.sent, onblur: e=> data.sent = e.target.value }
+                  ),
+                  m('span', { style: "padding: 0px 5px 3px;"}, "Отметить отправленные")
+                ]),
+                m('label.pure-checkbox[for="fresh"]', [ 
+                  m('input[id="fresh"][type="checkbox"][name="fresh"]'
                     //{ value: data.sent, onblur: e=> data.sent = e.target.value }
                   ),
                   m('span', { style: "padding: 0px 5px 3px;"}, "Не отправлять принятые")
                 ])
               ]),
+              
               m('.pure-controls', [
                 m('button.pure-button pure-button-primary[type="submit"]',
                   { style: 'margin-top: 0.5em'}, test ? "Прверить" : "Сформировать")
