@@ -29,10 +29,12 @@ const Form = function(vnode) {
   model.href= taskReestr.pack.get_url;
   
   const _submit = event=> {
-    
-    if ( window.prompt(`Код для пакета № ${data.pack} за ${data.month}`) !== _mo() )
-      return false;
-    
+
+    if ( ! Boolean(test) ) {
+      console.log(_mo());
+      if ( window.prompt(`Код для пакета № ${data.pack} за ${data.month}`) !== _mo() )
+        return false;
+    }
     data.check= test ? 'check': ''; //document.getElementById("check").checked ? 'check': '';
     data.sent= test ? '': document.getElementById("sent").checked ? 'sent': '';
     data.fresh= test ? '': document.getElementById("fresh").checked ? 'fresh': '';
