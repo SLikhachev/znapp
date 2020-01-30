@@ -23,15 +23,25 @@ const file = model=>  [
               m('span.blue', {style: "font-size: 1.2em"}, model.file)
 ];
 
+export const doTask= async function ( event, promise ) {
+  event.preventDefault();
+  let resp= document.getElementById('resp'); // taskResp - view with #resp dom
+  //resp.classList.add('disable');
+  resp.open= false;
+  let res= await promise;
+  //task.classList.remove('disable');
+  resp.open= true;
+  return res;
+};
+
 // func return chunk of hyper-script of form to post get task
 export const taskResp= model=> m('details#resp',
   m('summary.legend', "Статус обработки"),
   model.error ? m('.error', model.error) :
-    model.message ? [
-      
+    !model.message ? '': [
       m('h4', { class: model.done ? 'blue' : 'red'}, model.message),
       model.file ? file(model): ''
-     ] : ''  //message
+    ] 
   );
  
 

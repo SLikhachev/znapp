@@ -1,7 +1,7 @@
 // ./report/view/vuMovemek.js
 // 
 
-import { vuTheader, taskResp } from '../../apps/view/vuApp.js';
+import { vuTheader, doTask, taskResp } from '../../apps/view/vuApp.js';
 import { _schema, _month } from '../../apps/model/moModel.js';
 import { moModel } from '../../apps/model/moFormModel.js';
 import { taskReestr } from '../reestrApi.js';
@@ -14,18 +14,18 @@ const Form = function() {
   //const model = vnode.attrs.model;
   //console.log(model);
   const md= { url: taskReestr.mek.post_url, href: taskReestr.mek.get_url };
-  const _test = event=> { event.preventDefault(); return false; };
-  /*
-  const _submit = event=> doTask(event,
+  //const _test = event=> { event.preventDefault(); return false; };
+  
+  const _export = event=> doTask(event,
     moModel.formSubmit(event, _schema('task'), md, "GET")
   );
-  */
+  
   return { view() {
     return m('div#task.pure-g', { style: "margin-bottom: 1.3em;" }, [
       m('.pure-u-1-3', [
-        m('form.pure-form.pure-form-stacked', {onsubmit: _test},
+        m('form.pure-form.pure-form-stacked', {onsubmit: _export},
           m('fieldset', [
-            m('legend', "Выгрузить отказанные по МЭК в CSV файл"),
+            m('legend', "Выгрузить отказанных по МЭК в CSV файл"),
             m('.pure-control-group', [
               m('label[for=month]', 'Месяц'),
               m('input.fname[id="month"][type="month"][name="month"][reqired=required]',

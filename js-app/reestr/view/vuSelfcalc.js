@@ -2,9 +2,9 @@
 //  calc sums for month  by type of records
 
 import { _month, _schema } from '../../apps/model/moModel.js';
-import { vuTheader, taskResp } from '../../apps/view/vuApp.js';
+import { vuTheader, doTask, taskResp } from '../../apps/view/vuApp.js';
 import { moModel } from '../../apps/model/moFormModel.js';
-import { doTask, get_type } from "../../apps/view/vuDataSheet";
+import {  get_type } from "../../apps/view/vuDataSheet";
 import { taskReestr } from '../reestrApi.js';
 
 

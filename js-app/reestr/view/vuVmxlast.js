@@ -1,9 +1,9 @@
 // ./report/view/vuVmxlast.js
 // show the last imported errors and download errors csv file 
 
-import { taskResp } from '../../apps/view/vuApp.js';
+import { doTask, taskResp} from '../../apps/view/vuApp.js';
 import { _schema } from '../../apps/model/moModel.js';
-import { vuDataSheet, get_fref, doTask } from '../../apps/view/vuDataSheet';
+import { vuDataSheet, get_fref } from '../../apps/view/vuDataSheet';
 import { moModel } from '../../apps/model/moFormModel.js';
 import { taskReestr } from '../reestrApi.js';
 

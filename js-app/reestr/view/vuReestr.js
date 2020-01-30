@@ -1,10 +1,10 @@
 // ./reestr/view/vuReestr.js
 // make reestr zip
 
-import { vuLoading, vuTheader, taskResp } from '../../apps/view/vuApp.js';
+import { vuLoading, vuTheader, doTask, taskResp } from '../../apps/view/vuApp.js';
 import { _mo, _month, _schema } from '../../apps/model/moModel.js';
 import { moModel } from '../../apps/model/moFormModel.js';
-import { doTask, get_fref, vuDataSheet } from "../../apps/view/vuDataSheet";
+import { get_fref, vuDataSheet } from "../../apps/view/vuDataSheet";
 import { taskReestr, restReestr } from '../reestrApi';
 
 

@@ -6,17 +6,6 @@ import { moModel } from '../model/moFormModel.js';
 import { vuLoading, vuTheader } from './vuApp.js';
 
 
-export const doTask= async function ( event, promise ) {
-  event.preventDefault();
-  let resp= document.getElementById('resp'); // taskResp - view with #resp dom
-  //resp.classList.add('disable');
-  resp.open= false;
-  let res= await promise;
-  //task.classList.remove('disable');
-  resp.open= true;
-  return res;
-};
-
 export const get_fref= ()=> {
     //card_id: "/cards/:crd",
     const card_id = clinicApi.card_id.split(':')[0];

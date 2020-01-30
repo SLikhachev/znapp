@@ -2,10 +2,10 @@
 // import BARS invoice -> transform it into xlsx book and download it
 
 import { _schema } from '../../apps/model/moModel.js';
-import { vuTheader, taskResp } from '../../apps/view/vuApp.js';
+import { vuTheader, doTask, taskResp } from '../../apps/view/vuApp.js';
 import { file_field, form_file_dom } from '../../apps/form/customFields.js';
 import { moModel } from '../../apps/model/moFormModel.js';
-import { doTask, get_type } from "../../apps/view/vuDataSheet";
+import { get_type } from "../../apps/view/vuDataSheet";
 import { taskReestr, restReestr } from '../reestrApi.js';
 import { vuImp } from './vuImport.js';
 

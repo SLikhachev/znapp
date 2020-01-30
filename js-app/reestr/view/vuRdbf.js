@@ -1,10 +1,9 @@
 // ./reestr/view/vuRdbf.js
 // import dbf reestrs files to sql tables for pavlenkov and stale files
-import { vuTheader, taskResp } from '../../apps/view/vuApp.js';
+import { vuTheader, doTask, taskResp } from '../../apps/view/vuApp.js';
 import { file_field, form_file_dom } from '../../apps/form/customFields.js';
 import { _month, _schema } from '../../apps/model/moModel.js';
 import { moModel } from '../../apps/model/moFormModel.js';
-import { doTask } from "../../apps/view/vuDataSheet";
 
 
 const Form = function(vnode) {

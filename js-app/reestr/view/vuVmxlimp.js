@@ -1,11 +1,10 @@
 // ./reestr/view/vuVmxlimp.js
 // import errors from VM xml file
 
-import { vuLoading,  vuTheader, taskResp } from '../../apps/view/vuApp.js';
+import { vuLoading,  vuTheader, doTask, taskResp } from '../../apps/view/vuApp.js';
 import { file_field, form_file_dom } from '../../apps/form/customFields.js';
 import { _schema } from '../../apps/model/moModel.js';
 import { moModel } from '../../apps/model/moFormModel.js';
-import { doTask } from '../../apps/view/vuDataSheet';
 import { restReestr } from '../reestrApi';
 
 const Form = function(vnode) {
