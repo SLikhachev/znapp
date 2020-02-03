@@ -95,6 +95,12 @@ export const moModel = {
     const url= `${schema}${model.url}`;
     //console.log(upurl);
     let fdata;
+    // request is SIMPLE if we send to serever Form Data not JSON object
+    // with GET HEAD POST methods. WITH Any other methods preflight request is used
+    // Allowed Content-Type headers is :
+    // application/x-www-form-urlencoded
+    // multipart/form-data
+    // text/plain
     if ( cors == 'simple' ) {
       fdata= new FormData();
       for (let k of Object.keys(data))
