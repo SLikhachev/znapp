@@ -13,6 +13,9 @@ import { upper } from './vuClinic';
 const _Reg= _region();
 
 export const checkDost = card=> {
+  
+  ['fam', 'im', 'ot'].map( k=>  card[k] = card[k].trim().toUpperCase() );
+  
   let dost= '';
   if ( !card.fam ) dost += '2_';
   if ( !card.im ) dost += '3_';
@@ -94,7 +97,6 @@ export const set_smo_okato = (data, card)=> {
   };
 };
 
-
 export const getName = function(data, val, key, prop, name, text, first_word=false) {
     // data - optional data MAP
     // val - String foForm input tag value
@@ -121,16 +123,26 @@ export const toSaveCard= card=> {
     // card number
     card.crd_num= trims(card.crd_num);
     if (! card.crd_num )
-      return ('Пустой номер карты');
+      return 'Пустой номер карты';
     
     //dost
-    let dost= checkDost(card);
+    const dost= checkDost(card);
     if ( Boolean(dost) )
       return dost;
+    
+    // birth date
+    const d0= new Date('1900-01-01');
+    let d1= new Date(Date.now());
+    d1= new Date( d1.getFullYear() - 18, 1, 1);
+    const d= new Date(card.birth_date);
+    if (d < d0 || d > d1 )
+      return 'Некорректная дата рождения';
     
     // gender
     if ( !Boolean( card.gender ))
       return 'Укажите пол';
+    
+    
     
     // DUL
     if ( !card.dul_serial && !card.dul_number )

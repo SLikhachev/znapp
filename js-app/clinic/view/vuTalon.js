@@ -144,14 +144,13 @@ const toSaveTalon= async function (tal, check) {
     let _spec_url= `${doc_spec}?spec=eq.${spec}`;
     let opt= [ { url: _mo_url } ];
     if ( cons ) {
-        if (!tal.npr_date)
-            tal.npr_date = tal.open_date;
-
-        opt.push({url: _spec_url, order_by: 'spec'});
+      if ( !tal.npr_date || ( new Date(tal.npr_date) > new Date(tal.open_date)) )
+        tal.npr_date = tal.open_date;
+      opt.push({url: _spec_url, order_by: 'spec'});
     //hospital
     } else {
-        if (!tal.npr_date)
-            tal.npr_date = tal.close_date;
+      if ( !tal.npr_date || ( new Date(tal.npr_date) > new Date(tal.close_date)) )
+        tal.npr_date = tal.close_date;
     }
     const _mdl= { options: opt, data: new Map() };
     try {
