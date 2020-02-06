@@ -89,14 +89,18 @@ export const moModel = {
   // model = {field, url, method,  }
   getList (model) {
     model.list= null;
-    let method= model.method ? model.method : 'GET';
+    const method= model.method ? model.method : 'GET';
     // filed - sort by with SELECT, default 'id' field
     //let schema = window.localStorage.getItem('pg_rest');
-    let schema = _schema('pg_rest');
-    let id = model.order_by ? model.order_by : 'id',
-    sign= model.url.includes('?') ? '&': '?';
-    order = `${sign}order=${id}.asc`;
-    let url = schema + model.url + order;
+    const schema = _schema('pg_rest');
+    const id = model.order_by ? model.order_by : 'id';
+    let url= `${model.url}`;
+    let sign= url.includes('?') ? '&': '?';
+    if ( model.editable.indexOf('del') >= 0) {
+      url= `${url}${sign}ddel=eq.0`;
+      sign= '&';
+    }
+    url =`${schema}${url}${sign}order=${id}.asc`;
     console.log(url);
     return m.request({
       method: method,
@@ -254,26 +258,34 @@ export const moModel = {
   formSubmit(event, model, method) {
     //console.log(model);
     event.target.parentNode.classList.add('disable');
-    let schema= _schema('pg_rest');
+    const schema= _schema('pg_rest');
     let url = schema + model.url;
-    let key= model.key ? model.key : 'id';
+    const key= model.key ? model.key : 'id';
     let data= Object.assign({}, model.item);
-    let sign= model.url.includes('?') ? '&': '?';
-    if ( method == 'DELETE' || method == 'PATCH' ) {
+    const sign= model.url.includes('?') ? '&': '?';
+    let _method= method; // 
+    if ( _method === 'PATCH' || _method === 'DELETE') {
       url += `${sign}${key}=eq.${data[key]}`; 
       if (data[key]) delete data[key];
     }
-    for ( let k of Object.keys(data) ){
-      if (model.change && model.change.indexOf(k) < 0) {
-        delete data[k];
-        continue;
-      }
+    if ( _method !== 'DELETE' ) {
+      for ( let k of Object.keys(data) ){
+        if (model.change && model.change.indexOf(k) < 0) {
+          delete data[k];
+          continue;
+        }
       if ( data[k] === '' ) delete data[k];  //data[k] = null;
+      }
+    } else {
+      // restrict DELETE to PATCH only
+      data= { ddel: 1 };
+      _method= 'PATCH';
     }
+    
     model.save = { err: false, msg: '' };
     return m.request({
       url: url,
-      method: method,
+      method: _method,
       body: data,
       //async: false,
       headers: model.headers

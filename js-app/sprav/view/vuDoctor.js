@@ -46,34 +46,14 @@ const Item = {
   }
 }
 
+const docFields= ['family', 'name', 'sname', 'snils', 'code', 'spec', 'division', 'district', 'tabid'];
 
-const itemForm= function(vnode){
-  let flds= ['family', 'name', 'sname', 'snils', 'code', 'spec', 'division', 'district', 'tabid'];
-  const itf = function(f, d, a={}) { return fieldFrom(Item, f, d, a); };
-  return itForm( flds, itf , vnode);
-}
+const itemForm= vnode => itForm(
+    docFields,
+    (f, d, a={}) => fieldFrom(Item, f, d, a),
+    vnode);
 
-const _Form = function(vnode){
-  let item; //= vnode.attrs.item;
- 
-  //ro = vnode.attrs.method === 'DELETE' ? true : false;
-  let fld = ['family', 'name', 'sname', 'snils', 'code', 'spec', 'division', 'district', 'tabid'];
-  return {  
-    onbeforeupdate(vnode) {
-      item= vnode.attrs.model.item;
-    },
-    view(vnode) {
-      //item= vnode.attrs.model.item;
-      //console.log(item);
-      return m('fieldset', [
-        item ? fld.map( f => m('.pure-control-group', itf(f, item)) ): ''
-      ]);
-    },
-  };
-}
-// clojure
 export const vuDoctor = function (vnode) {
   vnode.attrs.itemForm= itemForm;
-  let view= vuSheet(vnode);
-  return view
+  return vuSheet(vnode);
 }

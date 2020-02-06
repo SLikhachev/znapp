@@ -67,27 +67,22 @@ export const vuSheet = function (vnode) {
     model.getItem(null);
   }
   
-  return {
-    
-    oninit () {
-    },
-    view () {
-      //console.log(itemForm);
-      return [
-        header ? m(vuTheader, {header: header}) : '',
-        fetchForm ? fetchForm( model ) : '',
-        model.error ? m(".error", model.error) :
-          model.list ? [
-            filter ? m(vuFilter, {cols: filter, model: model, add: edialog.add} ) : '',
-            m(vuListTable, {struct: struct, edialog: edialog, href: href, sort: sort, model: model} ),
-            dialog ? itemForm ? // set in parent view if any
-              m(vuDialog, { header: header, word: vuForm.word },
-                m(vuForm, { model: model, name: name },
-                  m(itemForm, { model: model, method: vuForm.method } )
-                )
-              ) : '' //m('h2', 'Не определена форма редактирования объекта')
-            : '' // not editable
-          ] : m(vuLoading)
+  return { view () {
+    //console.log(itemForm);
+    return [
+      header ? m(vuTheader, {header: header}) : '',
+      fetchForm ? fetchForm( model ) : '',
+      model.error ? m(".error", model.error) :
+        !model.list ? m(vuLoading) : [
+          filter ? m(vuFilter, {cols: filter, model: model, add: edialog.add} ) : '',
+          m(vuListTable, {struct: struct, edialog: edialog, href: href, sort: sort, model: model} ),
+          !dialog ? '' : !itemForm ? '' : // set in parent view if any
+            m(vuDialog, { header: header, word: vuForm.word },
+              m(vuForm, { model: model, name: name },
+                m(itemForm, { model: model, method: vuForm.method } )
+              )
+            )
+        ] 
       ];
     }
   }; //return this object

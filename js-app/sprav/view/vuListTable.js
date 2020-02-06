@@ -11,7 +11,7 @@ export const vuTableRow= function(data) {
   //let { data={}, row=[] }= vnode.attrs;
   //console.log(data);
   //let id= data.id ? data.id : 'id';
-  let {edit, ddel, href, struct, pk }= data;
+  const {edit, ddel, href, struct, pk }= data;
   href= edit ? '' : href;
   
   const first_cell= id => m('td.choice.blue', id);
