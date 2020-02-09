@@ -1,5 +1,5 @@
 
-// src/sprav/view/vuList.js
+// src/sprav/view/vuListTable.js
 
 export const vuTableRow= function(data) {
   // data Object
@@ -12,7 +12,7 @@ export const vuTableRow= function(data) {
   //console.log(data);
   //let id= data.id ? data.id : 'id';
   const {edit, ddel, href, struct, pk }= data;
-  href= edit ? '' : href;
+  let _href= edit ? '' : href;
   
   const first_cell= id => m('td.choice.blue', id);
   
@@ -22,7 +22,7 @@ export const vuTableRow= function(data) {
     }, val);
   
   const anchor_cell= (val, vpk) => m('td.choice.blue', m(m.route.Link, {
-      href: `${href}/${vpk}`,
+      href: `${_href}/${vpk}`,
     }, val));
   
   const ddel_cell= vpk => m('td', m('i.fa.fa-minus-circle.choice.red', {
@@ -38,7 +38,7 @@ export const vuTableRow= function(data) {
           let rc= row[column];
           let td= first ? // first will be anchor code 
             edit ? dialog_cell(rc, vpk) :
-            href ? anchor_cell(rc, vpk) : first_cell(rc)
+            _href ? anchor_cell(rc, vpk) : first_cell(rc)
           : m('td', rc);
           first = false;
           return td;
