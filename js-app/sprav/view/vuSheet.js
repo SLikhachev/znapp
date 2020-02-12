@@ -1,10 +1,9 @@
 // src/sprav/view/vuSheet.js
 
-
 import { moModel } from '../../apps/model/moModel.js';
-import { vuLoading } from '../../apps/view/vuApp.js';
+import { vuLoading, vuTheader } from '../../apps/view/vuApp.js';
 import { vuDialog } from '../../apps/view/vuDialog.js';
-import { change, vuTheader, vuFilter, vuForm } from './vuSprav.js';
+import { change,  vuFilter, vuForm } from './vuSprav.js';
 import { vuListTable } from './vuListTable';
 
 

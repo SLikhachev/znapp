@@ -1,6 +1,6 @@
 // src/sprav/router_sprav.js
 
-import { vuMain } from '../apps/view/vuMain.js';
+import { vuApp } from '../apps/view/vuApp.js';
 // sprav
 import { spravApi, spravMenu } from './spravApi.js';
 import { vuSprav } from './view/vuSprav.js';
@@ -12,9 +12,8 @@ import { roCom } from './router/roCom.js';
 import { roTarif } from './router/roTarif.js';
 
 const spravRouter = { [spravApi.root]: {
-    render: function() {
-       return m(vuMain, spravMenu,
-          m(vuSprav, { text: "Медстатистика: Справочники" }));
+    render() { 
+       return vuSprav( m(vuApp, { text: "Медстатистика: Справочники" }) );
     }
   }
 };

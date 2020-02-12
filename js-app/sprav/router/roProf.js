@@ -1,10 +1,11 @@
 // src/sprav/router/profRouter.js
 
 // common
+import { vuApp } from '../../apps/view/vuApp.js';
 import { moModel } from '../../apps/model/moModel.js';
 // sprav
 import { restSprav, spravApi } from '../spravApi.js';
-import { vuSprav, vuView } from '../view/vuSprav.js';
+import { vuSprav } from '../view/vuSprav.js';
 import { moStruct } from '../model/moStruct.js';
 import { idName } from '../model/moStruct.js';
 
@@ -18,19 +19,10 @@ import { vuPmuItem } from '../view/vuPmuItem';
 import { vuGrupItem } from '../view/vuGrupItem';
 import { vuMkb } from '../view/vuMkb';
 
-const vuSpec = function(vnode){
-  return vuSheet(vnode);
-}
-const vuProf = function(vnode){
-  return vuSheet(vnode);
-}
-const vuPrvs = function(vnode){
-  return vuSheet(vnode);
-}
-const vuVidpom = function(vnode){
-  return vuSheet(vnode);
-}
-
+const vuSpec= vnode=> vuSheet(vnode);
+const vuProf= vnode=> vuSheet(vnode);
+const vuPrvs= vnode=> vuSheet(vnode);
+const vuVidpom= vnode=> vuSheet(vnode);
 /*
 const vuPurp = function(vnode){
   return vuCatalog(vnode);
@@ -50,32 +42,31 @@ const vuErrors = function(vnode){
 */
 const vuPgrup = function (vnode) {
   vnode.attrs.itemForm= itemForm;
-  let view= vuSheet(vnode);
-  return view;
+  return vuSheet(vnode);
 }
 
 export const roProf = {
   [spravApi.prof]: {
     render: function() {
-      return vuView( m(vuSprav, { text: "Профильные справочники" } ) );
+      return vuSprav( m(vuApp, { text: "Профильные справочники" } ) );
     }
   },
   
   [spravApi.prof_spec]: {
     render: function() {
-      let view = m(vuSpec, {
+      const view = m(vuSpec, {
           model:  moModel.getModel( restSprav.doc_spec ),
           header: "Коды врачебных специальностей",
           name: "Специальность",
           struct: moStruct.doc_spec,
           filter: 2,
       });
-      return vuView(view);
+      return vuSprav(view);
     }
   },
   [spravApi.prof_prof]: {
     render: function() {
-      let view = m(vuProf, {
+      const view = m(vuProf, {
           model:  moModel.getModel( restSprav.profil),
           header: "Профили помощи",
           name: "Профиль",
@@ -83,43 +74,43 @@ export const roProf = {
           itemForm: itemProfil,
           filter: 2,
       });
-      return vuView(view);
+      return vuSprav(view);
     }
   },
   [spravApi.prof_prvs]: {
     render: function() {
-      let view = m(vuPrvs, {
+      const view = m(vuPrvs, {
           model:  moModel.getModel( restSprav.prvs),
           header: "Специальности V021",
           name: "Специальность",
           struct: idName,
           filter: 2
       });
-      return vuView(view);
+      return vuSprav(view);
     }
   },
   [spravApi.prof_vidpom]: {
     render: function() {
-      let view = m(vuVidpom, {
+      const view = m(vuVidpom, {
           model:  moModel.getModel( restSprav.vidpom),
           header: "Вид помощи",
           name: "Вид",
           struct: idName,
           filter: 2
       });
-      return vuView(view);
+      return vuSprav(view);
     }
   },
   [spravApi.prof_pmus]: {
     render: function() {
-      let view = m(vuPmu, {
+      const view = m(vuPmu, {
           model:  moModel.getModel( restSprav.pmu ),
           header: "Простые мед. усдуги",
           name: "Услуга",
           href: spravApi.prof_pmus,
           struct: moStruct.pmu
       });
-      return vuView(view);
+      return vuSprav(view);
     }
   },
   [spravApi.prof_pmu_code] : {
@@ -127,12 +118,12 @@ export const roProf = {
       return vuPmuItem;
     },
     render : function(vnode) {
-         return vuView( vnode );
+         return vuSprav( vnode );
       }
   },
   [spravApi.prof_pgrup]: {
     render: function() {
-      let view = m(vuPgrup, {
+      const view = m(vuPgrup, {
           model:  moModel.getModel( restSprav.pmu_grup ),
           header: "Гуппы ПМУ ",
           name: "Группа",
@@ -140,7 +131,7 @@ export const roProf = {
           struct: idName,
           href: spravApi.prof_pgrup,
       });
-      return vuView(view);
+      return vuSprav(view);
     }
   },
   [spravApi.prof_pmu_grup]: {
@@ -148,18 +139,18 @@ export const roProf = {
       return vuGrupItem;
     },
     render : function(vnode) {
-        return vuView( vnode );
+        return vuSprav( vnode );
       }
   },
   [spravApi.prof_mkb]: {
     render: function() {
-      let view = m(vuMkb, {
+      const view = m(vuMkb, {
           model:  moModel.getModel( restSprav.mkb),
           header: "МКБ - 10",
           name: "Диагноз",
           struct: moStruct.mkb
       });
-      return vuView(view);
+      return vuSprav(view);
     }
   },
   /*

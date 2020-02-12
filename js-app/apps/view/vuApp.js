@@ -15,7 +15,7 @@ export const get_route= model=> {
     style: "font-size: 1.2 em"}, model.file );
 }
 
-const file = model=>  [
+const file = model=> [
     m('span.blue', {style: "font-size: 1.2em"}, "Результат, Файл : "),
     model.route ?
         get_route(model) :
@@ -51,37 +51,29 @@ export const foMonth= data=> [m('label[for=month]', 'Месяц'),
   )];
 
 export const vuTheader = {
-  view (vnode) {
-    return m(".pure-g",
-      m(".pure-u-1-1.box-1",
-        m('span.dheader', vnode.attrs.header )
-      )
-    );
-  }
+  view (vnode) { return m(".pure-g",
+    m(".pure-u-1-1.box-1", m('span.dheader', vnode.attrs.header ) )
+  ); }
 }
+
 
 export const vuApp = {
   view: function(vnode) {
-    return m('div', {
-        style: "margin: 0 auto; padding-top: 5em; width: 50%;"
-      },
+    return m('div', { style: "margin: 0 auto; padding-top: 5em; width: 50%;" },
       m('h1.blue', {style: "font-size: 3em;"}, vnode.attrs.text)
     );
   }
 }
 
-export const vuView = function(appMenu, view) {
-  return m(vuMain, appMenu, view);
-}
+//export const vuView = view=> m(vuMain, spravMenu, view);
+export const vuView = (appMenu, view)=> m(vuMain, appMenu, view);
 
 export const vuLoading = {
-  view() { 
-    return m(".loading-icon", 
-      m('.i.fa.fa-refresh.fa-spin.fa-3x.fa-fw'),
-      m('span.sr-only', 'Loading...')
-    );
-  }
-}
+  view() { return m(".loading-icon", 
+    m('.i.fa.fa-refresh.fa-spin.fa-3x.fa-fw'),
+    m('span.sr-only', 'Loading...')
+  );
+}};
 
 
 export const taskResponse= (model, href=null) => {

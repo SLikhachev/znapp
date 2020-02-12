@@ -1,6 +1,7 @@
 // src/sprav/view/vuSprav.js
 
 import { vuMain } from '../../apps/view/vuMain.js';
+import { vuView } from '../../apps/view/vuApp.js';
 import { vuDialog } from '../../apps/view/vuDialog.js';
 import { spravMenu } from '../spravApi.js';
 import { moModel } from '../../apps/model/moModel.js';
@@ -77,14 +78,6 @@ export const vuForm = {
   },
 };
 
-export const vuTheader = {
-  view (vnode) {
-    return m(".pure-g", m(".pure-u-1-1.box-1",
-        m('span.dheader', vnode.attrs.header )
-      )
-    );
-  }
-};
 
 export const vmFilter = {
   
@@ -106,6 +99,7 @@ export const vmFilter = {
   }
   
 };
+
 
 export const vuFilter = {
   
@@ -166,17 +160,8 @@ export const vuFilter = {
   }
 }
 
-export const vuSprav = {
-  view(vnode) { return m('div',
-   { style: "margin: 0 auto; padding-top: 5em; width: 50%;" },
-   m('h1.blue', {style: "font-size: 3em;"}, vnode.attrs.text)
-  );
-}};
-/*
-export const vuView = function(view) {
-  return m(vuMain, spravMenu, view);
-};
-*/
-export const vuView = view=> m(vuMain, spravMenu, view);
+
+//export const vuView = (appMenu, view)=> m(vuMain, appMenu, view);
+export const vuSprav = view=> vuView(spravMenu, view);
 
 

@@ -1,10 +1,11 @@
 // src/sprav/router.moRouter.js
 
 // common
+import { vuApp } from '../../apps/view/vuApp.js';
 import { moModel } from '../../apps/model/moModel.js';
 // sprav
 import { restSprav, spravApi } from '../spravApi.js';
-import { vuSprav, vuView } from '../view/vuSprav.js';
+import { vuSprav } from '../view/vuSprav.js';
 import { idName, moStruct } from '../model/moStruct.js';
 //
 import { vuSheet } from '../view/vuSheet.js';
@@ -21,32 +22,27 @@ const vuSpPodr = function(vnode){
   return vuDataSheet(vnode);
 }
 */
-const vuSpPara = function(vnode){
-  return vuSheet(vnode);
-};
-const vuMoLocal = function(vnode){
-  return vuSheet(vnode);
-}
-const vuSmoLocal = function(vnode){
-  return vuSheet(vnode);
-}
+const vuSpPara = vnode=> vuSheet(vnode);
+const vuMoLocal = vnode=> vuSheet(vnode);
+const vuSmoLocal = vnode=> vuSheet(vnode);
+
 
 export const roLocal = {
   [spravApi.mo]: {
     render: function() {
-      return vuView( m(vuSprav, { text: "Cправочники локальные" } ) );
+      return vuSprav( m(vuApp, { text: "Cправочники локальные" } ) );
     }
   },
   [spravApi.mo_doct]: {
     render: function() {
-      let view = m(vuDoctor, {
+      const view = m(vuDoctor, {
         model: moModel.getModel(restSprav.doctor),
         header: "Врачи",
         name: "Врач",
         filter: 3, // search in the first 3 table columns
         struct: moStruct.doctor
       });
-      return vuView(view);
+      return vuSprav(view);
     }
   },
   /*
@@ -85,38 +81,38 @@ export const roLocal = {
   */
   [spravApi.mo_sp_para]: {
     render: function() {
-      let view = m(vuSpPara, {
+      const view = m(vuSpPara, {
           model:  moModel.getModel( restSprav.sp_para),
           header: "Коды диагностических подразделений",
           name: "Подазделение",
           struct: idName,
           filter: 2,
       });
-      return vuView(view);
+      return vuSprav(view);
     }
   },
   
   [spravApi.mo_local]: {
     render: function() {
-      let view = m(vuMoLocal, {
+      const view = m(vuMoLocal, {
           model: moModel.getModel( restSprav.mo_local ),
           header: "МО Приморского края",
           name: "МО",
           filter: 3, // search in the first 3 table columns
           struct: moStruct.moLocal
         });
-        return vuView(view);
+        return vuSprav(view);
       }
   },
   [spravApi.mo_smo]: {
     render: function() {
-      let view = m(vuSmoLocal, {
+      const view = m(vuSmoLocal, {
         model: moModel.getModel( restSprav.smo_local ),
         header: "СМО Приморского края",
         name: "СМО",
         struct: moStruct.smoLocal
       });
-      return vuView(view);
+      return vuSprav(view);
     }
   },
 }
