@@ -1,5 +1,5 @@
 
-// src/sprav/view/vuList.js
+// src/sprav/view/vuListTable.js
 
 export const vuTableRow= function(data) {
   // data Object
