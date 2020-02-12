@@ -167,16 +167,16 @@ export const vuFilter = {
 }
 
 export const vuSprav = {
-  view: function(vnode) {
-    return m('div',
-      { style: "margin: 0 auto; padding-top: 5em; width: 50%;" },
-      m('h1.blue', {style: "font-size: 3em;"}, vnode.attrs.text)
-    );
-  }
-};
-
+  view(vnode) { return m('div',
+   { style: "margin: 0 auto; padding-top: 5em; width: 50%;" },
+   m('h1.blue', {style: "font-size: 3em;"}, vnode.attrs.text)
+  );
+}};
+/*
 export const vuView = function(view) {
   return m(vuMain, spravMenu, view);
 };
+*/
+export const vuView = view=> m(vuMain, spravMenu, view);
 
 

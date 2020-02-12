@@ -43,15 +43,15 @@ export const clinicApi = {
 export const clinicMenu = { subAppMenu: {
 
   cards: {
-    nref: [ `#!${clinicApi.cards}`, "Карты"],
+    nref: [ `${clinicApi.cards}`, "Карты"],
   },
 
   talons: {
-    nref: [`#!${clinicApi.talons}`, "Визиты"],
+    nref: [`${clinicApi.talons}`, "Визиты"],
   },
 
   talons_tpl:  {
-      nref: [`#!${clinicApi.talons_tpl}`, "Шаблоны"]
+      nref: [`${clinicApi.talons_tpl}`, "Шаблоны"]
   }
 }
 };

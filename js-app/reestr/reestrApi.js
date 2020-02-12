@@ -61,33 +61,33 @@ export const reestrApi = {
 export const reestrMenu = { subAppMenu: {
   
   pack: {
-    nref: [`#!${reestrApi.pack}`, "Пакеты"],
+    nref: [`${reestrApi.pack}`, "Пакеты"],
     items: [
-      [`#!${reestrApi.pack_test}`, "Проверить"],
-      [`#!${reestrApi.pack_xml}`, "Сформировать"],
+      [`${reestrApi.pack_test}`, "Проверить"],
+      [`${reestrApi.pack_xml}`, "Сформировать"],
      
     ]
   },
   vmxl: {
-    nref: [`#!${reestrApi.vmxl}`, "Ошибки"],
+    nref: [`${reestrApi.vmxl}`, "Ошибки"],
     items: [
-      [`#!${reestrApi.vmxl_imp}`, "Импорт ошибок"],
-      [`#!${reestrApi.vmxl_last}`, "Показать последние"],
+      [`${reestrApi.vmxl_imp}`, "Импорт ошибок"],
+      [`${reestrApi.vmxl_last}`, "Показать последние"],
     ]
   },
   
   invoice: {
-    nref: [`#!${reestrApi.invoice}`, "Счета"],
+    nref: [`${reestrApi.invoice}`, "Счета"],
     items: [
-      [`#!${reestrApi.inv_impex}`, "Реестр в СМО"],
-      [`#!${reestrApi.inv_calc}`, "Расчеты"],
-      [`#!${reestrApi.inv_mek}`, "Перенести МЭК"],
+      [`${reestrApi.inv_impex}`, "Реестр в СМО"],
+      [`${reestrApi.inv_calc}`, "Расчеты"],
+      [`${reestrApi.inv_mek}`, "Перенести МЭК"],
     ]
   },
   impo: {
-    nref: [`#!${reestrApi.impo}`, "Импорт"],
+    nref: [`${reestrApi.impo}`, "Импорт"],
     items: [
-      [`#!${reestrApi.impo_dbf}`, "Файлы реестров (DBF)"],
+      [`${reestrApi.impo_dbf}`, "Файлы реестров (DBF)"],
     ]
   }
 }

@@ -96,7 +96,7 @@ export const moModel = {
     const id = model.order_by ? model.order_by : 'id';
     let url= `${model.url}`;
     let sign= url.includes('?') ? '&': '?';
-    if ( model.editable.indexOf('del') >= 0) {
+    if ( model.editable && model.editable.indexOf('del') >= 0) {
       url= `${url}${sign}ddel=eq.0`;
       sign= '&';
     }
