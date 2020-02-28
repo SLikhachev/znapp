@@ -4,7 +4,7 @@
 export const restReport = {
     volum: {
       url: 'p146_report',
-      params: {insurer: 'eq.999', this_year: 'eq.2019', order: 'this_month' }
+      params: {insurer: 'eq.999', this_year: 'eq.2020', order: 'this_month' }
     }
 }
 

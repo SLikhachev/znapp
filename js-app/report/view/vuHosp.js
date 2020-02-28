@@ -4,8 +4,7 @@
 import { _month, _schema } from '../../apps/model/moModel.js';
 import { moModel } from '../../apps/model/moFormModel.js';
 import { file_field, form_file_dom } from '../../apps/form/customFields.js';
-import { vuTheader, taskResp } from '../../apps/view/vuApp.js';
-import { doTask } from "../../apps/view/vuDataSheet";
+import { vuTheader, taskResp, doTask} from '../../apps/view/vuApp.js';
 import { taskReport } from '../reportApi.js';
 
 

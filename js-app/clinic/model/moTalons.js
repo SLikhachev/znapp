@@ -134,6 +134,7 @@ export const moTalon = {
     card.crd_polis_ser= card.polis_ser;
     card.crd_polis_num= card.polis_num;
     card.crd_smo= card.smo;
+    card.crd_smo_okato= card.smo_okato;
     return [card];
   },
   
@@ -164,7 +165,7 @@ export const moTalon = {
   prepare( model ) {
    const card_fileds = [
     'id', 'crd_num', 'fam', 'im', 'ot', 'birth_date',
-    'crd_polis_ser', 'crd_polis_num', 'crd_smo',
+    'crd_polis_ser', 'crd_polis_num', 'crd_smo', 'crd_smo_okato',
     'dul_serial', 'dul_number',
     'mo_att' ];
     // prepare card

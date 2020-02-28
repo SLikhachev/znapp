@@ -73,27 +73,48 @@ export const sel_smo = card=> {
   };
 }
 
+const okato= (target, data, okato)=> {
+  const o = data.get('okato').find( item => item.okato == okato );
+  if ( !!o )
+    target.value = `${o.region}. ${o.name.split(' ')[0]}`;
+  else
+    target.value= '';
+  return false;
+}
+
+const set_okato_by_smo= (target, data, card)=> {
+  const smo= data.get('smo_local').find( item => item.code == card.smo );
+  if ( Boolean(smo) ) {
+    card.smo_okato = smo.okato;
+    return okato(target, data, smo.okato);
+  }
+  target.value= '';
+  card.smo_okato= null;
+  return false;
+}
+
+const set_card_okato= (target, data, card)=> okato( target, data, card.smo_okato );
+
   // smo OKATO
 export const set_smo_okato = (data, card)=> {
   return e=> {  
-    if ( Boolean(card.smo) ) {
-      let _smo= card.smo; // + _reg;
-      let smo = Array.from( data.get('smo_local') ).find( item => item.code == _smo );
-      if ( Boolean(smo) ) {
-        card.smo_okato = smo.okato;
-        let o = Array.from( data.get('okato') ).find( item => item.okato == smo.okato );
-        e.target.value = `${o.region}. ${o.name.split(' ')[0]}`;
+    // it was had been set SMO 
+    if ( Boolean(card.smo) )
+      return set_okato_by_smo(e.target, data, card);
+   
+    if ( !e.target.value ) // empty
+      if ( Boolean(card.smo_okato) )
+         // it was had been set OKATO and no value (empty) in field yet
+        return set_card_okato(e.target, data, card);
+      else
         return false;
-      }
-    } else {
-      if ( Boolean( e.target.value ) && !e.target.value.includes(_Reg)) {
-        rg = e.target.value.split('.')[0];
-        card.smo_okato = Array.from(data.get('okato')).find(item => item.region.toString() == rg)['okato'];
-      } else {
-        e.target.value= null;
-        card.smo_okato= null;
-      }
+    
+    // firstly set OKATO
+    if( !e.target.value.includes(_Reg)) {
+      const rg= e.target.value.split('.')[0];
+      card.smo_okato= data.get('okato').find(item => item.region.toString() == rg)['okato'];
     }
+    return false;
   };
 };
 
@@ -141,8 +162,6 @@ export const toSaveCard= card=> {
     // gender
     if ( !Boolean( card.gender ))
       return 'Укажите пол';
-    
-    
     
     // DUL
     if ( !card.dul_serial && !card.dul_number )
@@ -324,7 +343,7 @@ const crdMain = function(vnode) {
               m(".pure-control-group", [
                 m('label', { for: "smo"}, "Страховщик"),
                 m('select[name="smo"]',
-                  {tabindex: 13, value: card.smo, onchange: _set_smo}, [
+                  {tabindex: 12, value: card.smo, onchange: _set_smo}, [
                   m('option[value=""]', ""),
                   data.get('smo_local').map(s=> m('option', {value: s.code}, s.short_name))
                 ])
@@ -335,7 +354,7 @@ const crdMain = function(vnode) {
                   oncreate: v => _set_smo_okato( { target: v.dom} ),
                   list:  "okato",
                   //value: card.smo_okato,
-                  tabindex: "12",
+                  tabindex: "13",
                   onblur: _set_smo_okato
                 }),
                 //cof('smo_okato', card, {

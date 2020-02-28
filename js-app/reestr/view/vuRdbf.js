@@ -15,7 +15,7 @@ const Form = function(vnode) {
   const _submit = event=> {
     //data.test= document.getElementById("test").checked ? 'test': '';
     return doTask(event,
-      moModel.formSubmit(event, _schema('task'), schema, model, "POST")
+      moModel.formSubmit(event, _schema('task'), model, "POST")
     ); };
   
   return {
