@@ -139,7 +139,8 @@ export const vuCardsList = function (vnode) {
     view () {
       
       return model.error ? [ m(".error", model.error) ] :
-        model.list ? m('div', { style: "padding-left: 2em"}, [
+        !model.list ? m(vuLoading) :
+        m('div', { style: "padding-left: 2em"}, [
           //m(vuTheader, { header: headerString} ),
           m(cardFind, { model } ),
           model.list[0] ? model.list[0].recount ? m('div' , 
@@ -149,7 +150,7 @@ export const vuCardsList = function (vnode) {
             m('thead', hdrMap() ),
             m('tbody', [model.list.map( listMap )] )
           ]) : m('h1.blue', {style: "font-size: 1.5em;"}, "Нет таких записей")
-      ]) : m(vuLoading); 
+      ]); 
     }
   }; //return this object
 }

@@ -14,6 +14,7 @@ export const moCardsList = {
     const model = {
       url: restClinic.card_find.url,
       method: restClinic.card_find.method,
+      //headers: { 'Accept': 'application/json' },
       list: null, // main data list (showing in table page)
       error: null, // Promise all error
       order: true, // for list

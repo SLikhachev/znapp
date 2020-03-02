@@ -178,13 +178,15 @@ export const moModel = {
       body: data,
       headers: headers
     }).then( res=> {
+       //console.log(res);
       if ( ! Boolean(res) ) return false;
       if (res.length && res.length > 0) {
+        //console.log(res);
         model.list= Array.from( res ); // list of objects
         model.order = true;
         return true;
       } else
-        model.list= [];
+        model.list= [ { recount: res } ];
         return false;
     }).catch( err=> {
       let msg=  errMsg(err);
