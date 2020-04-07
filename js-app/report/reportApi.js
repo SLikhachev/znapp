@@ -31,10 +31,10 @@ export const reportApi = {
 export const reportMenu = { subAppMenu: {
   
   surv: {
-    nref: [`#!${reportApi.surv}`, "Сводные"],
+    nref: [`${reportApi.surv}`, "Сводные"],
     items: [
-      [`#!${reportApi.surv_hosp}`, "Госпитализация ЕИР"],
-      [`#!${reportApi.surv_volum}`, "Объемы помощи"],
+      [`${reportApi.surv_hosp}`, "Госпитализация ЕИР"],
+      [`${reportApi.surv_volum}`, "Объемы помощи"],
       
     ]
   }
