@@ -10,7 +10,7 @@ rollup({
 });
 */
 export default {
-  input: 'js-app/sprav/router_sprav.js',
+  input: 'js-app/sprav/router.js',
   output: {
     file: 'static/js/apps/sprav.pack.js',
     format: 'es'

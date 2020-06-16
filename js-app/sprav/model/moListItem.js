@@ -1,0 +1,129 @@
+
+import { vuDialog } from '../../apps/view/vuDialog';
+import { _schema, errMsg } from './moModel';
+
+const [stream, combine] = [m.stream, m.stream.combine];
+
+
+export const listItem = stream();
+export const itemId = stream('');
+export const changeValue = stream({});
+
+
+export const getItem = (id, pk, list) => {
+  if (!id) return {};
+  for (let item of list) {
+    if (item[pk] == id)
+      return Object.assign({}, item);
+  }
+  return {}
+};
+
+/*
+const getItem = itemid => {
+  let id = itemid();
+  if (!id) return {};
+  for (let item of moList().list) {
+    if (item[itemPk()] == id)
+      return Object.assign({}, item);
+  }
+};
+*/
+
+const updateItem = (item, changed) => {
+  // checkbox value (0, 1);
+  const target = changed().target;
+  let value = target.value;
+
+  if (target.type === 'checkbox') {
+    if (target.checked)
+      value = 1;
+    else
+      value = null;
+  }
+  return Object.assign(item(),
+    { [target.name]: value });
+};
+
+
+export const changedItem = combine((itemid, newvalue, changed) => {
+  if (changed.length > 1)
+    return {}; // stream initialization 
+  let c = changed[0]();
+  if (typeof c === 'string') // id is a string mapped to item from list
+    return listItem();
+  // changed some value on blur 
+  return updateItem(changedItem, newvalue);
+}, [itemId, changeValue]);
+
+
+const saveRequest = (set, item, _method, data) => {
+  const rest = set[item].rest || {},
+    _item = set[item].item || {},
+    _fields = _item.editable_fields || [],
+    _key = _item.pk || 'id', // primary key may be vary
+    _url = rest.url || item,
+    _sign = _url.includes('?') ? '&' : '?';
+
+  const params = {};
+
+  // data request may be from call params or changedItem stream  
+  const _data = data ? data : changedItem();
+  let body = Object.assign({}, _data);
+
+  //let method = changeEvent().method || '';
+  let method = _method;
+  if (!method) throw new Error('No METHOD for save Item provided');
+
+  if (method === 'PATCH' || method === 'DELETE') {
+    params[_key] = `eq.${body[_key]}`;
+    delete body[_key];
+  }
+  if (method !== 'DELETE') {
+    for (let k of Object.keys(body)) {
+      if (_fields && _fields.indexOf(k) < 0) {
+        delete body[k];
+        continue;
+      }
+      if (body[k] === '') delete body[k];
+    }
+  } else {
+    // restrict DELETE to PATCH only
+    if (body.method !== method) {
+      body = { ddel: 1 };
+      method = 'PATCH';
+    } else {
+      // this for tru delete
+      delete body.method;
+      Object.keys(body).forEach(
+        k => params[k] = `eq.${body[k]}`
+      )
+      body = null;
+
+    }
+  }
+  const qstring = m.buildQueryString(params),
+    url = `${_schema('pg_rest')}${_url}${_sign}${qstring}`,
+    headers = rest.headers || {};
+  //console.log(url, _method, body);
+  return { url, method, body, headers };
+};
+
+
+export const saveItem = (set, item, method, data = null) => {
+  //vuDialog.error = '';
+  return m.request(
+    saveRequest(set, item, method, data)
+  ).then(
+    () => {
+      if (vuDialog.dialog && vuDialog.dialog.open)
+        vuDialog.close();
+      return true;
+    },
+    err => {
+      //vuDialog.error = errMsg(err);
+      //saveResult({ error: errMsg(err) });
+      return Promise.reject({ saverror: errMsg(err) })
+    });
+};
+

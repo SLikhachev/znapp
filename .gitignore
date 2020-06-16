@@ -3,6 +3,8 @@
 *.bat
 *.pyc
 *.pyo
+*.7z
+*.zip
 .idea/
 .komodotools/
 __pycache__/

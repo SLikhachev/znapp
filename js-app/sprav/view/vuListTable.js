@@ -1,86 +1,107 @@
 
 // src/sprav/view/vuListTable.js
 
-export const vuTableRow= function(data) {
-  // data Object
-  // edit - callback on click to edit row
-  // ddel - callback to delete row
-  // href - anchor href to set route on row page if any
-  // there may be either edit or href attr
-  // struct - struct object for row representation 
-  //let { data={}, row=[] }= vnode.attrs;
-  //console.log(data);
-  //let id= data.id ? data.id : 'id';
-  const {edit, ddel, href, struct, pk }= data;
-  const _href= edit ? '' : href;
-  
-  const first_cell= id => m('td.choice.blue', id);
-  
-  const dialog_cell = (val, vpk) => m('td.choice.blue', {
-      data: vpk, // every item must have id attr
-      onclick: edit
-    }, val);
-  
-  const anchor_cell= (val, vpk) => m('td.choice.blue', m(m.route.Link, {
-      href: `${_href}/${vpk}`,
-    }, val));
-  
-  const ddel_cell= vpk => m('td', m('i.fa.fa-minus-circle.choice.red', {
-    data: vpk,
-    onclick: ddel
-    }) );
-  
-  return function(row) {
-      //console.log(vnode.attrs.row);
-      let first= true, vpk=row[pk];
-      return m('tr', [
-        Object.keys(struct).map( column => {
-          let rc= row[column];
-          let td= first ? // first will be anchor code 
-            edit ? dialog_cell(rc, vpk) :
-            _href ? anchor_cell(rc, vpk) : first_cell(rc)
-          : m('td', rc);
-          first = false;
-          return td;
-        }),
-        ddel ? ddel_cell(vpk) : ''
+import { vuDialog } from '../../apps/view/vuDialog';
+import { disp } from '../spravApi';
+import { idName } from '../defines/defStruct';
+//import { saveResult } from '../model/moModel';
+
+const tableRow = () => {
+
+  const onchange = (method, word) => e => {
+    disp(['change', method, word, e.target.getAttribute('data')]);
+    //saveResult({});
+    vuDialog.open();
+  };
+  const onedit = onchange('PATCH', "Изменить");
+  const ondelet = onchange('DELETE', "Удалить");
+
+  return data => {
+    // data Object { itdef } object for row representation 
+    //console.log(data);
+    const { itdef } = data;
+    let pki = itdef.pk || 'id';
+    //itemPk(itdef.pk || 'id');
+
+    const struct = itdef.struct || idName;
+    const edit = itdef.editable && (itdef.editable.indexOf('edit') >= 0);
+    const delet = itdef.editable && (itdef.editable.indexOf('del') >= 0);
+    const href = itdef.href ? `${m.route.get()}` : '';
+
+    const first_cell = (col, row, href) => {
+      const pk = row[pki];
+
+      if (href)
+        return m('td.choice.blue', m(m.route.Link,
+          { href: `${href}/${pk}` }, row[col]));
+
+      const attrs = { data: pk };
+      if (edit)
+        attrs.onclick = onedit;
+
+      return m('td.choice.blue', attrs, row[col]);
+    }
+
+    const ddisplay = () => delet ? 'display: table-cell' : 'display : none';
+
+    return row => {
+      let columns = Object.keys(struct);
+
+      return m('tr', { key: row[pki] }, [
+        first_cell(columns[0], row, href),
+        columns.slice(1).map(column => m('td', row[column])),
+        m('td', { style: ddisplay() }, m('i.fa.fa-minus-circle.choice.red',
+          { data: row[pki], onclick: ondelet })
+        )
       ]);
     };
-}
+  };
+};
 
 // clojure
 export const vuListTable = function (vnode) {
-  
-  let {
-    clss='', tid='', model, struct={},
-    edialog={}, href='', sort='' //sort - callback
-    
-  }= vnode.attrs;
-  let { edit='', ddel='' }= edialog;
-  const pk= model.key;
-  const listMap= vuTableRow( { struct, edit, ddel, href, pk} );
-  
-  let cls= clss ? clss : '.pure-table.pure-table-bordered';
-  let ftid= tid ? tid : 'list_table' 
-  let table= `table${cls}[id=${ftid}]`;
-  
+
+  const {
+    table_class = '.pure-table.pure-table-bordered',
+    table_id = 'list_table',
+  } = vnode; // call as func not as component
+
+  let itdef = {}, struct = {}, list = [];
+
+  const sort = e => disp(['sort', e.target.getAttribute('data')]);
+
+  const column = c => {
+    let f = struct[c].th || struct[c] || ['unknown']; // object with th or just list
+
+    if (f.length > 1) // sortable column has 2nd elem in array
+      return m('th.sortable', { data: c, onclick: sort }, f[0],
+        m('i.fa.fa-sort.pl10'));
+
+    return m('th', f[0]);
+  };
+  let listRow = tableRow();
+
+  const ddisplay = () => {
+    if (itdef.editable && (itdef.editable.indexOf('del') >= 0))
+      return 'display: table-cell';
+    return 'display: none';
+  }
+
+  const table = `table${table_class}[id=${table_id}]`;
+
   return {
-    view() {
-      //console.log(vnode.attrs.model.list);
-      return m(table, [ 
+    view(vnode) {
+      ({ itdef, list } = vnode.attrs);
+      struct = itdef.struct || idName;
+      listMap = listRow({ itdef });
+
+      return m(table, [
         m('thead', m('tr', [
-          Object.keys(struct).map( column => {
-            let field = struct[column];
-            let th= field.length > 1 ? m('th.sortable', // sortable field has 2nd elem in array
-              { data: column, onclick: sort },
-              [field[0], m('i.fa.fa-sort.pl10')]
-            ) : m('th', field[0]);
-            return th;
-          }),
-          ddel ? m('th', "Удалить") : ''
+          Object.keys(struct).map(col => column(col)),
+          m('th', { style: ddisplay() }, "Удалить")
         ])),
-        m('tbody', [model.list.map(listMap)])
-     ]);
+        m('tbody', [list.map(listMap)])
+      ]);
     }
-  }; 
+  };
 }

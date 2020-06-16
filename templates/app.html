@@ -1,20 +1,23 @@
 {% extends 'base.html' %}
 {% block body %}
+
 <body id="{{ app_name }}">
-{% comment %}
-<span id="pg_rest" style="display: none;">{{ pg_rest }}</span>
-{% endcomment %}
-<script>
-  window.localStorage.setItem('this_mo', "{{ user.username }}")
-  window.localStorage.setItem('pg_rest', "{{ pg_rest }}");
-  window.localStorage.setItem('task_rest', "{{ task_rest }}");
-  window.localStorage.setItem('apps', '{{ apps|safe }}' );
+  {% comment %}
+  <span id="pg_rest" style="display: none;">{{ pg_rest }}</span>
+  {% endcomment %}
+  <script>
+    window.localStorage.setItem('this_mo', "{{ user.username }}")
+    window.localStorage.setItem('pg_rest', "{{ pg_rest }}");
+    window.localStorage.setItem('task_rest', "{{ task_rest }}");
+    window.localStorage.setItem('apps', '{{ apps|safe }}');
   //let apps = window.localStorage.getItem('apps');
   //console.log( JSON.parse(apps) );
-</script>
-<script src="/static/js/lib/lodash/lodash.min.js"></script>
-<script src="/static/js/lib/jquery/jquery-1.11.2.min.js"></script>
-<script src="/static/js/lib/mithril/mithril.min.js"></script>
-<script src="/static/js/apps/{{ app_name }}.pack.js"></script>
+  </script>
+  <!--script src="/static/js/lib/lodash/lodash.min.js"></script!-->
+  <script src="/static/js/lib/ramda/ramda.min.js"></script>
+  <script src="/static/js/lib/jquery/jquery-1.11.2.min.js"></script>
+  <script src="/static/js/lib/mithril/mithril.min.js"></script>
+  <script src="/static/js/lib/mithril/mithril-stream.js"></script>
+  <script src="/static/js/apps/{{ app_name }}.pack.js"></script>
 </body>
 {% endblock %}

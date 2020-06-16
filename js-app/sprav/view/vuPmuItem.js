@@ -1,199 +1,165 @@
 
 // src/sprav/view/dsTNM.js
 
-import { vuLoading } from '../../apps/view/vuApp.js';
-import { moModel } from '../../apps/model/moModel.js';
-import { fieldFrom } from '../../apps/form/foForm';
-import { restSprav } from '../spravApi.js';
+import { changedItem } from '../model/moListItem';
+import { states, disp } from '../spravApi';
+import { vuForm } from '../form/spravForm';
+import { vuItemFormChildren } from '../form/vuItemChildren';
+import { makeTags } from '../form/makeTags';
 
-const Item = {
-  ccode: { label: ['', 'Номер ПМУ'], input: {
-      tag: ['.input-find.pure-u-3-4', "number"],
-      //attrs: { placeholder: 'Номер' }
-    }
-  },
-  code_podr: { label: ['', 'Подразделение'], input: {
-      tag: ['.input-find.pure-u-3-4', 'number'],
-      //attrs: { placeholder: 'Подразд' }
-    }
-  },
-  code_spec: { label: ['', 'Специалист'], input: {
-      tag: ['.input-find.pure-u-3-4', 'number'],
-      //attrs: { placeholder: 'Спец' }
-    }
-  },
-}
-const itf = function(f, d, a={}) { return fieldFrom(Item, f, d, a); };
+// current key to delete from `pmu_grup_code`
+// if this is code_usl in several groups then id of grup, else code_usl 
+const keys = ['id', 'code_usl']
+const delkey = () => states().unit === 'pmus' ? 0 : 1;
 
-const pmuForm = function (vnode) {
+const grupPmuForm = () => {
 
-  let item= Object.assign({}, vnode.attrs.item);
-  let fld= ['ccode', 'code_podr', 'code_spec'];
-  let on_submit = function (event) {
-    event.preventDefault();
-    let model= Object.assign({ item: item}, restSprav.pmu );
-    return moModel.formSubmit(event, model, 'PATCH');
+  let code_usl = '';
+  const grup = m.stream('');
+  const oninput = e => grup(e.target.value);
+  const onsubmit = e => {
+    e.preventDefault();
+    //console.log(code_usl, grup());
+    disp(['pmugrup', code_usl, grup(), 'POST']);
+    return false;
   };
-  
+
+  const tags = makeTags({
+    grup: {
+      th: [''],
+      label: ['Добавить к группе'],
+      tag: ['.pure-u-3-4', 'required'],
+      type: 'number',
+      attrs: { value: grup, oninput }
+    }
+  });
+
   return {
+    view(vnode) {
+      ({ code_usl } = vnode.attrs);
 
-    view() {
-
-      return m(".pure-g",
-        m(".pure-u-1-2",
-          m("form.pure-form", { onsubmit: on_submit },
-            m("fieldset", m(".pure-g", [
-              fld.map( f => m(".pure-u-1-4", itf(f, item))),
-              m(".pure-u-1-5", 
-                m('button.pure-button.pure-button-primary[type="submit"]',
-                  {style: 'margin-top: 1.7em'},
-                  "Сохранить")
-              )
-            ]))
-          ) //form
-        ) // u-1-2
-      ); // g return
-    }// view
-  }; //this object
-}; //func
-
-
-const vuItem= function(vnode){
-
-  let item= vnode.attrs.model.item[0];
-  //console.log(item);
-  let thdr= [['code_usl', 'Код ПМУ'], ['name', 'Описание'] ]
-  let fld = ['ccode', 'code_podr', 'code_spec'];
-  
-  let tr= it => m('tr', [thdr.map( k => m('td', it[ k[0] ]) ) ]); 
-  
-  return {
-    view(){
       return [
-        m('h2', 'Редактор ПМУ'),
-        m('table.pure-table.pure-table-bordered', [
-          m('thead', [thdr.map( t => m('th', t[1])) ]),
-          m('tbody', tr(item))
-        ]),
-        m(pmuForm, {item: item}),
-      ];
-    }
-  };
-}
-
-const Grit = {
-  grup: { label: ['', 'Добавить к гуппе'], input: {
-      tag: ['.input-find.pure-u-3-4', "number"],
-      //attrs: { placeholder: 'Номер' }
-    }
-  },
-}
-const itg = function(f, d, a={}) { return fieldFrom(Grit, f, d, a); };
-
-const grcForm = function (vnode) {
-  
-  let { model, item }= vnode.attrs;
-  let _item= Object.assign({ grup: '' }, item);
-  let _model= { url: restSprav.pgr.url, item: _item, change: ['code_usl', 'grup'] }
-  let fld= ['grup', ];
-  let on_submit = function (event) {
-    event.preventDefault();
-    return moModel.formSubmit(event, _model, 'POST').then( ()=> 
-      moModel.getViewRpcMap(model, [ null, {code: item.code_usl}] ) );
-    //console.log(model);
-  };
-  
-  return {
-    view() {
-      return [ m(".pure-g",
-        m(".pure-u-1-2",
-          m("form.pure-form", { onsubmit: on_submit },
-            m("fieldset", m(".pure-g", [
-              fld.map( f => m(".pure-u-1-4", itg(f, _item) ) ),
-              m(".pure-u-1-5", 
-                m('button.pure-button.pure-button-primary[type="submit"]',
-                  {style: 'margin-top: 1.7em'},
-                  "Добавить")
-              )
-            ]))
-          ) //form
-        )), // u-1-2, g
-        m('.pure-g', 
-          m(".pure-u-1-2 ", 
+        m(".pure-g",
+          m(".pure-u-1-1",
+            m("form.pure-form", { onsubmit },
+              m("fieldset", m(".pure-g", [
+                m(".pure-u-1-3", tags('grup', 0)),
+                m(".pure-u-1-3",
+                  m('button.pure-button.pure-button-primary[type="submit"]',
+                    { style: 'margin-top: 1.7em' }, "Добавить")
+                )
+              ]))
+            )//form
+          ) // u-1-2
+        ), // g
+        m('.pure-g',
+          m(".pure-u-1-1",
             m('span#card_message',
-              _model.save ? _model.save.ok ? _model.save.msg : m('span.red', _model.save.msg) : '')
+              states().saverror ? m('span.red', states().saverror) : '')
           )
         )
-      ]; // g return
-    }// view
-  }; //this object
-}; //func
+      ];
+    }// g return
+  }
+}// view
 
 
-const vuGrups= function(vnode){
-  
-  let model= vnode.attrs.model;
-  let item= vnode.attrs.model.item[0];
-  let grup;
-  //let grup= vnode.attrs.model.grup; //[0];
-  //console.log(vnode.attrs.model.grup);
-  let ddel= e => {
-    //e.preventDefault();
-    let grup= e.target.getAttribute('data');
-    let _model= {
-      url: `${restSprav.pgr.url}?code_usl=eq.${item.code_usl}`,
-      key: 'grup',
-      item: { grup: grup },
-    };
-    return moModel.formSubmit(e, _model, 'DELETE').then(()=>
-      moModel.getViewRpcMap(model, [ null, {code: item.code_usl}] ) );
-    //m.redraw();
+const vuPmuGrups = function () {
+
+  let grups = [], struct = {}, item;
+
+  // disp accept params ( code_usl, grup, method )
+  const ddel = e => {
+    e.preventDefault();
+    const dk = delkey();
+    const act = ['pmugrup'];
+    // delele usl from grup
+    if (keys[dk] === 'id') {
+      act.push(item.code_usl);
+      act.push(e.target.getAttribute('data'));
+    } else {
+      act.push(e.target.getAttribute('data'));
+      act.push(item.id);
+    }
+    //console.log(act);
+    act.push('DELETE')
+    disp(act);
+    return false;
   };
-  let thdr= [['id', 'Номер группы'], ['name', 'Описание'], [null, 'Удалить из группы'] ];
-  let tr= row => m('tr', [thdr.map( k => {
-    let td= k[0] ? row [ k[0] ] : m('i.fa.fa-minus-circle.choice.red',
-      { data: row.id, onclick: ddel });
-    return m('td', td);
-  }) ] ); 
-  
+
+  const tcol = c => {
+    let f = struct[c].th || struct[c] || ['unknown'];
+    return m('th', f[0]);
+  };
+
+  // in both case (cide_usl, grup) row must have the id field
+  // if code_usl is constatnt: id will be grup id
+  // else if grup id is constant: id will be code_usl id
+  // key param here is needed only for mithril render
+  const trow = r => m('tr', { key: r.id }, [
+    Object.keys(struct).map(c => m('td', r[c])),
+    m('td', m('i.fa.fa-minus-circle.choice.red',
+      { data: r[keys[delkey()]], onclick: ddel })
+    )
+  ]);
+  const tbl_struct = () => states().unit === 'pmus' ? 'usl_grup' : 'grup_usl';
+  const tbl_hdr = () => ({
+    usl_grup: 'ПМУ Включена в группы',
+    grup_usl: 'В группу включены ПМУ'
+  }[tbl_struct()]);
+
+
   return {
-    view(vnode){
-      grup= vnode.attrs.model.grup;
+    view(vnode) {
+      struct = states().suite[tbl_struct()].item.struct || {};
+      grups = [];
+      if (states().options)
+        grups = states().options.get(tbl_struct()) || [];
+      ({ item } = vnode.attrs);
+
       return [
-        m('h3', 'ПМУ Включена в группы'),
-        m(grcForm, {model: model, item: item}),
-        grup ? 
+        m('h2', tbl_hdr()),
+        tbl_struct() === 'usl_grup' ?
+          m(grupPmuForm, { code_usl: item.code_usl }) : '',
         m('table.pure-table.pure-table-bordered', [
-          m('thead', [thdr.map( t => m('th', t[1])) ]),
-          m('tbody', [grup.map(tr)] )
-        ]) : '',
+          m('thead', m('tr', [
+            Object.keys(struct).map(col => tcol(col)),
+            m('th', "Удалить")
+          ])),
+          m('tbody', grups.map(trow))
+        ])
       ];
     }
   };
 }
 
-export const vuPmuItem = function(vnode){
-  
-  let { code } = vnode.attrs; //from url
-  //console.log(code);
-  let q= `?code_usl=eq.${code}`;
-  //console.log(q);
-  let model= moModel.getModel();
-  model.url= [ `${restSprav.pmu.url}${q}`, `${restSprav.pgc.url}` ];
-  model.method= ['GET', 'POST'];
-  model.map_keys= ['item', 'grup'];
-  // getViewRpcMap(model: object, data: additional data object)
-  moModel.getViewRpcMap(model, [ null, {code: code}] );
-  
-  return {  
-    onupdate() {
-      //moModel.getViewRpcMap(model, [ null, {code: code}] );
-    },
+
+export const vuPmu = function () {
+
+  let defs, def, itdef;
+  const name = () => item.name ? item.name : 'Без названия'
+
+  const hdr = item => m('h2',
+    `${item[keys[delkey() ^ 1]]} ${name()}`);
+
+  return {
     view() {
-      return model.error ? [ m(".error", model.error) ] :
-      model.item ?
-        [m(vuItem, {model: model}), m(vuGrups, {model: model} )] 
-      : m(vuLoading);
+      defs = states().suite || {};
+      def = defs[states().unit] || {};
+      itdef = def.item || {};
+      item = changedItem() || {};
+
+      return m('.pure-g', [
+        m('.pure-u-1-2', [
+          hdr(item),
+          m(vuForm, { word: states().word, itdef },
+            m(vuItemFormChildren, { itdef })
+          )
+        ]),
+        m('.pure-u-1-2', [
+          m(vuPmuGrups, { item })
+        ])
+      ]);
     }
   };
 }
