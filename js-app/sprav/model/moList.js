@@ -14,11 +14,11 @@ export const sortList = (id, state) => {
 };
 
 
-const fetchParams = (fetch, tofetch) => {
+const fetchParams = (fetch, isfetch) => {
   const params = {};
   //console.log(fetch, tofetch);
   let ps, val;
-  if (fetch && tofetch) {
+  if (isfetch && fetch) {
     Object.keys(fetch).forEach(
       fk => {
         val = changedItem()[fk] || '';
@@ -48,8 +48,10 @@ const makeBody = rest => {
 }
 
 
-export const getRequest = (set, item, fetch) => {
-  // fetch - String (may be bool)
+export const getRequest = (set, item, isfetch) => {
+  // set:: def Object ref,
+  // item:: String current eName 
+  // qfetch - String (may be bool) present is the fetch request
   const rest = set[item].rest || {},
     _fetch = set[item].fetch || null,
     _url = rest.url || item,
@@ -58,8 +60,9 @@ export const getRequest = (set, item, fetch) => {
     _item = set[item].item || {},
 
     //_fetch - object defines how build fetch params for getList
-    params = fetchParams(_fetch, fetch);
+    params = fetchParams(_fetch, isfetch);
 
+  // assume every deletable entity table have ddel column  
   if (_item.editable && _item.editable.indexOf('del') >= 0)
     params.ddel = 'eq.0';
 
@@ -75,11 +78,12 @@ export const getRequest = (set, item, fetch) => {
 };
 
 
-export const getList = (set, item, fetch = '') => {
-  // fetch - String (may be bool) as flag to build fetch params object for getList
+export const getList = (set, item, isfetch = '') => {
+  // isfetch - String (may be bool) 
+  // as flag to build fetch params object for getList
   // default empty string
   return m.request(
-    getRequest(set, item, fetch)
+    getRequest(set, item, isfetch)
   ).then(
     res => {
       if (!!res && res.length && res.length > 0) {

@@ -1,7 +1,7 @@
 // src/sprav/view/vuSprav.js
 
 import { vuDialog } from '../../apps/view/vuDialog';
-import { disp, states } from '../spravApi';
+import { disp, states } from '../../apps/appApi';
 //import { saveResult } from '../model/moModel';
 //import { changeEvent, itemId, fetchEvent } from '../model/moModel';
 

@@ -32,7 +32,7 @@ export const makeTags = defs => (field, idx) => {
 
   // composite struct
   const name = sf.th || sf;
-  if (!Array.isArray(name)) return '';
+  if (!Array.isArray(name) || name.length < 1) return '';
 
   const _label = sf.label || [name[0]] // [labeltext, labelclass]
   const _tag = sf.tag || [''] // [tagclass, auxattrs(reqired, disabled, etc)]

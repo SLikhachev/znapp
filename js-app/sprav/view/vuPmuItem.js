@@ -1,8 +1,8 @@
 
 // src/sprav/view/dsTNM.js
 
+import { states, disp } from '../../apps/appApi';
 import { changedItem } from '../model/moListItem';
-import { states, disp } from '../spravApi';
 import { vuForm } from '../form/spravForm';
 import { vuItemFormChildren } from '../form/vuItemChildren';
 import { makeTags } from '../form/makeTags';

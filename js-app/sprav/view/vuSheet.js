@@ -3,7 +3,7 @@
 //import { moList, changeEvent } from '../model/moModel'; //streams
 import { vuLoading, vuTheader } from '../../apps/view/vuApp';
 import { vuDialog } from '../../apps/view/vuDialog';
-import { states } from '../spravApi'; //stream
+import { states } from '../../apps/appApi'; //stream
 import { vuFindForm, vuForm, vuFetchForm } from '../form/spravForm';
 import { vuItemFormChildren } from '../form/vuItemChildren';
 import { vuFetchFormChildren } from '../form/vuFetchChildren';

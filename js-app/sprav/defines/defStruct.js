@@ -1,37 +1,125 @@
 
 // src/sparv/struct/spravStruct.js
 /**
-    spravStruct object of ITEMs define the app states, the table or view or proc of DB
-    every ITEM is an object present the item state
-    the name of item is a state name ( and the endpoint of the rest api by default )
-    itemName: {
-    // rest api interface define rest api endpoint if any
-      // defaul absent and endpoint is an item name and no prarms and no options
-      rest: {
-        url: String REST table name (defalut item name is a table name) if any 
-        params: Object present the query params ( default { order_by: 'id' } ) if any
-        options: Array of items' objects to query in option with this item 
-      },
-      // item object define the item properties 
-      item: {
-        find: Number, defines how number table comns includes in find finction
-        name: String define the item name in navigation
-        // Array present the allowed action with object item
-        editable: ['add', 'edit'. 'del'] default no actions allowed
-        edit_fields: Array of Strings, fields' names which allowed to edit default all fields exclude 'id'  
-        pk: String primary key for sql model table dafault id
-        
-        // if struct is abcent in definition then this idName object used by default
-        struct: Object of returned rest data fields name and array of their names
-          { 
-            field_name: [ UI_table_name: String, sortable: bool ] ...
-          }
-      }  
-    }
+    defStruct object defines the set of the representation of some entities
+    used by app for states, models and views generation.
+    Every entity have unique name as the ref of the object to present this entity.
+    Every entity is an object with the set of attrs (properties) that may be absent
+    and that case are used defaults.
+    Struct of props:
 
+const defStruct = {
+  // entity's unique name
+  eName: {
+
+    // rest attr present the api interface for the restful db server
+    // if absent then api endpoint is a `eName`, and default params
+    // will be params as follow
+    rest: {
+
+      // String RESTful api url (table name). Def: `eName`
+      url: tablename,
+
+      // String Request method Def: 'GET'
+      method: 'POST',
+
+      // Object Request headers. Def: undef
+      headers: {},
+
+      // Object present the query params. Def: { order: 'id.asc' }
+      params: { order: 'id.asc' },
+
+      // Array(String) of entity's objects to query in option with this one
+      // every name in array must be present in this `defStruct`
+      // Def: undef
+      options: ['eName1', 'eName2']
+    },
+
+    // Object item define the presentation of the entity
+    item: {
+
+      // Object present of the table and form for entity presentation
+      struct: {
+
+        // Object or Array. Name of the entity prop (column name of the DB)
+        // 1st var: Array(String) ["Name", 'sort']
+        // Name - name of the prop table column and text for prop form's `lable` tag
+        // 'sort' if any column will be sortable, may be absent
+        // Def: undef (also [] is undef)
+        field1: ["column1", 'sort'], // ["column1"]
+
+        // 2nd var: Object
+        // Object present the table and form presentation of entity prop
+        field2: {
+
+          // Array(String) ["Name", 'sort'], as above for field1
+          th: ["Код", 'sort'],
+
+          // Array(String) form label presentation [labeltext, labelclass]
+          // Def: th[0]
+          label: ['name', 'klass'],
+
+          // String type of the form's input tag
+          // Def: 'text'
+          type: 'number',
+
+          // Array(String) form input presentation [tagclass, opt1, opt2, ...]
+          // Def: undef
+          tag: ['.lcode', 'required'],
+
+          // Object present the form's input tag aux attrs
+          // Def: undef
+          attrs: { placeholder: "Код диагноза МКБ-10" }
+        },
+      },
+
+      // Number attr for 'search form' in sheet table and def how many cols must
+      // be used for search some text in table cols. Def: 2
+      find: 0,
+
+      // String defines as the entity will be present in side bar nav
+      name: 'itemName',
+
+      // Array(String) present the allowed action with object item
+      // Def: undef, no actions allowed
+      editable: ['add', 'edit', 'del'],
+
+      // Array(String), fields' names which allowed to edit
+      // Def: undef, all fields editable exclude 'id'
+      edit_fields: ['field1', `field2`],
+
+      // String primary key column name for sql model table
+      // Def: 'id'
+      pk: 'pk',
+
+      // Array(String order of fields in entity form, tabindex
+      // is Array index of current field
+      form: ['field2', 'field1']
+    }
+  }
+}
+
+
+// this Object present of the nav paths for above def
+const structNav = {
+  // String of the current nav
+  // item will be correspond with the defStruct eNames
+  path: '/local/:item',
+
+  // horizontal nav bar button\item name
+  name: "Локальные",
+
+  // this defStruct ref
+  def: spravLocal,
+
+  // eNames will be rendered on the nav sidebar in this order
+  items: ['doctor', 'sp_para', 'mo_local', 'smo_local'],
+  router: 'router'
+};
 */
 
-// this func return the default struct object to render table
+// The default struct Object to render table, form if
+// defStruct.eName.item.struct not present
 export const idName = {
   id: { th: ["Код", 'sort'], type: 'number', tag: ['.lcode', 'readonly'] },
   name: { th: ["Описаение", 'sort'], tag: ['', 'required'] }

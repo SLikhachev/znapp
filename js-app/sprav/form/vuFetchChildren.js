@@ -11,7 +11,9 @@ export const vuFetchFormChildren = () => {
   return {
     view(vnode) {
       ({ def } = vnode.attrs);
+
       fetch = def.fetch || null;
+      //console.log(def.fetch);
       return fetch ? makeFields(makeTags(fetch), Object.keys(fetch)) : '';
     }
   }

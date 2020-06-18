@@ -14,7 +14,7 @@ export const spravPmus = {
     },
     fetch: {
       ccode: {
-        th: [],
+        th: [''],
         //label: ["Номер услуги"],
         type: 'number',
         tag: ['.pure-u-1-8'],
@@ -22,7 +22,7 @@ export const spravPmus = {
         params: 'gte.'
       },
       code_usl: {
-        th: [],
+        th: [''],
         //label: ["Код услуги"],
         tag: ['.pure-u-1-8'],
         attrs: { placeholder: "Код услуги" },
@@ -53,7 +53,7 @@ export const spravPmus = {
     },
     fetch: {
       id: {
-        th: [],
+        th: [''],
         //label: ["Номер услуги"],
         type: 'number',
         tag: ['.pure-u-1-8'],
@@ -118,9 +118,11 @@ export const spravPmus = {
   }
 }
 
+
 export const pmus = {
   path: '/pmus/:item',
   name: "ПМУ",
   def: spravPmus,
-  items: ['pmus', 'pmu_grup']
+  items: ['pmus', 'pmu_grup'],
+  router: 'pmus'
 };

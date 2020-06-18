@@ -2,7 +2,7 @@
 // src/sprav/view/vuListTable.js
 
 import { vuDialog } from '../../apps/view/vuDialog';
-import { disp } from '../spravApi';
+import { disp } from '../../apps/appApi';
 import { idName } from '../defines/defStruct';
 //import { saveResult } from '../model/moModel';
 
