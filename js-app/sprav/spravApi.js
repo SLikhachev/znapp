@@ -13,6 +13,7 @@ import { getData } from './model/moData';
 const initial = {
   suite: { page: "Медстатстика: Справочнкики" }
 }
+
 const Actions = (state, update) => {
   // stream of states
   const stup = up(update);

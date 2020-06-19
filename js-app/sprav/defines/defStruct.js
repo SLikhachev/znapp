@@ -56,7 +56,7 @@ const defStruct = {
           th: ["Код", 'sort'],
 
           // Array(String) form label presentation [labeltext, labelclass]
-          // Def: th[0]
+          // Def: th[0] or null
           label: ['name', 'klass'],
 
           // String type of the form's input tag

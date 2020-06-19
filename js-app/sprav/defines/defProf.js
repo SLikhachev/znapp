@@ -48,7 +48,6 @@ export const spravProf = {
     rest: { params: { order: 'code.asc', limit: 20 } },
     fetch: {
       code: {
-        th: [''],
         //label: ["Код диагноза МКБ-10"],
         tag: ['.input-find.pure-u-2-4', 'required'],
         attrs: { placeholder: "Код диагноза МКБ-10" },

@@ -14,7 +14,6 @@ export const spravPmus = {
     },
     fetch: {
       ccode: {
-        th: [''],
         //label: ["Номер услуги"],
         type: 'number',
         tag: ['.pure-u-1-8'],
@@ -22,7 +21,6 @@ export const spravPmus = {
         params: 'gte.'
       },
       code_usl: {
-        th: [''],
         //label: ["Код услуги"],
         tag: ['.pure-u-1-8'],
         attrs: { placeholder: "Код услуги" },
@@ -53,7 +51,6 @@ export const spravPmus = {
     },
     fetch: {
       id: {
-        th: [''],
         //label: ["Номер услуги"],
         type: 'number',
         tag: ['.pure-u-1-8'],
