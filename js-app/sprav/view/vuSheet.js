@@ -1,13 +1,12 @@
 // src/sprav/view/vuSheet.js
 
-//import { moList, changeEvent } from '../model/moModel'; //streams
+import { states } from '../../apps/appApi'; //stream
 import { vuLoading, vuTheader } from '../../apps/view/vuApp';
 import { vuDialog } from '../../apps/view/vuDialog';
-import { states } from '../../apps/appApi'; //stream
+import { vuListTable } from '../../apps/view/vuListTable';
+import { vuItemFormChildren } from '../../apps/form/vuItemChildren';
+import { vuFetchFormChildren } from '../../apps/form/vuFetchChildren';
 import { vuFindForm, vuForm, vuFetchForm } from '../form/spravForm';
-import { vuItemFormChildren } from '../form/vuItemChildren';
-import { vuFetchFormChildren } from '../form/vuFetchChildren';
-import { vuListTable } from './vuListTable';
 
 
 // clojure

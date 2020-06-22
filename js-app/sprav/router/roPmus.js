@@ -1,7 +1,8 @@
 
 // src/sprav/router/roProf.js
 
-import { disp, pathRouter, vuPage } from '../../apps/appApi';
+import { disp } from '../../apps/appApi';
+import { pathRouter, vuPage } from '../../apps/appRouter';
 import { pmus } from '../defines/defPmus';
 import { vuSheet } from '../view/vuSheet';
 import { vuPmu } from '../view/vuPmuItem';

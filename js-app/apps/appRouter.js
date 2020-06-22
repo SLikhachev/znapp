@@ -12,7 +12,7 @@ export const vuPage = view => vuView({ spaMenu: app.menu }, view)
 export const rootRouter = {
   [app.menu.root]: {
     render() {
-      return vuPage(m(vuPageTitle, { text: states().suite.page }));
+      return vuPage(m(vuPageTitle, { text: app.initial.suite.page }));
     }
   }
 };

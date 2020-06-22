@@ -2,18 +2,10 @@
 
 import { vuDialog } from '../../apps/view/vuDialog';
 import { disp, states } from '../../apps/appApi';
-//import { saveResult } from '../model/moModel';
-//import { changeEvent, itemId, fetchEvent } from '../model/moModel';
 
 
 const onadd = (e) => {
   e.preventDefault();
-  //changeEvent({
-  // method: 'POST',
-  //  word: 'Добавить'
-  //});
-  //itemId('');
-  //saveResult({});
   disp(['add'])
   vuDialog.open();
 };

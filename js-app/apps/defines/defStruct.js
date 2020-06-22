@@ -129,7 +129,7 @@ const structNav = {
 // The default struct Object to render table, form if
 // defStruct.eName.item.struct not present
 export const idName = {
-  id: { th: ["Код", 'sort'], type: 'number', tag: ['.lcode', 'readonly'] },
-  name: { th: ["Описаение", 'sort'], tag: ['', 'required'] }
+    id: { th: ["Код", 'sort'], type: 'number', tag: ['.lcode', 'readonly'] },
+    name: { th: ["Описаение", 'sort'], tag: ['', 'required'] }
 }
 

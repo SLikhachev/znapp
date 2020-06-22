@@ -4,11 +4,10 @@
   */
 import { up } from '../apps/utils';
 import { states, update, disp } from '../apps/appApi';
+import { getList, sortList } from '../apps/model/moList';
+import { getItem, listItem, itemId, saveItem } from '../apps/model/moListItem';
+import { getData } from '../apps/model/moData';
 import { spravMenu } from './spravMenu';
-import { getList, sortList } from './model/moList';
-import { getItem, listItem, itemId, saveItem } from './model/moListItem';
-import { getData } from './model/moData';
-
 
 const initial = {
   suite: { page: "Медстатстика: Справочнкики" }
@@ -77,12 +76,14 @@ const actions = Actions(states, update); //=> obj of func ref
 
 //[actionName, args] 
 export const initApp = app => {
+  Object.assign(
+    app,
+    { initial, menu: spravMenu }
+  );
+  //states = m.stream.scan(acc, app.initial, update);
   disp.map(av => {
     let [event, ...args] = av;
     return actions[event] ? actions[event](args) : m.stream.SKIP
   });
-  Object.assign(
-    app,
-    { initial, menu: spravMenu }
-  )
+
 }

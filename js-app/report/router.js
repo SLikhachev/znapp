@@ -1,27 +1,25 @@
 // src/report/router_report.js
 
-import { vuPageTitle } from '../apps/view/vuMain';
+import { app } from '../apps/appApi';
+import { pathRouter, routerFun } from '../apps/appRouter';
 
-import { vuApp, vuView } from '../apps/view/vuApp.js';
-//report
-import { reportApi, reportMenu } from './reportApi.js';
-// routers
-import { roSurvey } from './router/roSurvey.js';
-//import { roTfoms } from './router/roTfoms.js';
-//import { roOnko } from './router/roOnko.js';
+//  init func
+import { initApp } from './reportApi';
 
-const reportRouter = {
-  [reportMenu.root]: {
-    render() {
-      return vuReport(m(vuPageTitle, { text: states().suite.page }));
-    }
-  }
-};
+//menu
+import { reportMenu } from './reportMenu';
 
-Object.assign(
-  reportRouter,
-  roRouter(survey),
-)
+// adds routers
+//import { roPmus } from './router/roPmus';
 
-m.route(document.body, "/", reportRouter);
+// views
+import { vuTaskSheet } from './view/vuTaskSheet';
 
+// init application
+initApp(app);
+
+const route = pathRouter(vuTaskSheet);
+const addroute = {}; //{ pmus: roPmus }; //functions
+const spravRouter = routerFun(reportMenu, addroute, route);
+
+m.route(document.body, "/", spravRouter);

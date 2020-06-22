@@ -2,10 +2,11 @@
 // src/sprav/view/dsTNM.js
 
 import { states, disp } from '../../apps/appApi';
-import { changedItem } from '../model/moListItem';
+import { changedItem } from '../../apps/model/moListItem';
+import { vuItemFormChildren } from '../../apps/form/vuItemChildren';
+import { makeTags } from '../../apps/form/makeTags';
 import { vuForm } from '../form/spravForm';
-import { vuItemFormChildren } from '../form/vuItemChildren';
-import { makeTags } from '../form/makeTags';
+
 
 // current key to delete from `pmu_grup_code`
 // if this is code_usl in several groups then id of grup, else code_usl 

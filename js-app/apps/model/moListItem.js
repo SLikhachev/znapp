@@ -1,5 +1,5 @@
 
-import { vuDialog } from '../../apps/view/vuDialog';
+import { vuDialog } from '../view/vuDialog';
 import { _schema, errMsg } from './moModel';
 
 const [stream, combine] = [m.stream, m.stream.combine];
