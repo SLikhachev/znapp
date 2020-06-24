@@ -35,6 +35,10 @@ const updateItem = (item, changed) => {
   const target = changed().target;
   let value = target.value;
 
+  if (target.type === 'submit')
+    return Object.assign(item(),
+      { method: target.getAttribute('method') || 'POST' });
+
   if (target.type === 'checkbox') {
     if (target.checked)
       value = 1;

@@ -1,19 +1,16 @@
 // src/sprav/view/vuSprav.js
 
-//import { vuDialog } from '../../apps/view/vuDialog';
-import { disp, states } from '../../apps/appApi';
-//import { saveResult } from '../model/moModel';
-//import { changeEvent, itemId, fetchEvent } from '../model/moModel';
+import { disp } from '../../apps/appApi';
 
 export const vuTaskForm = () => {
 
   let task = {}, form = {};
 
-  const display = form => R.isEmpty(form) ? 'display: block' : 'display: none;';
+  const display = form => R.isEmpty(form) ? 'display: none' : 'display: block;';
 
   const onsubmit = e => {
     e.preventDefault();
-    disp([e.target.name]);
+    disp(['task', e]);
     return false;
   };
 
@@ -22,15 +19,14 @@ export const vuTaskForm = () => {
       ({ task } = vnode.attrs);
       form = task.form || {};
 
-      return m('.pure-g', { style: display(form) },
-        m(".pure-u-1-1",
+      return m('.pure-g', { style: display(form) }, [
+        m('.pure-u-1-2',
           m("form.pure-form.pure-form-stacked", { onsubmit },
-            m('fieldset', [
-              vnode.children,
-            ])
-          )
-        )
-      )
+            m('fieldset', [vnode.children])
+          ),
+        ),
+        //m('.pure-u-2-3', [taskResp(md)])
+      ])
     }
   }
 };

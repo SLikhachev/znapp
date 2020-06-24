@@ -2,9 +2,9 @@
 // src/sparv/model/spravCom.js
 // common sprav definition
 
+import { get_month } from '../../apps/defines/defStruct';
 
-
-export const reportSurvey = {
+export const reportSurv = {
 
   page: "Отчеты сводные",
 
@@ -14,8 +14,26 @@ export const reportSurvey = {
       params: { insurer: 'eq.999', this_year: 'eq.2020', order: 'this_month' }
     },
     task: {
-      post: "/report/common/volum/make_report", //POST date
-      get: "/utils/file/volum/report/" //GET report file
+      url: "/report/common/volum/make_report", // POST/GET data
+      get: "/utils/file/volum/report/", //GET report file
+      form: {
+        legend: "Расчет объемов",
+        month: {
+          label: ["Месяц"], type: 'month', tag: ['', 'required'],
+        },
+        test: { label: ["Тест", '.pure-checkbox'], type: "checkbox", view: 'controls' }
+      },
+      buttons: {
+        butt1: {
+          label: ["Обновить"], type: 'submit', tag: ['.pure-button'],
+          attrs: { style: 'font-size: 1.2em', method: 'POST' }
+        },
+        butt2: {
+          label: ["Отчет"], type: 'submit',
+          tag: ['.pure-button.pure-button-primary'],
+          attrs: { style: "font-size: 1.2em; margin-left: 2em;", method: 'GET' }
+        }
+      }
     },
     item: {
       name: "Объемы помощи",
@@ -37,7 +55,7 @@ export const reportSurvey = {
   },
   hosp: {
     task: {
-      post: "/report/common/hosp/make_report", //POST date, upload file
+      url: "/report/common/hosp/make_report", //POST data, upload file
       get: "/utils/file/hosp/report/", //GET report file
     },
     item: {

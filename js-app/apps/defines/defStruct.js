@@ -71,7 +71,7 @@ const defStruct = {
           // Def: 'text'
           type: 'number',
 
-          // Array(String) form input presentation [tagclass, opt1, opt2, ...]
+          // Array(String) form input tag presentation [tagclass, opt1, opt2, ...]
           // Def: undef
           tag: ['.lcode', 'required'],
 
@@ -126,10 +126,27 @@ const structNav = {
 };
 */
 
+export const get_month = month => [
+  "Январь",
+  "Февраль",
+  "Март",
+  "Апрель",
+  "Май",
+  "Июнь",
+  "Июль",
+  "Август",
+  "Сентябрь",
+  "Октябрь",
+  "Ноябрь",
+  "Декабрь"
+][month - 1];
+
+
+
 // The default struct Object to render table, form if
 // defStruct.eName.item.struct not present
 export const idName = {
-    id: { th: ["Код", 'sort'], type: 'number', tag: ['.lcode', 'readonly'] },
-    name: { th: ["Описаение", 'sort'], tag: ['', 'required'] }
+  id: { th: ["Код", 'sort'], type: 'number', tag: ['.lcode', 'readonly'] },
+  name: { th: ["Описаение", 'sort'], tag: ['', 'required'] }
 }
 

@@ -3,21 +3,32 @@
 import { changeValue, changedItem } from '../model/moListItem';
 
 
-// String -> String
-const _klass = kl => kl ? kl[0] !== '.' ? `.${kl}` : kl : '';
+// Any -> String
+const _text = t => R.isNil(t) ? '' : typeof t === 'string' ? t : '';
+const _klass = k => R.isEmpty(_text(k)) ? '' : k[0] !== '.' ? `.${k}` : k;
 
-// String -> String -> String -> Vnode
-const label = (ffor, text = '', klass = '') => m(`label${klass}[for=${ffor}]`, text);
+
+// (String -> String -> String) -> Vnode
+const label = (fortag, txt = '', kl = '') => m(
+  `label${_klass(kl)}[for=${_text(fortag)}]`,
+  _text(txt));
+
+const labelcheckbox = (fortag, checkbox = '', txt = '', kl = '') => m('.pure-controls',
+  m(`label${_klass(kl)}[for=${_text(fortag)}]`, [
+    checkbox,
+    m('span', { style: "padding: 0px 7px 0px;" }, _text(txt))
+  ])
+)
 
 // Object -> Vnode
-const input = obj => { // {klass, type, name, tabindex, aux, value, attrs} => {
+const _input = obj => { // {klass, type, name, tabindex, aux, value, attrs} => {
 
   let tag = `input${_klass(obj.klass)}`;
 
   tag = ['type', 'name', 'tabindex'].reduce(
-    (s, el) => obj[el] ? s + `[${el}=${obj[el]}]` : s, tag);
+    (s, el) => obj[el] ? s + `[${el}=${_text(obj[el])}]` : s, tag);
 
-  tag = obj.aux.reduce((s, el) => s + `[${el}]`, tag);
+  tag = obj.aux.reduce((s, el) => s + `[${_text(el)}]`, tag);
 
   // we can redefine value oninput by attrs
   const attrs = { value: obj.value, oninput: changeValue };
@@ -32,10 +43,19 @@ const input = obj => { // {klass, type, name, tabindex, aux, value, attrs} => {
   return m(tag, Object.assign({}, attrs, obj.attrs));
 }
 
-export const makeTags = defs => (field, idx) => {
+const legend = t => m('legend', _text(t));
 
-  const sf = defs[field]; // stuct of object presentation
-  if (!sf) return ''; // no such field 
+const button = sf => {
+  const klass = Array.isArray(sf.tag) ? _klass(sf.tag[0]) : '';
+  const text = Array.isArray(sf.label) ? _text(sf.label[0]) : 'Выполнить';
+  const attrs = sf.attrs || {};
+  attrs.type = _text(sf.type) || 'submit';
+  attrs.onclick = changeValue;
+  return m(`button${klass}`, attrs, text);
+}
+
+
+const input = (sf, field, idx) => {
 
   // composite struct
   let _label = sf.label || sf.th || sf; //[labeltext, labelclass]
@@ -43,10 +63,13 @@ export const makeTags = defs => (field, idx) => {
   if (!Array.isArray(_label)) // no label present
     _label = null;
 
-  if (!sf.label && _label && _label.length > 1) // label from th
+  if (!sf.label && _label) // no klass for label 
     _label = [_label[0]];
 
-  const _tag = sf.tag || [''] // [tagclass, auxattrs(reqired, disabled, etc)]
+  // [tagclass, auxattrs(reqired, disabled, etc)]
+  const _tag =
+    (sf.tag && Array.isArray(sf.tag) && sf.tag.length > 0) ? sf.tag : ['']
+
   //if (idx == 1 || idx == 2)
   if (idx < 2)
     _tag.push['autofocus'];
@@ -55,19 +78,40 @@ export const makeTags = defs => (field, idx) => {
   let type = sf.type || 'text';
   let value = changedItem()[field];
   let aux = _tag.slice(1);
+
   if (type === 'checkbox' && value)
     aux.push('checked')
 
+  const _tagobj = {
+    klass: _tag[0],
+    type: type, //type of input field
+    name: field, //name of input field
+    tabindex: idx,
+    aux: aux, // aux params
+    value: value, // current chosen value
+    attrs: sf.attrs || {} // attrs from definition eg. { placeholder: 'i love you' } 
+  };
+
+  if (type === 'checkbox' && sf.view && sf.view === 'controls')
+    return labelcheckbox(field, _input(_tagobj), ..._label);
+
   return [
     _label ? label(field, ..._label) : '',
-    input({
-      klass: _tag[0],
-      type: type, //type of input field
-      name: field, //name of input field
-      tabindex: idx,
-      aux: aux, // aux params
-      value: value, // current chosen value
-      attrs: sf.attrs || {} // attrs from definition eg. { placeholder: 'i love you' }
-    })
+    _input(_tagobj)
   ]
 };
+
+
+export const makeTags = defs => (field, idx) => {
+
+  const sf = defs[field]; // stuct of object presentation
+  if (!sf) return ''; // no such field 
+
+  if (field === 'legend')
+    return legend(sf);
+
+  if (sf.type && (sf.type === 'submit' || sf.type === 'button'))
+    return button(sf);
+
+  return input(sf, field, idx);
+}

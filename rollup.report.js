@@ -10,7 +10,7 @@ rollup({
 });
 */
 export default {
-  input: 'js-app/report/router_report.js',
+  input: 'js-app/report/router.js',
   output: {
     file: 'static/js/apps/report.pack.js',
     format: 'es'

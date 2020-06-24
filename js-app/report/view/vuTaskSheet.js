@@ -2,9 +2,10 @@
 
 import { vuLoading, vuTheader } from '../../apps/view/vuApp';
 import { states } from '../../apps/appApi'; //stream
+import { vuListTable } from '../../apps/view/vuListTable';
 import { vuTaskForm } from '../form/taskForm';
 import { vuTaskFormChildren } from '../form/vuTaskChildren';
-import { vuListTable } from '../apps/view/vuListTable';
+
 
 
 // clojure
