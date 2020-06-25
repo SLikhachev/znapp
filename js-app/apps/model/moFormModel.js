@@ -19,21 +19,22 @@ export const runTask = async function (event, promise) {
   const res = await promise;
   resp.open = true;
   event.target.classList.remove('disable');
+  console.log(res);
   return res;
 };
 
-const formRequest = (schema, suite, unit, data) => {
+const formRequest = (api, suite, unit, data) => {
   const def = suite[unit] || {},
-    _schema = def[schema] || {},
+    _api = def[api] || {},
     _data = data ? data : changedItem(),
-    _url = _schema.url || '',
-    headers = _schema.headers || {},
-    method = _data.method || 'POST';
+    headers = _api.headers || {},
+    method = _data.method || 'POST',
+    _url = _api.url || '';
 
   if (!_url) throw new Error('No URL for form Request provided');
   delete _data.method;
 
-  let url = `${_schema(schema)}${_url}`;
+  let url = `${_schema(api)}${_url}`;
 
   // request is SIMPLE if we send to serever Form Data not JSON object
   // with GET HEAD POST methods. 
@@ -43,14 +44,12 @@ const formRequest = (schema, suite, unit, data) => {
   // multipart/form-data
   // text/plain
 
-  let body = {};
-
   if (method === 'GET') {
     url = `${url}?${m.buildQueryString(_data)}`;
-    return { url, method, body, headers };
+    return { url, method, headers };
   }
 
-  body = _data;
+  let body = _data; // json object
 
   // with POST we use simple request
   if (method === 'POST') {
@@ -63,11 +62,16 @@ const formRequest = (schema, suite, unit, data) => {
 }
 
 // 
-export const formSubmit(schema, suite, unit, data) {
-  const reqBody = formRequest(schema, suite, unit, data);
+export const formSubmit = (api, suite, unit, data) => {
+  const reqBody = formRequest(api, suite, unit, data);
   reqBody.timeout = 0
   return m.request(reqBody).then(
-    res => ({ res }),
+    res => ({
+      done: res.done || false,
+      message: res.message || '',
+      detail: res.detail || '',
+      file: res.file || ''
+    }),
     err => ({ error: errMsg(err) })
   );
 }

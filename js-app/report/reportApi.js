@@ -5,7 +5,7 @@
 import { up } from '../apps/utils';
 import { states, update, disp } from '../apps/appApi';
 import { listItem, itemId, changedItem } from '../apps/model/moListItem';
-import { formItem } from '../apps/model/moFormModel';
+import { formItem, runTask, formSubmit } from '../apps/model/moFormModel';
 import { reportMenu } from './reportMenu';
 
 
@@ -39,20 +39,20 @@ const Actions = (state, update) => {
     task(d) {
       let [event] = d;
       //console.log(changedItem());
-      runTask(event, formSubmit('task',
+      const resp = document.getElementById('resp');
+      resp.open = false;
+      event.target.classList.add('disable');
+      stup({ error: null, file: null, done: false, message: '', detail: '' });
+      formSubmit('task',
         state().suite,
         state().unit,
-        changedItem())).
-        then(res => this.resp(res)).
-        catch(error => stup(error));
-    },
-    resp(res) {
-      stup({
-        file: res.file ? res.file : null,
-        message: res.message,
-        detail: res.detail ? res.detail : null,
-        done: res.done ? res.done : null,
-      })
+        changedItem()).
+        then(res => stup(res)).
+        catch(err => stup(err)).
+        finally(() => {
+          resp.open = true;
+          event.target.classList.remove('disable');
+        });
     },
     /*
     add() {
