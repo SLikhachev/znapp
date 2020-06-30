@@ -1,5 +1,5 @@
 
-// src/sparv/model/spravOnko.js
+// src/sparv/defines/spravOnko.js
 // onkology sprav definition
 
 const onko_ = function () {

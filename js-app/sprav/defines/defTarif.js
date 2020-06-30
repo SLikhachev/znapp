@@ -1,5 +1,5 @@
 
-// src/sparv/model/spravTarif.js
+// src/sparv/defines/spravTarif.js
 // tarifs sprav definition
 
 export const spravTarif = {

@@ -1,5 +1,6 @@
 
-// src/sparv/model/spravLocal.js
+// src/sparv/defines/spravLocal.js
+
 // local sprav definition
 // item.struct:
 // table presentation:

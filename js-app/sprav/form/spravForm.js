@@ -1,4 +1,4 @@
-// src/sprav/view/vuSprav.js
+// src/sprav/form/spravForm.js
 
 import { vuDialog } from '../../apps/view/vuDialog';
 import { disp, states } from '../../apps/appApi';

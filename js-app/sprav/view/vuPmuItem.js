@@ -1,5 +1,5 @@
 
-// src/sprav/view/dsTNM.js
+// src/sprav/view/vuPmuItem.js
 
 import { states, disp } from '../../apps/appApi';
 import { changedItem } from '../../apps/model/moListItem';

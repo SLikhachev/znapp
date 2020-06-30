@@ -1,5 +1,5 @@
 
-// src/sparv/model/spravProfil.js
+// src/sparv/defines/spravProfil.js
 // prof sprav definition
 
 export const spravProf = {

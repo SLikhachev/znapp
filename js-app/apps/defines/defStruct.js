@@ -40,7 +40,26 @@ const defStruct = {
       // String POST request url for given task
       post: 'url',
       // String GET request url for given task
-      get: 'url'
+      get: 'url',
+      // task form definition
+      form: {
+        legend: "Расчет объемов",
+        month: _month,
+        test: _test
+      },
+      // set of form buttons
+      buttons: {
+        butt1: {
+          label: ["Обновить"], type: 'submit', tag: ['.pure-button'],
+          attrs: { style: 'font-size: 1.2em', method: 'POST' }
+        },
+        butt2: {
+          label: ["Отчет"], type: 'submit',
+          tag: ['.pure-button.pure-button-primary'],
+          attrs: { style: "font-size: 1.2em; margin-left: 2em;", method: 'GET' }
+        }
+      }
+
     },
 
     // Object item define the presentation of the entity

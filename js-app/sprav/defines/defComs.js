@@ -1,5 +1,5 @@
 
-// src/sparv/model/spravCom.js
+// src/sparv/defines/spravCom.js
 // common sprav definition
 
 export const spravComs = {
