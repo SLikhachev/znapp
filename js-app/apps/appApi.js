@@ -49,3 +49,12 @@ disp.map(av => {
   return actions[event] ? actions[event](args) : stream.SKIP
 })
 */
+
+//[actionName, args] 
+export const initApp = (initial, menu, actions) => {
+  Object.assign(app, { initial, menu });
+  disp.map(av => {
+    let [event, ...args] = av;
+    return actions[event] ? actions[event](args) : stream.SKIP
+  });
+}

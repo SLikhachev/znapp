@@ -3,16 +3,16 @@
 /**
   */
 import { up } from '../apps/utils';
-import { states, update, disp } from '../apps/appApi';
+import { states, update, initApp } from '../apps/appApi';
 import { getList, sortList } from '../apps/model/moList';
 import { getItem, listItem, itemId, saveItem } from '../apps/model/moListItem';
 import { getData } from '../apps/model/moData';
 import { spravMenu } from './spravMenu';
-
+/*
 const initial = {
   suite: { page: "Медстатстика: Справочнкики" }
 }
-
+*/
 const Actions = (state, update) => {
   // stream of states
   const stup = up(update);
@@ -72,18 +72,10 @@ const Actions = (state, update) => {
   }
 }
 
-const actions = Actions(states, update); //=> obj of func ref
+//const actions = Actions(states, update); //=> obj of func ref
 
-//[actionName, args] 
-export const initApp = app => {
-  Object.assign(
-    app,
-    { initial, menu: spravMenu }
-  );
-  //states = m.stream.scan(acc, app.initial, update);
-  disp.map(av => {
-    let [event, ...args] = av;
-    return actions[event] ? actions[event](args) : m.stream.SKIP
-  });
-
-}
+export const initSparv = () => initApp(
+  { suite: { page: "Медстатстика: Справочнкики" } },
+  spravMenu,
+  Actions(states, update)
+);

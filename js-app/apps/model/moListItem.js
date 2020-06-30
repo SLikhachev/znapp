@@ -39,12 +39,20 @@ const updateItem = (item, changed) => {
     return Object.assign(item(),
       { method: target.getAttribute('method') || 'POST' });
 
+  if (target.type === 'file') {
+    value = target.value.split('\\').pop();
+    return Object.assign(item(),
+      { [target.name]: value, files: target.files[0] });
+    //value = target.files[0];
+  }
+
   if (target.type === 'checkbox') {
     if (target.checked)
       value = 1;
     else
       value = null;
   }
+
   return Object.assign(item(),
     { [target.name]: value });
 };

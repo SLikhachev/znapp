@@ -54,6 +54,18 @@ const button = sf => {
   return m(`button${klass}`, attrs, text);
 }
 
+const file = sf => {
+  const klass = Array.isArray(sf.tag) ? _klass(sf.tag[0]) : '.inputfile';
+  return [
+    m(`input${klass}[type="file"][name="file"][id="file"]`,
+      {
+        'data-multiple-caption': "{count} files selected",
+        'multiple': false, onchange: changeValue
+      }
+    ),
+    m('label[for="file"]', m('strong', "Выбрать файл"))
+  ];
+}
 
 const input = (sf, field, idx) => {
 
@@ -109,6 +121,8 @@ export const makeTags = defs => (field, idx) => {
 
   if (field === 'legend')
     return legend(sf);
+  if (sf.type && sf.type === 'file')
+    return file(sf);
 
   if (sf.type && (sf.type === 'submit' || sf.type === 'button'))
     return button(sf);

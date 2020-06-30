@@ -24,6 +24,7 @@ export const vuTaskSheet = function () {
       def = defs[item] || {};
       itdef = def.item || {};
       task = def.task || {};
+      rest = def.rest || {};
 
       return [
         m(vuTheader, { itdef }),
@@ -31,9 +32,9 @@ export const vuTaskSheet = function () {
           m(vuTaskFormChildren, { task })
         ), // make list [] manually
         states().error ? m(".error", states().error) :
-          !states().list ? m(vuLoading) : [
-            m(vuTable, { itdef, list: states().list }),
-          ]
+          !rest.url ? '' :
+            !states().list ? m(vuLoading) :
+              m(vuTable, { itdef, list: states().list }),
       ]
     }
   }; //return this object

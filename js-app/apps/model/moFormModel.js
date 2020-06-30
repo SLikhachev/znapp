@@ -4,24 +4,14 @@
 // this models is used by REESTR, REPORT apps 
 
 import { _month, _schema, errMsg } from './moModel.js';
-
+import { changedItem } from './moListItem';
 
 export const formItem = def => {
-  let month = _month();
-  if (def.task && def.task.form)
-    return { month };
+  if (def.task && def.task.form && def.task.form.month)
+    return { month: _month() };
+  return {};
 }
 
-export const runTask = async function (event, promise) {
-  event.target.classList.add('disable');
-  const resp = document.getElementById('resp'); // taskResp - view with #resp dom
-  resp.open = false;
-  const res = await promise;
-  resp.open = true;
-  event.target.classList.remove('disable');
-  console.log(res);
-  return res;
-};
 
 const formRequest = (api, suite, unit, data) => {
   const def = suite[unit] || {},
@@ -54,9 +44,15 @@ const formRequest = (api, suite, unit, data) => {
   // with POST we use simple request
   if (method === 'POST') {
     body = new FormData();
-    Object.keys(_data).forEach(k =>
-      body.append(k, _data[k])
-    );
+    Object.keys(_data).forEach(k => {
+      if (_data[k] === undefined) return;
+      if (k === 'file' && _data.file && _data.files) {
+        body.append('file', _data.files, _data.file);
+        _data.files = undefined;
+        return;
+      }
+      body.append(k, _data[k]);
+    });
   }
   return { url, method, body, headers };
 }

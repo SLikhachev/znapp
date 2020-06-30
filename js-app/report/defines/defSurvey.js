@@ -4,6 +4,9 @@
 
 import { get_month } from '../../apps/defines/defStruct';
 
+const _month = { label: ["Месяц"], type: 'month', tag: ['', 'required'] };
+const _test = { label: ["Тест", '.pure-checkbox'], type: "checkbox", view: 'controls' }
+
 export const reportSurv = {
 
   page: "Отчеты сводные",
@@ -18,10 +21,8 @@ export const reportSurv = {
       get: "/utils/file/volum/report/", //GET report file
       form: {
         legend: "Расчет объемов",
-        month: {
-          label: ["Месяц"], type: 'month', tag: ['', 'required'],
-        },
-        test: { label: ["Тест", '.pure-checkbox'], type: "checkbox", view: 'controls' }
+        month: _month,
+        test: _test
       },
       buttons: {
         butt1: {
@@ -57,18 +58,31 @@ export const reportSurv = {
     task: {
       url: "/report/common/hosp/make_report", //POST data, upload file
       get: "/utils/file/hosp/report/", //GET report file
+      form: {
+        legend: "Отчет из файла ЕИР",
+        file: { type: 'file' },
+        month: _month,
+        test: _test,
+      },
+      buttons: {
+        but1: {
+          label: ["Загрузить"],
+          type: 'submit',
+          tag: ['.pure-button.pure-button-primary'],
+          attrs: { style: "font-size: 1.2em;", method: 'POST' }
+        }
+      }
     },
     item: {
       name: "Госпитализация ЕИР",
-      header: "Госпитализация отчет из файда ЕИР"
+      header: "Госпитализация отчет из файла ЕИР"
     }
   }
 }
-
 
 export const surv = {
   path: '/surv/:item',
   name: "Сводные",
   def: reportSurv,
-  items: ['volum']//, 'hosp']
+  items: ['volum', 'hosp']
 };

@@ -1,25 +1,23 @@
-// src/report/router_report.js
+// src/report/router.js
 
-import { app } from '../apps/appApi';
 import { pathRouter, routerFun } from '../apps/appRouter';
 
 //  init func
-import { initApp } from './reportApi';
+import { initReport } from './reportApi';
 
 //menu
 import { reportMenu } from './reportMenu';
 
 // adds routers
-//import { roPmus } from './router/roPmus';
+//import { ro } from './router/ro';
 
 // views
 import { vuTaskSheet } from './view/vuTaskSheet';
 
-// init application
-initApp(app);
-
 const route = pathRouter(vuTaskSheet);
 const addroute = {}; //{ pmus: roPmus }; //functions
-const spravRouter = routerFun(reportMenu, addroute, route);
+const Router = routerFun(reportMenu, addroute, route);
 
-m.route(document.body, "/", spravRouter);
+// init application
+initReport();
+m.route(document.body, "/", Router);
