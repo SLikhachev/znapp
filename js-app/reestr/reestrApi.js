@@ -1,94 +1,72 @@
 
-// src/reestr/reestrApi.js
+// src/report/reportApi.js
+/**
+  */
+import { up } from '../apps/utils';
+import { states, update, initApp } from '../apps/appApi';
+//mport { _mo } from '../apps/model/moModel';
+import { listItem, itemId, changedItem } from '../apps/model/moListItem';
+import { formItem, formSubmit } from '../apps/model/moFormModel';
+import { getList } from '../apps/model/moList';
+import { reestrMenu } from './reestrMenu';
 
-export const taskReestr = {
-    // POST request for calculat, GET for download files
-    impo_dbf: {
-        post_url: "/reestr/import/dbf", //POST date, upload file
-    },
-    pack: {
-      post_url: "/reestr/xml/pack",
-      get_url: "/utils/file/reestr/xml/", // get xml zip pack
-    },
-    vmx: {
-      post_url: "/reestr/xml/vmx",
-      get_url: "/utils/file/reestr/vmx/", //GET report file  
-    },
-    invoice: {
-      post_url: "/reestr/inv/impex",
-      get_url: "/utils/file/reestr/inv/" //GET reestr file  
-    },
-    calc: {
-      post_url: "/reestr/inv/calc",
-      get_url: "/utils/file/reestr/calc/" //GET calc file
-    },
-    mek: {
-      post_url: "/reestr/inv/mek",
-      get_url: "/utils/file/reestr/mek/" //GET mek file  
-    }
-};
 
-export const restReestr = {
-    task: { url: 'task_rest'},
-    xml: { url: 'error_pack', params: { order: 'tal_num.asc' }}, // just test pack
-    vmx: { url:"vmx_errors", params: { limit: 50 } } // show vmx errors
-    
-};
-   
+const Actions = (state, update) => {
+  // stream of states
+  const stup = up(update);
+  return {
+    suite(d) { stup({ suite: d[0] }) },
+    unit(d) {
+      let [suite, unit] = d;
+      let pk = suite[unit].item.pk || 'id';
+      stup({ suite, unit, pk, message: '' });
+      listItem(formItem(suite, unit));
+      itemId(unit);
+      if (!R.isNil(suite[unit].rest))
+        return this.list();
+    },
+    list(fetch = '') {
+      stup({ list: [], error: null });
+      return getList(state().suite, state().unit, fetch).
+        then(res => stup(res))
+    },
+    confirm() {
+      let conf = state().suite[state().unit].task || {}, prompt;
+      if (conf.confirm) {
+        prompt = conf.prompt || 'Код для задачи';
+        if (window.prompt(prompt) !== conf.confirm())
+          return false;
+      }
+      return true;
+    },
+    task(d) {
+      // confirm task
+      if (!this.confirm())
+        return;
 
-export const reestrApi = {
-    root: "/",
-    
-    pack: "/pack",
-    pack_test: "/pack/test",
-    pack_xml: "/pack/xml",
-    
-    
-    vmxl: "/vmxl",
-    vmxl_imp: "/vmxl/imp",
-    vmxl_last: "/vmxl/last",
-    
-    invoice: "/invoice",
-    inv_impex: "/invoice/impex",
-    inv_calc: "/invoice/calc",
-    inv_mek: "/invoice/mek",
-        
-    impo: "/impo",
-    impo_dbf: "/impo/dbf",
-
-};
-
-export const reestrMenu = { subAppMenu: {
-  
-  pack: {
-    nref: [`${reestrApi.pack}`, "Пакеты"],
-    items: [
-      [`${reestrApi.pack_test}`, "Проверить"],
-      [`${reestrApi.pack_xml}`, "Сформировать"],
-     
-    ]
-  },
-  vmxl: {
-    nref: [`${reestrApi.vmxl}`, "Ошибки"],
-    items: [
-      [`${reestrApi.vmxl_imp}`, "Импорт ошибок"],
-      [`${reestrApi.vmxl_last}`, "Показать последние"],
-    ]
-  },
-  
-  invoice: {
-    nref: [`${reestrApi.invoice}`, "Счета"],
-    items: [
-      [`${reestrApi.inv_impex}`, "Реестр в СМО"],
-      [`${reestrApi.inv_calc}`, "Расчеты"],
-      [`${reestrApi.inv_mek}`, "Перенести МЭК"],
-    ]
-  },
-  impo: {
-    nref: [`${reestrApi.impo}`, "Импорт"],
-    items: [
-      [`${reestrApi.impo_dbf}`, "Файлы реестров (DBF)"],
-    ]
+      let [event] = d;
+      const resp = document.getElementById('resp');
+      resp.open = false;
+      event.target.classList.add('disable');
+      stup({ error: null, message: '' });
+      formSubmit('task',
+        state().suite,
+        state().unit,
+        changedItem()).
+        then(res => stup(res)).
+        catch(err => stup(err)).
+        finally(() => {
+          resp.open = true;
+          event.target.classList.remove('disable');
+        });
+    },
   }
 }
-};
+
+//const actions = Actions(states, update); //=> obj of func ref
+
+export const initReestr = () => initApp(
+  { suite: { page: "Медстатстика: Реестры и Счета ОМС" } },
+  reestrMenu,
+  Actions(states, update)
+);

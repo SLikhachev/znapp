@@ -86,11 +86,16 @@ const input = (sf, field, idx) => {
   if (idx < 2)
     _tag.push['autofocus'];
 
-  // checkbox value
+  /*
+  let init_val = sf.attrs && sf.attrs['data-initial'];
+  if (!!init_val)
+    changedItem(Object.assign(changedItem(), { [field]: init_val }));
+  */
   let type = sf.type || 'text';
   let value = changedItem()[field];
   let aux = _tag.slice(1);
 
+  // checkbox value
   if (type === 'checkbox' && value)
     aux.push('checked')
 

@@ -24,7 +24,7 @@ const Actions = (state, update) => {
       let [suite, unit] = d;
       let pk = suite[unit].item.pk || 'id';
       stup({ suite, unit, pk, message: '' });
-      listItem(formItem(suite[unit]));
+      listItem(formItem(suite, unit));
       itemId(unit);
       if (!R.isNil(suite[unit].rest))
         return this.list();

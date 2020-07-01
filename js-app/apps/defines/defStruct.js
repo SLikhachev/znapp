@@ -160,7 +160,8 @@ export const get_month = month => [
   "Декабрь"
 ][month - 1];
 
-
+export const _month = { label: ["Месяц"], type: 'month', tag: ['', 'required'] };
+export const _test = { label: ["Тест", '.pure-checkbox'], type: "checkbox", view: 'controls' }
 
 // The default struct Object to render table, form if
 // defStruct.eName.item.struct not present

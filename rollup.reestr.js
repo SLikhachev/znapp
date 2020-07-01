@@ -10,7 +10,7 @@ rollup({
 });
 */
 export default {
-  input: 'js-app/reestr/router_reestr.js',
+  input: 'js-app/reestr/router.js',
   output: {
     file: 'static/js/apps/reestr.pack.js',
     format: 'es'

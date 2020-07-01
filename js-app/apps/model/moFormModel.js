@@ -6,10 +6,14 @@
 import { _month, _schema, errMsg } from './moModel.js';
 import { changedItem } from './moListItem';
 
-export const formItem = def => {
+// used by Actions to set initial form data
+export const formItem = (suite, unit) => {
+  const form = {}, def = suite[unit];
   if (def.task && def.task.form && def.task.form.month)
-    return { month: _month() };
-  return {};
+    form.month = _month();
+  if (unit === 'test')
+    form.test = 1;
+  return form;
 }
 
 

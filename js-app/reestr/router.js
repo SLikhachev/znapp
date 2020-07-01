@@ -2,18 +2,17 @@
 // src/reestr/router.js
 
 import { pathRouter, routerFun } from '../apps/appRouter';
+// views
+import { vuTaskSheet } from '../apps/view/vuTaskSheet';
 
-//  init func
-import { initReestr } from './reportApi';
+// init func
+import { initReestr } from './reestrApi';
 
-//menu
-import { reestrMenu } from './reportMenu';
+// menu
+import { reestrMenu } from './reestrMenu';
 
 // adds routers
 //import { ro } from './router/ro';
-
-// views
-import { vuTaskSheet } from './view/vuTaskSheet';
 
 const route = pathRouter(vuTaskSheet);
 const addroute = {}; //{ pmus: roPmus }; //functions
