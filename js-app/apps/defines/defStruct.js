@@ -34,7 +34,14 @@ const defStruct = {
       // Def: undef
       options: ['eName1', 'eName2']
     },
-    
+    fetch: {
+      code: {
+        //label: ["Код диагноза МКБ-10"],
+        tag: ['.input-find.pure-u-2-4', 'required'],
+        attrs: { placeholder: "Код диагноза МКБ-10" },
+        params: 'ilike.*'
+      },
+    },
     // task attr present app server task api
     task: {
       // String POST request url for given task
@@ -145,6 +152,8 @@ const structNav = {
 };
 */
 
+import { _month } from '../model/moModel';
+
 export const get_month = month => [
   "Январь",
   "Февраль",
@@ -160,8 +169,22 @@ export const get_month = month => [
   "Декабрь"
 ][month - 1];
 
-export const _month = { label: ["Месяц"], type: 'month', tag: ['', 'required'] };
-export const _test = { label: ["Тест", '.pure-checkbox'], type: "checkbox", view: 'controls' }
+export const $month = {
+  label: ["Месяц"], type: 'month', tag: ['', 'required'],
+  attrs: { 'data-initial': _month() }
+};
+export const $test = {
+  label: ["Тест", '.pure-checkbox'], type: "checkbox", view: 'controls'
+}
+export const $button_attrs = {
+  style: 'font-size: 1.2em; margin-top: 0.5em', method: 'POST'
+}
+
+export const $button = text => ({
+  label: [text.toString()], type: 'submit',
+  tag: ['.pure-button.pure-button-primary'],
+  attrs: $button_attrs
+});
 
 // The default struct Object to render table, form if
 // defStruct.eName.item.struct not present

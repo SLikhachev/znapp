@@ -19,16 +19,27 @@ const Actions = (state, update) => {
     unit(d) {
       let [suite, unit] = d;
       let pk = suite[unit].item.pk || 'id';
-      stup({ suite, unit, pk, message: '' });
+      stup({ suite, unit, pk, message: '', list: [], error: null });
       listItem(formItem(suite, unit));
       itemId(unit);
+      return this.fetch();
+      /*
       if (!R.isNil(suite[unit].rest))
         return this.list();
+      */
     },
-    list(fetch = '') {
-      stup({ list: [], error: null });
-      return getList(state().suite, state().unit, fetch).
-        then(res => stup(res))
+    fetch() {
+      state().suite[state().unit].fetch ?
+        getList(state().suite, state().unit, 'fetch').
+          then(res => stup({ fetch: res.list[0] })) :
+        stup({ fetch: null });
+    },
+    list() {
+      //stup({ list: [], error: null });
+      state().suite[state().unit].rest ?
+        getList(state().suite, state().unit).
+          then(res => stup(res)) :
+        stup({ list: [] });
     },
     confirm() {
       let conf = state().suite[state().unit].task || {}, prompt;
@@ -43,7 +54,7 @@ const Actions = (state, update) => {
       // confirm task
       if (!this.confirm())
         return;
-
+      // run task
       let [event] = d;
       const resp = document.getElementById('resp');
       resp.open = false;
@@ -53,7 +64,8 @@ const Actions = (state, update) => {
         state().suite,
         state().unit,
         changedItem()).
-        then(res => stup(res)).
+        then(res => { stup(res); return res.done }).
+        then(done => done ? void false : this.list()).
         catch(err => stup(err)).
         finally(() => {
           resp.open = true;

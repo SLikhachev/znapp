@@ -1,8 +1,8 @@
 
 // src/reestr/defines/defReestr.js
-// common sprav definition
+// packages definition
 
-import { _month, _test } from '../../apps/defines/defStruct';
+import { $month, $button_attrs } from '../../apps/defines/defStruct';
 import { _mo } from '../../apps/model/moModel';
 
 export const reestrPack = {
@@ -10,16 +10,23 @@ export const reestrPack = {
   page: "Проверка и Пакеты для ФОМС",
 
   test: {
+    rest: {
+      url: 'error_pack',
+      params: { order: 'tal_num.asc' }, // just test pack
+    },
     task: {
       url: "/reestr/xml/pack",
+      get: "/utils/file/reestr/xml/",
       form: {
         legend: "Параметры проверки",
-        month: _month,
+        month: $month,
+        test: { type: 'checkbox', attrs: { style: 'display: none', 'data-initial': 1 } }
       },
       buttons: {
         butt1: {
-          label: ["Прверить"], type: 'submit', tag: ['.pure-button'],
-          attrs: { style: 'font-size: 1.2em; margin-top: 0.5em', method: 'POST' }
+          label: ["Прверить"], type: 'submit',
+          tag: ['.pure-button.pure-button-primary'],
+          attrs: $button_attrs
         },
       }
     },
@@ -27,17 +34,27 @@ export const reestrPack = {
       name: "Проверить",
       header: "Проверяем талоны",
       struct: {
-      },
-    }
+        tal_num: ['Талон'],
+        crd_num: ['Карта'],
+        error: ['Ошибка']
+      }
+    },
   },
   xml: {
+    fetch: {
+      url: 'task_rest',
+      task: {
+        params: 'eq.',
+        value: 'make_xml'
+      },
+    },
     task: {
       url: "/reestr/xml/pack",
       get: "/utils/file/reestr/xml/",
       confirm: _mo,
       form: {
         legend: "Параметры реестра",
-        month: _month,
+        month: $month,
         pack: {
           label: ["Номер пакета"],
           type: "number",
@@ -57,10 +74,9 @@ export const reestrPack = {
       },
       buttons: {
         but1: {
-          label: ["Сформировать"],
-          type: 'submit',
+          label: ["Сформировать"], type: 'submit',
           tag: ['.pure-button.pure-button-primary'],
-          attrs: { style: "font-size: 1.2em; margin-top: 0.5em", method: 'POST' }
+          attrs: $button_attrs
         }
       }
     },

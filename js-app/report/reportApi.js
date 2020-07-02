@@ -26,13 +26,13 @@ const Actions = (state, update) => {
       stup({ suite, unit, pk, message: '' });
       listItem(formItem(suite, unit));
       itemId(unit);
-      if (!R.isNil(suite[unit].rest))
-        return this.list();
+      return this.list();
     },
-    list(fetch = '') {
-      stup({ list: [], error: null });
-      return getList(state().suite, state().unit, fetch).
-        then(res => stup(res))
+    list() {
+      state().suite[state().unit].rest ?
+        getList(state().suite, state().unit).
+          then(res => stup(res)) :
+        stup({ list: [], error: '' });
     },
     task(d) {
       let [event] = d;
@@ -44,7 +44,8 @@ const Actions = (state, update) => {
         state().suite,
         state().unit,
         changedItem()).
-        then(res => stup(res)).
+        then(res => { stup(res); return res.done }).
+        then(done => done ? undefined : this.list()).
         catch(err => stup(err)).
         finally(() => {
           resp.open = true;

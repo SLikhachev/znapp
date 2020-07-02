@@ -9,10 +9,16 @@ import { changedItem } from './moListItem';
 // used by Actions to set initial form data
 export const formItem = (suite, unit) => {
   const form = {}, def = suite[unit];
-  if (def.task && def.task.form && def.task.form.month)
-    form.month = _month();
-  if (unit === 'test')
-    form.test = 1;
+  if (def.task && def.task.form) {
+    Object.entries(def.task.form).forEach(k => {
+      let [p, v] = k, I = v.attrs && v.attrs['data-initial'];
+      if (!!I) {
+        if (typeof I === 'function')
+          form[p] = I();
+        form[p] = I.toString();
+      }
+    })
+  }
   return form;
 }
 

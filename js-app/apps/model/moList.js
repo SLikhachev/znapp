@@ -21,7 +21,7 @@ const fetchParams = (fetch, isfetch) => {
   if (isfetch && fetch) {
     Object.keys(fetch).forEach(
       fk => {
-        val = changedItem()[fk] || '';
+        val = changedItem()[fk] || fetch[fk].value || '';
         if (!!val) {
           ps = fetch[fk].params || '';
           if (!!ps && (typeof ps === 'string')) {
@@ -38,14 +38,14 @@ const fetchParams = (fetch, isfetch) => {
 
 
 const makeBody = rest => {
-  if (!checkArray(rest.body))
-    return null;
   const body = {};
-  rest.body.forEach(p => {
-    body[p] = changedItem()[p]
-  });
+  if (checkArray(rest.body))
+    rest.body.forEach(p => {
+      body[p] = changedItem()[p]
+    });
   return body;
 }
+
 
 
 export const getRequest = (set, item, isfetch) => {
@@ -53,14 +53,17 @@ export const getRequest = (set, item, isfetch) => {
   // item:: String current eName 
   // qfetch - String (may be bool) present is the fetch request
   const rest = set[item].rest || {},
-    _fetch = set[item].fetch || null,
-    _url = rest.url || item,
+    fetch = set[item].fetch || {},
+
+    // url priority 1st: fetch, 2nd: rest, 3rd: item name
+    _url = fetch.url || rest.url || item,
+
     _sign = _url.includes('?') ? '&' : '?',
     _param = rest.params || { order: 'id.asc' },
     _item = set[item].item || {},
 
     //_fetch - object defines how build fetch params for getList
-    params = fetchParams(_fetch, isfetch);
+    params = fetchParams(fetch, isfetch);
 
   // assume every deletable entity table have ddel column  
   if (_item.editable && _item.editable.indexOf('del') >= 0)
@@ -72,7 +75,7 @@ export const getRequest = (set, item, isfetch) => {
     headers = rest.headers || {};
   const r = { url, method, headers };
   const b = makeBody(rest);
-  if (!!b)
+  if (!R.isEmpty(b))
     r.body = b;
   return r;
 };

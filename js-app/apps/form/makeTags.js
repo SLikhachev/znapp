@@ -4,7 +4,7 @@ import { changeValue, changedItem } from '../model/moListItem';
 
 
 // Any -> String
-const _text = t => R.isNil(t) ? '' : typeof t === 'string' ? t : '';
+const _text = t => R.isNil(t) ? '' : t.toString();
 const _klass = k => R.isEmpty(_text(k)) ? '' : k[0] !== '.' ? `.${k}` : k;
 
 
@@ -31,7 +31,7 @@ const _input = obj => { // {klass, type, name, tabindex, aux, value, attrs} => {
   tag = obj.aux.reduce((s, el) => s + `[${_text(el)}]`, tag);
 
   // we can redefine value oninput by attrs
-  const attrs = { value: obj.value, oninput: changeValue };
+  let attrs = { value: obj.value, oninput: changeValue };
 
   const val = obj.attrs.value;
 
@@ -39,8 +39,8 @@ const _input = obj => { // {klass, type, name, tabindex, aux, value, attrs} => {
     attrs.value = val();
     delete obj.attrs.value;
   }
-
-  return m(tag, Object.assign({}, attrs, obj.attrs));
+  attrs = Object.assign(attrs, obj.attrs)
+  return m(tag, attrs);
 }
 
 const legend = t => m('legend', _text(t));

@@ -2,10 +2,11 @@
 // src/sparv/model/spravCom.js
 // common sprav definition
 
-import { get_month } from '../../apps/defines/defStruct';
+import {
+  get_month, $month,
+  $test, $button, $button_attrs
+} from '../../apps/defines/defStruct';
 
-const _month = { label: ["Месяц"], type: 'month', tag: ['', 'required'] };
-const _test = { label: ["Тест", '.pure-checkbox'], type: "checkbox", view: 'controls' }
 
 export const reportSurv = {
 
@@ -21,18 +22,18 @@ export const reportSurv = {
       get: "/utils/file/volum/report/", //GET report file
       form: {
         legend: "Расчет объемов",
-        month: _month,
-        test: _test
+        month: $month,
+        test: $test
       },
       buttons: {
         butt1: {
           label: ["Обновить"], type: 'submit', tag: ['.pure-button'],
-          attrs: { style: 'font-size: 1.2em', method: 'POST' }
+          attrs: $button_attrs
         },
         butt2: {
           label: ["Отчет"], type: 'submit',
           tag: ['.pure-button.pure-button-primary'],
-          attrs: { style: "font-size: 1.2em; margin-left: 2em;", method: 'GET' }
+          attrs: { style: "font-size: 1.2em; margin: 0.5em 0 0 2em;", method: 'GET' }
         }
       }
     },
@@ -61,17 +62,10 @@ export const reportSurv = {
       form: {
         legend: "Отчет из файла ЕИР",
         file: { type: 'file' },
-        month: _month,
-        test: _test,
+        month: $month,
+        test: $test
       },
-      buttons: {
-        but1: {
-          label: ["Загрузить"],
-          type: 'submit',
-          tag: ['.pure-button.pure-button-primary'],
-          attrs: { style: "font-size: 1.2em;", method: 'POST' }
-        }
-      }
+      buttons: { but1: $button("Загрузить") }
     },
     item: {
       name: "Госпитализация ЕИР",
