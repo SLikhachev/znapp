@@ -72,7 +72,7 @@ export const changedItem = combine((itemid, newvalue, changed) => {
 const saveRequest = (set, item, _method, data) => {
   const rest = set[item].rest || {},
     _item = set[item].item || {},
-    _fields = _item.editable_fields || [],
+    _fields = _item.editable_fields || null, //default all fields editable
     _key = _item.pk || 'id', // primary key may be vary
     _url = rest.url || item,
     _sign = _url.includes('?') ? '&' : '?';
@@ -99,6 +99,7 @@ const saveRequest = (set, item, _method, data) => {
       }
       if (body[k] === '') delete body[k];
     }
+
   } else {
     // restrict DELETE to PATCH only
     if (body.method !== method) {
@@ -117,7 +118,7 @@ const saveRequest = (set, item, _method, data) => {
   const qstring = m.buildQueryString(params),
     url = `${_schema('pg_rest')}${_url}${_sign}${qstring}`,
     headers = rest.headers || {};
-  //console.log(url, _method, body);
+
   return { url, method, body, headers };
 };
 

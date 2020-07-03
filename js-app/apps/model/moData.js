@@ -16,18 +16,15 @@ const reqOptions = (set, opts) => opts.
 
 
 export const getData = (set, item) => {
-  const opts = restOpts(set[item])
+  const opts = restOpts(set[item]), optm = new Map();
   // order should preserved
   return Promise.all(reqOptions(set, opts)).then(
     lists => {
-      const opt = new Map();
-      opts.forEach((op, idx) => {
-        if (lists[idx])
-          opt.set(op, lists[idx])
-        else
-          opt.set(op, [])
-      });
-      return { options: opt };
+      opts.reduce((mp, op, ix) => {
+        lists[ix] ? mp.set(op, lists[ix]) : mp.set(op, []);
+        return mp;
+      }, optm);
+      return { options: optm };
     },
     err => ({ error: errMsg(err) }));
 };

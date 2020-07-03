@@ -9,16 +9,12 @@ import { changedItem } from './moListItem';
 // used by Actions to set initial form data
 export const formItem = (suite, unit) => {
   const form = {}, def = suite[unit];
-  if (def.task && def.task.form) {
-    Object.entries(def.task.form).forEach(k => {
-      let [p, v] = k, I = v.attrs && v.attrs['data-initial'];
-      if (!!I) {
-        if (typeof I === 'function')
-          form[p] = I();
-        form[p] = I.toString();
-      }
-    })
-  }
+  if (def.task && def.task.form)
+    Object.entries(def.task.form).reduce((f, el) => {
+      let [p, v] = el, I = v.attrs && v.attrs['data-initial'];
+      f[p] = !!I ? (typeof I === 'function') ? I() : I.toString() : '';
+      return f;
+    }, form);
   return form;
 }
 
@@ -54,15 +50,17 @@ const formRequest = (api, suite, unit, data) => {
   // with POST we use simple request
   if (method === 'POST') {
     body = new FormData();
-    Object.keys(_data).forEach(k => {
-      if (_data[k] === undefined) return;
-      if (k === 'file' && _data.file && _data.files) {
-        body.append('file', _data.files, _data.file);
-        _data.files = undefined;
-        return;
+    Object.entries(_data).reduce((b, el) => {
+      let [k, v] = el;
+      if (!!v) {
+        if (k === 'file' && _data.file && _data.files) {
+          b.append('file', _data.files, _data.file);
+          _data.files = void 0;
+        }
+        b.append(k, v);
       }
-      body.append(k, _data[k]);
-    });
+      return b;
+    }, body);
   }
   return { url, method, body, headers };
 }

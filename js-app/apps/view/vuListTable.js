@@ -1,9 +1,13 @@
 
 // src/sprav/view/vuListTable.js
 
-import { vuDialog } from './vuDialog';
 import { disp } from '../appApi';
 import { idName } from '../defines/defStruct';
+import { checkArray } from '../model/moModel';
+import { vuDialog } from './vuDialog';
+
+const nfn = v => v.th || v || ['unknown']; // object with th or just list
+const _fn = n => checkArray(nfn(n)) ? nfn(n)[1] : null;
 
 
 const tableRow = () => {
@@ -26,45 +30,43 @@ const tableRow = () => {
     const delet = itdef.editable && (itdef.editable.indexOf('del') >= 0);
     const href = itdef.href ? `${m.route.get()}` : '';
 
-    const rowvalue = (val, fn) => {
-      if (fn && (typeof fn === 'function'))
-        return fn(val);
-      return val;
-    }
+    const rval = (val, fn) =>
+      fn && (typeof fn === 'function') ? fn(val) : val;
 
-    const first_cell = (col, row, href) => {
-      const pk = row[pki];
-
-      const rval = rowvalue(row[col], struct[col][1]);
+    const first_cell = (el, rd) => {
+      const [k, n] = el, val = rd[k], pk = rd[pki],
+        _rval = rval(val, _fn(n));
 
       if (href)
         return m('td.choice.blue', m(m.route.Link,
-          { href: `${href}/${pk}` }, rval));
+          { href: `${href}/${pk}` }, _rval));
 
       const attrs = { data: pk };
       if (edit)
         attrs.onclick = onedit;
 
-      return m('td.choice.blue', attrs, rval);
+      return m('td.choice.blue', attrs, _rval);
     }
+
+    const _cell = (el, rd) => {
+      let [k, n] = el;
+      return m('td', rval(rd[k], _fn(n)));
+    }
+
+    const cell = (el, ix, rd) => ix === 0 ? first_cell(el, rd) : _cell(el, rd);
 
     const ddisplay = () => delet ? 'display: table-cell' : 'display : none';
 
-    return row => {
-      let columns = Object.keys(struct);
+    const columns = Object.entries(struct);
 
-      return m('tr', { key: row[pki] }, [
-        first_cell(columns[0], row, href),
-        columns.slice(1).map(column => m('td',
-          rowvalue(row[column], struct[column][1]))
-        ),
-        m('td', { style: ddisplay() }, m('i.fa.fa-minus-circle.choice.red',
-          { data: row[pki], onclick: ondelet })
-        )
-      ]);
-    };
-  };
-};
+    return row => m('tr', { key: row[pki] }, [
+      columns.map((el, ix) => cell(el, ix, row)),
+      m('td', { style: ddisplay() }, m('i.fa.fa-minus-circle.choice.red',
+        { data: row[pki], onclick: ondelet })
+      )
+    ]);
+  }
+}
 
 // clojure
 export const vuListTable = function (vnode) {
@@ -78,22 +80,17 @@ export const vuListTable = function (vnode) {
 
   const sort = e => disp(['sort', e.target.getAttribute('data')]);
 
-  const column = c => {
-    let f = struct[c].th || struct[c] || ['unknown']; // object with th or just list
-
-    if (f.length > 1 && f[1] === 'sort') // sortable column has 2nd elem in array
-      return m('th.sortable', { data: c, onclick: sort }, f[0],
-        m('i.fa.fa-sort.pl10'));
-
-    return m('th', f[0]);
+  const column = el => {
+    let [k, v] = el, [name, s] = nfn(v);
+    return s === 'sort' ? // sortable column has 2nd elem in array
+      m('th.sortable', { data: k, onclick: sort }, name, m('i.fa.fa-sort.pl10')) :
+      m('th', name);
   };
   let listRow = tableRow();
 
-  const ddisplay = () => {
-    if (itdef.editable && (itdef.editable.indexOf('del') >= 0))
-      return 'display: table-cell';
-    return 'display: none';
-  }
+  const ddisplay = d =>
+    d.editable && (d.editable.indexOf('del') >= 0) ?
+      'display: table-cell' : 'display: none';
 
   const table = `table${table_class}[id=${table_id}]`;
 
@@ -105,8 +102,8 @@ export const vuListTable = function (vnode) {
 
       return m(table, [
         m('thead', m('tr', [
-          Object.keys(struct).map(col => column(col)),
-          m('th', { style: ddisplay() }, "Удалить")
+          Object.entries(struct).map(el => column(el)),
+          m('th', { style: ddisplay(itdef) }, "Удалить")
         ])),
         m('tbody', [list.map(listMap)])
       ]);

@@ -17,21 +17,19 @@ export const sortList = (id, state) => {
 const fetchParams = (fetch, isfetch) => {
   const params = {};
   //console.log(fetch, tofetch);
-  let ps, val;
   if (isfetch && fetch) {
-    Object.keys(fetch).forEach(
-      fk => {
-        val = changedItem()[fk] || fetch[fk].value || '';
-        if (!!val) {
-          ps = fetch[fk].params || '';
-          if (!!ps && (typeof ps === 'string')) {
-            ps = ps.split('.');
-            let tail = ps[1] || '';
-            params[fk] = `${ps[0]}.${val}${tail}`;
-          }
+    Object.entries(fetch).reduce((p, el) => {
+      let [k, v] = el, val = changedItem()[k] || v.value || '', ps;
+      if (!!val) {
+        ps = v.params || '';
+        if (!!ps && (typeof ps === 'string')) {
+          ps = ps.split('.');
+          let tail = ps[1] || '';
+          p[k] = `${ps[0]}.${val}${tail}`;
         }
       }
-    );
+      return p;
+    }, params);
   }
   return params;
 };

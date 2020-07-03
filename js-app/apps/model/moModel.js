@@ -35,7 +35,6 @@ export const _region = () => '25.';
 
 export const _mo = () => window.localStorage.getItem('this_mo');
 
-
 export const checkArray = a => !!a && Array.isArray(a) && a.length > 0 ? true : false;
 
 
