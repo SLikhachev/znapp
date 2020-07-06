@@ -2,7 +2,7 @@
 // src/reestr/defines/defImport.js
 // packages definition
 
-import { $month, $test, $button } from '../../apps/defines/defStruct';
+import { $month, $checkbox, $button } from '../../apps/defines/defStruct';
 
 export const reestrImport = {
 
@@ -15,7 +15,7 @@ export const reestrImport = {
         legend: "Импорт файла DBF",
         file: { type: 'file' },
         month: $month,
-        test: $test
+        test: $checkbox("Тест")
       },
       buttons: {
         but1: $button("Загрузить")

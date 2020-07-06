@@ -34,6 +34,7 @@ const updateItem = (item, changed) => {
   // checkbox value (0, 1);
   const target = changed().target;
   let value = target.value;
+  //console.log(target.type, value);
 
   if (target.type === 'submit')
     return Object.assign(item(),
@@ -52,7 +53,12 @@ const updateItem = (item, changed) => {
     else
       value = null;
   }
-
+  /*
+  if (target.tagname === 'select') {
+    value = target.options[target.selectedIndex].value;
+    console.log(value);
+  }
+  */
   return Object.assign(item(),
     { [target.name]: value });
 };

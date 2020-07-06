@@ -173,12 +173,16 @@ export const $month = {
   label: ["Месяц"], type: 'month', tag: ['', 'required'],
   attrs: { 'data-initial': _month() }
 };
-export const $test = {
-  label: ["Тест", '.pure-checkbox'], type: "checkbox", view: 'controls'
-}
+
 export const $button_attrs = {
   style: 'font-size: 1.2em; margin-top: 0.5em', method: 'POST'
 }
+
+export const $checkbox = text => ({
+  label: [text.toString(), '.pure-checkbox'],
+  type: "checkbox",
+  view: 'controls'
+})
 
 export const $button = text => ({
   label: [text.toString()], type: 'submit',

@@ -7,6 +7,28 @@ import { changeValue, changedItem } from '../model/moListItem';
 const _text = t => R.isNil(t) ? '' : t.toString();
 const _klass = k => R.isEmpty(_text(k)) ? '' : k[0] !== '.' ? `.${k}` : k;
 
+const _labeltag = sf => {
+  let _label = sf.label || sf.th || sf; //[labeltext, labelclass]
+
+  if (!Array.isArray(_label)) // no label present
+    return null;
+
+  if (!sf.label && _label) // no klass for label 
+    return [_label[0]];
+
+  return _label;
+}
+
+const _tagarray = (sf, idx) => {
+  let _tag = (sf.tag && Array.isArray(sf.tag) && sf.tag.length > 0) ?
+    sf.tag : [''];
+  //if (idx == 1 || idx == 2)
+  if (idx && idx < 2)
+    _tag.push['autofocus'];
+
+  return _tag;
+}
+
 
 // (String -> String -> String) -> Vnode
 const label = (fortag, txt = '', kl = '') => m(
@@ -33,7 +55,7 @@ const _input = obj => { // {klass, type, name, tabindex, aux, value, attrs} => {
   // we can redefine value oninput by attrs
   let attrs = { value: obj.value, oninput: changeValue };
 
-  const val = obj.attrs.value;
+  let val = obj.attrs.value;
 
   if (typeof val === 'function' && val.name === 'stream') {
     attrs.value = val();
@@ -46,16 +68,16 @@ const _input = obj => { // {klass, type, name, tabindex, aux, value, attrs} => {
 const legend = t => m('legend', _text(t));
 
 const button = sf => {
-  const klass = Array.isArray(sf.tag) ? _klass(sf.tag[0]) : '';
-  const text = Array.isArray(sf.label) ? _text(sf.label[0]) : 'Выполнить';
-  const attrs = sf.attrs || {};
+  let klass = _klass(_tagarray(sf)[0]);
+  let text = _text(_labeltag(sf)[0]) || 'Выполнить';
+  let attrs = sf.attrs || {};
   attrs.type = _text(sf.type) || 'submit';
   attrs.onclick = changeValue;
   return m(`button${klass}`, attrs, text);
 }
 
 const file = sf => {
-  const klass = Array.isArray(sf.tag) ? _klass(sf.tag[0]) : '.inputfile';
+  let klass = _klass(_tagarray(sf)[0]) || '.inputfile';
   return [
     m(`input${klass}[type="file"][name="file"][id="file"]`,
       {
@@ -67,25 +89,26 @@ const file = sf => {
   ];
 }
 
+const select = (sf, field) => {
+  let _label = _labeltag(sf), _tag = _tagarray(sf);
+  return [
+    _label ? label(field, ..._label) : '',
+    m(`select${_klass(_tag[0])}[name=${field}]`,
+      { value: changedItem()[field], oninput: changeValue },
+      Object.entries(sf.options).map(el => {
+        let [v, op] = el;
+        return m('option', { value: v }, op);
+      })
+    )
+  ]
+}
+
 const input = (sf, field, idx) => {
 
-  // composite struct
-  let _label = sf.label || sf.th || sf; //[labeltext, labelclass]
-
-  if (!Array.isArray(_label)) // no label present
-    _label = null;
-
-  if (!sf.label && _label) // no klass for label 
-    _label = [_label[0]];
+  let _label = _labeltag(sf);
 
   // [tagclass, auxattrs(reqired, disabled, etc)]
-  const _tag =
-    (sf.tag && Array.isArray(sf.tag) && sf.tag.length > 0) ? sf.tag : ['']
-
-  //if (idx == 1 || idx == 2)
-  if (idx < 2)
-    _tag.push['autofocus'];
-
+  let _tag = _tagarray(sf, idx);
   /*
   let init_val = sf.attrs && sf.attrs['data-initial'];
   if (!!init_val)
@@ -99,7 +122,7 @@ const input = (sf, field, idx) => {
   if (type === 'checkbox' && value)
     aux.push('checked')
 
-  const _tagobj = {
+  let _tagobj = {
     klass: _tag[0],
     type: type, //type of input field
     name: field, //name of input field
@@ -121,13 +144,17 @@ const input = (sf, field, idx) => {
 
 export const makeTags = defs => (field, idx) => {
 
-  const sf = defs[field]; // stuct of object presentation
+  let sf = defs[field]; // stuct of object presentation
   if (!sf) return ''; // no such field 
 
   if (field === 'legend')
     return legend(sf);
+
   if (sf.type && sf.type === 'file')
     return file(sf);
+
+  if (sf.type && sf.type === 'select')
+    return select(sf, field);
 
   if (sf.type && (sf.type === 'submit' || sf.type === 'button'))
     return button(sf);
