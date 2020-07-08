@@ -100,7 +100,7 @@ export const vuListTable = function (vnode) {
       struct = itdef.struct || idName;
       listMap = listRow({ itdef });
 
-      return m(table, [
+      return m(table, { style: 'margin-top: 2em;' }, [
         m('thead', m('tr', [
           Object.entries(struct).map(el => column(el)),
           m('th', { style: ddisplay(itdef) }, "Удалить")

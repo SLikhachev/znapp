@@ -2,7 +2,7 @@
 // src/reestr/defines/defReestr.js
 // packages definition
 
-import { $month, $button_attrs, $checkbox } from '../../apps/defines/defStruct';
+import { $month, $checkbox, $button } from '../../apps/defines/defStruct';
 import { _mo } from '../../apps/model/moModel';
 
 export const reestrPack = {
@@ -22,13 +22,7 @@ export const reestrPack = {
         month: $month,
         test: { type: 'checkbox', attrs: { style: 'display: none', 'data-initial': 1 } }
       },
-      buttons: {
-        butt1: {
-          label: ["Прверить"], type: 'submit',
-          tag: ['.pure-button.pure-button-primary'],
-          attrs: $button_attrs
-        },
-      }
+      buttons: { but1: $button("Прверить") },
     },
     item: {
       name: "Проверить",
@@ -64,13 +58,7 @@ export const reestrPack = {
         sent: $checkbox("Отметить отправленные"),
         fresh: $checkbox("Не отправлять принятые"),
       },
-      buttons: {
-        but1: {
-          label: ["Сформировать"], type: 'submit',
-          tag: ['.pure-button.pure-button-primary'],
-          attrs: $button_attrs
-        }
-      }
+      buttons: { but1: $button("Сформировать") }
     },
     item: {
       name: "Сформировать",

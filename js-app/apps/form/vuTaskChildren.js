@@ -4,7 +4,7 @@ import { makeTags } from '../../apps/form/makeTags';
 const makeFields = (fn, flds) => flds.map((f, idx) => m('.pure-control-group', fn(f, idx)));
 const makeButtons = (fn, flds) => flds.map((f, idx) => fn(f, idx));
 
-const checkAttrs = attrs => typeof attrs === 'object' ? attrs : {};
+const checkAttrs = attrs => attrs && typeof attrs === 'object' ? attrs : {};
 
 export const vuTaskFormChildren = () => {
 

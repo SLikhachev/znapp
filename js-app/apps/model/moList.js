@@ -13,24 +13,31 @@ export const sortList = (id, state) => {
   };
 };
 
+const _dot_param = (ps, val) => {
+  let par, tail;
+  if (ps && ps.includes('.')) {
+    par = ps.split('.'); // array[String, String]
+    tail = par[1] || '';
+    return `${par[0]}.${val}${tail}`;
+  }
+  return val;
+}
 
 const fetchParams = (fetch, isfetch) => {
-  const params = {};
-  //console.log(fetch, tofetch);
+  let params = {};
+  //console.log(params);
+  // there 'url' prop is in fetch object 
   if (isfetch && fetch) {
-    Object.entries(fetch).reduce((p, el) => {
-      let [k, v] = el, val = changedItem()[k] || v.value || '', ps;
-      if (!!val) {
-        ps = v.params || '';
-        if (!!ps && (typeof ps === 'string')) {
-          ps = ps.split('.');
-          let tail = ps[1] || '';
-          p[k] = `${ps[0]}.${val}${tail}`;
-        }
-      }
-      return p;
+    Object.keys(fetch).reduce((acc, key) => {
+      let val = changedItem()[key] || fetch[key].value || null,
+        ps = fetch[key].params || null;
+
+      // string (url e.g) will be ignored
+      if (!!val) acc[key] = _dot_param(ps, val);
+      return acc;
     }, params);
   }
+  //console.log(params);
   return params;
 };
 
@@ -45,23 +52,23 @@ const makeBody = rest => {
 }
 
 
-
 export const getRequest = (set, item, isfetch) => {
   // set:: def Object ref,
   // item:: String current eName 
-  // qfetch - String (may be bool) present is the fetch request
+  // isfetch - String (may be bool) present is the fetch request
   const rest = set[item].rest || {},
     fetch = set[item].fetch || {},
-
     // url priority 1st: fetch, 2nd: rest, 3rd: item name
-    _url = fetch.url || rest.url || item,
+    _url = (isfetch && fetch.url) ? fetch.url : (rest.url || item),
 
     _sign = _url.includes('?') ? '&' : '?',
-    _param = rest.params || { order: 'id.asc' },
-    _item = set[item].item || {},
+    _param = Boolean(isfetch) ? {} : (rest.params || { order: 'id.asc' }),
+    _item = set[item].item || {};
 
-    //_fetch - object defines how build fetch params for getList
-    params = fetchParams(fetch, isfetch);
+  // fetch - object defines how build fetch params for getList
+
+  const params = fetchParams(fetch, isfetch);
+  //console.log(params);
 
   // assume every deletable entity table have ddel column  
   if (_item.editable && _item.editable.indexOf('del') >= 0)

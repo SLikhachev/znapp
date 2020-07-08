@@ -22,11 +22,10 @@ const Actions = (state, update) => {
       stup({ suite, unit, pk, message: '', list: [], error: null });
       listItem(formItem(suite, unit));
       itemId(unit);
-      return this.fetch();
-      /*
-      if (!R.isNil(suite[unit].rest))
+      this.fetch();
+      // test to show list initially
+      if (!R.isNil(suite[unit].item.list))
         return this.list();
-      */
     },
     fetch() {
       state().suite[state().unit].fetch ?

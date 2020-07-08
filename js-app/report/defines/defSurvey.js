@@ -26,15 +26,11 @@ export const reportSurv = {
         test: $test
       },
       buttons: {
-        butt1: {
-          label: ["Обновить"], type: 'submit', tag: ['.pure-button'],
-          attrs: $button_attrs
-        },
-        butt2: {
-          label: ["Отчет"], type: 'submit',
-          tag: ['.pure-button.pure-button-primary'],
-          attrs: { style: "font-size: 1.2em; margin: 0.5em 0 0 2em;", method: 'GET' }
-        }
+        but1: R.assocPath(['tag'], ['.pure-button'], $button("Обновить")),
+        but2: R.compose(
+          R.assocPath(['attrs', 'style'], 'font-size: 1.2em; margin: 0.5em 0 0 2em;'),
+          R.assocPath(['attrs', 'method'], 'GET'))
+          ($button(["Отчет"))
       }
     },
     item: {

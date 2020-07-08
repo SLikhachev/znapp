@@ -10,20 +10,39 @@ const packType = {
   2: "Онкология",
 }
 
+const tableStruct = {
+  tal_num: ['Талон'],
+  crd_num: ['Карта'],
+  fam: ['Фамилия'],
+  open_date: ['Открыт'],
+  close_date: ['Закрыт'],
+  error: ['Номер ошибки'],
+  cmt: ['Текст ошибки']
+}
+
+const restErr = {
+  url: "vmx_errors",
+  params: { limit: 50 } // show vmx errors
+}
+
 export const xmlErrors = {
 
   page: "Правим ошибки реестра",
-
   ximp: {
-    /*
-    rest: {
-      url: "vmx_errors",
-      params: { limit: 50 } // show vmx errors
+    //rest: restErr,
+    fetch: {
+      url: 'task_rest',
+      task: {
+        params: 'eq.',
+        value: 'import_errors'
+      },
+      select: {
+        value: 'file_name,pack_type(descr)'
+      }
     },
-    */
     task: {
       url: "/reestr/xml/vmx",
-      get: "/utils/file/reestr/vmx/", //GET report file  
+      //get: "/utils/file/reestr/vmx/", //GET report file  
       form: {
         legend: "Тип файла ошибок",
         file: { type: 'file' },
@@ -42,13 +61,29 @@ export const xmlErrors = {
     item: {
       name: "Импорт ошибок",
       header: "Импорт протокола ошибок (XML файл)",
-      struct: {
-        tal_num: ['Талон'],
-        crd_num: ['Карта'],
-        error: ['Ошибка']
-      }
+      //struct: tableStruct
     },
   },
+  last: {
+    rest: restErr,
+    task: {
+      url: "/reestr/xml/vmx",
+      get: "/utils/file/reestr/vmx/", //GET report file
+      form: {
+        legend: "Выгрузить в CSV файл"
+      },
+      buttons: {
+        but1: R.assocPath(['attrs', 'method'], 'GET', $button("Выгрузить"))
+      }
+    },
+    item: {
+      name: "Показать последние",
+      header: "Последние принятые ошибки (50 первых записей)",
+      list: true, // show table anyway at beginning
+      struct: tableStruct
+    },
+
+  }
 }
 
 
@@ -56,5 +91,5 @@ export const xerr = {
   path: '/xerr/:item',
   name: "Ошибки",
   def: xmlErrors,
-  items: ['ximp']
+  items: ['ximp', 'last']
 };
