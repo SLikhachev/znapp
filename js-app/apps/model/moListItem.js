@@ -2,8 +2,8 @@
 import { vuDialog } from '../view/vuDialog';
 import { _schema, errMsg } from './moModel';
 
-const [stream, combine] = [m.stream, m.stream.combine];
 
+const [stream, combine] = [m.stream, m.stream.combine];
 
 export const listItem = stream();
 export const itemId = stream('');

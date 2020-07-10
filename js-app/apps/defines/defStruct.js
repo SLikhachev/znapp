@@ -154,7 +154,7 @@ const structNav = {
 
 import { _month } from '../model/moModel';
 
-export const get_month = month => [
+export const get_month = (data, key) => [
   "Январь",
   "Февраль",
   "Март",
@@ -167,7 +167,7 @@ export const get_month = month => [
   "Октябрь",
   "Ноябрь",
   "Декабрь"
-][month - 1];
+][data[key] - 1];
 
 export const $month = {
   label: ["Месяц"], type: 'month', tag: ['', 'required'],

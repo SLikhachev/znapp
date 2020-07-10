@@ -2,6 +2,8 @@
 // src/sparv/defines/spravProfil.js
 // prof sprav definition
 
+import { editItem } from '../../apps/view/vuListTable';
+
 export const spravProf = {
 
   page: "Профильные справочники",
@@ -17,7 +19,7 @@ export const spravProf = {
       pk: 'spec',
       editable: ['add', 'edit'],
       struct: {
-        spec: ["Код", 'sort'],
+        spec: ["Код", 'sort', editItem],
         name: ["Специальность"],
         prvs: ["Код PRVS V021"],
         profil: ["Профиль"],
@@ -33,7 +35,7 @@ export const spravProf = {
       editable: ['edit'],
       editable_fields: ['one_visit', 'two_visit', 'podr'],
       struct: {
-        id: { th: ["Код", 'sort'], tag: ['', 'readonly'] },
+        id: { th: ["Код", 'sort', editItem], tag: ['', 'readonly'] },
         name: { th: ["Профиль"], tag: ['', 'readonly'] },
         one_visit: ["ПМУ посещение"],
         two_visit: ["ПМУ обращение"],

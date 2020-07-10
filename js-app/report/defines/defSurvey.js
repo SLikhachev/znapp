@@ -4,7 +4,7 @@
 
 import {
   get_month, $month,
-  $test, $button, $button_attrs
+  $checkbox, $button
 } from '../../apps/defines/defStruct';
 
 
@@ -23,21 +23,21 @@ export const reportSurv = {
       form: {
         legend: "Расчет объемов",
         month: $month,
-        test: $test
+        test: $checkbox("Тест")
       },
       buttons: {
         but1: R.assocPath(['tag'], ['.pure-button'], $button("Обновить")),
         but2: R.compose(
           R.assocPath(['attrs', 'style'], 'font-size: 1.2em; margin: 0.5em 0 0 2em;'),
           R.assocPath(['attrs', 'method'], 'GET'))
-          ($button(["Отчет"))
+          ($button("Отчет"))
       }
     },
     item: {
       name: "Объемы помощи",
       header: "Обемы помощи приказ 146",
       struct: {
-        this_month: ["Месяц", get_month],
+        this_month: ["Месяц", '', get_month],
         pol_ambul_visits: ["Амбул визиты"],
         pol_prof_visits: ["Проф визиты"],
         pol_stac_visits: ["Стац визиты"],
@@ -59,7 +59,7 @@ export const reportSurv = {
         legend: "Отчет из файла ЕИР",
         file: { type: 'file' },
         month: $month,
-        test: $test
+        test: $checkbox("Тест")
       },
       buttons: { but1: $button("Загрузить") }
     },

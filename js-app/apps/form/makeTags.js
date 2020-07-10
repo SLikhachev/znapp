@@ -97,7 +97,7 @@ const select = (sf, field) => {
       { value: changedItem()[field], oninput: changeValue },
       Object.entries(sf.options).map(el => {
         let [v, op] = el;
-        return m('option', { value: v }, op);
+        return m('option', { key: v, value: v }, op);
       })
     )
   ]

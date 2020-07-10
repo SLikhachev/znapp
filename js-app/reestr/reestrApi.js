@@ -4,7 +4,6 @@
   */
 import { up } from '../apps/utils';
 import { states, update, initApp } from '../apps/appApi';
-//mport { _mo } from '../apps/model/moModel';
 import { listItem, itemId, changedItem } from '../apps/model/moListItem';
 import { formItem, formSubmit } from '../apps/model/moFormModel';
 import { getList } from '../apps/model/moList';

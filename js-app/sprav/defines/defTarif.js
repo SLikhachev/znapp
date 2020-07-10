@@ -2,6 +2,8 @@
 // src/sparv/defines/spravTarif.js
 // tarifs sprav definition
 
+import { editItem } from '../../apps/view/vuListTable';
+
 export const spravTarif = {
 
   page: "Тарифы ТТС",
@@ -12,7 +14,7 @@ export const spravTarif = {
       editable: ['edit'],
       header: "Базовые тарифы и коэфициенты",
       struct: {
-        id: ["№ п/п"],
+        id: ["№ п/п", '', editItem],
         name: ["Тариф"],
         tarif: ["Цена руб./ Коэфф. "],
       },
@@ -36,7 +38,7 @@ export const spravTarif = {
       editable: ['edit'],
       header: "Тарифы на ПМУ по взаиморасчетам",
       struct: {
-        id: ["№ п/п"],
+        id: ["№ п/п", '', editItem],
         code: { th: ["Код ПМУ"], tag: ['', 'readonly'] },
         tarif: ["Цена руб."],
         name: { th: ["ПМУ"], tag: ['', 'readonly'] }

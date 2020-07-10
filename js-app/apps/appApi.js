@@ -3,7 +3,7 @@
 /**
   */
 
-//import { up } from './utils';
+import { vuDialog } from './view/vuDialog';
 
 
 const [stream, scan] = [m.stream, m.stream.scan];

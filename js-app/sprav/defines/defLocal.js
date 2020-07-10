@@ -12,6 +12,9 @@
 // attrs: {} // if any
 // form: order of fields tabindex is index
 
+import { editItem, deletItem } from '../../apps/view/vuListTable';
+
+
 export const spravLocal = {
 
   page: "Локальные справочники",
@@ -30,13 +33,20 @@ export const spravLocal = {
       name: "Врачи",
       editable: ['add', 'edit', 'del'],
       struct: {
-        code: { th: ["Код", 'sort'], type: 'number', tag: ['.lcode', 'required'] },
-        spec: { th: ["Специальность", 'sort'], type: 'number', tag: ['.lcode', 'required'] },
+        code: {
+          th: ["Код", 'sort', editItem],
+          type: 'number', tag: ['.lcode', 'required']
+        },
+        spec: {
+          th: ["Специальность", 'sort'],
+          type: 'number', tag: ['.lcode', 'required']
+        },
         family: { th: ["Врач"], tag: ['', 'required'] },
         snils: { th: ["СНИЛС"], tag: ['', 'requred'] },
         division: { th: ["Отделение"], type: 'number', tag: ['.lcode'] },
         district: { th: ["Участок"], type: 'number', tag: ['.lcode'] },
-        tabid: { th: ["Таб. номер"], type: 'number' }
+        tabid: { th: ["Таб. номер"], type: 'number' },
+        ddel: ["Удалить", '', deletItem]
       },
       form: ['family', 'snils', 'code', 'spec', 'division', 'district', 'tabid']
     },

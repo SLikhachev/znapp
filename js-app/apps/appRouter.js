@@ -17,10 +17,12 @@ export const rootRouter = {
   }
 };
 
+export const pageView = state => vuPage(m(vuPageTitle, { text: state().suite.page }))
 
 export const torender = path => {
   disp(['suite', path.def]);
-  return vuPage(m(vuPageTitle, { text: states().suite.page }));
+  //return vuPage(m(vuPageTitle, { text: states().suite.page }));
+  return pageView(states);
 }
 
 // route on match helper

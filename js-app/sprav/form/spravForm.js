@@ -16,7 +16,8 @@ export const vuFetchForm = () => {
 
   const display = (def) => def.fetch ? 'display: block' : 'display: none;';
   const addButton = (def) => (def.item && def.item.editable
-    && def.item.editable.indexOf('add') >= 0) ? 'display: inline-block; margin-left: 1.0em' :
+    && def.item.editable.indexOf('add') >= 0) ?
+    'display: inline-block; margin-left: 1.0em' :
     'display: none;';
 
   const onsubmit = e => {

@@ -2,6 +2,9 @@
 // src/sparv/defines/spravPmus.js
 // prof sprav definition
 
+import { linkItem } from '../../apps/view/vuListTable';
+
+
 export const spravPmus = {
 
   page: "Простые медуслуги (ПМУ)",
@@ -35,7 +38,7 @@ export const spravPmus = {
       editable_fields: ['ccode', 'code_podr', 'code_spec'],
       //pk: 'code_usl',
       struct: {
-        code_usl: { th: ['Код услуги'], tag: ['', 'required'] },
+        code_usl: { th: ['Код услуги', '', linkItem], tag: ['', 'required'] },
         ccode: ['Номер'],
         name: { th: ['Наименование'], tag: ['', 'required'] },
         code_podr: ['Подразд.'],
@@ -65,7 +68,7 @@ export const spravPmus = {
       editable: ['add'],
       editable_fields: ['name'],
       struct: {
-        id: ['Номер группы'],
+        id: ['Номер группы', '', linkItem],
         name: ['Имя группы'],
       }
     },

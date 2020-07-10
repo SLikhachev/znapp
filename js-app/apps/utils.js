@@ -23,3 +23,5 @@ const P = p => state => Object.assign(state, p) // return a patch func
 const log = a => { console.log(a); return a; };
 
 export const up = update => p => pipe([P, update])(p);
+
+export const checkArray = a => !!a && Array.isArray(a) && a.length > 0 ? true : false;
