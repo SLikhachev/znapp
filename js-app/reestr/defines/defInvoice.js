@@ -42,19 +42,15 @@ export const calcInvoice = {
   page: "Расчеты и реестры в СМО",
 
   tosmo: {
-    fetch: {
-      url: 'task_rest',
-      task: {
-        params: 'eq.',
-        value: 'import_invoice'
-      },
-      select: {
-        value: 'file_name,pack_type(descr)'
+    count: {
+      rest: {
+        url: 'task_rest',
+        params: { task: 'eq.import_invoice', select: 'file_name,pack_type(descr)' }
       }
     },
     task: {
       url: "/reestr/inv/impex",
-      get: "/utils/file/reestr/inv/",  //GET reestr file  
+      get: "/utils/file/reestr/inv/",  //GET reestr file
       form: {
         legend: "Файл счета БАРС",
         file: { type: 'file' },

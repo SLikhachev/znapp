@@ -43,8 +43,8 @@ const hasChildren = (spaMenu, menuItem) => {
   if (!menuItem)
     return ''; // no menu item selected
 
-  const m = spaMenu[menuItem];
-  if (!m.hasOwnProperty('items') || !m.items.length || m.items.length === 0)
+  const $m = spaMenu[menuItem];
+  if (!$m.hasOwnProperty('items') || !$m.items.length || $m.items.length === 0)
     return ''; // no items' Array in menu item's definition
 
   return menuItem; // string

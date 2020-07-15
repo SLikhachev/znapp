@@ -30,14 +30,10 @@ export const xmlErrors = {
   page: "Правим ошибки реестра",
   ximp: {
     //rest: restErr,
-    fetch: {
-      url: 'task_rest',
-      task: {
-        params: 'eq.',
-        value: 'import_errors'
-      },
-      select: {
-        value: 'file_name,pack_type(descr)'
+    count: {
+      rest: {
+        url: 'task_rest',
+        params: { task: 'eq.import_errors', select: 'file_name,pack_type(descr)' }
       }
     },
     task: {

@@ -28,7 +28,7 @@ export const vuTaskSheet = function () {
 
       return [
         m(vuTheader, { itdef }),
-        subHdr(states().fetch),
+        subHdr(states().count),
         m(vuTaskForm, { task },
           m(vuTaskFormChildren, { task })
         ), // make list [] manually

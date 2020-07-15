@@ -35,11 +35,10 @@ export const reestrPack = {
     },
   },
   xml: {
-    fetch: {
-      url: 'task_rest',
-      task: {
-        params: 'eq.',
-        value: 'make_xml'
+    count: {
+      rest: {
+        url: 'task_rest',
+        params: { task: 'eq.make_xml' }
       },
     },
     task: {

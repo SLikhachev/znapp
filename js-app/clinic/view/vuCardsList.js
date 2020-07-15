@@ -1,13 +1,14 @@
 // src/clinic/view/vuCardsList.js
-import { states } from '../../apps/appApi';
+import { states, disp } from '../../apps/appApi';
 import { vuLoading, vuTheader } from '../../apps/view/vuApp.js';
+import { vuListTable } from '../../apps/view/vuListTable';
 import { makeTags } from '../../apps/form/makeTags';
 //import { moModel } from '../../apps/model/moModel.js';
 //import { restClinic, clinicApi } from '../clinicApi.js';
 //import { moCardsList } from '../model/moCards.js';
 //import { getFIO } from './vuClinic.js';
 
-
+/*
 const cardFind = function (vnode) {
 
   let { model } = vnode.attrs;
@@ -74,12 +75,13 @@ const cardFind = function (vnode) {
     }
   }
 }
-
+*/
+/*
 export const toCard = function (crd_num) {
   m.route.set(clinicApi.card_id, { crd: crd_num });
   return false;
 };
-
+*/
 const makeFields = (fn, flds) => flds.map((f, idx) => m('.pure-u-1-5', fn(f, idx)));
 //const makeButtons = (fn, flds) => flds.map((f, idx) => fn(f, idx));
 
@@ -100,17 +102,17 @@ export const vuFetchFormChildren = () => {
 
 export const vuFetchForm = () => {
 
-  let fetch = {};
+  //let fetch = {};
 
   const onsubmit = e => {
     e.preventDefault();
-    //disp(['fetch', e]);
+    disp(['fetch']);
     return false;
   };
 
   return {
     view(vnode) {
-      ({ fetch } = vnode.attrs);
+      //({ fetch } = vnode.attrs);
 
       return m('.pure-g',
         m('.pure-u-18-24',
@@ -183,15 +185,18 @@ export const vuCardsList = function () {
     ]);
   };
   */
-  let defs, def, itdef, fetch;
+  let defs, def, itdef, fetch, _table;
 
   const subHdr = text => text ? m('h1.blue', { style: "font-size: 1.5em;" },
     `${text} записей в таблице`) : '';
 
-  const table = list => R.isEmpty(list) ?
-    m('h1.blue', { style: "font-size: 1.5em;" }, "Нет таких записей") :
-    list[0] === 'notable' ? '' :
-      vuListTable({ itdef, list });
+  const vuTable = vuListTable({ itdef, list: states().list });
+
+  const table = list => _table ?
+    (R.isEmpty(list) ?
+      m('h1.blue', { style: "font-size: 1.5em;" }, "Нет таких записей") :
+      m(vuTable, { itdef, list })
+    ) : '';
 
   return {
 
@@ -200,9 +205,9 @@ export const vuCardsList = function () {
       def = defs[states().unit] || {};
       itdef = def.item || {};
       fetch = def.fetch || {};
-      //rest = def.rest || {};
+      _table = states().table;
 
-      return [
+      return m('div', { style: "padding-left: 2em" }, [
         m(vuTheader, { itdef }),
         subHdr(states().count),
         m(vuFetchForm, { fetch },
@@ -210,7 +215,7 @@ export const vuCardsList = function () {
         ),
         states().error ? m(".error", states().error) :
           states().list ? table(states().list) : m(vuLoading)
-      ];
+      ]);
     }
   };
 } //return this object
@@ -220,13 +225,13 @@ export const vuCardsList = function () {
       m('div', { style: "padding-left: 2em" }, [
         //m(vuTheader, { header: headerString} ),
         m(cardFind, { model }),
-        model.list[0] ? model.list[0].recount ? m('div',
+        model.list[0] ? (model.list[0].recount ? m('div',
           m('h1.blue', { style: "font-size: 1.5em;" },
             `${model.list[0].recount} записей в таблице`)
         ) : m('table.pure-table.pure-table-bordered', { id: table_id }, [
           m('thead', hdrMap()),
           m('tbody', [model.list.map(listMap)])
-        ]) : m('h1.blue', { style: "font-size: 1.5em;" }, "Нет таких записей")
+        ])) : m('h1.blue', { style: "font-size: 1.5em;" }, "Нет таких записей")
       ]);
 }
   }; //return this object

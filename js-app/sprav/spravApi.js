@@ -27,7 +27,8 @@ const Actions = (state, update) => {
     list(fetch = '') {
       stup({ list: null, error: null });
       return getList(state().suite, state().unit, fetch).
-        then(res => stup(res))
+        then(res => stup(res)).
+        catch(error => stup(error));
     },
     sort(d) {
       stup(sortList(d[0], state))

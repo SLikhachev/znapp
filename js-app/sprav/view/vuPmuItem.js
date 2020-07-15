@@ -31,6 +31,7 @@ const grupPmuForm = () => {
       label: ['Добавить к группе'],
       tag: ['.pure-u-3-4', 'required'],
       type: 'number',
+      // in make tags we check value is STREAM
       attrs: { value: grup, oninput }
     }
   });

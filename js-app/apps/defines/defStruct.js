@@ -11,37 +11,54 @@
 const defStruct = {
   // entity's unique name
   eName: {
-
+    // special object for prefetch data before rendering
+    // includes ONLY rest object same as REST below 
+    count: { {rest} }
+    
     // rest attr present the api interface for the restful db server
     // if absent then api endpoint is a `eName`, and default params
     // will be params as follow
+    
     rest: {
 
       // String RESTful api url (table name). Def: `eName`
-      url: tablename,
+      url: tablename || eName,
 
       // String Request method Def: 'GET'
-      method: 'POST',
+      method: 'POST' || 'GET',
 
       // Object Request headers. Def: undef
-      headers: {},
+      headers: Object || undefined,
 
       // Object present the query params. Def: { order: 'id.asc' }
-      params: { order: 'id.asc' },
+      params: Object || { order: 'id.asc' } ,
+
+      // Array(String) for local stream request body definition 
+      // as for additional request via RPC call
+      body: Array(String) || undef
 
       // Array(String) of entity's objects to query in option with this one
       // every name in array must be present in this `defStruct`
       // Def: undef
-      options: ['eName1', 'eName2']
+      options: Array('eName1', 'eName2') || undefined
     },
+    
+    // this object present fetch form for large DB table to fetch list of items
     fetch: {
+      // every prop is object present the form field and construct request
+      // as for STRUCT props in ITEM object
+      // column/field name
       code: {
         //label: ["Код диагноза МКБ-10"],
         tag: ['.input-find.pure-u-2-4', 'required'],
         attrs: { placeholder: "Код диагноза МКБ-10" },
-        params: 'ilike.*'
+        
+        // params for construct field request 
+        // ( used by fetchParams func from moList module)
+        params: 'ilike.*' 
       },
     },
+    
     // task attr present app server task api
     task: {
       // String POST request url for given task

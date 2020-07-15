@@ -23,26 +23,27 @@ const _dot_param = (ps, val) => {
   return val;
 }
 
-const fetchParams = (fetch, isfetch) => {
+// make object from fetch and changedItem
+const fetchParams = fetch => {
   let params = {};
   //console.log(params);
-  // there 'url' prop is in fetch object 
-  if (isfetch && fetch) {
-    Object.keys(fetch).reduce((acc, key) => {
-      let val = changedItem()[key] || fetch[key].value || null,
-        ps = fetch[key].params || null;
+  // 
+  Object.keys(fetch).reduce((acc, key) => {
+    let val = changedItem()[key], ps = fetch[key].params || null;
+    val = R.isNil(val) ? (
+      R.isNil(fetch[key].value) ? null : fetch[key].value
+    ) : val;
 
-      // string (url e.g) will be ignored
-      if (!!val) acc[key] = _dot_param(ps, val);
-      return acc;
-    }, params);
-  }
+    if (!R.isNil(val)) acc[key] = _dot_param(ps, val);
+    return acc;
+  }, params);
   //console.log(params);
   return params;
 };
 
-
-const makeBody = rest => {
+// special array for additional form of POST RPC call 
+// (as options to main request)
+const makeRestBody = rest => {
   const body = {};
   if (checkArray(rest.body))
     rest.body.forEach(p => {
@@ -51,37 +52,57 @@ const makeBody = rest => {
   return body;
 }
 
-
+// REST object used ONLY for build exclude params from fetch form
+// ALLOWED methods GET POST
 export const getRequest = (set, item, isfetch) => {
   // set:: def Object ref,
   // item:: String current eName 
-  // isfetch - String (may be bool) present is the fetch request
+  // rest { url, method, headers, params, body}
   const rest = set[item].rest || {},
-    fetch = set[item].fetch || {},
-    // url priority 1st: fetch, 2nd: rest, 3rd: item name
-    _url = (isfetch && fetch.url) ? fetch.url : (rest.url || item),
+    fetch = set[item].fetch || {};
+  let params = {};
 
-    _sign = _url.includes('?') ? '&' : '?',
-    _param = Boolean(isfetch) ? {} : (rest.params || { order: 'id.asc' }),
+  // isfetch - String (may be bool) present is the fetch request 
+  // fetch used ONLY for build query from CHANGED ITEM nothing else
+  if (isfetch && R.isEmpty(fetch))
+    return 'Нет объекта FETCH';
+  else
+    params = fetchParams(fetch);
+
+  // url priority 1st: fetch, 2nd: rest, 3rd: item name
+  // used by tasks in feych to select task item from 
+  // task table (last file here)
+  const _url = rest.url || item,
+    method = rest.method || 'GET',
+    headers = rest.headers || {},
+    _sign = (method === 'GET') ? (_url.includes('?') ? '&' : '?') : '',
+    _param = rest.params || { order: 'id.asc' },
     _item = set[item].item || {};
-
-  // fetch - object defines how build fetch params for getList
-
-  const params = fetchParams(fetch, isfetch);
-  //console.log(params);
 
   // assume every deletable entity table have ddel column  
   if (_item.editable && _item.editable.indexOf('del') >= 0)
     params.ddel = 'eq.0';
 
-  const qstring = m.buildQueryString(Object.assign({}, params, _param)),
-    url = `${_schema('pg_rest')}${_url}${_sign}${qstring}`,
-    method = rest.method || 'GET',
-    headers = rest.headers || {};
-  const r = { url, method, headers };
-  const b = makeBody(rest);
-  if (!R.isEmpty(b))
-    r.body = b;
+  let data = Object.assign({}, params, _param);
+
+  let qstring = '';
+  if (method === 'GET')
+    qstring = m.buildQueryString(data);
+
+  let url = `${_schema('pg_rest')}${_url}${_sign}${qstring}`;
+  let r = { url, method, headers };
+
+  if (method === 'GET')
+    return r;
+
+  //const body = new FormData();
+  // simetimes we need body if this is RPC call for option object e.g.
+
+  let b = Object.assign(data, makeRestBody(rest));
+  //Object.keys(b).forEach(k => body.append(k, b[k]));
+  //r.body = body;
+  r.body = b
+  console.log('POST', r);
   return r;
 };
 
@@ -90,14 +111,25 @@ export const getList = (set, item, isfetch = '') => {
   // isfetch - String (may be bool) 
   // as flag to build fetch params object for getList
   // default empty string
-  return m.request(
-    getRequest(set, item, isfetch)
-  ).then(
+  //return Promise.reject({ error: ' xer xer ' });
+  let r = getRequest(set, item, isfetch);
+  if (typeof r === 'string')
+    return Promise.reject({ error: r });
+  return m.request(r).then(
+    // mithril send 2 request for cross-site 
+    // 1st with OPTION if request is prefilght 
+    // 2nd with real POST 
     res => {
-      if (!!res && res.length && res.length > 0) {
-        return { list: Array.from(res), order: true }; // list of objects
-      } else
-        return { list: [] };
+      if (!R.isNil(res)) {
+        if (typeof res === 'object') {
+          if (res.length && res.length > 0) {
+            return { list: Array.from(res), order: true }; // list of objects
+          } else {
+            return { list: [] };
+          }
+        }
+        return res;
+      }
     },
     err => ({ error: errMsg(err) }))
 };

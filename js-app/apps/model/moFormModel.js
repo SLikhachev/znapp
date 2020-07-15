@@ -18,7 +18,7 @@ export const formItem = (suite, unit) => {
   return form;
 }
 
-
+// used by task server
 const formRequest = (api, suite, unit, data) => {
   const def = suite[unit] || {},
     _api = def[api] || {},
@@ -65,7 +65,7 @@ const formRequest = (api, suite, unit, data) => {
   return { url, method, body, headers };
 }
 
-// 
+// // used by TASK server
 export const formSubmit = (api, suite, unit, data) => {
   const reqBody = formRequest(api, suite, unit, data);
   reqBody.timeout = 0

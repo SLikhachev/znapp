@@ -65,6 +65,7 @@ export const spravLocal = {
     }
   },
   sp_para: {
+    //rest: { url: 'ytr' },
     item: {
       editable: ['edit'],
       name: 'Диагност. подр.',

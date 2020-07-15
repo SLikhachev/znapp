@@ -21,16 +21,16 @@ const Actions = (state, update) => {
       stup({ suite, unit, pk, message: '', list: [], error: null });
       listItem(formItem(suite, unit));
       itemId(unit);
-      this.fetch();
+      this.count();
       // test to show list initially
       if (!R.isNil(suite[unit].item.list))
         return this.list();
     },
-    fetch() {
-      state().suite[state().unit].fetch ?
-        getList(state().suite, state().unit, 'fetch').
-          then(res => stup({ fetch: res.list[0] })) :
-        stup({ fetch: null });
+    count() {
+      state().suite[state().unit].count ?
+        getList(state().suite[state().unit], 'count').
+          then(res => stup({ count: res.list[0] })) :
+        stup({ count: null });
     },
     list() {
       //stup({ list: [], error: null });

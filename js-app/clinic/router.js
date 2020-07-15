@@ -5,7 +5,7 @@ import { states } from '../apps/appApi'
 import { pageView, pathRouter, routerFun } from '../apps/appRouter';
 
 // init func
-import { initClinic } from './clincApi';
+import { initClinic } from './clinicApi';
 
 // menu
 import { clinicMenu } from './clinicMenu';
