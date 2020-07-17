@@ -2,7 +2,7 @@
 // src/sparv/defines/spravTarif.js
 // tarifs sprav definition
 
-import { editItem } from '../../apps/view/vuListTable';
+import { editItem } from '../../apps/defines/defStruct';
 
 export const spravTarif = {
 

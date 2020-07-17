@@ -2,7 +2,7 @@
 // src/sparv/defines/spravProfil.js
 // prof sprav definition
 
-import { editItem } from '../../apps/view/vuListTable';
+import { editItem } from '../../apps/defines/defStruct';
 
 export const spravProf = {
 

@@ -2,7 +2,7 @@
 // src/sparv/defines/spravPmus.js
 // prof sprav definition
 
-import { linkItem } from '../../apps/view/vuListTable';
+import { linkItem } from '../../apps/defines/defStruct';
 
 
 export const spravPmus = {

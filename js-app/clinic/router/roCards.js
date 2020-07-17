@@ -9,21 +9,22 @@ import { vuCardsList } from '../view/vuCardsList';
 
 export const roCards = () => ({
   [cards.path]: {
-    render() {
+    onmatch() {
       disp(['suite', cards.def, 'cards']);
-      return vuPage(m(vuCardsList));
+      return vuCardsList;
     },
+    render(vnode) { return vuPage(vnode); },
   },
-  /*
+
   [cards.path + '/:crd']: {
     onmatch(args) {
       const { crd } = args;
       if (!Number.isSafeInteger(Number(crd)))
         m.route.SKIP;
-      //disp(['card', cards.def, crd]);
-      m.route.SKIP;
-      //return vuCard;
+      disp(['card', cards.def, crd]);
+      //m.route.SKIP;
+      return vuCard;
     },
     render(vnode) { return vuPage(vnode); }
-  },*/
+  },
 })

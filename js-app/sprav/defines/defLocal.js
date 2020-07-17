@@ -12,7 +12,7 @@
 // attrs: {} // if any
 // form: order of fields tabindex is index
 
-import { editItem, deletItem } from '../../apps/view/vuListTable';
+import { editItem, deletItem } from '../../apps/defines/defStruct';
 
 
 export const spravLocal = {

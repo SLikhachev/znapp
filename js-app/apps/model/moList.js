@@ -15,7 +15,8 @@ export const sortList = (id, state) => {
 
 const _dot_param = (ps, val) => {
   let par, tail;
-  if (ps && ps.includes('.')) {
+  if (!R.isNil(ps) && (typeof ps === 'string')
+    && ps.includes('.')) {
     par = ps.split('.'); // array[String, String]
     tail = par[1] || '';
     return `${par[0]}.${val}${tail}`;
@@ -29,11 +30,9 @@ const fetchParams = fetch => {
   //console.log(params);
   // 
   Object.keys(fetch).reduce((acc, key) => {
-    let val = changedItem()[key], ps = fetch[key].params || null;
-    val = R.isNil(val) ? (
-      R.isNil(fetch[key].value) ? null : fetch[key].value
-    ) : val;
-
+    let ps = fetch[key].params,
+      val = changedItem()[key] || fetch[key].value;
+    // fetch[key].value may be empty string or 0 so we need isNil
     if (!R.isNil(val)) acc[key] = _dot_param(ps, val);
     return acc;
   }, params);
@@ -52,7 +51,8 @@ const makeRestBody = rest => {
   return body;
 }
 
-// REST object used ONLY for build exclude params from fetch form
+// ONLY REST object used for request building, 
+// exclude params from FETCH form, these process separately
 // ALLOWED methods GET POST
 export const getRequest = (set, item, isfetch) => {
   // set:: def Object ref,

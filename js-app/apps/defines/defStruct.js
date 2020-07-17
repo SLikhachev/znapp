@@ -170,6 +170,34 @@ const structNav = {
 */
 
 import { _month } from '../model/moModel';
+import { vuDialog } from '../view/vuDialog';
+
+// change list item in Dialog window 
+const onchange = (method, word) => e => {
+  disp(['change', method, word, e.target.getAttribute('data')]);
+  vuDialog.open();
+};
+export const onedit = onchange('PATCH', "Изменить");
+export const ondelet = onchange('DELETE', "Удалить");
+export const onadd = e => {
+  e.preventDefault();
+  disp(['add'])
+  vuDialog.open();
+};
+
+export const editItem = (row, key, pk) => ([
+  row[key],
+  '.choice.blue',
+  { data: row[pk], onclick: onedit }
+]);
+
+export const deletItem = (row, key, pk) => m('i.fa.fa-minus-circle.choice.red',
+  { data: row[pk], onclick: ondelet });
+
+export const linkItem = (row, key, pk) => ([
+  m(m.route.Link, { href: `${m.route.get()}/${row[pk]}` }, row[key]),
+  '.choice.blue',
+]);
 
 export const get_month = (data, key) => [
   "Январь",

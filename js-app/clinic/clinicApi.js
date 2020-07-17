@@ -8,6 +8,7 @@ import { listItem, itemId, changedItem } from '../apps/model/moListItem';
 //import { formItem, formSubmit } from '../apps/model/moFormModel';
 import { getList } from '../apps/model/moList';
 import { clinicMenu } from './clinicMenu';
+import { getData } from '../apps/model/moData';
 
 
 const Actions = (state, update) => {
@@ -16,7 +17,7 @@ const Actions = (state, update) => {
   return {
     suite(d) {
       let [suite, unit] = d;
-      stup({ suite, unit });
+      stup({ suite, unit, options: null });
       //console.log(suite, unit);
       let def = state().suite[state().unit];
       if (!!def.count)
@@ -37,13 +38,28 @@ const Actions = (state, update) => {
         then(res => stup(res)).
         catch(error => stup(error));
     },
+    opts() {
+      stup({ options: null });
+      return getData(state().suite, state().unit).
+        then(res => stup(res)).
+        catch(err => stup(err))
+    },
+    card(d) {
+      let [suite, crd] = d;
+      stup({ suite, unit: 'card', crd, data: null, error: null });
+      if (R.isNil(states().options))
+        this.opts();
+      changedItem({ crd_num: crd });
+      return getData(state().suite, 'card', 'data').
+        then(res => stup(res)).
+        catch(err => stup(err))
+    }
   }
-}
 
-//const actions = Actions(states, update); //=> obj of func ref
+  //const actions = Actions(states, update); //=> obj of func ref
 
-export const initClinic = () => initApp(
-  { suite: { page: "Медстатстика: Поликлиника" } },
-  clinicMenu,
-  Actions(states, update)
-);
+  export const initClinic = () => initApp(
+    { suite: { page: "Медстатстика: Поликлиника" } },
+    clinicMenu,
+    Actions(states, update)
+  );

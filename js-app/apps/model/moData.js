@@ -2,10 +2,10 @@
 import { checkArray, errMsg } from './moModel';
 import { getRequest } from './moList';
 
-const restOpts = def => {
+const restOpts = (def, list) => {
   const rest = def.rest || {};
-  if (checkArray(rest.options))
-    return rest.options;
+  if (checkArray(rest[list]))
+    return rest[list];
   return [];
 }
 
@@ -15,8 +15,8 @@ const reqOptions = (set, opts) => opts.
   map(r => m.request(r));
 
 
-export const getData = (set, item) => {
-  const opts = restOpts(set[item]), optm = new Map();
+export const getData = (set, item, list = 'options') => {
+  const opts = restOpts(set[item], list), optm = new Map();
   // order should preserved
   return Promise.all(reqOptions(set, opts)).then(
     lists => {
@@ -24,7 +24,7 @@ export const getData = (set, item) => {
         lists[ix] ? mp.set(op, lists[ix]) : mp.set(op, []);
         return mp;
       }, optm);
-      return { options: optm };
+      return { [list]: optm };
     },
     err => ({ error: errMsg(err) }));
 };

@@ -209,10 +209,10 @@ export const vuCardsList = function () {
 
       return m('div', { style: "padding-left: 2em" }, [
         m(vuTheader, { itdef }),
-        subHdr(states().count),
         m(vuFetchForm, { fetch },
           m(vuFetchFormChildren, { fetch })
         ),
+        subHdr(states().count),
         states().error ? m(".error", states().error) :
           states().list ? table(states().list) : m(vuLoading)
       ]);

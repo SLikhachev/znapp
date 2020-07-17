@@ -9,6 +9,7 @@ import { clinicApi } from '../clinicApi.js';
 import { tabsView, forTabs } from './vuTabs.js';
 import { cof } from '../form/foForm.js';
 import { upper } from './vuClinic';
+import { states } from '../../apps/appApi';
 
 const _Reg = _region();
 
@@ -479,30 +480,18 @@ const crdViz = function (vnode) {
     } // view
   }; // return
 };
-const crdExt = function (vnode) {
-  return {
-    view(vnode) {
-      return m('h2', "Дополнительно");
-    }
-  };
-};
-const crdAtt = function (vnode) {
-  return {
-    view(vnode) {
-      return m('h2', "Прикрепить");
-    }
-  };
-}
-const crdDel = function (vnode) {
-  return {
-    view(vnode) {
-      return m('h2', "Удалить/Объеденить");
-    }
-  };
-}
-export const vuCard = function (vnode) {
-  //console.log(vnode.attrs);
 
+const emptyTab = tab => m('h2', tab.header);
+
+
+export const tabContent = tab => {
+  if (tab.type && tab.type === 'empty')
+    return emptyTab(tab);
+}
+
+export const vuCard = () => {
+  //console.log(vnode.attrs);
+  /*
   let tabs = ['Карта', 'Визиты', 'Дополнительно', 'Прикрепить', 'Удалить'];
   let conts = [crdMain, crdViz, crdExt, crdAtt, crdDel];
   const crd = parseInt(vnode.attrs.crd);
@@ -510,23 +499,14 @@ export const vuCard = function (vnode) {
   model.word = 'Карты';
   moCard.getCard(model, crd);
   const method = Number.isNaN(crd) || crd === 0 ? "POST" : "PATCH";
-
+  */
   return {
-    oninit() {
-      //model = moCard.getModel();
-      //card = model.list ? model.list[0] : null;
-      //console.log(model);
-    },
-    onbeforeupdate() {
-      //console.log('update');
-      //model = moCard.getModel();
-    },
+    view(vnode) {
+      console.log(vnode.attrs.crd);
 
-    view() {
-      return model.error ? [m(".error", model.error)] :
-        cardOpt.data.size > 0 && model.card ?
-          m(tabsView, { model: model, tabs: tabs, conts: conts, method: method })
-          : m(vuLoading);
+      return states().error ? [m(".error", states().error)] :
+        states().options && states().data ?
+          m(tabsView) : m(vuLoading);
     }
   };
 };
