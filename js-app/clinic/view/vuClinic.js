@@ -4,6 +4,15 @@
 //import { moCard } from '../model/moCards.js';
 //import { moTalonsList, moTalon } from '../model/moTalons.js';
 
+const emptyTab = tab => m('h2', tab.header);
+
+
+export const tabContent = tab => {
+  return emptyTab(tab);
+  if (tab.type && tab.type === 'empty')
+    return emptyTab(tab);
+}
+
 export const vuClinic = function (vnode) {
   return {
     oninit: function (vnode) {
@@ -32,12 +41,12 @@ export const vuClinic = function (vnode) {
     }
   }
 }
-
+/*
 export const getFIO = row => {
   let f = ['fam', 'im', 'ot'].map(k => row[k] ? row[k] : '');
   return `${f[0]} ${f[1]} ${f[2]}`;
 }
-
+*/
 export const _Num = num => num ? num : ''; //talon number
 
 //talon editable

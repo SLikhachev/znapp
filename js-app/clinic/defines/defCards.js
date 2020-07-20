@@ -82,7 +82,8 @@ export const clinicCards = {
     rest: {
       url: 'rpc/crd_talons',
       method: 'POST',
-      params: { tal_tbl: 'talonz_clin_20' }
+      params: { tal_tbl: 'talonz_clin_20' },
+      body: ['crd_num']
     }
   },
   smo_local: spravLocal.smo_local,
@@ -94,10 +95,14 @@ export const clinicCards = {
       url: "rpc/clin_card_by_num",
       method: "POST",
       params: { _tbl: 'cardz_clin' },
-      data['card', 'talons'],
-      options: ['mo_local', 'smo_local', 'dul', 'okato']
+      data: ['card', 'talons'],
+      options: ['mo_local', 'smo_local', 'dul', 'okato'],
+      body: ['crd_num']
     },
     tabsdef: [crdMainTab, crdVizTab, crdExtTab, crdAttTab, crdDelTab],
+    item: {
+      header: "Карты",
+    }
   }
 }
 

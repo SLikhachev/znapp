@@ -2,7 +2,7 @@
 // src/clinic/view/vuTabs.js
 import { vuDialog } from '../../apps/view/vuDialog.js';
 import { states } from '../../apps/appApi.js';
-import { tabContent } from './vuCard';
+import { tabContent } from './vuClinic';
 
 export const toFocus = function (vnode) {
   vnode.dom.focus();
@@ -18,7 +18,7 @@ export const delPale = function (e) {
 
 export const tabsView = () => {
 
-  let tabs = [], tabs_cont = [], def, tabsdef;
+  let tabs = [], tabs_cont = [], def, itdef, tabsdef;
 
   const hideTabs = idx => {
     for (let id = idx; id < tabs.length; id++) {
@@ -49,7 +49,9 @@ export const tabsView = () => {
 
     view() {
       def = states().suite[states().unit];
+      itdef = def.item;
       tabsdef = def.tabsdef;
+
 
       return [m('div#tabs', [
         tabsdef.map((tab, idx) => m('.tab',
@@ -57,12 +59,12 @@ export const tabsView = () => {
         tabsdef.map(tab => m('.tab-content',
           tabContent(tab)))
       ]),
-      m(vuDialog, { header: def.item.header, word: states().word },
+      m(vuDialog, { itdef, word: states().word },
         m('dl', [m('dt', "Ошибка обработки"),
         states().errorsList.map(err => m('dd.red',
           { style: "font-size: 1.2em; font-weight: 600" },
           err))
-        )
+        ])
       )];
     }
   }

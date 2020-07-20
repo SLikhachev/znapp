@@ -46,20 +46,25 @@ const Actions = (state, update) => {
     },
     card(d) {
       let [suite, crd] = d;
-      stup({ suite, unit: 'card', crd, data: null, error: null });
+      stup({ suite, unit: 'card', crd, data: null, error: null, errorsList: [] });
       if (R.isNil(states().options))
         this.opts();
       changedItem({ crd_num: crd });
       return getData(state().suite, 'card', 'data').
-        then(res => stup(res)).
-        catch(err => stup(err))
+        then(res => {
+          stup(res);// card and list of talons in Map
+          listItem(state().data.get('card')[0]); // card object from Map
+          itemId(crd); // just string
+        }).
+        catch(err => stup(err));
     }
   }
+}
 
-  //const actions = Actions(states, update); //=> obj of func ref
+//const actions = Actions(states, update); //=> obj of func ref
 
-  export const initClinic = () => initApp(
-    { suite: { page: "Медстатстика: Поликлиника" } },
-    clinicMenu,
-    Actions(states, update)
-  );
+export const initClinic = () => initApp(
+  { suite: { page: "Медстатстика: Поликлиника" } },
+  clinicMenu,
+  Actions(states, update)
+);

@@ -1,16 +1,16 @@
 // src/clinic/view/vuCard.js
 
-import { trims } from '../../apps/utils';
-import { vuDialog } from '../../apps/view/vuDialog.js';
+//import { trims } from '../../apps/utils';
+//import { vuDialog } from '../../apps/view/vuDialog.js';
 import { vuLoading } from '../../apps/view/vuApp.js';
-import { moModel, _region } from '../../apps/model/moModel.js';
-import { moCard, cardOpt } from '../model/moCards.js';
-import { clinicApi } from '../clinicApi.js';
-import { tabsView, forTabs } from './vuTabs.js';
-import { cof } from '../form/foForm.js';
-import { upper } from './vuClinic';
+//import { moModel, _region } from '../../apps/model/moModel.js';
+//import { moCard, cardOpt } from '../model/moCards.js';
+//import { clinicApi } from '../clinicApi.js';
+import { tabsView } from './vuTabs.js';
+//import { cof } from '../form/foForm.js';
+//import { upper } from './vuClinic';
 import { states } from '../../apps/appApi';
-
+/*
 const _Reg = _region();
 
 export const checkDost = card => {
@@ -193,7 +193,7 @@ export const toSaveCard = card => {
 
   return false;
 };
-
+*/
 
 const crdMain = function (vnode) {
 
@@ -342,8 +342,8 @@ const crdMain = function (vnode) {
             cof('smo', card, {onblur: _set_smo}),
             m('span.item_name',
               card.smo === null ? '':  get_name(card.smo + _reg, 'smo_local', 'code', 'short_name'))
-          ]),*/
-          // --
+          ]),
+          */ //--
           m(".pure-control-group", [
             m('label', { for: "smo" }, "Страховщик"),
             m('select[name="smo"]',
@@ -422,6 +422,8 @@ const crdMain = function (vnode) {
     } // view
   }; // return
 }; //func
+
+/*
 const crdViz = function (vnode) {
 
   let crd;
@@ -480,14 +482,7 @@ const crdViz = function (vnode) {
     } // view
   }; // return
 };
-
-const emptyTab = tab => m('h2', tab.header);
-
-
-export const tabContent = tab => {
-  if (tab.type && tab.type === 'empty')
-    return emptyTab(tab);
-}
+*/
 
 export const vuCard = () => {
   //console.log(vnode.attrs);
