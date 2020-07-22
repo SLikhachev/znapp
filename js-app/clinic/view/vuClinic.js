@@ -4,14 +4,11 @@
 //import { moCard } from '../model/moCards.js';
 //import { moTalonsList, moTalon } from '../model/moTalons.js';
 
-const emptyTab = tab => m('h2', tab.header);
+export const crdEmpty = (name, header) => ({
+  name,
+  content() { return m('h2', header) }
+});
 
-
-export const tabContent = tab => {
-  return emptyTab(tab);
-  if (tab.type && tab.type === 'empty')
-    return emptyTab(tab);
-}
 
 export const vuClinic = function (vnode) {
   return {

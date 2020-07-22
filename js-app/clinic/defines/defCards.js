@@ -2,29 +2,20 @@
 // src/sparv/defines/spravPmus.js
 // prof sprav definition
 
+import { states } from '../../apps/appApi';
 import { linkItem } from '../../apps/defines/defStruct';
 import { spravLocal } from '../../sprav/defines/defLocal';
 import { spravComs } from '../../sprav/defines/defComs';
-import { getFIO } from '../common/utils';
+import { getFIO, _ufms } from '../common/utils';
 
 $cards = text => ({
   placeholder: text,
   style: "font-size: 1.2em",
 })
 
-const crdEmpty = (name, header) => ({
-  type: 'empty',
-  name,
-  header
-});
+$upper = text => ({ placeholder: text, style: 'text-transform: uppercase' })
 
-crdMainTab = crdEmpty("Карта", "Карта пациента");
-crdVizTab = crdEmpty("Визиты", "Визиты");
-
-crdExtTab = crdEmpty("Дополнительно", "Дополнительно");
-crdAttTab = crdEmpty("Прикрепить", "Прикрепить");
-crdDelTab = crdEmpty("Удалить", "Удалить/Объеденить");
-
+const $talons = () => states().data && states().data.get('talons').length
 
 export const clinicCards = {
 
@@ -90,6 +81,18 @@ export const clinicCards = {
   mo_local: spravLocal.mo_local,
   dul: spravComs.dul,
   okato: spravComs.okato,
+  ufms: {
+    rest: {
+      params: { order: 'code' },
+      headers: { 'Range': '0-1' }
+    },
+    fetch: {
+      code: {
+        alias: 'ufms',
+        params: 'eq.'
+      }
+    }
+  },
   card: {
     rest: {
       url: "rpc/clin_card_by_num",
@@ -99,13 +102,68 @@ export const clinicCards = {
       options: ['mo_local', 'smo_local', 'dul', 'okato'],
       body: ['crd_num']
     },
-    tabsdef: [crdMainTab, crdVizTab, crdExtTab, crdAttTab, crdDelTab],
     item: {
       header: "Карты",
-    }
+    },
+    form: {
+      group1: {
+        class: '.pure-u-7-24',
+        fields: {
+          crd_num: {
+            label: ["Номер карты"],
+            tag: ['', 'required'],
+            attrs: { readonly: $talons }
+          },
+          fam: { label: [''], attrs: $upper("Фамилия") },
+          im: { label: [''], attrs: $upper("Имя") },
+          ot: { label: [''], attrs: $upper("Отчество") },
+          birth_date: {
+            label: ['Дата рождения'],
+            tag: ['', 'required'],
+            type: 'date'
+          },
+          gender: {
+            label: ["Пол"],
+            type: 'radio',
+            radio: [
+              { text: "M", value: 'м' },
+              { text: "Ж", value: 'ж' }
+            ]
+          },
+          dul_type: {
+            label: ['Тип документа'],
+            tag: ['.pure-u-1-5'],
+            type: 'number',
+            attrs: { min: 1, placeholder: "Число" }
+          },
+          dul_serial: {
+            label: ["Документ"],
+            attrs: { placeholder: "Серия" }
+          },
+          dul_number: {
+            label: [''],
+            attrs: { placeholder: "Номер" }
+          },
+          dul_date: {
+            label: ['Дата выдачи'],
+            type: 'date',
+          },
+          dul_org: {
+            label: [' Кем выдан'],
+            tag: ['.pure-u-7-12'],
+            attrs: { style: "fonf-size: 1em; font-weight: normal" }
+          },
+          ufms: {
+            label: ["УФМС"],
+            tag: ['.pure-u-6-24'],
+            type: 'number',
+            attrs: { onblur: _ufms }
+          }
+        },
+      },
+    },
   }
 }
-
 
 export const cards = {
   path: '/cards',

@@ -4,7 +4,7 @@
   */
 import { up } from '../apps/utils';
 import { states, update, initApp } from '../apps/appApi';
-import { listItem, itemId, changedItem } from '../apps/model/moListItem';
+import { listItem, itemId, changedItem, changeValue } from '../apps/model/moListItem';
 //import { formItem, formSubmit } from '../apps/model/moFormModel';
 import { getList } from '../apps/model/moList';
 import { clinicMenu } from './clinicMenu';
@@ -57,6 +57,21 @@ const Actions = (state, update) => {
           itemId(crd); // just string
         }).
         catch(err => stup(err));
+    },
+    ufms(d) {
+      //let [ufms] = d;
+      stup({ ufms: null });
+      return getList(state().suite, 'ufms', 'fetch').
+        then(res => {
+          if (res.list && res.list.length > 0) {
+            let uf = res.list[0].name;
+            changeValue({ target: { name: 'dul_org', value: uf } });
+            stup({ ufms: uf })
+          } else {
+            stup({ ufms: 'Нет такого кода' })
+          }
+        }).
+        catch(err => stup({ ufms: err.error }));
     }
   }
 }

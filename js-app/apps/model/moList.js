@@ -26,12 +26,15 @@ const _dot_param = (ps, val) => {
 
 // make object from fetch and changedItem
 const fetchParams = fetch => {
+  //console.log(fetch)
   let params = {};
-  //console.log(params);
-  // 
   Object.keys(fetch).reduce((acc, key) => {
-    let ps = fetch[key].params,
-      val = changedItem()[key] || fetch[key].value;
+    // alias for case where key string not present in changedItem
+    // but alias string present
+
+    let ps = fetch[key].params, alias = fetch[key].alias || key,
+      val = changedItem()[alias] || fetch[key].value;
+
     // fetch[key].value may be empty string or 0 so we need isNil
     if (!R.isNil(val)) acc[key] = _dot_param(ps, val);
     return acc;
@@ -69,6 +72,7 @@ export const getRequest = (set, item, isfetch) => {
   else
     params = fetchParams(fetch);
 
+  //console.log(params);
   // url priority 1st: fetch, 2nd: rest, 3rd: item name
   // used by tasks in feych to select task item from 
   // task table (last file here)

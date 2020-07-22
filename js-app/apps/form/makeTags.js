@@ -23,8 +23,8 @@ const _tagarray = (sf, idx) => {
   let _tag = (sf.tag && Array.isArray(sf.tag) && sf.tag.length > 0) ?
     sf.tag : [''];
   //if (idx == 1 || idx == 2)
-  if (idx && idx < 2)
-    _tag.push['autofocus'];
+  //if (idx && idx < 2)
+  //  _tag.push['autofocus'];
 
   return _tag;
 }
@@ -55,13 +55,14 @@ const _input = obj => { // {klass, type, name, tabindex, aux, value, attrs} => {
   // we can redefine value oninput by attrs
   let attrs = { value: obj.value, oninput: changeValue };
 
-  let val = obj.attrs.value;
-
-  if (typeof val === 'function' && val.name === 'stream') {
-    attrs.value = val();
-    delete obj.attrs.value;
-  }
-  attrs = Object.assign(attrs, obj.attrs)
+  Object.keys(obj.attrs).forEach(k => {
+    let val = obj.attrs[k];
+    if (typeof val === 'function' && k !== 'onblur')
+      attrs[k] = val();
+    else
+      attrs[k] = val;
+  });
+  //attrs = Object.assign(attrs, obj.attrs)
   return m(tag, attrs);
 }
 
@@ -103,6 +104,20 @@ const select = (sf, field) => {
   ]
 }
 
+const labelradio = (fortag, radio = [], txt = '', kl = '') => [
+  m(`label${_klass(kl)}[for=${fortag}]`, _text(txt)),
+  radio.map(tag => [
+    m('span', { style: "line-height: 1em;" }, _text(tag.text)),
+    m(`input[name=${fortag}][type=radio]`, {
+      style: "margin: 0 14px 0 7px;",
+      value: tag.value,
+      checked: changedItem()[fortag] === tag.value ? true : false,
+      onchange: changeValue
+    })
+  ])
+]
+
+
 const input = (sf, field, idx) => {
 
   let _label = _labeltag(sf);
@@ -126,7 +141,7 @@ const input = (sf, field, idx) => {
     klass: _tag[0],
     type: type, //type of input field
     name: field, //name of input field
-    tabindex: idx,
+    tabindex: idx + 1,
     aux: aux, // aux params
     value: value, // current chosen value
     attrs: sf.attrs || {} // attrs from definition eg. { placeholder: 'i love you' } 
@@ -135,6 +150,9 @@ const input = (sf, field, idx) => {
   if (type === 'checkbox' && sf.view && sf.view === 'controls')
     return labelcheckbox(field, _input(_tagobj), ..._label);
 
+  if (type === 'radio') {
+    return labelradio(_text(field), sf.radio, ..._label);
+  }
   return [
     _label ? label(field, ..._label) : '',
     _input(_tagobj)

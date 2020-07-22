@@ -2,14 +2,12 @@
 
 //import { trims } from '../../apps/utils';
 //import { vuDialog } from '../../apps/view/vuDialog.js';
-import { vuLoading } from '../../apps/view/vuApp.js';
-//import { moModel, _region } from '../../apps/model/moModel.js';
+import { vuLoading } from '../../apps/view/vuApp';
+import { makeTags } from '../../apps/form/makeTags';
 //import { moCard, cardOpt } from '../model/moCards.js';
-//import { clinicApi } from '../clinicApi.js';
-import { tabsView } from './vuTabs.js';
-//import { cof } from '../form/foForm.js';
-//import { upper } from './vuClinic';
-import { states } from '../../apps/appApi';
+import { tabsView, nextTagFocus } from './vuTabs.js';
+import { crdEmpty } from './vuClinic';
+import { states, disp } from '../../apps/appApi';
 /*
 const _Reg = _region();
 
@@ -194,230 +192,117 @@ export const toSaveCard = card => {
   return false;
 };
 */
+const makeFields = (fn, flds) => flds.map((f, idx) => m('.pure-control-group', fn(f, idx)));
 
-const crdMain = function (vnode) {
+const makeGroup = group => m(group.class,
+  makeFields(makeTags(group.fields), Object.keys(group.fields))
+);
 
-  let { model, method } = vnode.attrs;
-  const data = cardOpt.data;
-  let card;
-  if (model.card.length > 0) {
-    card = model.card[0];
-    card.old_card = card.crd_num;
-  } else {
-    card = {};
+const makeFormChildren = form => Object.keys(form).map(
+  group => makeGroup(form[group])
+);
+
+const crdMain = () => {
+  /*
+    const fio = field => event => card[field] = upper(event.target.value);
+  
+    const ufms_test = v => {
+      if (v.length < 5) return false;
+      let u = parseInt(v);
+      if (isNaN(u)) return false;
+      return u;
+    };
+    const ufms_model = {
+      ufms: 'ufms?code=eq.', order_by: 'code', list: null,
+      headers: { Range: '0-1' }, uf: null
+    };
+    const set_ufms = e => {
+  
+      card.ufms = e.target.value;
+      //console.log(e.target.value);
+      let u = ufms_test(card.ufms);
+      if (Boolean(u)) {
+        ufms_model.url = `${ufms_model.ufms}${u}`;
+        return moModel.getList(ufms_model).then(t => {
+          if (t) {
+            ufms_model.uf = ufms_model.list[0] ? ufms_model.list[0] : { code: null, name: 'Нет такого кода' };
+            card.dul_org = ufms_model.uf.code ? ufms_model.uf.name : null;
+          } else {
+            ufms_model.uf = { code: null, name: 'Пустой ответ сервера' };
+          }
+        });
+      }
+      return false;
+    };
+    const ufms_show = () => {
+      if (Boolean(ufms_model.error))
+        return m('span.red', ufms_model.error);
+      if (Boolean(ufms_model.uf)) {
+        //console.log(ufms_model.uf);
+        return m('span', { class: ufms_model.uf.code ? '' : 'red' }, ufms_model.uf.name);
+      }
+      return m('span', card.dul_org);
+    };
+    const cardSave = function (e) {
+      e.preventDefault();
+      // form send with forTabs onCreate function
+      // above changed all processing will made here
+      //console.log(card);
+      model.save = toSaveCard(card);
+      if (Boolean(model.save)) {
+        vuDialog.open();
+        return false;
+      }
+      //model.save= null;
+      return moCard.saveCard(e, card, model, method).then(t =>
+        m.route.set([clinicApi.cards])
+      ).catch(err => {
+        model.save = err;
+        vuDialog.open();
+      });
+    };
+    // gender
+    const gnd = function (c) {
+      return ['м', 'ж'].indexOf(c.gender.toLowerCase());
+    };
+    // set smo
+    //const _set_smo = set_smo(card);
+    const _set_smo = sel_smo(card);
+  
+    // smo OKATO
+    const _set_smo_okato = set_smo_okato(data, card);
+    // gets the name of option from Map by key
+    const get_name = function (val, key, prop, name) {
+      return getName(data, val, key, prop, name, 'Неизвестный код', false);
+    };
+  */
+
+  let form = {};
+
+  const onsubmit = e => {
+    e.preventDefault()
+    console.log('savecard');
+    //disp['savecard']
+    return false
   }
 
-  const fio = field => event => card[field] = upper(event.target.value);
-
-  const ufms_test = v => {
-    if (v.length < 5) return false;
-    let u = parseInt(v);
-    if (isNaN(u)) return false;
-    return u;
-  };
-  const ufms_model = {
-    ufms: 'ufms?code=eq.', order_by: 'code', list: null,
-    headers: { Range: '0-1' }, uf: null
-  };
-  const set_ufms = e => {
-
-    card.ufms = e.target.value;
-    //console.log(e.target.value);
-    let u = ufms_test(card.ufms);
-    if (Boolean(u)) {
-      ufms_model.url = `${ufms_model.ufms}${u}`;
-      return moModel.getList(ufms_model).then(t => {
-        if (t) {
-          ufms_model.uf = ufms_model.list[0] ? ufms_model.list[0] : { code: null, name: 'Нет такого кода' };
-          card.dul_org = ufms_model.uf.code ? ufms_model.uf.name : null;
-        } else {
-          ufms_model.uf = { code: null, name: 'Пустой ответ сервера' };
-        }
-      });
-    }
-    return false;
-  };
-  const ufms_show = () => {
-    if (Boolean(ufms_model.error))
-      return m('span.red', ufms_model.error);
-    if (Boolean(ufms_model.uf)) {
-      //console.log(ufms_model.uf);
-      return m('span', { class: ufms_model.uf.code ? '' : 'red' }, ufms_model.uf.name);
-    }
-    return m('span', card.dul_org);
-  };
-  const cardSave = function (e) {
-    e.preventDefault();
-    // form send with forTabs onCreate function
-    // above changed all processing will made here
-    //console.log(card);
-    model.save = toSaveCard(card);
-    if (Boolean(model.save)) {
-      vuDialog.open();
-      return false;
-    }
-    //model.save= null;
-    return moCard.saveCard(e, card, model, method).then(t =>
-      m.route.set([clinicApi.cards])
-    ).catch(err => {
-      model.save = err;
-      vuDialog.open();
-    });
-  };
-  // gender
-  const gnd = function (c) {
-    return ['м', 'ж'].indexOf(c.gender.toLowerCase());
-  };
-  // set smo
-  //const _set_smo = set_smo(card);
-  const _set_smo = sel_smo(card);
-
-  // smo OKATO
-  const _set_smo_okato = set_smo_okato(data, card);
-  // gets the name of option from Map by key
-  const get_name = function (val, key, prop, name) {
-    return getName(data, val, key, prop, name, 'Неизвестный код', false);
-  };
-
   return {
-    view: function () {
-      //console.log(method);
-      //let crd= Boolean (model.talons);
-      //console.log(model.talons);
+    view(vnode) {
+      form = states().suite.card.form || {};
+
       return m('form.tcard.pure-form.pure-form-aligned',
-        { style: "font-size: 1.2em;", id: "card", oncreate: forTabs, onsubmit: cardSave },
-        [m('fieldset', [m('legend', "Карта пациента"),
-        m(".pure-g", [
-          m(".pure-u-7-24", [
-            // --        // -- TODO check for card.card_type to process card number    
-            m(".pure-control-group", cof('crd_num', card,
-              { readonly: Boolean(model.talons.length) })),
-            m(".pure-control-group", cof('fam', card, { onblur: fio('fam') })),
-            m(".pure-control-group", cof('im', card, { onblur: fio('im') })),
-            m('.pure-control-group', cof('ot', card, { onblur: fio('ot') })),
-            m(".pure-control-group", cof('birth_date', card)),
-
-            m(".pure-control-group", [
-              m('label', { for: "gender" }, "Пол"),
-              m('span', { style: "line-height: 1em;" }, "М"),
-              m('input[name="gender"][type="radio"]', {
-                style: "margin: 0 14px 0 7px;",
-                value: 0,
-                checked: card.gender ? gnd(card) === 0 : false,
-                onchange: e => e.target.checked ? card.gender = 'м' : card.gender = 'ж'
-              }),
-              m('span', "Ж"),
-              m('input[name="gender"][type="radio"]', {
-                style: "margin: 0 0 0 7px;",
-                value: 1,
-                checked: card.gender ? gnd(card) === 1 : false,
-                onchange: e => e.target.checked ? card.gender = 'ж' : card.gender = 'м'
-              })
-            ]),
-            // --            
-            m(".pure-control-group", [cof('dul_type', card),
-            m('span.item_name', get_name(card.dul_type, 'dul', 'code', 'short_name'))
-            ]),
-            m(".pure-control-group", cof('dul_serial', card)),
-            m(".pure-control-group", cof('dul_number', card)),
-            m(".pure-control-group", cof('dul_date', card)),
-            // UFMS
-            m(".pure-control-group", [
-              m('label[for=ufms]', 'УФМС'),
-              m('input.pure-u-6-24[type=number][tabindex=10][name=ufms]', {
-                value: card.ufms, onblur: set_ufms
-              }),
-            ]),
-            m(".pure-control-group", cof('dul_org', card)),
-            ufms_show()
-          ]), // u-7-24
-          // ============================			
-          m(".pure-u-8-24", [m('legend', "ОМС"),
-          m(".pure-control-group", cof('polis_ser', card)),
-          m(".pure-control-group", [cof('polis_num', card),
-          m('div.item_name', { style: "margin-left: 10em;" }, num_digits(card)),
-          ]),
-          /*
-          m(".pure-control-group", [
-            cof('smo', card, {onblur: _set_smo}),
-            m('span.item_name',
-              card.smo === null ? '':  get_name(card.smo + _reg, 'smo_local', 'code', 'short_name'))
-          ]),
-          */ //--
-          m(".pure-control-group", [
-            m('label', { for: "smo" }, "Страховщик"),
-            m('select[name="smo"]',
-              { tabindex: 12, value: card.smo, onchange: _set_smo }, [
-              m('option[value=""]', ""),
-              data.get('smo_local').map(s => m('option', { value: s.code }, s.short_name))
-            ])
-          ]),
-          m(".pure-control-group", [
-            m('label', { for: "smo_okato" }, "Регион"),
-            m('input[name="smo_okato"][type="text"]', {
-              oncreate: v => _set_smo_okato({ target: v.dom }),
-              list: "okato",
-              //value: card.smo_okato,
-              tabindex: "13",
-              onblur: _set_smo_okato
-            }),
-            //cof('smo_okato', card, {
-            //  oncreate: v => set_smo_okato({target: v.dom}),
-            //  onblur: set_smo_okato
-            //}),
-            //m('span.item_name', set_name(card.smo_okato, 'okato', 'okato', 'name', true) )
-            m('datalist[id="okato"]', [
-              data.get('okato').map(o => {
-                let okato = `${o.region}. ${o.name.split(' ')[0]}`;
-                return m('option', okato);
-              })
-            ])
-          ]),
-          // --          
-          m(".pure-control-group", [
-            cof('mo_att', card),
-            m('.item_name',
-              { style: "margin: 1em 0; padding-left: 1em" },
-              get_name(card.mo_att, 'mo_local', 'scode', 'sname'))
-          ]),
-          ]), //-- 8-24
-          // ============================         
-          m(".pure-u-9-24", [m('legend', "Адрес"),
-          m(".pure-control-group", cof('city_g', card)),
-          m(".pure-control-group", cof('street_g', card)),
-          m(".pure-control-group", [
-            cof('home_g', card),
-            cof('corp_g', card),
-            cof('flat_g', card)
-          ]),
-          m(".pure-control-group", cof('phone_wrk', card)),
-          m(".pure-control-group", cof('phone_hom', card))
-          ]) //u-9-24
-          // ============================
-        ]) // pure-g
-        ]), // fieldset
-        // ============================
-        m(".pure-g", [
-          m(".pure-u-10-24 ", [
-            m('span#card_message', '')
-            //model.save ? model.save.ok ? model.save.msg : m('span.red', model.save.msg) : '')
-          ]),
-          m(".pure-u-14-24 ", [
-            m('button.pure-button.pure-button-primary[type="submit"]',
-              { //onfocus: setPale,
-                //onclick: cardSave
-                //tetabindex: "20",
-              }, "Сохранить"),
-
-            /*m('a.pure-button.', {
-              href: [clinicApi.cards],
-              oncreate: m.route.link,
-              //onclick: (e) => m.route.set('/cards/0/'),
-              style: "margin-left: 2em;"
-            }, "Добавить новую")*/
-          ])
-        ]) // pure-g
-        ]);// form
+        { style: "font-size: 1.2em;", id: "card", oncreate: nextTagFocus, onsubmit },
+        m('fieldset', [
+          m('legend', "Карта пациента"),
+          m(".pure-g", makeFormChildren(form)),
+          m(".pure-g", [
+            m(".pure-u-10-24 ", m('span#card_message', '')),
+            m(".pure-u-14-24 ",
+              m('button.pure-button.pure-button-primary[type="submit"]',
+                "Сохранить"),
+            )
+          ]) // pure-g
+        ]))// form
       //=========================
     } // view
   }; // return
@@ -425,7 +310,7 @@ const crdMain = function (vnode) {
 
 /*
 const crdViz = function (vnode) {
-
+ 
   let crd;
   if (vnode.attrs.model.card.length > 0)
     crd = vnode.attrs.model.card[0].crd_num;
@@ -445,9 +330,9 @@ const crdViz = function (vnode) {
     family: ['Доктор'],
     ds1: ['Диагноз']
   };
-
+ 
   return {
-
+ 
     listMap(s) {
       return m('tr', [
         Object.keys(tal_hdr).map(column => {
@@ -459,7 +344,7 @@ const crdViz = function (vnode) {
         })
       ]);
     },
-
+ 
     view() {
       //console.log('talPara view');
       return [m('.pure-g', m('.pure-u-1-1', m('table.pure-table.pure-table-bordered', [
@@ -484,24 +369,23 @@ const crdViz = function (vnode) {
 };
 */
 
-export const vuCard = () => {
-  //console.log(vnode.attrs);
-  /*
-  let tabs = ['Карта', 'Визиты', 'Дополнительно', 'Прикрепить', 'Удалить'];
-  let conts = [crdMain, crdViz, crdExt, crdAtt, crdDel];
-  const crd = parseInt(vnode.attrs.crd);
-  const model = moCard.getModel();
-  model.word = 'Карты';
-  moCard.getCard(model, crd);
-  const method = Number.isNaN(crd) || crd === 0 ? "POST" : "PATCH";
-  */
-  return {
-    view(vnode) {
-      console.log(vnode.attrs.crd);
+const cardTabs = [
+  {
+    name: "Карта",
+    content() { return m(crdMain) }
+  },
+  crdEmpty("Визиты", "Визиты"),
+  crdEmpty("Дополнительно", "Дополнительно"),
+  crdEmpty("Прикрепить", "Прикрепить"),
+  crdEmpty("Удалить", "Удалить/Объеденить"),
+]
 
+export const vuCard = () => {
+  return {
+    view() {
       return states().error ? [m(".error", states().error)] :
         states().options && states().data ?
-          m(tabsView) : m(vuLoading);
+          m(tabsView, { thisTabs: cardTabs }) : m(vuLoading);
     }
   };
 };
