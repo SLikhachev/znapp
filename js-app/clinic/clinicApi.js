@@ -14,6 +14,10 @@ import { getData } from '../apps/model/moData';
 const Actions = (state, update) => {
   // stream of states
   const stup = up(update);
+  const setMemo = (key, value) => ({
+    memo: R.assoc(key, value, state().memo)
+  })
+
   return {
     suite(d) {
       let [suite, unit] = d;
@@ -46,7 +50,12 @@ const Actions = (state, update) => {
     },
     card(d) {
       let [suite, crd] = d;
-      stup({ suite, unit: 'card', crd, data: null, error: null, errorsList: [] });
+      stup({
+        suite,
+        unit: 'card', crd, data: null,
+        error: null, errorsList: [],
+        memo: {}
+      });
       if (R.isNil(states().options))
         this.opts();
       changedItem({ crd_num: crd });
@@ -58,20 +67,52 @@ const Actions = (state, update) => {
         }).
         catch(err => stup(err));
     },
-    ufms(d) {
-      //let [ufms] = d;
-      stup({ ufms: null });
-      return getList(state().suite, 'ufms', 'fetch').
+    memo(d) {
+      let [name, value, msg] = d;
+      changeValue({ target: { name, value } });
+      stup(setMemo(name, msg))
+    },
+
+    //get_data ('mo_att', 'mo_lacal', 'scode', 'sname', 
+    //  'Нет такого МО', '') 
+    // find data in prefetched options
+    find_opts(d) { // -> this.memo
+      let [data, find, get, notfind, first = ''] = d
+      // data - String -> key in data MAP to get
+      // find - String -> prop in data array item to find
+      // get - String -> prop in data array to get if find 
+      // notfind - String -> text to output if item not find
+      // first - String if 'first' then output first word only from finded text 
+
+      let value = changedItem()[find], opts = state().options;
+      if (!value || !opts)
+        return this.memo(find, null, '');
+
+      let item = opts.get(data).find(it => it[find].toString() == value);
+
+      if (item !== undefined) {
+        if (!first)
+          return this.memo(find, value, `${item[get]} `);
+        return this.memo(find, value, `${item[get].split(' ')[0]} `);
+      }
+      return this.memo(find, value, `red&${notfind} `);
+    },
+
+    // fetch data from rest server defs in fetch, fill with target 
+    fetch_rest(d) { // ufms -> dul_org
+      let [fetch, target, msg] = d
+      stup(setMemo(target, '')); // initially empty in memo
+      const fn = (v, m) => this.memo(target, v, m)
+      return getList(state().suite, fetch, 'fetch').
         then(res => {
           if (res.list && res.list.length > 0) {
             let uf = res.list[0].name;
-            changeValue({ target: { name: 'dul_org', value: uf } });
-            stup({ ufms: uf })
+            fn(uf, uf)
           } else {
-            stup({ ufms: 'Нет такого кода' })
+            fn('', `red&${msg}`)
           }
         }).
-        catch(err => stup({ ufms: err.error }));
+        catch(err => fn('', `red&${err.error}`));
     }
   }
 }

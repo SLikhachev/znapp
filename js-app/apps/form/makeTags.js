@@ -1,12 +1,15 @@
 
-
+import { states } from '../appApi';
 import { changeValue, changedItem } from '../model/moListItem';
 
 
 // Any -> String
 const _text = t => R.isNil(t) ? '' : t.toString();
+// String -> String
 const _klass = k => R.isEmpty(_text(k)) ? '' : k[0] !== '.' ? `.${k}` : k;
+//----------------------------------------------------------
 
+// Object -> null | Array
 const _labeltag = sf => {
   let _label = sf.label || sf.th || sf; //[labeltext, labelclass]
 
@@ -18,7 +21,9 @@ const _labeltag = sf => {
 
   return _label;
 }
+//----------------------------------------------------
 
+// (Object -> Int) -> Array
 const _tagarray = (sf, idx) => {
   let _tag = (sf.tag && Array.isArray(sf.tag) && sf.tag.length > 0) ?
     sf.tag : [''];
@@ -28,7 +33,7 @@ const _tagarray = (sf, idx) => {
 
   return _tag;
 }
-
+//--------------------------------------------------------
 
 // (String -> String -> String) -> Vnode
 const label = (fortag, txt = '', kl = '') => m(
@@ -41,6 +46,7 @@ const labelcheckbox = (fortag, checkbox = '', txt = '', kl = '') => m('.pure-con
     m('span', { style: "padding: 0px 7px 0px;" }, _text(txt))
   ])
 )
+//-------------------------------------------------
 
 // Object -> Vnode
 const _input = obj => { // {klass, type, name, tabindex, aux, value, attrs} => {
@@ -57,17 +63,23 @@ const _input = obj => { // {klass, type, name, tabindex, aux, value, attrs} => {
 
   Object.keys(obj.attrs).forEach(k => {
     let val = obj.attrs[k];
-    if (typeof val === 'function' && k !== 'onblur')
+    if (typeof val === 'function' && !k.startsWith('on'))
+      // func calls here  
       attrs[k] = val();
     else
+      // func as ref to call at event (takes event as param)
       attrs[k] = val;
   });
   //attrs = Object.assign(attrs, obj.attrs)
   return m(tag, attrs);
 }
+//------------------------------------------
 
+// String -> Vnode
 const legend = t => m('legend', _text(t));
+//-------------------------------------------
 
+// Object -> Vnode
 const button = sf => {
   let klass = _klass(_tagarray(sf)[0]);
   let text = _text(_labeltag(sf)[0]) || 'Выполнить';
@@ -76,7 +88,9 @@ const button = sf => {
   attrs.onclick = changeValue;
   return m(`button${klass}`, attrs, text);
 }
+//--------------------------------------------
 
+// Object -> Vnode
 const file = sf => {
   let klass = _klass(_tagarray(sf)[0]) || '.inputfile';
   return [
@@ -89,7 +103,9 @@ const file = sf => {
     m('label[for="file"]', m('strong', "Выбрать файл"))
   ];
 }
+//-------------------------------------------
 
+// (Object -> String) -> Vnode
 const select = (sf, field) => {
   let _label = _labeltag(sf), _tag = _tagarray(sf);
   return [
@@ -103,7 +119,9 @@ const select = (sf, field) => {
     )
   ]
 }
+//-------------------------------------------
 
+// (String -> Array -> String -> String) -> Array(Vnode)
 const labelradio = (fortag, radio = [], txt = '', kl = '') => [
   m(`label${_klass(kl)}[for=${fortag}]`, _text(txt)),
   radio.map(tag => [
@@ -116,8 +134,27 @@ const labelradio = (fortag, radio = [], txt = '', kl = '') => [
     })
   ])
 ]
+//------------------------------------------
 
+// String -> Vnode
+const memo = (sf, field) => {
+  let _memo = states().memo,
+    _field = field.split('-').pop(),
+    _tag_cls = _tagarray(sf)[0],
+    _attrs = sf.attrs || {},
+    lst;
 
+  if (_memo && _memo[_field]) {
+    lst = _memo[_field].split('&');
+    let cls = lst[1] ? lst[0] : '',
+      txt = cls ? lst[1] : lst[0];
+    return m(`div${_tag_cls}`, _attrs, m(`span.${cls}`, txt));
+  }
+  return '';
+}
+//----------------------------------------
+
+// (Object -> String -> Int) -> Array(Vnode)
 const input = (sf, field, idx) => {
 
   let _label = _labeltag(sf);
@@ -158,7 +195,9 @@ const input = (sf, field, idx) => {
     _input(_tagobj)
   ]
 };
+//----------------------------------------
 
+// Curried Object -> (String -> Int) -> Func
 
 export const makeTags = defs => (field, idx) => {
 
@@ -176,6 +215,9 @@ export const makeTags = defs => (field, idx) => {
 
   if (sf.type && (sf.type === 'submit' || sf.type === 'button'))
     return button(sf);
+
+  if (sf.type && sf.type === 'memo')
+    return memo(sf, field);
 
   return input(sf, field, idx);
 }

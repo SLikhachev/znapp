@@ -27,7 +27,7 @@ const grupPmuForm = () => {
 
   const tags = makeTags({
     grup: {
-      th: [''],
+      //th: [''],
       label: ['Добавить к группе'],
       tag: ['.pure-u-3-4', 'required'],
       type: 'number',
@@ -45,7 +45,7 @@ const grupPmuForm = () => {
           m(".pure-u-1-1",
             m("form.pure-form", { onsubmit },
               m("fieldset", m(".pure-g", [
-                m(".pure-u-1-3", tags('grup', 0)),
+                m(".pure-u-1-3", tags('grup', 0)), // takes field and index
                 m(".pure-u-1-3",
                   m('button.pure-button.pure-button-primary[type="submit"]',
                     { style: 'margin-top: 1.7em' }, "Добавить")

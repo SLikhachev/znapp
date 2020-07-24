@@ -3,10 +3,16 @@
 // prof sprav definition
 
 import { states } from '../../apps/appApi';
-import { linkItem } from '../../apps/defines/defStruct';
+import { linkItem, $smo } from '../../apps/defines/defStruct';
 import { spravLocal } from '../../sprav/defines/defLocal';
 import { spravComs } from '../../sprav/defines/defComs';
-import { getFIO, _ufms } from '../common/utils';
+import {
+  _getFIO,
+  _ufms,
+  _polis_type,
+  _mo_att
+} from '../common/utils';
+
 
 $cards = text => ({
   placeholder: text,
@@ -62,7 +68,7 @@ export const clinicCards = {
       pk: 'crd_num',
       struct: {
         crd_num: ['Карта', '', linkItem],
-        fam: ['ФИО', '', getFIO],
+        fam: ['ФИО', '', _getFIO],
         birth_date: ['Дата рождения'],
         polis_num: ['Номер полиса']
       }
@@ -93,6 +99,7 @@ export const clinicCards = {
       }
     }
   },
+  // card representation
   card: {
     rest: {
       url: "rpc/clin_card_by_num",
@@ -105,7 +112,7 @@ export const clinicCards = {
     item: {
       header: "Карты",
     },
-    form: {
+    mainForm: {
       group1: {
         class: '.pure-u-7-24',
         fields: {
@@ -148,19 +155,73 @@ export const clinicCards = {
             label: ['Дата выдачи'],
             type: 'date',
           },
-          dul_org: {
-            label: [' Кем выдан'],
-            tag: ['.pure-u-7-12'],
-            attrs: { style: "fonf-size: 1em; font-weight: normal" }
-          },
           ufms: {
             label: ["УФМС"],
             tag: ['.pure-u-6-24'],
             type: 'number',
             attrs: { onblur: _ufms }
+          },
+          dul_org: {
+            //label: [' Кем выдан'],
+            //tag: ['.pure-u-7-12'],
+            tag: ['.pure-u-1-1'],
+            attrs: {
+              style: "fonf-size: 1em; font-weight: normal",
+              placeholder: "Кем выдан"
+            }
+          },
+          'memo-dul_org': {
+            type: 'memo'
           }
         },
       },
+      group2: {
+        class: '.pure-u-8-24',
+        fields: {
+          legend: "ОМС",
+          polis_ser: {
+            label: ["Полис серия"],
+          },
+          polis_num: {
+            label: ["Номер"],
+            tag: ['', 'required'],
+            type: 'number',
+            attrs: { min: 1, oncreate: _polis_type, onblur: _polis_type }
+          },
+          'memo-polis_num': {
+            type: 'memo',
+            attrs: { style: "margin-left: 10em;" }
+          },
+          smo: $smo,
+          smo_okato: {
+            label: ["Регион"],
+            attrs: {
+              oncreate: v => _set_smo_okato({ target: v.dom }),
+              list: "okato",
+              onblur: _set_smo_okato
+            }
+          },
+          okato: {
+            type: 'datalist',
+            //key: 'okato',
+            options: _okato // fn
+            //data.get('okato').map(o => {
+            //  let okato = `${o.region}. ${o.name.split(' ')[0]}`;
+            //  return m('option', okato);
+          },
+          mo_att: {
+            label: ["Прикреплен к МО"],
+            tag: ['.pure-u-1-6'],
+            type: 'number',
+            attrs: { oncreate: _mo_att, onblur: _mo_att }
+          },
+          'memo-mo_att': {
+            type: 'memo',
+            attrs: { style: "margin: 1em 0; padding-left: 1em" },
+          }
+
+        },
+      }
     },
   }
 }

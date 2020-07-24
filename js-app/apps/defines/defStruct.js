@@ -169,6 +169,7 @@ const structNav = {
 };
 */
 
+import { disp } from '../appApi';
 import { _month } from '../model/moModel';
 import { vuDialog } from '../view/vuDialog';
 
@@ -234,6 +235,39 @@ export const $button = text => ({
   tag: ['.pure-button.pure-button-primary'],
   attrs: $button_attrs
 });
+
+const packType = {
+  1: "Амбулаторный",
+  2: "Онкология",
+  3: "Дневной стационар",
+  4: "Профосмотр",
+  5: "Инокраевые",
+  6: "Тарифы ПМУ"
+}
+
+const smoId = {
+  '': "ФОМС",
+  '25016': "СВ Прим",
+  '25011': "ВС Альянс"
+}
+
+export const $pack = {
+  label: ["Тип счета"],
+  tag: ['.ml10'],
+  type: 'select',
+  options: packType,
+  attrs: { 'data-initial': 1 }
+}
+
+export const $smo = {
+  label: ["СМО"],
+  tag: ['.ml10'],
+  type: 'select',
+  options: smoId,
+  attrs: { 'data-initial': '' }
+}
+
+
 
 // The default struct Object to render table, form if
 // defStruct.eName.item.struct not present

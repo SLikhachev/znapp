@@ -2,9 +2,9 @@
 // src/clinic/view/vuClinic.js
 
 import { disp } from '../../apps/appApi';
-//import { changeValue } from "../../apps/model/moListItem";
+import { changedItem, changeValue } from "../../apps/model/moListItem";
 
-export const getFIO = row => {
+export const _getFIO = row => {
   let f = ['fam', 'im', 'ot'].map(k => row[k] ? row[k] : '');
   return `${f[0]} ${f[1]} ${f[2]}`;
 }
@@ -18,9 +18,37 @@ export const _just_int = (text, length = 0) => {
 export const _ufms = e => {
   let ufms = _just_int(e.target.value, 6);
   if (!!ufms)
-    disp(['ufms', ufms]);
+    disp(['fetch_rest', 'ufms', 'dul_org', 'Нет такого кода']);
   return false;
 }
+
+export const _polis_type = () => {
+  let s = 0, n = 0;
+  if (!!changedItem().polis_ser)
+    s = changedItem().polis_ser.toString().length;
+  if (!!changedItem().polis_num)
+    n = changedItem().polis_num.toString().length;
+
+  if (s === 0 && n === 16)
+    return disp(['memo', 'polis_type', 3,
+      "ЕНП 16 цифр"])
+
+  if (s === 0 && n > 0 && n < 16)
+    return disp(['memo', 'polis_type', 2,
+      `Временное свидетельсто ${n} цифр`])
+
+  if (s > 0 && n > 0)
+    return disp(['memo', 'polis_type', 1,
+      `Старый полис ${n} цифр`])
+
+  return disp(['memo', 'polis_type', null,
+    `red&Тип полиса неизвестен ${n} цифр`])
+};
+
+export const _mo_att = () => disp([
+  'find_opts', 'mo_local', 'scode', 'sname',
+  'Нет такого МО'
+])
 
 export const _Num = num => num ? num : ''; //talon number
 

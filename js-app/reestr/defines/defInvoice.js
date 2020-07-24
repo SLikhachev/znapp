@@ -2,39 +2,10 @@
 // src/reestr/defines/defXmlerrr.js
 // packages definition
 
-import { $checkbox, $button, $month } from '../../apps/defines/defStruct';
-
-
-const packType = {
-  1: "Амбулаторный",
-  2: "Онкология",
-  3: "Дневной стационар",
-  4: "Профосмотр",
-  5: "Инокраевые",
-  6: "Тарифы ПМУ"
-}
-
-const smoId = {
-  0: "ФОМС",
-  '25016': "СВ Прим",
-  '25011': "ВС Альянс"
-}
-
-const $pack = {
-  label: ["Тип счета"],
-  tag: ['.ml10'],
-  type: 'select',
-  options: packType,
-  attrs: { 'data-initial': 1 }
-}
-
-const $smo = {
-  label: ["СМО"],
-  tag: ['.ml10'],
-  type: 'select',
-  options: smoId,
-  attrs: { 'data-initial': 0 }
-}
+import {
+  $checkbox, $button, $month,
+  $pack, $smo
+} from '../../apps/defines/defStruct';
 
 
 export const calcInvoice = {
