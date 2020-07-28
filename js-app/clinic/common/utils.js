@@ -1,8 +1,11 @@
 
 // src/clinic/view/vuClinic.js
 
-import { disp } from '../../apps/appApi';
+import { disp, states } from '../../apps/appApi';
+import { _region } from '../../apps/model/moModel';
 import { changedItem, changeValue } from "../../apps/model/moListItem";
+
+const Reg = _region();
 
 export const _getFIO = row => {
   let f = ['fam', 'im', 'ot'].map(k => row[k] ? row[k] : '');
@@ -24,31 +27,63 @@ export const _ufms = e => {
 
 export const _polis_type = () => {
   let s = 0, n = 0;
+  let type = changedItem().polis_type;
+  const msg = (type, n) => ({
+    3: "ЕНП 16 цифр",
+    2: `Временное свидетельсто ${n} цифр`,
+    1: `Старый полис ${n} цифр`,
+    0: `red&Тип полиса неизвестен ${n} цифр`
+  }[type]
+  );
+
   if (!!changedItem().polis_ser)
     s = changedItem().polis_ser.toString().length;
   if (!!changedItem().polis_num)
     n = changedItem().polis_num.toString().length;
-
+  //console.log(type)
+  /*
+  if (type)
+    return disp(['memo', 'polis_type', type, msg(type, n)]);
+  */
   if (s === 0 && n === 16)
-    return disp(['memo', 'polis_type', 3,
-      "ЕНП 16 цифр"])
+    type = 3;
+  else if (s === 0 && n > 0 && n < 16)
+    type = 2;
+  else if (s > 0 && n > 0)
+    type = 1;
+  else
+    type = 0;
 
-  if (s === 0 && n > 0 && n < 16)
-    return disp(['memo', 'polis_type', 2,
-      `Временное свидетельсто ${n} цифр`])
-
-  if (s > 0 && n > 0)
-    return disp(['memo', 'polis_type', 1,
-      `Старый полис ${n} цифр`])
-
-  return disp(['memo', 'polis_type', null,
-    `red&Тип полиса неизвестен ${n} цифр`])
+  return disp(['memo', 'polis_type', type, msg(type, n)])
 };
 
-export const _mo_att = () => disp([
-  'find_opts', 'mo_local', 'scode', 'sname',
-  'Нет такого МО'
+const item_attr = attr => item => item[attr];
+
+
+export const _dul_type = () => disp([
+  'find_opts', 'dul', 'dul_type', 'code', item_attr('short_name')
 ])
+
+export const _mo_att = () => disp([
+  'find_opts', 'mo_local', 'scode', item_attr('sname')
+])
+
+// takes okato object -> vnode
+export const _okato = o => m(`option[value=${o.okato}]`,
+  `${o.region}. ${o.name.split(' ')[0]}`
+)
+
+
+export const _set_okato_by_smo = () => {
+  // there had to be set SMO
+  let smo = changedItem().smo;
+  if (!smo)
+    return false;
+  let _smo = states().options.get('smo_local').find(item => item.code == smo);
+  if (_smo)
+    return disp(['memo', 'smo_okato', _smo.okato, _smo.okato]);
+  return false;
+};
 
 export const _Num = num => num ? num : ''; //talon number
 

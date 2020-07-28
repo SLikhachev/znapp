@@ -9,7 +9,7 @@ export const trace = label => tap(console.log.bind(console, `${label}:`));
 
 export const trims = str => str.trim().split(' ')[0];
 
-const I = x => x; // identoty
+const I = x => x; // identity
 
 const o = (f, g) => x => f(g(x)); // composer 
 

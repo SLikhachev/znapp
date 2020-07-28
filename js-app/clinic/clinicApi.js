@@ -14,9 +14,13 @@ import { getData } from '../apps/model/moData';
 const Actions = (state, update) => {
   // stream of states
   const stup = up(update);
-  const setMemo = (key, value) => ({
-    memo: R.assoc(key, value, state().memo)
-  })
+  const setMemo = (key, value) => {
+    console.log('setMemo', key, value);
+    return ({
+      memo: Object.assign(
+        state().memo, { [key]: value })
+    })
+  }
 
   return {
     suite(d) {
@@ -71,38 +75,38 @@ const Actions = (state, update) => {
       let [name, value, msg] = d;
       changeValue({ target: { name, value } });
       stup(setMemo(name, msg))
+      m.redraw()
     },
 
-    //get_data ('mo_att', 'mo_lacal', 'scode', 'sname', 
-    //  'Нет такого МО', '') 
+    //get_data ('mo_att', 'mo_lacal', 'scode', fn), 
     // find data in prefetched options
     find_opts(d) { // -> this.memo
-      let [data, find, get, notfind, first = ''] = d
+      let [data, field, find, fn] = d
       // data - String -> key in data MAP to get
+      // field - String form field name cantains the value to find
       // find - String -> prop in data array item to find
-      // get - String -> prop in data array to get if find 
-      // notfind - String -> text to output if item not find
-      // first - String if 'first' then output first word only from finded text 
+      // fn - callback to fill the memo with find item
+      let value = changedItem()[field], opts = state().options;
+      let notfind = `red&Нет элемента ${find}-${value} в списке ${data}`;
+      stup(setMemo(field, ''));
 
-      let value = changedItem()[find], opts = state().options;
+      console.log('find_opt', data, field, find, value);
       if (!value || !opts)
-        return this.memo(find, null, '');
+        return this.memo(field, null, '');
 
       let item = opts.get(data).find(it => it[find].toString() == value);
+      //console.log(item);
+      if (item !== undefined)
+        return this.memo([field, value, fn(item)]);
 
-      if (item !== undefined) {
-        if (!first)
-          return this.memo(find, value, `${item[get]} `);
-        return this.memo(find, value, `${item[get].split(' ')[0]} `);
-      }
-      return this.memo(find, value, `red&${notfind} `);
+      return this.memo([field, value, notfind]);
     },
 
     // fetch data from rest server defs in fetch, fill with target 
     fetch_rest(d) { // ufms -> dul_org
       let [fetch, target, msg] = d
       stup(setMemo(target, '')); // initially empty in memo
-      const fn = (v, m) => this.memo(target, v, m)
+      const fn = (v, m) => this.memo([target, v, m])
       return getList(state().suite, fetch, 'fetch').
         then(res => {
           if (res.list && res.list.length > 0) {

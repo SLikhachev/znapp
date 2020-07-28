@@ -63,12 +63,16 @@ const _input = obj => { // {klass, type, name, tabindex, aux, value, attrs} => {
 
   Object.keys(obj.attrs).forEach(k => {
     let val = obj.attrs[k];
-    if (typeof val === 'function' && !k.startsWith('on'))
+    if (k === 'options')
+      return;
+    if (typeof val === 'function' && !k.startsWith('on')) {
       // func calls here  
       attrs[k] = val();
-    else
-      // func as ref to call at event (takes event as param)
-      attrs[k] = val;
+      return;
+    }
+    // func as ref to call at event (takes event as param) 
+    // or vnode at lifetime func call (takes vnode) 
+    attrs[k] = val;
   });
   //attrs = Object.assign(attrs, obj.attrs)
   return m(tag, attrs);
@@ -138,20 +142,32 @@ const labelradio = (fortag, radio = [], txt = '', kl = '') => [
 
 // String -> Vnode
 const memo = (sf, field) => {
+  //console.log(sf)
   let _memo = states().memo,
-    _field = field.split('-').pop(),
     _tag_cls = _tagarray(sf)[0],
+    _field = sf.field || field,
     _attrs = sf.attrs || {},
     lst;
-
+  //console.log(_field);
   if (_memo && _memo[_field]) {
     lst = _memo[_field].split('&');
     let cls = lst[1] ? lst[0] : '',
       txt = cls ? lst[1] : lst[0];
-    return m(`div${_tag_cls}`, _attrs, m(`span.${cls}`, txt));
+    //console.log('txt', txt)
+    return m(`span${_tag_cls}`, _attrs, m(`span.${cls}`, txt));
   }
   return '';
 }
+//----------------------------------------
+
+// (String -> Func) -> Vnode
+// list - string of list id
+// fn - array morphism 
+const datalist = (list = '', fn) => {
+  let opts = states().options.get(list) || [];
+  return m(`datalist[id="${list}"]`, opts.map(fn))
+}
+
 //----------------------------------------
 
 // (Object -> String -> Int) -> Array(Vnode)
@@ -187,17 +203,33 @@ const input = (sf, field, idx) => {
   if (type === 'checkbox' && sf.view && sf.view === 'controls')
     return labelcheckbox(field, _input(_tagobj), ..._label);
 
-  if (type === 'radio') {
+  if (type === 'radio')
     return labelradio(_text(field), sf.radio, ..._label);
-  }
-  return [
+
+  let tags = [
     _label ? label(field, ..._label) : '',
     _input(_tagobj)
-  ]
+  ];
+
+  if (_tagobj.attrs.list && _tagobj.attrs.options)
+    tags.push(datalist(_tagobj.attrs.list, _tagobj.attrs.options))
+
+  if (sf.memo)
+    tags.push(memo(sf.memo, field));
+
+  return tags;
 };
 //----------------------------------------
 
 // Curried Object -> (String -> Int) -> Func
+
+const tag_fn = {
+  file,
+  select,
+  button,
+  submit: button,
+  //memo
+}
 
 export const makeTags = defs => (field, idx) => {
 
@@ -207,17 +239,8 @@ export const makeTags = defs => (field, idx) => {
   if (field === 'legend')
     return legend(sf);
 
-  if (sf.type && sf.type === 'file')
-    return file(sf);
-
-  if (sf.type && sf.type === 'select')
-    return select(sf, field);
-
-  if (sf.type && (sf.type === 'submit' || sf.type === 'button'))
-    return button(sf);
-
-  if (sf.type && sf.type === 'memo')
-    return memo(sf, field);
+  if (sf.type && tag_fn[sf.type])
+    return tag_fn[sf.type](sf, field)
 
   return input(sf, field, idx);
 }

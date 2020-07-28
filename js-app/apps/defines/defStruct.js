@@ -245,7 +245,7 @@ const packType = {
   6: "Тарифы ПМУ"
 }
 
-const smoId = {
+export const smoId = {
   '': "ФОМС",
   '25016': "СВ Прим",
   '25011': "ВС Альянс"

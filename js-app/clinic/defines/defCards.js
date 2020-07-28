@@ -3,14 +3,17 @@
 // prof sprav definition
 
 import { states } from '../../apps/appApi';
-import { linkItem, $smo } from '../../apps/defines/defStruct';
+import { linkItem, smoId } from '../../apps/defines/defStruct';
 import { spravLocal } from '../../sprav/defines/defLocal';
 import { spravComs } from '../../sprav/defines/defComs';
 import {
   _getFIO,
+  _dul_type,
   _ufms,
   _polis_type,
-  _mo_att
+  _okato,
+  _mo_att,
+  _set_okato_by_smo
 } from '../common/utils';
 
 
@@ -113,7 +116,7 @@ export const clinicCards = {
       header: "Карты",
     },
     mainForm: {
-      group1: {
+      person: {
         class: '.pure-u-7-24',
         fields: {
           crd_num: {
@@ -141,7 +144,12 @@ export const clinicCards = {
             label: ['Тип документа'],
             tag: ['.pure-u-1-5'],
             type: 'number',
-            attrs: { min: 1, placeholder: "Число" }
+            memo: {},
+            attrs: {
+              style: 'margin-right: 1em;',
+              min: 1, placeholder: "Число",
+              oninit: _dul_type, onblur: _dul_type
+            }
           },
           dul_serial: {
             label: ["Документ"],
@@ -165,17 +173,15 @@ export const clinicCards = {
             //label: [' Кем выдан'],
             //tag: ['.pure-u-7-12'],
             tag: ['.pure-u-1-1'],
+            memo: {},
             attrs: {
               style: "fonf-size: 1em; font-weight: normal",
               placeholder: "Кем выдан"
             }
           },
-          'memo-dul_org': {
-            type: 'memo'
-          }
         },
       },
-      group2: {
+      insurance: {
         class: '.pure-u-8-24',
         fields: {
           legend: "ОМС",
@@ -186,40 +192,36 @@ export const clinicCards = {
             label: ["Номер"],
             tag: ['', 'required'],
             type: 'number',
-            attrs: { min: 1, oncreate: _polis_type, onblur: _polis_type }
+            memo: {
+              field: 'polis_type',
+              attrs: { style: "margin-left: 11em;" }
+            },
+            attrs: { min: 1, oninit: _polis_type, onblur: _polis_type }
           },
-          'memo-polis_num': {
-            type: 'memo',
-            attrs: { style: "margin-left: 10em;" }
+          smo: {
+            label: ["СМО"],
+            //tag: [''],
+            type: 'select',
+            options: smoId,
+            oninit: _set_okato_by_smo,
+            onblur: _set_okato_by_smo,
           },
-          smo: $smo,
           smo_okato: {
             label: ["Регион"],
             attrs: {
-              oncreate: v => _set_smo_okato({ target: v.dom }),
               list: "okato",
-              onblur: _set_smo_okato
+              options: _okato
             }
-          },
-          okato: {
-            type: 'datalist',
-            //key: 'okato',
-            options: _okato // fn
-            //data.get('okato').map(o => {
-            //  let okato = `${o.region}. ${o.name.split(' ')[0]}`;
-            //  return m('option', okato);
           },
           mo_att: {
             label: ["Прикреплен к МО"],
             tag: ['.pure-u-1-6'],
             type: 'number',
-            attrs: { oncreate: _mo_att, onblur: _mo_att }
+            memo: {
+              attrs: { style: "margin: 1em 0; padding-left: 1em" },
+            },
+            attrs: { oninit: _mo_att, onblur: _mo_att }
           },
-          'memo-mo_att': {
-            type: 'memo',
-            attrs: { style: "margin: 1em 0; padding-left: 1em" },
-          }
-
         },
       }
     },
