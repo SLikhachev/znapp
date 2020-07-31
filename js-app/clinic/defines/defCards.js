@@ -2,20 +2,26 @@
 // src/sparv/defines/spravPmus.js
 // prof sprav definition
 
-import { states } from '../../apps/appApi';
+import { states, memost } from '../../apps/appApi';
 import { linkItem, smoId } from '../../apps/defines/defStruct';
 import { spravLocal } from '../../sprav/defines/defLocal';
 import { spravComs } from '../../sprav/defines/defComs';
+import { 
+  item_attr, 
+  check_opts,
+  _okato,
+} from '../model/moModel';
 import {
   _getFIO,
-  _dul_type,
+  //_dul_type,
   _ufms,
-  _polis_type,
-  _okato,
-  _mo_att,
-  _set_okato_by_smo
-} from '../common/utils';
+  //_polis_type,
+  //_okato,
+  //_mo_att,
+  //_set_okato_by_smo
+} from '../model/moCards';
 
+const blurst = e => memost(e.target.name);
 
 $cards = text => ({
   placeholder: text,
@@ -144,11 +150,14 @@ export const clinicCards = {
             label: ['Тип документа'],
             tag: ['.pure-u-1-5'],
             type: 'number',
-            memo: {},
+            memo: {
+              check: check_opts,
+              params: ['dul', 'dul_type', 'code', item_attr('short_name')]
+            },
             attrs: {
               style: 'margin-right: 1em;',
               min: 1, placeholder: "Число",
-              oninit: _dul_type, onblur: _dul_type
+              onblur: blurst //dummy call for redraw
             }
           },
           dul_serial: {
@@ -173,7 +182,10 @@ export const clinicCards = {
             //label: [' Кем выдан'],
             //tag: ['.pure-u-7-12'],
             tag: ['.pure-u-1-1'],
-            memo: {},
+            memo: {
+              check: check_opts,
+              params: ['dul_org', 'ufms', 'code', item_attr('name')]
+            },
             attrs: {
               style: "fonf-size: 1em; font-weight: normal",
               placeholder: "Кем выдан"
@@ -192,19 +204,20 @@ export const clinicCards = {
             label: ["Номер"],
             tag: ['', 'required'],
             type: 'number',
-            memo: {
-              field: 'polis_type',
-              attrs: { style: "margin-left: 11em;" }
-            },
-            attrs: { min: 1, oninit: _polis_type, onblur: _polis_type }
+            //memo: {
+              // this field will be filled by _polis_type              
+            //  field: 'polis_type',
+            //  attrs: { style: "margin-left: 11em;" }
+            //},
+            //attrs: { min: 1, oninit: _polis_type, onblur: _polis_type }
           },
           smo: {
             label: ["СМО"],
             //tag: [''],
             type: 'select',
             options: smoId,
-            oninit: _set_okato_by_smo,
-            onblur: _set_okato_by_smo,
+            //oninit: _set_okato_by_smo,
+            //onblur: _set_okato_by_smo,
           },
           smo_okato: {
             label: ["Регион"],
@@ -217,16 +230,16 @@ export const clinicCards = {
             label: ["Прикреплен к МО"],
             tag: ['.pure-u-1-6'],
             type: 'number',
-            memo: {
-              attrs: { style: "margin: 1em 0; padding-left: 1em" },
-            },
-            attrs: { oninit: _mo_att, onblur: _mo_att }
+            //memo: {
+            //  attrs: { style: "margin: 1em 0; padding-left: 1em" },
+            //},
+            //attrs: { oninit: _mo_att, onblur: _mo_att }
           },
         },
       }
     },
   }
-}
+};
 
 export const cards = {
   path: '/cards',

@@ -39,6 +39,9 @@ const acc = (state, patch) => patch(state);
 //const init = app => app.initial;
 export const states = scan(acc, app.initial, update);
 
+// stream to store memo data
+export const memost = stream('');
+
 export const disp = stream(); // event dispatcher stream 
 //const actions = app.Actions(states, update); //=> obj of func ref
 

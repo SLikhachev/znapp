@@ -1,12 +1,33 @@
 // src/clinic/model/moCards.js
 
-import { vuDialog } from '../../apps/view/vuDialog.js';
-import { moModel, errMsg, _schema, _region } from '../../apps/model/moModel.js';
-import { restSprav } from '../../sprav/spravApi.js';
-import { restClinic } from '../clinicApi.js';
-import { moTalonsList } from './moTalons';
+import { disp, memost } from '../../apps/appApi';
+//import { vuDialog } from '../../apps/view/vuDialog.js';
+//import { moModel, errMsg, _schema, _region } from '../../apps/model/moModel.js';
+import { _region } from '../../apps/model/moModel.js';
+//import { restSprav } from '../../sprav/spravApi.js';
+//import { restClinic } from '../clinicApi.js';
+import { _just_int } from './moModel';
 
-const _reg= _region();
+const _reg = _region();
+
+const Reg = _region();
+
+export const _getFIO = row => {
+  let f = ['fam', 'im', 'ot'].map(k => row[k] ? row[k] : '');
+  return `${f[0]} ${f[1]} ${f[2]}`;
+};
+
+export const _ufms = e => {
+  memost('dul_org');
+  let ufms = _just_int(e.target.value, 6);
+  if (!!ufms)
+    disp(['fetch_rest', 'ufms', 'name', 'dul_org']);
+  return false;
+};
+
+//--------------------------
+
+/*
 
 export const moCardsList = {
   // return model object 
@@ -99,7 +120,7 @@ export const moCard = {
        event.target.parentNode.classList.remove('disable');
         m.redraw();
     });
-    */
+    *//*
     let schema = _schema('pg_rest');
     //let method = event.target.getAttribute('method');
     let { crd_num, id, old_card } = card;
@@ -128,3 +149,4 @@ export const moCard = {
     });
   }
 };
+*/

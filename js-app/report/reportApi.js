@@ -19,7 +19,7 @@ const Actions = (state, update) => {
   // stream of states
   const stup = up(update);
   return {
-    suite(d) { stup({ suite: d[0] }) },
+    suite(d) { stup({ suite: d[0] }); },
     unit(d) {
       let [suite, unit] = d;
       let pk = suite[unit].item.pk || 'id';

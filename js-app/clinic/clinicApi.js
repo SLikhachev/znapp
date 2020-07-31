@@ -3,25 +3,24 @@
 /**
   */
 import { up } from '../apps/utils';
-import { states, update, initApp } from '../apps/appApi';
+import { states, memost, update, initApp } from '../apps/appApi';
 import { listItem, itemId, changedItem, changeValue } from '../apps/model/moListItem';
 //import { formItem, formSubmit } from '../apps/model/moFormModel';
+import { checkArray } from '../apps/model/moModel';
 import { getList } from '../apps/model/moList';
 import { clinicMenu } from './clinicMenu';
 import { getData } from '../apps/model/moData';
 
+/*
+export const setMemo = (key, value) => memo(
+  Object.assign( memo(), { [key]: value } )
+)
+*/
 
 const Actions = (state, update) => {
   // stream of states
   const stup = up(update);
-  const setMemo = (key, value) => {
-    console.log('setMemo', key, value);
-    return ({
-      memo: Object.assign(
-        state().memo, { [key]: value })
-    })
-  }
-
+  
   return {
     suite(d) {
       let [suite, unit] = d;
@@ -50,7 +49,7 @@ const Actions = (state, update) => {
       stup({ options: null });
       return getData(state().suite, state().unit).
         then(res => stup(res)).
-        catch(err => stup(err))
+        catch(err => stup(err));
     },
     card(d) {
       let [suite, crd] = d;
@@ -58,7 +57,6 @@ const Actions = (state, update) => {
         suite,
         unit: 'card', crd, data: null,
         error: null, errorsList: [],
-        memo: {}
       });
       if (R.isNil(states().options))
         this.opts();
@@ -71,55 +69,31 @@ const Actions = (state, update) => {
         }).
         catch(err => stup(err));
     },
-    memo(d) {
-      let [name, value, msg] = d;
-      changeValue({ target: { name, value } });
-      stup(setMemo(name, msg))
-      m.redraw()
-    },
-
-    //get_data ('mo_att', 'mo_lacal', 'scode', fn), 
-    // find data in prefetched options
-    find_opts(d) { // -> this.memo
-      let [data, field, find, fn] = d
-      // data - String -> key in data MAP to get
-      // field - String form field name cantains the value to find
-      // find - String -> prop in data array item to find
-      // fn - callback to fill the memo with find item
-      let value = changedItem()[field], opts = state().options;
-      let notfind = `red&Нет элемента ${find}-${value} в списке ${data}`;
-      stup(setMemo(field, ''));
-
-      console.log('find_opt', data, field, find, value);
-      if (!value || !opts)
-        return this.memo(field, null, '');
-
-      let item = opts.get(data).find(it => it[find].toString() == value);
-      //console.log(item);
-      if (item !== undefined)
-        return this.memo([field, value, fn(item)]);
-
-      return this.memo([field, value, notfind]);
-    },
-
-    // fetch data from rest server defs in fetch, fill with target 
+    // fetch data from rest server defs in fetch, fill with target
     fetch_rest(d) { // ufms -> dul_org
-      let [fetch, target, msg] = d
-      stup(setMemo(target, '')); // initially empty in memo
-      const fn = (v, m) => this.memo([target, v, m])
+      // fetch data with params as fetch (in changedItem[fetch])
+      // result write to target 
+      let [fetch, source, target] = d;
+      console.log(source);
       return getList(state().suite, fetch, 'fetch').
         then(res => {
-          if (res.list && res.list.length > 0) {
-            let uf = res.list[0].name;
-            fn(uf, uf)
-          } else {
-            fn('', `red&${msg}`)
-          }
+          let list = checkArray(res.list) ? res.list : [],
+          name= target, 
+          value = list[0] ? list[0][source] : '';
+          
+          //if (res.list && res.list.length > 0) {
+            // set field in form
+            changeValue({ 'target': { name, value }}); //res.list[0][source] } });
+            //console.log('after fetch', changeValue());
+            // set in opts.map
+            state().options.set(target, list);
+          //} 
         }).
-        catch(err => fn('', `red&${err.error}`));
+        catch(err => state().options.set(target, [{ error: `red&${err.error}`}]))
+        //finally( memost(target) );
     }
-  }
-}
+  };
+};
 
 //const actions = Actions(states, update); //=> obj of func ref
 

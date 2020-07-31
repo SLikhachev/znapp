@@ -1,10 +1,13 @@
 
-import { states } from '../appApi';
+import { states, memost } from '../appApi';
+import { checkArray } from '../model/moModel';
 import { changeValue, changedItem } from '../model/moListItem';
 
+const E = x => '';
 
 // Any -> String
 const _text = t => R.isNil(t) ? '' : t.toString();
+
 // String -> String
 const _klass = k => R.isEmpty(_text(k)) ? '' : k[0] !== '.' ? `.${k}` : k;
 //----------------------------------------------------------
@@ -13,26 +16,19 @@ const _klass = k => R.isEmpty(_text(k)) ? '' : k[0] !== '.' ? `.${k}` : k;
 const _labeltag = sf => {
   let _label = sf.label || sf.th || sf; //[labeltext, labelclass]
 
-  if (!Array.isArray(_label)) // no label present
+  if (!checkArray(_label)) // no label present
     return null;
 
   if (!sf.label && _label) // no klass for label 
     return [_label[0]];
 
   return _label;
-}
+};
 //----------------------------------------------------
 
 // (Object -> Int) -> Array
-const _tagarray = (sf, idx) => {
-  let _tag = (sf.tag && Array.isArray(sf.tag) && sf.tag.length > 0) ?
-    sf.tag : [''];
-  //if (idx == 1 || idx == 2)
-  //if (idx && idx < 2)
-  //  _tag.push['autofocus'];
+const _tagarray = sf => checkArray(sf.tag) ? sf.tag : [''];
 
-  return _tag;
-}
 //--------------------------------------------------------
 
 // (String -> String -> String) -> Vnode
@@ -45,7 +41,7 @@ const labelcheckbox = (fortag, checkbox = '', txt = '', kl = '') => m('.pure-con
     checkbox,
     m('span', { style: "padding: 0px 7px 0px;" }, _text(txt))
   ])
-)
+);
 //-------------------------------------------------
 
 // Object -> Vnode
@@ -126,7 +122,7 @@ const select = (sf, field) => {
 //-------------------------------------------
 
 // (String -> Array -> String -> String) -> Array(Vnode)
-const labelradio = (fortag, radio = [], txt = '', kl = '') => [
+const labelradio = (fortag='dummy', radio = [], txt = '', kl = '') => [
   m(`label${_klass(kl)}[for=${fortag}]`, _text(txt)),
   radio.map(tag => [
     m('span', { style: "line-height: 1em;" }, _text(tag.text)),
@@ -141,13 +137,14 @@ const labelradio = (fortag, radio = [], txt = '', kl = '') => [
 //------------------------------------------
 
 // String -> Vnode
+/*
 const memo = (sf, field) => {
   //console.log(sf)
-  let _memo = states().memo,
-    _tag_cls = _tagarray(sf)[0],
-    _field = sf.field || field,
-    _attrs = sf.attrs || {},
-    lst;
+  //let _memo = states().memo,
+  let _tag_cls = _tagarray(sf)[0],
+   _field = sf.field || field,
+   _attrs = sf.attrs || {},
+   lst;
   //console.log(_field);
   if (_memo && _memo[_field]) {
     lst = _memo[_field].split('&');
@@ -158,15 +155,33 @@ const memo = (sf, field) => {
   }
   return '';
 }
+*/
+const memo = sf => {
+  //console.log(sf)
+  //memost('');
+  let def = sf || {},
+    check = def.check || E,
+    params = def.params || [],
+    tag_cls = _tagarray(def)[0],
+    attrs = def.attrs || {}, 
+    resp = check(params),
+    [cls= '', txt=''] = typeof resp === 'string' ? resp.split('&') : [];
+  
+  if (!txt)
+    ([txt, cls] = [cls, txt]); //swap it
+  //console.log('txt', txt)
+  return txt ? m(`span${tag_cls}`, attrs, m(`span.${cls}`, txt)) : '';
+};
+
 //----------------------------------------
 
 // (String -> Func) -> Vnode
 // list - string of list id
 // fn - array morphism 
-const datalist = (list = '', fn) => {
+const datalist = (list='', fn=E) => {
   let opts = states().options.get(list) || [];
-  return m(`datalist[id="${list}"]`, opts.map(fn))
-}
+  return m(`datalist[id="${list}"]`, opts.map(fn));
+};
 
 //----------------------------------------
 
@@ -214,9 +229,11 @@ const input = (sf, field, idx) => {
   if (_tagobj.attrs.list && _tagobj.attrs.options)
     tags.push(datalist(_tagobj.attrs.list, _tagobj.attrs.options))
 
-  if (sf.memo)
-    tags.push(memo(sf.memo, field));
-
+  if (sf.memo) {// && (memost() === field))
+    let _memo = memo(sf.memo, field);
+    if (_memo) tags.push(_memo);
+  }
+    
   return tags;
 };
 //----------------------------------------
@@ -229,7 +246,7 @@ const tag_fn = {
   button,
   submit: button,
   //memo
-}
+};
 
 export const makeTags = defs => (field, idx) => {
 
@@ -240,7 +257,7 @@ export const makeTags = defs => (field, idx) => {
     return legend(sf);
 
   if (sf.type && tag_fn[sf.type])
-    return tag_fn[sf.type](sf, field)
+    return tag_fn[sf.type](sf, field);
 
   return input(sf, field, idx);
 }
