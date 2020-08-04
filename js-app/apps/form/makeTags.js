@@ -72,7 +72,7 @@ const _input = obj => { // {klass, type, name, tabindex, aux, value, attrs} => {
   });
   //attrs = Object.assign(attrs, obj.attrs)
   return m(tag, attrs);
-}
+};
 //------------------------------------------
 
 // String -> Vnode
@@ -87,7 +87,7 @@ const button = sf => {
   attrs.type = _text(sf.type) || 'submit';
   attrs.onclick = changeValue;
   return m(`button${klass}`, attrs, text);
-}
+};
 //--------------------------------------------
 
 // Object -> Vnode
@@ -102,23 +102,26 @@ const file = sf => {
     ),
     m('label[for="file"]', m('strong', "Выбрать файл"))
   ];
-}
+};
 //-------------------------------------------
 
 // (Object -> String) -> Vnode
 const select = (sf, field) => {
-  let _label = _labeltag(sf), _tag = _tagarray(sf);
+  let _label = _labeltag(sf), _tag = _tagarray(sf), 
+    _attrs= sf.attrs || {}, 
+    attrs = Object.assign(_attrs, 
+      { value: changedItem()[field], onchange: changeValue }
+    );
   return [
     _label ? label(field, ..._label) : '',
-    m(`select${_klass(_tag[0])}[name=${field}]`,
-      { value: changedItem()[field], oninput: changeValue },
+    m(`select${_klass(_tag[0])}[name=${field}]`, attrs,
       Object.entries(sf.options).map(el => {
         let [v, op] = el;
         return m('option', { key: v, value: v }, op);
       })
     )
-  ]
-}
+  ];
+};
 //-------------------------------------------
 
 // (String -> Array -> String -> String) -> Array(Vnode)
@@ -133,7 +136,7 @@ const labelradio = (fortag='dummy', radio = [], txt = '', kl = '') => [
       onchange: changeValue
     })
   ])
-]
+];
 //------------------------------------------
 
 // String -> Vnode
@@ -203,7 +206,7 @@ const input = (sf, field, idx) => {
 
   // checkbox value
   if (type === 'checkbox' && value)
-    aux.push('checked')
+    aux.push('checked');
 
   let _tagobj = {
     klass: _tag[0],
@@ -227,7 +230,7 @@ const input = (sf, field, idx) => {
   ];
 
   if (_tagobj.attrs.list && _tagobj.attrs.options)
-    tags.push(datalist(_tagobj.attrs.list, _tagobj.attrs.options))
+    tags.push(datalist(_tagobj.attrs.list, _tagobj.attrs.options));
 
   if (sf.memo) {// && (memost() === field))
     let _memo = memo(sf.memo, field);
@@ -238,6 +241,9 @@ const input = (sf, field, idx) => {
 };
 //----------------------------------------
 
+const group = (sf, idx) => Object.keys(sf).map( k => input(sf[k], k, idx) );
+
+//----------------------------------------
 // Curried Object -> (String -> Int) -> Func
 
 const tag_fn = {
@@ -259,5 +265,8 @@ export const makeTags = defs => (field, idx) => {
   if (sf.type && tag_fn[sf.type])
     return tag_fn[sf.type](sf, field);
 
+  if (field === 'fields_group')
+    return group(sf, idx);
+
   return input(sf, field, idx);
-}
+};

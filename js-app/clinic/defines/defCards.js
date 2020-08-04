@@ -9,8 +9,12 @@ import { spravComs } from '../../sprav/defines/defComs';
 import { 
   item_attr, 
   check_opts,
+  polis_type,
+  set_polis_type,
+  set_okato_by_smo,
   _okato,
 } from '../model/moModel';
+
 import {
   _getFIO,
   //_dul_type,
@@ -187,7 +191,7 @@ export const clinicCards = {
               params: ['dul_org', 'ufms', 'code', item_attr('name')]
             },
             attrs: {
-              style: "fonf-size: 1em; font-weight: normal",
+              style: "fonf-size: 1em; font-weight: normal; text-transform: uppercase",
               placeholder: "Кем выдан"
             }
           },
@@ -204,20 +208,18 @@ export const clinicCards = {
             label: ["Номер"],
             tag: ['', 'required'],
             type: 'number',
-            //memo: {
-              // this field will be filled by _polis_type              
-            //  field: 'polis_type',
-            //  attrs: { style: "margin-left: 11em;" }
-            //},
-            //attrs: { min: 1, oninit: _polis_type, onblur: _polis_type }
+            memo: {
+              check: polis_type,
+              attrs: { style: "margin-left: 11em;" }
+            },
+            attrs: { min: 1, onblur: set_polis_type }
           },
           smo: {
             label: ["СМО"],
             //tag: [''],
             type: 'select',
             options: smoId,
-            //oninit: _set_okato_by_smo,
-            //onblur: _set_okato_by_smo,
+            attrs: { onblur: set_okato_by_smo },
           },
           smo_okato: {
             label: ["Регион"],
@@ -230,14 +232,47 @@ export const clinicCards = {
             label: ["Прикреплен к МО"],
             tag: ['.pure-u-1-6'],
             type: 'number',
-            //memo: {
-            //  attrs: { style: "margin: 1em 0; padding-left: 1em" },
-            //},
-            //attrs: { oninit: _mo_att, onblur: _mo_att }
+            memo: {
+              check: check_opts,
+              params: ['mo_local', 'mo_att', 'scode', item_attr('sname')],
+              attrs: { style: "display: block; margin: 1em 0; padding-left: 1em" },
+            },
           },
         },
+      },
+      address: {
+        class: '.pure-u-9-24',
+        fields: {
+          legend: "Адрес",
+          city_g: {
+            attrs: $upper("Город")
+          },
+          street_g: {
+            attrs: $upper("Город")
+          },
+          fields_group: {
+            home_g: {
+              tag: ['.pure-u-1-8'],
+              attrs: { placeholder: "Дом" }
+            },
+            corp_g: {
+              tag: ['.pure-u-1-8'],
+              attrs: { placeholder: "Корпус" }
+            },
+            flat_g: {
+              tag: ['.pure-u-1-8'],
+              attrs: { placeholder: "Кв" }
+            },
+          },
+          phone_wrk: {
+            attrs: { placeholder: "Мобильный тел" }
+          },
+          phone_hom: {
+            attrs: { placeholder: "Контактный тел" }
+          }
+        }
       }
-    },
+    }
   }
 };
 
