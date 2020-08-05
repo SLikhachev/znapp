@@ -1,143 +1,239 @@
+// card pages forms definition
 
-// label = [class, text], if null no label
-// input = tag = [class, type, tabindex (int), required(bool)]
-// input attrs: attrs fval - value function, fblur - onblur function
+import { states, memost } from '../../apps/appApi';
+import { $upper, smoId } from '../../apps/defines/defStruct';
+import { _ufms } from '../model/moCards';
+import {
+  item_attr,
+  check_opts,
+  polis_type,
+  set_polis_type,
+  set_okato_by_smo,
+  _okato,
+} from '../model/moModel';
 
-export const cardField = {
 
-  //vfunc:  v => v ? v : '',
-  //smo_val: v => v ? v - 250000: '',
+const $cards = text => ({
+  placeholder: text,
+  style: "font-size: 1.2em",
+});
 
-  crd_num: { label: ['', "Номер карты"], input: {
-      tag: ['', "text", 1, true],
-      attrs: { autofocus: true }
-    }
+const blurst = e => memost(e.target.name);
+
+const $talons = () => states().data && states().data.get('talons').length;
+
+const $name = text => ({
+  label: [''],
+  attrs: $upper(text)
+});
+
+const $city = text => $upper(text);
+
+const $home_tag = text => ({ 
+  tag: ['.pure-u-1-8'],
+  attrs: {
+    placeholder: text
+  }
+});
+
+const $home = () => ({
+  home_g: $home_tag("Дом"),
+  corp_g: $home_tag("Корп"),
+  flat_g: $home_tag("Кв")
+});
+
+const $phone = text => ({ attrs: {  placeholder: text }});
+
+
+// FETCH CARD form
+export const fetch_form = {
+  q_crd: {
+    tag: ['.input-find.pure-u-3-4'],
+    attrs: $cards("Номер карты"),
+    value: ''
   },
-  fam: { label: ['', ''], input: {
-      tag: ['', 'text', 2, false],
-      attrs: { placeholder: "Фамилия" }
-    }
+  q_fam: {
+    tag: ['.input-find.pure-u-2-3'],
+    attrs: $cards("Фамилия"),
+    value: '',
   },
-  im: { label: ['', ''], input: {
-      tag: ['', 'text', 3, false],
-      attrs: { placeholder: "Имя" }
-    }
+  q_im: {
+    tag: ['.input-find.pure-u-2-3'],
+    attrs: $cards("Имя"),
+    value: ''
   },
-  ot: { label: ['', ''], input: {
-      tag: ['', 'text', 4, false],
-      attrs: { placeholder: "Отчество" }
-    }
-  },
-  birth_date: { label: ['', 'Дата рождения'], input: {
-      tag: ['', 'date', 5, true],
-      //attrs: { }
-    }
-  },
-  dul_type: {label: ['', 'Тип документа'], input: {
-      tag: ['.pure-u-1-6', 'number', 6, false],
-      attrs: { min: 1 }
-    }
-  },
-  dul_serial: {label: ['', "Документ"], input: {
-      tag: ['', 'text', 7, false],
-      attrs: { placeholder: "Серия" }
-    }
-  },
-  dul_number: {label: ['', ''], input: {
-      tag: ['', 'text', 8, false],
-      attrs: { placeholder: "Номер" }
-    }
-  },
-  dul_date: {label: ['', 'Дата'], input: {
-      tag: ['', 'date', 9, false],
-      //attrs: { placeholder: "Номер" }
-    }
-  },
-  dul_org: {label: ['', 'Выдан'], input: {
-      tag: ['.pure-u-7-12', 'text', 11, false],
-      attrs: { style: "fonf-size: 1em; font-weight: normal"}
-    }
-  },
-  polis_ser: {label: ['', "Полис серия"], input: {
-      //tag: ['.pure-u-1-6', 'text', 9, false],
-      tag: ['', 'text', 12, false],
-      //attrs: {  placeholder:"Серия" }
-  }},
-  polis_num: {label: ['', "Номер"], input: {
-      //tag: ['.pure-u-3-6', 'text', 10, false],
-      tag: ['', 'number', 13, true],
-      attrs: { min : 1 }
-  }},
-  smo: {label: ['', "Страховщик"], input: {
-      //tag: ['.pure-u-1-6', 'text', 13, false],
-      //attrs: { pattern: "[0-9]*" }
-  }},
-  smo_okato: {label: ['', "Регион"], input: {
-      tag: ['', 'text', 14, false],
-      attrs: { list:  "okato", fblur: true }
-  }},
-  mo_att: {label: ['',  "Прикреплен к МО"], input: {
-      tag: ['.pure-u-1-6', 'number', 15, false],
-      //attrs: { }
-    }
-  },
-  city_g: {label: [], input: {
-      tag: ['', 'text', 15, false],
-      attrs: { placeholder: "Город" }
-  }},
-  street_g: {label: [], input: {
-      tag: ['', 'text', 16, false],
-      attrs: { placeholder: "Улица" }
-  }},
-  home_g: {label: [], input: {
-      tag: ['.pure-u-1-8', 'text', 17, false ],
-      attrs: { placeholder: "Дом" }
-  }},
-  corp_g: {label: [], input: {
-    tag: ['.pure-u-1-8', 'text',  18, false ],
-    attrs: { placeholder: "Корпус" }
-  }},
-  flat_g: {label: [], input: {
-    tag: ['.pure-u-1-8', 'text',  19, false ],
-    attrs: { placeholder: "Кв" }
-  }},
-  phone_wrk: {label: [], input: {
-    tag: ['', 'text',  20, false ],
-    attrs: { placeholder: "Мобильный тел" }
-  }},
-  phone_hom: {label: [], input: {
-    tag: ['', 'text',  21, false ],
-    attrs: { placeholder: "Контактный тел" }
-  }},
 };
+//-------------------------------
 
-export const talCard = {
-    fam: { label: [], input: {
-      tag: ['.pure-u-22-24', "text"],
-      attrs: { placeholder: 'Фамилия' }
-    }},
-    im: {label: [], input: {
-      tag: ['.pure-u-22-24', "text"],
-      attrs: { placeholder: 'Имя'}
-    }},
-    ot: {label: [], input: {
-      tag: ['.pure-u-22-24', "text"],
-      attrs: { placeholder: 'Отчество'}
-    }},
-    birth_date: { label: ['', 'Дата рождения'], input: {
-      tag: ['', "date"],
-      //attrs: {}
-    }},
-    crd_polis_ser: { label: ['', 'Полис (редактируем в карте)'], input: {
-      tag: ['', "text"],
-      attrs: { placeholder: 'Серия', readonly: true }
-    }},
-    crd_polis_num: { label: [], input: {
-      tag: ['', "text"],
-      attrs: { placeholder: 'Номер', readonly: true}
-    }},
-    crd_smo: {label: ['', 'СМО'], input: {
-      tag: ['', "text"],
-      attrs: {},
-    }},   
+
+// PERSON fields def
+export const person = {
+  class: '.pure-u-7-24',
+  fields: {
+    //
+    crd_num: {
+      label: ["Номер карты"],
+      tag: ['', 'required'],
+      attrs: {
+        readonly: $talons // call in make tag
+      }
+    },
+    //
+    fam: R.assoc('tag', ['', 'required'], $name("Фамилия")),
+    im: $name("Имя"),
+    ot: $name("Отчество"),
+    //
+    birth_date: {
+      label: ['Дата рождения'],
+      tag: ['', 'required'],
+      type: 'date'
+    },
+    //
+    gender: {
+      label: ["Пол"],
+      type: 'radio',
+      radio: [{
+        text: "M",
+        value: 'м'
+      }, {
+        text: "Ж",
+        value: 'ж'
+      }]
+    },
+    //
+    dul_type: {
+      label: ['Тип документа'],
+      tag: ['.pure-u-1-5'],
+      type: 'number',
+      memo: {
+        check: check_opts,
+        params: ['dul', 'dul_type', 'code', item_attr('short_name')]
+      },
+      attrs: {
+        style: 'margin-right: 1em;',
+        min: 1,
+        placeholder: "Число",
+        onblur: blurst //dummy call for redraw
+      }
+    },
+    //
+    dul_serial: {
+      label: ["Документ"],
+      attrs: {
+        placeholder: "Серия"
+      }
+    },
+    //
+    dul_number: {
+      label: [''],
+      attrs: {
+        placeholder: "Номер"
+      }
+    },
+    //
+    dul_date: {
+      label: ['Дата выдачи'],
+      type: 'date',
+    },
+    //
+    ufms: {
+      label: ["УФМС"],
+      tag: ['.pure-u-6-24'],
+      type: 'number',
+      attrs: {
+        onblur: _ufms
+      }
+    },
+    //
+    dul_org: {
+      //label: [' Кем выдан'],
+      //tag: ['.pure-u-7-12'],
+      tag: ['.pure-u-1-1'],
+      memo: {
+        check: check_opts,
+        params: ['dul_org', 'ufms', 'code', item_attr('name')]
+      },
+      attrs: {
+        style: "fonf-size: 1em; font-weight: normal; text-transform: uppercase",
+        placeholder: "Кем выдан"
+      }
+    },
+  },
+};
+//------------------------------------------
+
+// INSURANCE fields def
+export const insurance = {
+  class: '.pure-u-8-24',
+  fields: {
+    legend: "ОМС",
+    //
+    polis_ser: {
+      label: ["Полис серия"],
+    },
+    //
+    polis_num: {
+      label: ["Номер"],
+      tag: ['', 'required'],
+      type: 'number',
+      memo: {
+        check: polis_type,
+        attrs: {
+          style: "margin-left: 11em;"
+        }
+      },
+      attrs: {
+        min: 1,
+        onblur: set_polis_type
+      }
+    },
+    //
+    smo: {
+      label: ["СМО"],
+      //tag: [''],
+      type: 'select',
+      options: smoId,
+      attrs: {
+        onblur: set_okato_by_smo
+      },
+    },
+    //
+    smo_okato: {
+      label: ["Регион"],
+      attrs: {
+        list: "okato",
+        options: _okato
+      }
+    },
+    //
+    mo_att: {
+      label: ["Прикреплен к МО"],
+      tag: ['.pure-u-1-6'],
+      type: 'number',
+      memo: {
+        check: check_opts,
+        params: ['mo_local', 'mo_att', 'scode', item_attr('sname')],
+        attrs: {
+          style: "display: block; margin: 1em 0; padding-left: 1em"
+        },
+      },
+    },
+  },
+};
+//----------------------------------
+
+// PERSON ADDRESS fields def
+export const address = {
+  class: '.pure-u-9-24',
+  fields: {
+    legend: "Адрес",
+    //
+    city_g: $city("Город"),
+    street_g: $city("Улица"),
+    //
+    'fields_group': $home(),
+    //
+    phone_wrk: $phone("Мобильный тел"),
+    phone_hom: $phone("Контактный тел")
+  }
 };

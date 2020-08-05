@@ -26,7 +26,7 @@ const _labeltag = sf => {
 };
 //----------------------------------------------------
 
-// (Object -> Int) -> Array
+// Object -> Array
 const _tagarray = sf => checkArray(sf.tag) ? sf.tag : [''];
 
 //--------------------------------------------------------
@@ -139,26 +139,7 @@ const labelradio = (fortag='dummy', radio = [], txt = '', kl = '') => [
 ];
 //------------------------------------------
 
-// String -> Vnode
-/*
-const memo = (sf, field) => {
-  //console.log(sf)
-  //let _memo = states().memo,
-  let _tag_cls = _tagarray(sf)[0],
-   _field = sf.field || field,
-   _attrs = sf.attrs || {},
-   lst;
-  //console.log(_field);
-  if (_memo && _memo[_field]) {
-    lst = _memo[_field].split('&');
-    let cls = lst[1] ? lst[0] : '',
-      txt = cls ? lst[1] : lst[0];
-    //console.log('txt', txt)
-    return m(`span${_tag_cls}`, _attrs, m(`span.${cls}`, txt));
-  }
-  return '';
-}
-*/
+// Object -> Vnode
 const memo = sf => {
   //console.log(sf)
   //memost('');
@@ -166,7 +147,7 @@ const memo = sf => {
     check = def.check || E,
     params = def.params || [],
     tag_cls = _tagarray(def)[0],
-    attrs = def.attrs || {}, 
+    attrs = def.attrs || {},
     resp = check(params),
     [cls= '', txt=''] = typeof resp === 'string' ? resp.split('&') : [];
   
@@ -212,7 +193,7 @@ const input = (sf, field, idx) => {
     klass: _tag[0],
     type: type, //type of input field
     name: field, //name of input field
-    tabindex: idx + 1,
+    tabindex: idx,
     aux: aux, // aux params
     value: value, // current chosen value
     attrs: sf.attrs || {} // attrs from definition eg. { placeholder: 'i love you' } 
@@ -241,9 +222,12 @@ const input = (sf, field, idx) => {
 };
 //----------------------------------------
 
-const group = (sf, idx) => Object.keys(sf).map( k => input(sf[k], k, idx) );
+// group of input tags
+// (Object -> int) -> Array(Vnode)
+const inputs_group = (sf, idx) => Object.keys(sf).map( k => input(sf[k], k, idx) );
 
 //----------------------------------------
+
 // Curried Object -> (String -> Int) -> Func
 
 const tag_fn = {
@@ -266,7 +250,7 @@ export const makeTags = defs => (field, idx) => {
     return tag_fn[sf.type](sf, field);
 
   if (field === 'fields_group')
-    return group(sf, idx);
+    return inputs_group(sf, idx);
 
   return input(sf, field, idx);
 };

@@ -182,7 +182,7 @@ export const onedit = onchange('PATCH', "Изменить");
 export const ondelet = onchange('DELETE', "Удалить");
 export const onadd = e => {
   e.preventDefault();
-  disp(['add'])
+  disp(['add']);
   vuDialog.open();
 };
 
@@ -214,6 +214,9 @@ export const get_month = (data, key) => [
   "Ноябрь",
   "Декабрь"
 ][data[key] - 1];
+
+export const $upper = text => ({ placeholder: text, style: 'text-transform: uppercase' });
+
 
 export const $month = {
   label: ["Месяц"], type: 'month', tag: ['', 'required'],

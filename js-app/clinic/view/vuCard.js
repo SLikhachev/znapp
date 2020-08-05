@@ -167,15 +167,16 @@ export const toSaveCard = card => {
   return false;
 };
 */
-const makeFields = (fn, flds) => flds.map((f, idx) => m('.pure-control-group', fn(f, idx)));
+const makeFields = (fn, flds, ind) => flds.map((f, ix) => m('.pure-control-group', fn(f, ind*20+ix)));
 
-const makeGroup = group => m(group.class,
-  makeFields(makeTags(group.fields), Object.keys(group.fields))
+const makeGroup = (group, ind) => m(group.class,
+  makeFields(makeTags(group.fields), Object.keys(group.fields), ind)
 );
 
-const makeFormChildren = form => Object.keys(form).map(
-  group => makeGroup(form[group])
+const makeFormChildren = form =>Object.keys(form).map( 
+  (group, ind) => makeGroup(form[group], ind)
 );
+
 
 const crdMain = () => {
   /*
