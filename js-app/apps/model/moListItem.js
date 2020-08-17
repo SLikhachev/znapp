@@ -9,6 +9,7 @@ export const listItem = stream();
 export const itemId = stream('');
 export const changeValue = stream({});
 
+export const target = (name, value) => ({ target: {name, value}});
 
 export const getItem = (id, pk, list) => {
   if (!id) return {};

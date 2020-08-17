@@ -3,15 +3,6 @@ import { states } from '../../apps/appApi';
 import { changedItem, changeValue } from '../../apps/model/moListItem';
 
 
-//export const memost = m.stream({});
-
-export const _just_int = (text, length = 0) => {
-  if (typeof text !== 'string' || text.length < length)
-    return NaN;
-  return parseInt(text);
-};
-
-
 export const item_attr = attr => item => item[attr];
 
 // Array -> String
@@ -74,7 +65,7 @@ const calc_type = () => {
     return 1;
   
   return 0;
-}
+};
 
 export const set_polis_type = () => change('polis_type', calc_type());
 

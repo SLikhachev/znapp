@@ -59,7 +59,7 @@ export const tabsView = () => {
           tab.content()))
       ]),
       m(vuDialog, { itdef, word: states().word },
-        m('dl', [m('dt', "Ошибка обработки"),
+        m('dl', [m('dt', "Ошибки обработки"),
         states().errorsList.map(err => m('dd.red',
           { style: "font-size: 1.2em; font-weight: 600" },
           err))

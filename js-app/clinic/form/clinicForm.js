@@ -9,7 +9,7 @@ export const vuFetchForm = () => {
 
   const onadd = e => {
     e.preventDefault();
-    disp(['add'])
+    disp(['add']);
   };
   const onsubmit = e => {
     e.preventDefault();
@@ -33,8 +33,8 @@ export const vuFetchForm = () => {
             ])
           )
         )
-      )
+      );
     }
-  }
+  };
 };
 

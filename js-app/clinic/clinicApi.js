@@ -2,26 +2,23 @@
 // src/report/reportApi.js
 /**
   */
-import { up } from '../apps/utils';
+import { up, checkArray } from '../apps/utils';
 import { states, memost, update, initApp } from '../apps/appApi';
+import { getData } from '../apps/model/moData';
+import { getList } from '../apps/model/moList';
 import { listItem, itemId, changedItem, changeValue } from '../apps/model/moListItem';
 //import { formItem, formSubmit } from '../apps/model/moFormModel';
-import { checkArray } from '../apps/model/moModel';
-import { getList } from '../apps/model/moList';
+import { vuDialog } from '../apps/view/vuDialog';
+import { validateCard } from './model/moCards';
 import { clinicMenu } from './clinicMenu';
-import { getData } from '../apps/model/moData';
 
-/*
-export const setMemo = (key, value) => memo(
-  Object.assign( memo(), { [key]: value } )
-)
-*/
 
 const Actions = (state, update) => {
   // stream of states
   const stup = up(update);
   
   return {
+    
     suite(d) {
       let [suite, unit] = d;
       stup({ suite, unit, options: null });
@@ -30,6 +27,7 @@ const Actions = (state, update) => {
       if (!!def.count)
         this.count(def);
     },
+    
     count(d) {
       if (!!state().error)
         return;
@@ -39,18 +37,21 @@ const Actions = (state, update) => {
           catch(err => stup(err));
       }
     },
+    
     fetch() {
       stup({ list: null, error: null, table: true });
       return getList(state().suite, state().unit, 'fetch').
         then(res => stup(res)).
         catch(error => stup(error));
     },
+    
     opts() {
       stup({ options: null });
       return getData(state().suite, state().unit).
         then(res => stup(res)).
         catch(err => stup(err));
     },
+    
     card(d) {
       let [suite, crd] = d;
       stup({
@@ -69,6 +70,7 @@ const Actions = (state, update) => {
         }).
         catch(err => stup(err));
     },
+    
     // fetch data from rest server defs in fetch, fill with target
     fetch_rest(d) { // ufms -> dul_org
       // fetch data with params as fetch (in changedItem[fetch])
@@ -91,7 +93,17 @@ const Actions = (state, update) => {
         }).
         catch(err => state().options.set(target, [{ error: `red&${err.error}`}]))
         //finally( memost(target) );
-    }
+    },
+    
+    savecard() {
+      let errorsList = validateCard(changedItem);
+      //console.log('savecard', errorsList);
+      if (!R.isEmpty(errorsList)) {
+        stup({errorsList});
+        vuDialog.open();
+      }
+      return false;
+    },
   };
 };
 

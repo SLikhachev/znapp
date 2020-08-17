@@ -27,7 +27,7 @@ const $name = text => ({
   attrs: $upper(text)
 });
 
-const $city = text => $upper(text);
+const $city = text =>({attrs: $upper(text)});
 
 const $home_tag = text => ({ 
   tag: ['.pure-u-1-8'],

@@ -1,12 +1,13 @@
 // src/clinic/model/moCards.js
 
+import { trims, just_int } from '../../apps/utils';
 import { disp, memost } from '../../apps/appApi';
 //import { vuDialog } from '../../apps/view/vuDialog.js';
-//import { moModel, errMsg, _schema, _region } from '../../apps/model/moModel.js';
+import { changeValue, target } from '../../apps/model/moListItem';
 import { _region } from '../../apps/model/moModel.js';
 //import { restSprav } from '../../sprav/spravApi.js';
 //import { restClinic } from '../clinicApi.js';
-import { _just_int } from './moModel';
+
 
 const _reg = _region();
 
@@ -19,13 +20,112 @@ export const _getFIO = row => {
 
 export const _ufms = e => {
   memost('dul_org');
-  let ufms = _just_int(e.target.value, 6);
+  let ufms = just_int(e.target.value, 6);
   if (!!ufms)
     disp(['fetch_rest', 'ufms', 'name', 'dul_org']);
   return false;
 };
-
 //--------------------------
+
+// Stream -> String
+const crd_num = card => {
+  let value = trims(card().crd_num);
+  if (!value)
+    return 'Пустой номер карты';
+  changeValue(target('crd_num', value));
+  return '';
+};
+// ----------------------------
+
+export const dost = card => {
+
+  ['fam', 'im', 'ot'].map(
+    k => changeValue(
+      target(k, card()[k].trim().toUpperCase())
+    )
+  );
+
+  let dost = '';
+  if (!card().fam) dost += '2_';
+  if (!card().im) dost += '3_';
+  if (!card().ot) dost += '1_';
+  if (!card().fam && !card().im)
+    return 'Укажите Фамилию или Имя';
+  if (!!dost)
+    changeValue(target('dost', dost));
+  return '';
+};
+//-----------------------------
+
+const birth_date = card => {
+  let d0 = new Date('1900-01-01');
+  let d1 = new Date(Date.now());
+  //d1= new Date( d1.getFullYear() - 18, 1, 1); // 18 years or older
+  d1 = new Date(d1.getFullYear() - 3, 1, 1); // 3 years or older 
+  let d = new Date(card().birth_date);
+  if (d < d0 || d > d1)
+    return 'Возраст пациента должен быть в диапазоне от 3 до 120 лет';
+  return '';
+};
+//-------------------------------
+
+const gender  = card => !!card().gender ? 
+  '' : 'Не указан пол';
+//-------------------------------
+
+const dul = card => { 
+  if (!card().dul_serial && !card().dul_number)
+    changeValue(target('dul_type', null));
+  if (card().polis_type && card().polis_type < 3 && !card().dul_type)
+    return 'Для этого типа полиса требуются полные данные ДУЛ';
+  return '';
+};
+//-------------------------------------
+
+const polis_type = card => card().polis_type ? 
+  '' : 'Неизвестный тип полиса';
+//-------------------------------------
+
+const smo = card => (card().smo || card().smo_okato) ? 
+  '' : 'Укажите либо СМО либо СМО ОКАТО';
+//---------------------------------------
+
+const city_g = card => (!card().city_g && card().street_g) ?
+    'Укажите город': '';
+//----------------------------------------
+
+// nulled empty values 
+const empty = (list, card) => list.forEach(k => !card()[k] ? 
+  changeValue(target(k, null)) : void 0
+);
+
+// clear values 
+const clear = list => list.forEach(k => changeValue(target(k, null)));
+
+const checkCard = [
+  crd_num,
+  dost,
+  birth_date,
+  gender,
+  dul,
+  polis_type,
+  smo,
+  city_g
+];
+
+// Stream -> String
+export const validateCard = card => {
+
+  let errors = checkCard.map(f => f(card)).filter(e => !!e); 
+  
+  if (R.isEmpty(errors)) {
+    empty( ['mo_att'], card);
+    clear( ['ufms'], card);
+  }
+
+  return errors;
+};
+
 
 /*
 
