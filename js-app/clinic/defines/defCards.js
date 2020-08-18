@@ -6,7 +6,8 @@ import { $upper, linkItem, smoId } from '../../apps/defines/defStruct';
 import { spravLocal } from '../../sprav/defines/defLocal';
 import { spravComs } from '../../sprav/defines/defComs';
 import { fetch_form, person, insurance, address } from '../form/foCard';
-import { _getFIO } from '../model/moCards';
+import { _getFIO, cardValidator} from '../model/moCards';
+
 
 const $cards = {
   // count crads in db table
@@ -36,6 +37,7 @@ const $cards = {
   item: {
     header: "Поиск карт по номеру и пациенту",
     //href: 'eq.',
+    add: '/add',
     pk: 'crd_num',
     struct: {
       crd_num: ['Карта', '', linkItem],
@@ -87,6 +89,8 @@ const card = {
   },
   item: {
     header: "Карты",
+    validator: cardValidator,
+    rest: { url: 'cardz_clin' }
   },
   mainForm: {
     person,

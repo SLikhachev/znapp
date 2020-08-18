@@ -1,7 +1,7 @@
 
 // src/apps/model/moModel.js
 
-// this models is used by REESTR, REPORT apps 
+// this module is used by TASK server wiith REESTR, REPORT apps 
 
 import { _month, _schema, errMsg } from './moModel.js';
 import { changedItem } from './moListItem';
@@ -78,9 +78,9 @@ export const formSubmit = (api, suite, unit, data) => {
     }),
     err => ({ error: errMsg(err) })
   );
-}
+};
 
-
+/*
 export const moModel = {
 
   getModel(url = null, order_by = null) {
@@ -208,3 +208,4 @@ export const moModel = {
   }
 
 }
+*/

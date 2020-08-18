@@ -6,12 +6,12 @@ import { up, checkArray } from '../apps/utils';
 import { states, memost, update, initApp } from '../apps/appApi';
 import { getData } from '../apps/model/moData';
 import { getList } from '../apps/model/moList';
-import { listItem, itemId, changedItem, changeValue } from '../apps/model/moListItem';
-//import { formItem, formSubmit } from '../apps/model/moFormModel';
+import { listItem, itemId, changedItem, changeValue, saveItem } from '../apps/model/moListItem';
 import { vuDialog } from '../apps/view/vuDialog';
-import { validateCard } from './model/moCards';
 import { clinicMenu } from './clinicMenu';
 
+const patch = ['PATCH', "Изменить"];
+const post = ['POST', "Добавить"];
 
 const Actions = (state, update) => {
   // stream of states
@@ -53,15 +53,27 @@ const Actions = (state, update) => {
     },
     
     card(d) {
-      let [suite, crd] = d;
+      let [suite, crd] = d, [method, word] = patch;
+      console.log(crd);
+      // new card
+      if (crd === 'add') {
+        crd= '';
+        [method, word]  = post;
+      }
       stup({
         suite,
-        unit: 'card', crd, data: null,
+        unit: 'card', crd, data: null, method, word,
         error: null, errorsList: [],
       });
+      
       if (R.isNil(states().options))
         this.opts();
-      changedItem({ crd_num: crd });
+      
+      changedItem({ crd_num: crd, old_num: crd });
+      if (crd === '') {
+          stup({data: new Map( [[ 'talons', [] ]] )});
+          return;
+      }
       return getData(state().suite, 'card', 'data').
         then(res => {
           stup(res);// card and list of talons in Map
@@ -95,14 +107,24 @@ const Actions = (state, update) => {
         //finally( memost(target) );
     },
     
-    savecard() {
-      let errorsList = validateCard(changedItem);
-      //console.log('savecard', errorsList);
-      if (!R.isEmpty(errorsList)) {
-        stup({errorsList});
-        vuDialog.open();
-      }
-      return false;
+    save(d) {
+        let [item, event] = d;
+        vuDialog.error = '';
+        stup({
+          errorsList: state().suite[item].item.validator(changedItem)
+        });
+
+        if (!R.isEmpty(state().errorsList)) {
+          vuDialog.open();
+          return;
+        }
+        event.target.classList.add('disable');
+        return saveItem(state().suite[item], 'item', state().method).
+        catch(error => {
+          vuDialog.error = error.saverror;
+          vuDialog.open();
+        }).
+        finally(() =>  event.target.classList.remove('disable'));
     },
   };
 };

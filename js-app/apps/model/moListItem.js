@@ -5,7 +5,7 @@ import { _schema, errMsg } from './moModel';
 
 const [stream, combine] = [m.stream, m.stream.combine];
 
-export const listItem = stream();
+export const listItem = stream({});
 export const itemId = stream('');
 export const changeValue = stream({});
 
@@ -92,7 +92,7 @@ const saveRequest = (set, item, _method, data) => {
 
   //let method = changeEvent().method || '';
   let method = _method;
-  if (!method) throw new Error('No METHOD for save Item provided');
+  if (!method) throw new Error('No METHOD provided to save Item');
 
   if (method === 'PATCH' || method === 'DELETE') {
     params[_key] = `eq.${body[_key]}`;
@@ -104,7 +104,7 @@ const saveRequest = (set, item, _method, data) => {
         delete body[k];
         continue;
       }
-      if (body[k] === '') delete body[k];
+      if (body[k] === '' || body[k] === null) delete body[k];
     }
 
   } else {
@@ -125,25 +125,20 @@ const saveRequest = (set, item, _method, data) => {
   const qstring = m.buildQueryString(params),
     url = `${_schema('pg_rest')}${_url}${_sign}${qstring}`,
     headers = rest.headers || {};
-
+  //console.log(url, method, body);  
   return { url, method, body, headers };
 };
 
 
-export const saveItem = (set, item, method, data = null) => {
-  //vuDialog.error = '';
-  return m.request(
-    saveRequest(set, item, method, data)
-  ).then(
-    () => {
-      if (vuDialog.dialog && vuDialog.dialog.open)
-        vuDialog.close();
-      return true;
-    },
-    err => {
-      //vuDialog.error = errMsg(err);
-      //saveResult({ error: errMsg(err) });
-      return Promise.reject({ saverror: errMsg(err) })
-    });
-};
+export const saveItem = (set, item, method, data = null) => m.request(
+  saveRequest(set, item, method, data)
+).then(
+  () => {
+    if (vuDialog.dialog && vuDialog.dialog.open)
+      vuDialog.close();
+    return true;
+  },
+  err => Promise.reject({ saverror: errMsg(err) })
+);
+
 

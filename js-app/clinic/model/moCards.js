@@ -1,7 +1,7 @@
 // src/clinic/model/moCards.js
 
 import { trims, just_int } from '../../apps/utils';
-import { disp, memost } from '../../apps/appApi';
+import { states, disp, memost } from '../../apps/appApi';
 //import { vuDialog } from '../../apps/view/vuDialog.js';
 import { changeValue, target } from '../../apps/model/moListItem';
 import { _region } from '../../apps/model/moModel.js';
@@ -30,8 +30,16 @@ export const _ufms = e => {
 // Stream -> String
 const crd_num = card => {
   let value = trims(card().crd_num);
-  if (!value)
+  
+  if (value === '')
     return 'Пустой номер карты';
+  
+  if(parseInt(value) === 0)
+     return 'Недопустимый номер карты';
+  
+  if ( states().method === 'PATCH' && (value == card().old_num) )
+    // same card number must be cleaned
+    value = '';  
   changeValue(target('crd_num', value));
   return '';
 };
@@ -94,13 +102,17 @@ const city_g = card => (!card().city_g && card().street_g) ?
     'Укажите город': '';
 //----------------------------------------
 
-// nulled empty values 
-const empty = (list, card) => list.forEach(k => !card()[k] ? 
-  changeValue(target(k, null)) : void 0
+// clean empty values 
+const cleanEmpty = (list, card) => list.forEach(k => !card()[k] ? 
+  changeValue(target(k, '')) : void 0
 );
 
-// clear values 
-const clear = list => list.forEach(k => changeValue(target(k, null)));
+// clean values forced
+const cleanForced = list => list.forEach(k => changeValue(target(k, '')));
+
+const ifEmpty = ['mo_att'];
+const ignoreAny = ['old_num', 'ufms', 'created', 'modified', 'cuser' ];
+
 
 const checkCard = [
   crd_num,
@@ -114,13 +126,13 @@ const checkCard = [
 ];
 
 // Stream -> String
-export const validateCard = card => {
+export const cardValidator = card => {
 
-  let errors = checkCard.map(f => f(card)).filter(e => !!e); 
-  
+  let errors = checkCard.map(f => f(card)).filter(e => !!e);
+
   if (R.isEmpty(errors)) {
-    empty( ['mo_att'], card);
-    clear( ['ufms'], card);
+    cleanEmpty(ifEmpty, card);
+    cleanForced(ignoreAny, card);
   }
 
   return errors;

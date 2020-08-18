@@ -1,77 +1,10 @@
 // src/clinic/view/vuCard.js
 
-//import { vuDialog } from '../../apps/view/vuDialog.js';
-import { states, disp } from '../../apps/appApi';
-//import { changedItem } from '../../apps/model/moListItem';
+import { states } from '../../apps/appApi';
 import { vuLoading } from '../../apps/view/vuApp';
-import { makeTags } from '../../apps/form/makeTags';
-import { validateCard } from '../model/moCards'; 
-import { tabsView, nextTagFocus } from './vuTabs.js';
+import { tabsView } from './vuTabs.js';
 import { crdEmpty } from './vuClinic';
-
-
-const makeFields = (fn, flds, ind) => flds.map((f, ix) => m('.pure-control-group', fn(f, ind*20+ix)));
-
-const makeGroup = (group, ind) => m(group.class,
-  makeFields(makeTags(group.fields), Object.keys(group.fields), ind)
-);
-
-const makeFormChildren = form => Object.keys(form).map( 
-  (group, ind) => makeGroup(form[group], ind)
-);
-
-
-const crdMain = () => {
-  /*
-    const cardSave = function (e) {
-      e.preventDefault();
-      // form send with forTabs onCreate function
-      // above changed all processing will made here
-      //console.log(card);
-      model.save = toSaveCard(card);
-      if (Boolean(model.save)) {
-        vuDialog.open();
-        return false;
-      }
-      //model.save= null;
-      return moCard.saveCard(e, card, model, method).then(t =>
-        m.route.set([clinicApi.cards])
-      ).catch(err => {
-        model.save = err;
-        vuDialog.open();
-      });
-    };
-    
-  */
-
-  let form = {};
-
-  const onsubmit = e => {
-    e.preventDefault();
-    return disp(['savecard']);
-  };
-
-  return {
-    view() {
-      form = states().suite.card.mainForm || {};
-
-      return m('form.tcard.pure-form.pure-form-aligned',
-        { style: "font-size: 1.2em;", id: "card", oncreate: nextTagFocus, onsubmit },
-        m('fieldset', [
-          m('legend', "Карта пациента"),
-          m(".pure-g", makeFormChildren(form)),
-          m(".pure-g", [
-            m(".pure-u-10-24 ", m('span#card_message', '')),
-            m(".pure-u-14-24 ",
-              m('button.pure-button.pure-button-primary[type="submit"]',
-                "Сохранить"),
-            )
-          ]) // pure-g
-        ]))// form
-      //=========================
-    } // view
-  }; // return
-}; //func
+import { crdMain } from './vuCardMain';
 
 /*
 const crdViz = function (vnode) {
@@ -143,7 +76,7 @@ const cardTabs = [
   crdEmpty("Дополнительно", "Дополнительно"),
   crdEmpty("Прикрепить", "Прикрепить"),
   crdEmpty("Удалить", "Удалить/Объеденить"),
-]
+];
 
 export const vuCard = () => {
   return {

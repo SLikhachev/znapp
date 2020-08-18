@@ -19,10 +19,12 @@ export const roCards = () => ({
   [cards.path + '/:crd']: {
     onmatch(args) {
       const { crd } = args;
+      /*
       if (!Number.isSafeInteger(Number(crd))) {
         console.warn('invalid card number -- ', crd);
-        m.route.SKIP;
+        return m.route.SKIP;
       }
+      */
       disp(['card', cards.def, crd]);
       return vuCard;
     },
