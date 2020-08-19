@@ -1,4 +1,5 @@
 
+
 // src/sparv/spravApi.js
 /**
   */
@@ -33,7 +34,7 @@ export const tomatch = (path, view) => args => {
   if (idx < 0) return m.route.SKIP;
   disp(['unit', path.def, item]);
   return view;
-}
+};
 
 export const pathRouter = view => route => ({
   [route.path.split(':')[0]]: {
@@ -55,8 +56,8 @@ export const routerFun = (menu, addroute, route) => {
     if (!!menu[m].router)
       next = addroute[m]();
     else
-      next = route(menu[m])
+      next = route(menu[m]);
     Object.assign(root, next);
   });
   return root;
-}
+};

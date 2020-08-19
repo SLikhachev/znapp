@@ -1,4 +1,5 @@
 
+
 // src/report/reportApi.js
 /**
   */
@@ -6,7 +7,8 @@ import { up, checkArray } from '../apps/utils';
 import { states, memost, update, initApp } from '../apps/appApi';
 import { getData } from '../apps/model/moData';
 import { getList } from '../apps/model/moList';
-import { listItem, itemId, changedItem, changeValue, saveItem } from '../apps/model/moListItem';
+import { listItem, itemId, changedItem, 
+  changeValue, saveItem, target } from '../apps/model/moListItem';
 import { vuDialog } from '../apps/view/vuDialog';
 import { clinicMenu } from './clinicMenu';
 
@@ -71,7 +73,9 @@ const Actions = (state, update) => {
       
       changedItem({ crd_num: crd, old_num: crd });
       if (crd === '') {
-          stup({data: new Map( [[ 'talons', [] ]] )});
+          stup({data: new Map()});
+          listItem({});
+          itemId(crd);
           return;
       }
       return getData(state().suite, 'card', 'data').
@@ -118,13 +122,22 @@ const Actions = (state, update) => {
           vuDialog.open();
           return;
         }
+        
         event.target.classList.add('disable');
         return saveItem(state().suite[item], 'item', state().method).
+        then(res => {
+          if (checkArray(res)) {
+            listItem(res[0]); 
+            itemId(res[0].crd_num);
+            stup({ crd: itemId()});
+            changeValue(target('crd_old', itemId()));
+          }
+        }).
         catch(error => {
           vuDialog.error = error.saverror;
           vuDialog.open();
         }).
-        finally(() =>  event.target.classList.remove('disable'));
+        finally(() => event.target.classList.remove('disable'));
     },
   };
 };

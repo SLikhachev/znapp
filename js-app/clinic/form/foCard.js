@@ -20,7 +20,9 @@ const $cards = text => ({
 
 const blurst = e => memost(e.target.name);
 
-const $talons = () => states().data && states().data.get('talons').length;
+const $talons = () => Boolean(states().data && 
+  states().data.get('talons') &&
+  states().data.get('talons').length);
 
 const $name = text => ({
   label: [''],

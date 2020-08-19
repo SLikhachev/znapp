@@ -56,8 +56,21 @@ const talons = {
       tal_tbl: 'talonz_clin_20'
     },
     body: ['crd_num']
+  },
+  item: {
+    struct: {
+      tal_num: ['Номер талона'],
+      open_date: ['Открыт'],
+      close_date: ['Закрыт'],
+      purp: ['Цель визита'],
+      doc_spec: ['Спец'],
+      doc_code: ['Спец код'],
+      family: ['Доктор'],
+      ds1: ['Диагноз']
+    }
   }
 };
+
 
 const ufms = {
   rest: {
@@ -90,7 +103,10 @@ const card = {
   item: {
     header: "Карты",
     validator: cardValidator,
-    rest: { url: 'cardz_clin' }
+    rest: { 
+      url: 'cardz_clin',  
+      headers: {Prefer: 'return=representation'} 
+    }
   },
   mainForm: {
     person,

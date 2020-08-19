@@ -10,7 +10,7 @@ const makeGroup = (group, ind) => m(group.class,
   makeFields(makeTags(group.fields), Object.keys(group.fields), ind)
 );
 
-const makeFormChildren = form => Object.keys(form).map( 
+const makeFormChildren = form => Object.keys(form).map(
   (group, ind) => makeGroup(form[group], ind)
 );
 

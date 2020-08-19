@@ -129,6 +129,7 @@ export const vuCardsList = function () {
       fetch = def.fetch || {};
       _table = states().table;
       //console.log(itdef);
+      
       return m('div', { style: "padding-left: 2em" }, [
         m(vuTheader, { itdef }),
         m(vuFetchForm, { itdef },

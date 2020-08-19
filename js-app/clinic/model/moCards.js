@@ -48,9 +48,9 @@ const crd_num = card => {
 export const dost = card => {
 
   ['fam', 'im', 'ot'].map(
-    k => changeValue(
-      target(k, card()[k].trim().toUpperCase())
-    )
+    k => card()[k] ? changeValue(
+      target(k, card()[k].trim().toUpperCase()) 
+    ) : void 0
   );
 
   let dost = '';
@@ -81,11 +81,23 @@ const gender  = card => !!card().gender ?
   '' : 'Не указан пол';
 //-------------------------------
 
+const dul_err = {
+  dul_serial: 'Нет серии ДУЛ',
+  dul_number: 'Нет номера ДУЛ',
+  dul_date: 'Нет даты ДУЛ',
+  dul_org: 'Кем выдан ДУЛ ?'
+};
+
 const dul = card => { 
   if (!card().dul_serial && !card().dul_number)
     changeValue(target('dul_type', null));
+  
   if (card().polis_type && card().polis_type < 3 && !card().dul_type)
-    return 'Для этого типа полиса требуются полные данные ДУЛ';
+    return 'Для этого типа полиса заполните ДУЛ';
+  
+  if (card().dul_type)
+    return Object.keys(dul_err).map(d=> card()[d] ? '' : dul_err[d]);
+  
   return '';
 };
 //-------------------------------------
@@ -128,7 +140,7 @@ const checkCard = [
 // Stream -> String
 export const cardValidator = card => {
 
-  let errors = checkCard.map(f => f(card)).filter(e => !!e);
+  let errors = R.flatten( checkCard.map(f => f(card)) ).filter(e => !!e);
 
   if (R.isEmpty(errors)) {
     cleanEmpty(ifEmpty, card);

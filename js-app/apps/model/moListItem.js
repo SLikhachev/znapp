@@ -133,10 +133,10 @@ const saveRequest = (set, item, _method, data) => {
 export const saveItem = (set, item, method, data = null) => m.request(
   saveRequest(set, item, method, data)
 ).then(
-  () => {
+  res => {
     if (vuDialog.dialog && vuDialog.dialog.open)
       vuDialog.close();
-    return true;
+    return res; // return=representation
   },
   err => Promise.reject({ saverror: errMsg(err) })
 );
