@@ -13,7 +13,7 @@ export const errMsg = function (error) {
   //let m= e.message ? e.message : error;
   console.log(m);
   return m;
-}
+};
 
 // return date in yyyy-mm format
 export const _month = () => {
@@ -22,12 +22,14 @@ export const _month = () => {
   return `${y}-${m}`;
 };
 
+export const _year = () => _month().split('-')[0]; // on init app year,
+
 // return posgrest url if pg_rest else task url
 export const _schema = type => {
   if (type === 'task')
     return window.localStorage.getItem('task_rest');
   return window.localStorage.getItem('pg_rest');
-}
+};
 
 //export const _region= ()=> int(window.localStorage.getItem('smo_reg'));
 

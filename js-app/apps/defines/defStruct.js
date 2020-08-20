@@ -216,7 +216,7 @@ export const get_month = (data, key) => [
 ][data[key] - 1];
 
 export const $upper = text => ({ placeholder: text, style: 'text-transform: uppercase' });
-
+export const $place = text => ({ placeholder: text, style: "font-size: 1.2em", });
 
 export const $month = {
   label: ["Месяц"], type: 'month', tag: ['', 'required'],

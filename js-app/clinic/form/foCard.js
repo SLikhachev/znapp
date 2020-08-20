@@ -1,7 +1,7 @@
 // card pages forms definition
 
 import { states, memost } from '../../apps/appApi';
-import { $upper, smoId } from '../../apps/defines/defStruct';
+import { $upper, $place, smoId } from '../../apps/defines/defStruct';
 import { _ufms } from '../model/moCards';
 import {
   item_attr,
@@ -12,11 +12,6 @@ import {
   _okato,
 } from '../model/moModel';
 
-
-const $cards = text => ({
-  placeholder: text,
-  style: "font-size: 1.2em",
-});
 
 const blurst = e => memost(e.target.name);
 
@@ -51,17 +46,17 @@ const $phone = text => ({ attrs: {  placeholder: text }});
 export const fetch_form = {
   q_crd: {
     tag: ['.input-find.pure-u-3-4'],
-    attrs: $cards("Номер карты"),
+    attrs: $place("Номер карты"),
     value: ''
   },
   q_fam: {
     tag: ['.input-find.pure-u-2-3'],
-    attrs: $cards("Фамилия"),
+    attrs: $place("Фамилия"),
     value: '',
   },
   q_im: {
     tag: ['.input-find.pure-u-2-3'],
-    attrs: $cards("Имя"),
+    attrs: $place("Имя"),
     value: ''
   },
 };

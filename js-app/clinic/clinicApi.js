@@ -5,6 +5,7 @@
   */
 import { up, checkArray } from '../apps/utils';
 import { states, memost, update, initApp } from '../apps/appApi';
+import { _year } from '../apps/model/moModel';
 import { getData } from '../apps/model/moData';
 import { getList } from '../apps/model/moList';
 import { listItem, itemId, changedItem, 
@@ -23,21 +24,23 @@ const Actions = (state, update) => {
     
     suite(d) {
       let [suite, unit] = d;
-      stup({ suite, unit, options: null });
+      stup({ suite, unit, options: null, count: null });
+      if (R.isNil(state().year))
+        stup({year: _year()});
       //console.log(suite, unit);
       let def = state().suite[state().unit];
       if (!!def.count)
-        this.count(def);
+        return this.count(def);
     },
     
     count(d) {
       if (!!state().error)
         return;
-      if (R.isNil(state().count)) {
-        getList(d, 'count').
+      if (R.isNil(state().count)) // calculate once for menu changed
+        return getList(d, 'count').
           then(res => stup({ count: res, error: null, list: [] })).
           catch(err => stup(err));
-      }
+      return;
     },
     
     fetch() {
@@ -56,7 +59,7 @@ const Actions = (state, update) => {
     
     card(d) {
       let [suite, crd] = d, [method, word] = patch;
-      console.log(crd);
+      console.log('crd ',crd);
       // new card
       if (crd === 'add') {
         crd= '';
@@ -139,6 +142,12 @@ const Actions = (state, update) => {
         }).
         finally(() => event.target.classList.remove('disable'));
     },
+
+    year(d) {
+      let [ event ] = d;
+      stup({ year: event.target.value });
+    },
+
   };
 };
 

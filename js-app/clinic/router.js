@@ -12,10 +12,10 @@ import { clinicMenu } from './clinicMenu';
 
 // routers
 import { roCards } from './router/roCards';
-
+import { roTalons } from './router/roTalons';
 
 const route = pathRouter(pageView(states));
-const addroute = { cards: roCards }; //functions
+const addroute = { cards: roCards, talons: roTalons }; //functions
 const Router = routerFun(clinicMenu, addroute, route);
 
 // init application

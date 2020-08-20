@@ -1,5 +1,44 @@
 
-import { _month } from '../../apps/model/moModel.js';
+//import { _month } from '../../apps/model/moModel.js';
+import { $place } from '../../apps/defines/defStruct';
+
+const tag = ['.input-find.pure-u-2-3'];
+
+export const fetch_form = {
+  q_tal: {
+    tag,
+    type: 'number',
+    attrs: $place("Номер талона"),
+    value: '1'
+  },
+  q_crd: {
+    tag,
+    attrs: $place("Номер карты")
+  }
+};
+
+  m(".pure-u-1-5",
+                m("input[name=q_tal][type='number']",
+                  { 
+                    onupdate: v => v.dom.value = '', //vnode hook
+                    
+                  }
+                )
+              ),
+              m(".pure-u-1-5",
+                m("input.input-find.pure-u-2-3[name=q_crd][type='text']",
+                  {placeholder:, style: "font-size: 1.2em"}
+                )
+              ),
+              m(".pure-u-1-5",
+                m("input.input-find.pure-u-2-3[name=q_date][type='date']"
+                  //{placeholder:"С даты"}
+                )
+              ),
+              
+}
+
+
 // label = [class, text]
 // input = tag = [class, type, required]
 

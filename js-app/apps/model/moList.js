@@ -14,10 +14,14 @@ export const sortList = (id, state) => {
 };
 
 const _dot_param = (ps, val) => {
-  let par, tail;
-  if (!R.isNil(ps) && (typeof ps === 'string')
-    && ps.includes('.')) {
-    par = ps.split('.'); // array[String, String]
+  let par, tail, _ps=ps;
+  
+  if (typeof ps === 'function')
+    _ps = ps();
+  
+  if (!R.isNil(_ps) && (typeof _ps === 'string') && 
+    _ps.includes('.')) {
+    par = _ps.split('.'); // array[String, String]
     tail = par[1] || '';
     return `${par[0]}.${val}${tail}`;
   }
@@ -33,6 +37,7 @@ const fetchParams = fetch => {
     // but alias string present
 
     let ps = fetch[key].params, alias = fetch[key].alias || key,
+      // if not provided dynamically get it statically from, value prop
       val = changedItem()[alias] || fetch[key].value;
 
     // fetch[key].value may be empty string or 0 so we need isNil
@@ -83,6 +88,10 @@ export const getRequest = (set, item, isfetch) => {
     _param = rest.params || { order: 'id.asc' },
     _item = set[item].item || {};
 
+  //dynamic _param replaced by proxy
+  //Object.keys(_param).forEach( k=> typeof _param[k] === 'function' ? 
+  //  _param[k] = _param[k]() : void 0 );
+    
   // assume every deletable entity table have ddel column  
   if (_item.editable && _item.editable.indexOf('del') >= 0)
     params.ddel = 'eq.0';

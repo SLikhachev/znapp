@@ -3,19 +3,19 @@
 
 import { disp } from '../../apps/appApi';
 import { vuPage } from '../../apps/appRouter';
-import { cards } from '../defines/defCards';
+import { talons } from '../defines/defTalons';
 import { vuClinicList } from '../view/vuClinicList';
-import { vuCard } from '../view/vuCard';
+//import { vuCard } from '../view/vuCard';
 
-export const roCards = () => ({
-  [cards.path]: {
+export const roTalons = () => ({
+  [talons.path]: {
     onmatch() {
-      disp(['suite', cards.def, 'cards']);
+      disp(['suite', talons.def, 'talons']);
       return vuClinicList;
     },
     render(vnode) { return vuPage(vnode); },
   },
-
+  /*
   [cards.path + '/:crd']: {
     onmatch(args) {
       const { crd } = args;
@@ -24,10 +24,11 @@ export const roCards = () => ({
         console.warn('invalid card number -- ', crd);
         return m.route.SKIP;
       }
-      */
+      *//*
       disp(['card', cards.def, crd]);
       return vuCard;
     },
     render(vnode) { return vuPage(vnode); }
   },
-})
+  */
+});

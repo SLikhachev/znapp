@@ -2,42 +2,47 @@
 // prof sprav definition
 
 import { states, memost } from '../../apps/appApi';
-import { $upper, linkItem, smoId } from '../../apps/defines/defStruct';
-import { spravLocal } from '../../sprav/defines/defLocal';
-import { spravComs } from '../../sprav/defines/defComs';
-import { fetch_form, person, insurance, address } from '../form/foCard';
-import { _getFIO, cardValidator} from '../model/moCards';
-import { talons_table } from './defTalons';
+//import { $upper, linkItem, smoId } from '../../apps/defines/defStruct';
+//import { spravLocal } from '../../sprav/defines/defLocal';
+//import { spravComs } from '../../sprav/defines/defComs';
+import { fetch_form } from '../form/foTalon';
+//import { _getFIO, cardValidator} from '../model/moCards';
+
+// vitrual object 
+export const talons_table = obj => new Proxy ( 
+  obj, {
+    get(target, prop) {
+      if (['_tbl', 'tbl', 'tal_tbl'].indexOf(prop) > 0)
+        return `talonz_clin_${states().year.slice(2)}`;
+      return Reflect.get(target, prop);
+    }  
+});
 
 
-const $cards = {
-  // count crads in db table
+const $talons = {
+  // count talons in db table
   count: {
     rest: {
-      url: 'rpc/get_crd_count',
+      url: 'rpc/get_tal_count', 
       method: "POST",
-      params: {
-        _tbl: 'cardz_clin'
-      },
-      //headers: { 'Accept': 'application/json' }
+      params: talons_table({_tbl: ''})
     }
   },
-  // fetch list of cards by fetch form params
+  // fetch list of talons by fetch form params
   rest: {
-    url: "rpc/cards_list",
+    url: "rpc/talons_list",
     method: "POST",
-    params: {
-      _tbl: 'cardz_clin',
+    params: talons_table({
+      tbl: '',
       lim: 50,
-      offs: 1
-    },
-    //headers: { 'Accept': 'application/json' }
+      offs: 0
+    }),
   },
   // form definition
   fetch: fetch_form,
   item: {
-    header: "Поиск карт по номеру и пациенту",
-    pk: 'crd_num',
+    header: "Поиск талонов по номеру талона, карты или дате",
+    pk: 'tal_num',
     struct: {
       crd_num: ['Карта', '', linkItem],
       fam: ['ФИО', '', _getFIO],
@@ -46,13 +51,14 @@ const $cards = {
     }
   }
 };
-
-
+/*
 const talons = {
   rest: {
     url: 'rpc/crd_talons',
     method: 'POST',
-    params: talons_table({tal_tbl: ''}),
+    params: {
+      tal_tbl: 'talonz_clin_20'
+    },
     body: ['crd_num']
   },
   item: {
@@ -112,29 +118,27 @@ const card = {
     address
   }
 };
+*/
 
+export const clinicTalons = {
 
-export const clinicCards = {
+  page: "Клиника: Талоны",
 
-  page: "Клиника: Карты",
-
-  cards: $cards,
-  talons,
+  talons: $talons,
+  //card,
   //card dependensies
-  smo_local: spravLocal.smo_local,
-  mo_local: spravLocal.mo_local,
-  dul: spravComs.dul,
-  okato: spravComs.okato,
-  ufms,
-  // card representation
-  card
+  //smo_local: spravLocal.smo_local,
+  //mo_local: spravLocal.mo_local,
+  //dul: spravComs.dul,
+  //okato: spravComs.okato,
+  // talon representation
+  //talon
 };
 
-export const cards = {
-  path: '/cards',
-  name: "Карты",
-  add: '/add',
-  def: clinicCards,
+export const talons = {
+  path: '/talons',
+  name: "Визиты",
+  def: clinicTalons,
   //items: [],
-  router: 'cards'
+  router: 'talons'
 };
