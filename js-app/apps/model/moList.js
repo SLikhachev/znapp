@@ -1,5 +1,6 @@
 
-import { _schema, errMsg, checkArray } from './moModel';
+//import { states } from '../appApi';
+import { _schema, _year, errMsg, checkArray } from './moModel';
 import { changedItem } from './moListItem';
 
 
@@ -26,7 +27,18 @@ const _dot_param = (ps, val) => {
     return `${par[0]}.${val}${tail}`;
   }
   return val;
-}
+};
+
+// vitrual object 
+export const talons_table = (state, obj) => new Proxy ( 
+  obj, {
+    get(target, prop) {
+      if (['_tbl', 'tbl', 'tal_tbl'].indexOf(prop) < 0)
+        return Reflect.get(target, prop);
+      let year = state().year || _year();
+      return `talonz_clin_${year.slice(2)}`;
+    }  
+});
 
 // make object from fetch and changedItem
 const fetchParams = fetch => {
@@ -37,7 +49,7 @@ const fetchParams = fetch => {
     // but alias string present
 
     let ps = fetch[key].params, alias = fetch[key].alias || key,
-      // if not provided dynamically get it statically from, value prop
+      // if not provided dynamically get it statically from value prop
       val = changedItem()[alias] || fetch[key].value;
 
     // fetch[key].value may be empty string or 0 so we need isNil
@@ -96,6 +108,8 @@ export const getRequest = (set, item, isfetch) => {
   if (_item.editable && _item.editable.indexOf('del') >= 0)
     params.ddel = 'eq.0';
 
+  // _PARAMS MAY BE PROXY
+  //Object.keys(_param).forEach( k => console.log(k, _param[k]) );
   let data = Object.assign({}, params, _param);
 
   let qstring = '';

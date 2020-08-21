@@ -25,6 +25,7 @@ const cardTabs = [
 export const vuCard = () => {
   return {
     view() {
+      //console.log('vuCard');
       return states().error ? [m(".error", states().error)] :
         states().options && states().data ?
           m(tabsView, { thisTabs: cardTabs }) : m(vuLoading);

@@ -177,6 +177,7 @@ const input = (sf, field, idx) => {
   // [tagclass, auxattrs(reqired, disabled, etc)]
   let _tag = _tagarray(sf, idx);
   /*
+  // DATA-INITIAL set at ATTRS object and will be shown anyway
   let init_val = sf.attrs && sf.attrs['data-initial'];
   if (!!init_val)
     changedItem(Object.assign(changedItem(), { [field]: init_val }));

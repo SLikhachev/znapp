@@ -14,6 +14,7 @@ const _reg = _region();
 const Reg = _region();
 
 export const _getFIO = row => {
+  //console.log(row.fam, row.im);
   let f = ['fam', 'im', 'ot'].map(k => row[k] ? row[k] : '');
   return `${f[0]} ${f[1]} ${f[2]}`;
 };

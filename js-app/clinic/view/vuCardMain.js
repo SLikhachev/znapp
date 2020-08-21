@@ -26,7 +26,7 @@ export const crdMain = () => {
   return {
     view() {
       form = states().suite.card.mainForm || {};
-
+      //console.log('crd maim');
       return m('form.tcard.pure-form.pure-form-aligned',
         { style: "font-size: 1.2em;", id: "card", oncreate: nextTagFocus, onsubmit },
         m('fieldset', [

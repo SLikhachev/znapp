@@ -129,8 +129,8 @@ export const vuClinicList = function () {
   */
   let defs, def, itdef, fetch, _table;
 
-  const subHdr = text => text ? m('h1.blue', { style: "font-size: 1.5em;" },
-    `${text} записей в таблице`) : '';
+  const subHdr = text => R.isNil(text) ? '' :
+   m('h1.blue', { style: "font-size: 1.5em;" }, `${text} записей в таблице`);
 
   const vuTable = vuListTable({ itdef, list: states().list });
 

@@ -2,21 +2,19 @@
 // prof sprav definition
 
 import { states, memost } from '../../apps/appApi';
+import { talons_table } from '../../apps/model/moList';
 //import { $upper, linkItem, smoId } from '../../apps/defines/defStruct';
 //import { spravLocal } from '../../sprav/defines/defLocal';
 //import { spravComs } from '../../sprav/defines/defComs';
+import { cards } from '../defines/defCards';
 import { fetch_form } from '../form/foTalon';
-//import { _getFIO, cardValidator} from '../model/moCards';
+import { _getFIO } from '../model/moCards';
 
-// vitrual object 
-export const talons_table = obj => new Proxy ( 
-  obj, {
-    get(target, prop) {
-      if (['_tbl', 'tbl', 'tal_tbl'].indexOf(prop) > 0)
-        return `talonz_clin_${states().year.slice(2)}`;
-      return Reflect.get(target, prop);
-    }  
-});
+
+export const linkCard = (row, key, pk) => ([
+  m(m.route.Link, { href: `${cards.path}/${row[key]}` }, row[key]),
+  '.choice.blue',
+]);
 
 
 const $talons = {
@@ -25,14 +23,14 @@ const $talons = {
     rest: {
       url: 'rpc/get_tal_count', 
       method: "POST",
-      params: talons_table({_tbl: ''})
+      params: talons_table(states, {'_tbl': ''})
     }
   },
   // fetch list of talons by fetch form params
   rest: {
     url: "rpc/talons_list",
     method: "POST",
-    params: talons_table({
+    params: talons_table(states, {
       tbl: '',
       lim: 50,
       offs: 0
@@ -44,13 +42,20 @@ const $talons = {
     header: "Поиск талонов по номеру талона, карты или дате",
     pk: 'tal_num',
     struct: {
-      crd_num: ['Карта', '', linkItem],
+      crd_num: ['Карта', '', linkCard],
       fam: ['ФИО', '', _getFIO],
-      birth_date: ['Дата рождения'],
-      polis_num: ['Номер полиса']
+      tal_num: ['Талон'],
+      open_date: ['Открыт'],
+      close_date: ['Закрыт'],
+      purp: ['Цель'],
+      ds1: ['Диагноз'],
+      spec: ['Спец'],
+      code: ['Код'],
+      family: ['Врач']
     }
   }
 };
+
 /*
 const talons = {
   rest: {

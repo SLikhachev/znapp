@@ -7,7 +7,7 @@ const restOpts = (def, list) => {
   if (checkArray(rest[list]))
     return rest[list];
   return [];
-}
+};
 
 
 const reqOptions = (set, opts) => opts.
@@ -18,8 +18,10 @@ const reqOptions = (set, opts) => opts.
 export const getData = (set, item, list = 'options') => {
   const opts = restOpts(set[item], list), optm = new Map();
   // order should preserved
+  //console.log('get data ', list);
   return Promise.all(reqOptions(set, opts)).then(
     lists => {
+      //console.log('get data resp ', list);
       opts.reduce((mp, op, ix) => {
         lists[ix] ? mp.set(op, lists[ix]) : mp.set(op, []);
         return mp;

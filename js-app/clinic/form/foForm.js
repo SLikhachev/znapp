@@ -3,12 +3,6 @@
 //import { talonField, pmuAdd } from './foTalon.js';
 //import { cardField, talCard } from './foCard.js';
 
-export const $place = text => ({
-  placeholder: text,
-  style: "font-size: 1.2em",
-});
-
-
 // label = [class, text]
 // input = tag = [class, type, tabindex (int), required(bool)]
 /*

@@ -36,7 +36,7 @@ export const crdVizits = function (vnode) {
     view(vnode) {
       
       itdef = states().suite.talons.item;
-      list = states().data.get('talons');
+      list = states().data.get('talons') || [];
 
       //console.log('talPara view');
       return [

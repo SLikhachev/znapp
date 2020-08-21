@@ -117,7 +117,7 @@ const saveRequest = (set, item, _method, data) => {
       delete body.method;
       Object.keys(body).forEach(
         k => params[k] = `eq.${body[k]}`
-      )
+      );
       body = null;
 
     }

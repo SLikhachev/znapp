@@ -12,6 +12,8 @@ import { listItem, itemId, changedItem,
   changeValue, saveItem, target } from '../apps/model/moListItem';
 import { vuDialog } from '../apps/view/vuDialog';
 import { clinicMenu } from './clinicMenu';
+import { talons } from './defines/defTalons';
+
 
 const patch = ['PATCH', "Изменить"];
 const post = ['POST', "Добавить"];
@@ -24,7 +26,7 @@ const Actions = (state, update) => {
     
     suite(d) {
       let [suite, unit] = d;
-      stup({ suite, unit, options: null, count: null });
+      stup({ suite, unit, options: null, count: null, table: false });
       if (R.isNil(state().year))
         stup({year: _year()});
       //console.log(suite, unit);
@@ -59,12 +61,16 @@ const Actions = (state, update) => {
     
     card(d) {
       let [suite, crd] = d, [method, word] = patch;
-      console.log('crd ',crd);
+      //console.log('crd ',crd);
       // new card
       if (crd === 'add') {
         crd= '';
         [method, word]  = post;
       }
+      // if not set then no POST to data will be send
+      if (R.isNil(state().year))
+        stup({year: _year()});
+      
       stup({
         suite,
         unit: 'card', crd, data: null, method, word,
@@ -76,6 +82,7 @@ const Actions = (state, update) => {
       
       changedItem({ crd_num: crd, old_num: crd });
       if (crd === '') {
+          //console.log(' crd emp ', crd );
           stup({data: new Map()});
           listItem({});
           itemId(crd);
@@ -146,6 +153,9 @@ const Actions = (state, update) => {
     year(d) {
       let [ event ] = d;
       stup({ year: event.target.value });
+      // redirect to talons
+      if (state().unit === 'talons')
+        m.route.set(talons.path);
     },
 
   };

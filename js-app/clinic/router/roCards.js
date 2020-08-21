@@ -19,6 +19,7 @@ export const roCards = () => ({
   [cards.path + '/:crd']: {
     onmatch(args) {
       const { crd } = args;
+      //console.log('match ', crd )
       /*
       if (!Number.isSafeInteger(Number(crd))) {
         console.warn('invalid card number -- ', crd);

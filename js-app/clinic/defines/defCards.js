@@ -2,12 +2,13 @@
 // prof sprav definition
 
 import { states, memost } from '../../apps/appApi';
+import { talons_table } from '../../apps/model/moList';
 import { $upper, linkItem, smoId } from '../../apps/defines/defStruct';
 import { spravLocal } from '../../sprav/defines/defLocal';
 import { spravComs } from '../../sprav/defines/defComs';
 import { fetch_form, person, insurance, address } from '../form/foCard';
 import { _getFIO, cardValidator} from '../model/moCards';
-import { talons_table } from './defTalons';
+
 
 
 const $cards = {
@@ -52,7 +53,7 @@ const talons = {
   rest: {
     url: 'rpc/crd_talons',
     method: 'POST',
-    params: talons_table({tal_tbl: ''}),
+    params: talons_table(states, {tal_tbl: ''}),
     body: ['crd_num']
   },
   item: {

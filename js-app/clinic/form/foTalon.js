@@ -9,35 +9,18 @@ export const fetch_form = {
     tag,
     type: 'number',
     attrs: $place("Номер талона"),
-    value: '1'
+    value: 1
   },
   q_crd: {
     tag,
-    attrs: $place("Номер карты")
+    attrs: $place("Номер карты"),
+    value: '.*'
+  },
+  q_date: {
+    type: 'date',
+    value: '2010-01-01'
   }
 };
-
-  m(".pure-u-1-5",
-                m("input[name=q_tal][type='number']",
-                  { 
-                    onupdate: v => v.dom.value = '', //vnode hook
-                    
-                  }
-                )
-              ),
-              m(".pure-u-1-5",
-                m("input.input-find.pure-u-2-3[name=q_crd][type='text']",
-                  {placeholder:, style: "font-size: 1.2em"}
-                )
-              ),
-              m(".pure-u-1-5",
-                m("input.input-find.pure-u-2-3[name=q_date][type='date']"
-                  //{placeholder:"С даты"}
-                )
-              ),
-              
-}
-
 
 // label = [class, text]
 // input = tag = [class, type, required]
@@ -48,6 +31,7 @@ const month = function () {
     return d.getMonth() + 1;
  };
 */
+/*
 export const talonField = {
 
   open_date: { label: ['', "Открыт"], input: {
@@ -90,7 +74,7 @@ export const talonField = {
       attrs: {style: "margin-right: 0.7em"}
     }
   },
-  */
+  *//*
   ist_fin: { label: ['', "Оплата"], input: {
       tag: ['.pure-u-18-24', "text", 7, true],
       //attrs: { min: 1, max: 9}
@@ -167,3 +151,4 @@ export const pmuAdd = {
   
 };
 
+*/
