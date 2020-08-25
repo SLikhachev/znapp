@@ -13,6 +13,8 @@ import { listItem, itemId, changedItem,
 import { vuDialog } from '../apps/view/vuDialog';
 import { clinicMenu } from './clinicMenu';
 import { talons } from './defines/defTalons';
+import { cardTabs } from './view/vuClinic';
+import { talonTabs } from './view/vuClinic';
 
 
 const patch = ['PATCH', "Изменить"];
@@ -74,7 +76,7 @@ const Actions = (state, update) => {
       stup({
         suite,
         unit: 'card', crd, data: null, method, word,
-        error: null, errorsList: [],
+        tabs: cardTabs, error: null, errorsList: [],
       });
       
       if (R.isNil(states().options))
@@ -97,6 +99,24 @@ const Actions = (state, update) => {
         catch(err => stup(err));
     },
     
+    talon(d) {
+      let [suite, crd, tal] = d, [method, word] = patch;
+      if (tal === 'add') {
+        tal= '';
+        [method, word]  = post;
+      }
+      // if not set then no POST to data will be send
+      if (R.isNil(state().year))
+        stup({year: _year()});
+      
+      stup({
+        suite,
+        unit: 'talon', crd, tal, data: null, method, word,
+        tabs: talonTabs, error: null, errorsList: [],
+      });
+      return;
+    },
+
     // fetch data from rest server defs in fetch, fill with target
     fetch_rest(d) { // ufms -> dul_org
       // fetch data with params as fetch (in changedItem[fetch])

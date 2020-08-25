@@ -15,20 +15,19 @@ export const roTalons = () => ({
     },
     render(vnode) { return vuPage(vnode); },
   },
-  /*
-  [cards.path + '/:crd']: {
+  
+  [talons.path + '/:crd' + '/:tal']: {
     onmatch(args) {
-      const { crd } = args;
+      const { crd, tal } = args;
       /*
-      if (!Number.isSafeInteger(Number(crd))) {
-        console.warn('invalid card number -- ', crd);
+      if (!Number.isSafeInteger(Number(tal))) {
+        console.warn('invalid talon number -- ', crd);
         return m.route.SKIP;
       }
-      *//*
-      disp(['card', cards.def, crd]);
-      return vuCard;
+      */
+      disp(['talon', talons.def, crd, tal]);
+      return vuClinicTabs;
     },
     render(vnode) { return vuPage(vnode); }
   },
-  */
 });

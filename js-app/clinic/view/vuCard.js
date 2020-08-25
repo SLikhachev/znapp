@@ -1,5 +1,6 @@
 // src/clinic/view/vuCard.js
 
+/*
 import { states } from '../../apps/appApi';
 import { vuLoading } from '../../apps/view/vuApp';
 import { tabsView } from './vuTabs.js';
@@ -32,3 +33,4 @@ export const vuCard = () => {
     }
   };
 };
+*/

@@ -1,7 +1,7 @@
 
 // src/reestr/router.js
 
-import { states } from '../apps/appApi'
+import { states } from '../apps/appApi';
 import { pageView, pathRouter, routerFun } from '../apps/appRouter';
 
 // init func

@@ -16,6 +16,10 @@ export const linkCard = (row, key, pk) => ([
   '.choice.blue',
 ]);
 
+export const linkTalon = (row, key, pk) => ([
+  m(m.route.Link, { href: `${talons.path}/${row.crd_num}/${row[key]}` }, row[key]),
+  '.choice.blue',
+]);
 
 const $talons = {
   // count talons in db table
@@ -44,7 +48,7 @@ const $talons = {
     struct: {
       crd_num: ['Карта', '', linkCard],
       fam: ['ФИО', '', _getFIO],
-      tal_num: ['Талон'],
+      tal_num: ['Талон'. '', linkTalon],
       open_date: ['Открыт'],
       close_date: ['Закрыт'],
       purp: ['Цель'],
@@ -144,6 +148,7 @@ export const talons = {
   path: '/talons',
   name: "Визиты",
   def: clinicTalons,
+  add: '/add',
   //items: [],
   router: 'talons'
 };

@@ -10,7 +10,6 @@ import { fetch_form, person, insurance, address } from '../form/foCard';
 import { _getFIO, cardValidator} from '../model/moCards';
 
 
-
 const $cards = {
   // count crads in db table
   count: {
@@ -58,7 +57,7 @@ const talons = {
   },
   item: {
     struct: {
-      tal_num: ['Номер талона'],
+      tal_num: ['Номер талона', '',  ],
       open_date: ['Открыт'],
       close_date: ['Закрыт'],
       purp: ['Цель визита'],

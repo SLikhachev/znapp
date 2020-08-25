@@ -1,49 +1,38 @@
 
 // src/clinic/view/vuClinic.js
 
-//import { moCard } from '../model/moCards.js';
-//import { moTalonsList, moTalon } from '../model/moTalons.js';
+import { crdMain } from './vuCardMain';
+import { crdVizits } from './vuCardVizits';
 
-export const crdEmpty = (name, header) => ({
+
+export const tabEmpty = (name, header) => ({
   name,
-  content() { return m('h2', header) }
+  content() { return m('h2', header); }
 });
 
 
-export const vuClinic = function (vnode) {
-  return {
-    oninit: function (vnode) {
-      // init optons data
-      //if ( !Boolean(moCard.data) ) moCard.getOptions();
-      //if ( !Boolean(moTalon.data) ) moTalon.getOptions();
-    },
-    view: function (vnode) {
-      return m('div', {
-        style: "margin: 0 auto; padding-top: 5em; width: 50%;"
-      },
-        /*
-        m(".pure-g", [
-          m(".pure-u-1-6",
-            m("a.pure-button.pure-button-primary",
-              { href: "#!/new-card", style: "font-size: 1.2em; font-weight: 600" }, "Карта"),
-          ),
-          m(".pure-u-1-6",
-            m('a.pure-button.pure-button-primary',
-              { href: "#!/new-talon", style: "font-size: 1.2em; font-weight: 600" }, "Талон"),
-          )
-        ]),
-        */
-        m('h1.blue', { style: "font-size: 3em;" }, vnode.attrs.text)
-      );
-    }
-  }
-}
-/*
-export const getFIO = row => {
-  let f = ['fam', 'im', 'ot'].map(k => row[k] ? row[k] : '');
-  return `${f[0]} ${f[1]} ${f[2]}`;
-}
-*/
+export const cardTabs = [
+  {
+    name: "Карта",
+    content() { return m(crdMain); }
+  },
+  {  
+    name: "Визиты", 
+    content() { return m(crdVizits); }
+  },
+  tabEmpty("Дополнительно", "Дополнительно"),
+  tabEmpty("Прикрепить", "Прикрепить"),
+  tabEmpty("Удалить", "Удалить/Объеденить"),
+];
+
+
+export const talonTabs = [
+  tabEmpty("Талон", "Талон"),
+  tabEmpty("ПМУ", "ПМУ"),
+  tabEmpty("Удалить", "Удалить"),
+];
+
+
 export const _Num = num => num ? num : ''; //talon number
 
 //talon editable

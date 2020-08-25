@@ -5,7 +5,7 @@ import { disp } from '../../apps/appApi';
 import { vuPage } from '../../apps/appRouter';
 import { cards } from '../defines/defCards';
 import { vuClinicList } from '../view/vuClinicList';
-import { vuCard } from '../view/vuCard';
+import { vuClinicTabs } from '../view/vuClinicTabs';
 
 export const roCards = () => ({
   [cards.path]: {
@@ -27,7 +27,7 @@ export const roCards = () => ({
       }
       */
       disp(['card', cards.def, crd]);
-      return vuCard;
+      return vuClinicTabs;
     },
     render(vnode) { return vuPage(vnode); }
   },
