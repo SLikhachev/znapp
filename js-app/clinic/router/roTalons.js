@@ -5,7 +5,7 @@ import { disp } from '../../apps/appApi';
 import { vuPage } from '../../apps/appRouter';
 import { talons } from '../defines/defTalons';
 import { vuClinicList } from '../view/vuClinicList';
-//import { vuCard } from '../view/vuCard';
+import { vuClinicTabs } from '../view/vuClinicTabs';
 
 export const roTalons = () => ({
   [talons.path]: {
@@ -26,6 +26,7 @@ export const roTalons = () => ({
       }
       */
       disp(['talon', talons.def, crd, tal]);
+      //console.log(args);
       return vuClinicTabs;
     },
     render(vnode) { return vuPage(vnode); }

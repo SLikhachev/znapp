@@ -8,6 +8,13 @@ import { spravLocal } from '../../sprav/defines/defLocal';
 import { spravComs } from '../../sprav/defines/defComs';
 import { fetch_form, person, insurance, address } from '../form/foCard';
 import { _getFIO, cardValidator} from '../model/moCards';
+import { $path } from './defClinic';
+
+
+const linkTalon = state => (row, key, pk) => ([
+  m(m.route.Link, { href: `${$path.talons}/${state().crd}/${row[key]}` }, row[key]),
+  '.choice.blue',
+]);
 
 
 const $cards = {
@@ -57,7 +64,7 @@ const talons = {
   },
   item: {
     struct: {
-      tal_num: ['Номер талона', '',  ],
+      tal_num: ['Номер талона', '',  linkTalon(states)],
       open_date: ['Открыт'],
       close_date: ['Закрыт'],
       purp: ['Цель визита'],
@@ -131,7 +138,7 @@ export const clinicCards = {
 };
 
 export const cards = {
-  path: '/cards',
+  path: $path.cards,
   name: "Карты",
   add: '/add',
   def: clinicCards,

@@ -1,18 +1,8 @@
 
 import { states, disp } from '../../apps/appApi';
-import { makeTags } from '../../apps/form/makeTags';
+import { makeFormChildren } from '../form/foForm';
 import { nextTagFocus } from './vuTabs.js';
 
-
-const makeFields = (fn, flds, ind) => flds.map((f, ix) => m('.pure-control-group', fn(f, ind*20+ix)));
-
-const makeGroup = (group, ind) => m(group.class,
-  makeFields(makeTags(group.fields), Object.keys(group.fields), ind)
-);
-
-const makeFormChildren = form => Object.keys(form).map(
-  (group, ind) => makeGroup(form[group], ind)
-);
 
 export const crdMain = () => {
 
@@ -36,7 +26,7 @@ export const crdMain = () => {
             m(".pure-u-10-24 ", m('span#card_message', '')),
             m(".pure-u-14-24 ",
               m('button.pure-button.pure-button-primary[type="submit"]',
-                "Сохранить"),
+                "Сохранить")
             )
           ]) // pure-g
         ]));// form

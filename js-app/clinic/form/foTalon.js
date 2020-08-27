@@ -1,8 +1,22 @@
 
 //import { _month } from '../../apps/model/moModel.js';
-import { $place } from '../../apps/defines/defStruct';
+import { $place, $upper } from '../../apps/defines/defStruct';
+import {
+  check_dul,
+  check_att
+} from '../model/moModel';
+
 
 const tag = ['.input-find.pure-u-2-3'];
+
+const $none = { style: 'display: none' };
+
+const $name = text => ({
+  label: [''],
+  tag: ['.pure-u-22-24'],
+  attrs: $upper(text)
+});
+
 
 export const fetch_form = {
   q_tal: {
@@ -19,6 +33,50 @@ export const fetch_form = {
   q_date: {
     type: 'date',
     value: '2010-01-01'
+  }
+};
+
+export const card = {
+  form: {
+    fields: {
+      fam: $name("Фамилия"),
+      im: $name("Имя"),
+      ot: $name("Отчество"),
+      birth_date: {
+        label: ["Дата рождения"],
+        type: 'date',
+      },
+      crd_polis_ser: {
+        label: ["Полис (редактируем в карте)"],
+        tag: ['', 'readonly'],
+        attrs: {
+          placeholder: "Серия"
+        }
+      },
+      crd_polis_num: {
+        label: [''],
+        tag: ['', 'readonly'],
+        attrs: {
+          placeholder: "Номер"
+        }
+      },
+      crd_smo: {
+        label: ["СМО"],
+        tag: ['', 'readonly']
+      },
+      dul_serial: {
+        attrs: $none,
+        memo: {
+          check: check_dul
+        }  
+      },
+      mo_att: {
+        attrs: $none,
+        memo: {
+          check: check_att
+        }  
+      },
+    }
   }
 };
 

@@ -2,6 +2,7 @@
 
 import { states, memost } from '../../apps/appApi';
 import { $upper, $place, smoId } from '../../apps/defines/defStruct';
+import { makeTags } from '../../apps/form/makeTags';
 import { _ufms } from '../model/moCards';
 import {
   item_attr,
@@ -11,7 +12,6 @@ import {
   set_okato_by_smo,
   _okato,
 } from '../model/moModel';
-
 
 const blurst = e => memost(e.target.name);
 

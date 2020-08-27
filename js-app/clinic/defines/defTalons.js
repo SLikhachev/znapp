@@ -6,20 +6,21 @@ import { talons_table } from '../../apps/model/moList';
 //import { $upper, linkItem, smoId } from '../../apps/defines/defStruct';
 //import { spravLocal } from '../../sprav/defines/defLocal';
 //import { spravComs } from '../../sprav/defines/defComs';
-import { cards } from '../defines/defCards';
-import { fetch_form } from '../form/foTalon';
+import { fetch_form, card } from '../form/foTalon';
 import { _getFIO } from '../model/moCards';
+import { $path } from './defClinic';
 
 
 export const linkCard = (row, key, pk) => ([
-  m(m.route.Link, { href: `${cards.path}/${row[key]}` }, row[key]),
+  m(m.route.Link, { href: `${$path.cards}/${row[key]}` }, row[key]),
   '.choice.blue',
 ]);
 
-export const linkTalon = (row, key, pk) => ([
-  m(m.route.Link, { href: `${talons.path}/${row.crd_num}/${row[key]}` }, row[key]),
+const linkTalon = (row, key, pk) => ([
+  m(m.route.Link, { href: `${$path.talons}/${row.crd_num}/${row[key]}` }, row[key]),
   '.choice.blue',
 ]);
+
 
 const $talons = {
   // count talons in db table
@@ -48,7 +49,7 @@ const $talons = {
     struct: {
       crd_num: ['Карта', '', linkCard],
       fam: ['ФИО', '', _getFIO],
-      tal_num: ['Талон'. '', linkTalon],
+      tal_num: ['Талон', '', linkTalon],
       open_date: ['Открыт'],
       close_date: ['Закрыт'],
       purp: ['Цель'],
@@ -60,49 +61,8 @@ const $talons = {
   }
 };
 
-/*
-const talons = {
-  rest: {
-    url: 'rpc/crd_talons',
-    method: 'POST',
-    params: {
-      tal_tbl: 'talonz_clin_20'
-    },
-    body: ['crd_num']
-  },
-  item: {
-    struct: {
-      tal_num: ['Номер талона'],
-      open_date: ['Открыт'],
-      close_date: ['Закрыт'],
-      purp: ['Цель визита'],
-      doc_spec: ['Спец'],
-      doc_code: ['Спец код'],
-      family: ['Доктор'],
-      ds1: ['Диагноз']
-    }
-  }
-};
 
-
-const ufms = {
-  rest: {
-    params: {
-      order: 'code'
-    },
-    headers: {
-      'Range': '0-1'
-    }
-  },
-  fetch: {
-    code: {
-      alias: 'ufms',
-      params: 'eq.'
-    }
-  }
-};
-  
-const card = {
+const talon = {
   rest: {
     url: "rpc/clin_card_by_num",
     method: "POST",
@@ -114,20 +74,20 @@ const card = {
     body: ['crd_num']
   },
   item: {
-    header: "Карты",
-    validator: cardValidator,
+    header: "Талоны",
+    validator: null,
     rest: { 
       url: 'cardz_clin',  
       headers: {Prefer: 'return=representation'} 
     }
   },
   mainForm: {
-    person,
-    insurance,
-    address
+    //person,
+    //insurance,
+    //address
   }
 };
-*/
+
 
 export const clinicTalons = {
 
@@ -141,11 +101,13 @@ export const clinicTalons = {
   //dul: spravComs.dul,
   //okato: spravComs.okato,
   // talon representation
-  //talon
+  card,
+  talon
 };
 
+
 export const talons = {
-  path: '/talons',
+  path: $path.talons,
   name: "Визиты",
   def: clinicTalons,
   add: '/add',

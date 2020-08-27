@@ -28,7 +28,7 @@ const Actions = (state, update) => {
     
     suite(d) {
       let [suite, unit] = d;
-      stup({ suite, unit, options: null, count: null, table: false });
+      stup({ suite, unit, options: null, count: null, table: false, error: '' });
       if (R.isNil(state().year))
         stup({year: _year()});
       //console.log(suite, unit);
@@ -76,7 +76,7 @@ const Actions = (state, update) => {
       stup({
         suite,
         unit: 'card', crd, data: null, method, word,
-        tabs: cardTabs, error: null, errorsList: [],
+        tabs: cardTabs, error: '', errorsList: [],
       });
       
       if (R.isNil(states().options))
@@ -93,7 +93,10 @@ const Actions = (state, update) => {
       return getData(state().suite, 'card', 'data').
         then(res => {
           stup(res);// card and list of talons in Map
-          listItem(state().data.get('card')[0]); // card object from Map
+          let card = state().data.get('card')[0] || {};
+          if (R.isNil(card) || R.isEmpty(card))
+            stup({ error: 'Карта не найдена'});
+          listItem(card); // card object from Map
           itemId(crd); // just string
         }).
         catch(err => stup(err));
@@ -101,6 +104,7 @@ const Actions = (state, update) => {
     
     talon(d) {
       let [suite, crd, tal] = d, [method, word] = patch;
+
       if (tal === 'add') {
         tal= '';
         [method, word]  = post;
@@ -111,8 +115,9 @@ const Actions = (state, update) => {
       
       stup({
         suite,
-        unit: 'talon', crd, tal, data: null, method, word,
-        tabs: talonTabs, error: null, errorsList: [],
+        unit: 'talon', crd, tal, data: new Map(), options: new Map(), 
+        method, word, error: null, errorsList: [],
+        tabs: talonTabs, 
       });
       return;
     },

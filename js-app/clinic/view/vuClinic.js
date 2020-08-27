@@ -3,6 +3,7 @@
 
 import { crdMain } from './vuCardMain';
 import { crdVizits } from './vuCardVizits';
+import { vuTalon } from './vuTalon';
 
 
 export const tabEmpty = (name, header) => ({
@@ -27,7 +28,11 @@ export const cardTabs = [
 
 
 export const talonTabs = [
-  tabEmpty("Талон", "Талон"),
+  {
+    name: "Талон",
+    content() { return m(vuTalon); }
+  },
+
   tabEmpty("ПМУ", "ПМУ"),
   tabEmpty("Удалить", "Удалить"),
 ];

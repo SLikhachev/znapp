@@ -1,6 +1,10 @@
 
 import { states } from '../../apps/appApi';
 import { changedItem, changeValue } from '../../apps/model/moListItem';
+import { _year } from '../../apps/model/moModel';
+
+
+export const thisYear = () => _year() == states().year;
 
 
 export const item_attr = attr => item => item[attr];
@@ -89,4 +93,17 @@ export const _okato = o => m(`option[value=${o.okato}]`,
 );
 
 
+export const check_dul = () => {
+  let ser = changedItem().dul_serial  || '',
+    num = changedItem().dul_number || '', 
+    dul = ser || num ? `${ser} ${num}` : "Нет";
+  return `Документ: ${dul}`;
+
+};
+
+
+export const check_att = () => {
+  let att = changedItem().mo_att || "Нет";
+  return `Прикреплен: ${att}`;
+}
 

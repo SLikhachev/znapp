@@ -7,7 +7,7 @@ import { tabEmpty } from './vuClinic';
 
 
 export const vuClinicTabs = () => {
-  
+
   let thisTabs, 
     tabs = [tabEmpty("Пусто", "Нет закладок (no tabs in states)")];
 
@@ -17,7 +17,7 @@ export const vuClinicTabs = () => {
 
       return states().error ? [m(".error", states().error)] :
         states().options && states().data ?
-          m(tabsView, { thisTabs} ) : m(vuLoading);
+          m(tabsView, { thisTabs } ) : m(vuLoading);
     }
   };
 };
