@@ -28,7 +28,7 @@ const Actions = (state, update) => {
     
     suite(d) {
       let [suite, unit] = d;
-      stup({ suite, unit, options: null, count: null, table: false, error: '' });
+      stup({ suite, unit, options: null, count: null, table: false , error: '' });
       if (R.isNil(state().year))
         stup({year: _year()});
       //console.log(suite, unit);
@@ -42,7 +42,7 @@ const Actions = (state, update) => {
         return;
       if (R.isNil(state().count)) // calculate once for menu changed
         return getList(d, 'count').
-          then(res => stup({ count: res, error: null, list: [] })).
+          then(res => stup({ count: res, error: '', list: [] })).
           catch(err => stup(err));
       return;
     },

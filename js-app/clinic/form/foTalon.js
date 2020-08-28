@@ -90,35 +90,81 @@ const month = function () {
  };
 */
 /*
-export const talonField = {
+m(".pure-u-4-24", tof('open_date', tal)),
+          m(".pure-u-4-24", tof('close_date', tal)),
+          m('.pure-u-3-24', tof('talon_month', tal)),
+          
+          m('.pure-u-3-24', {style: "padding-top: 2em"},
+            tof('mek', tal, { onclick: e=> set_chk(e, 'mek') }) ),
+          m(".pure-u-6-24", {style: "padding-top: 2em"}, [
+            tof('urgent', tal, { onclick: e=> set_chk(e, 'urgent') }),
+            tof('first_vflag', tal, { onclick: e=> set_chk(e, 'first_vflag') }),
+           
+*/
+const $date = text => ({
+  wrap: '.pure-u-4-24',
+  label: [text], 
+  tag: ['.pure-u-22-24', 'required'],
+  type: 'date', 
+  attrs: {style: "height: 45%",}
+});
 
-  open_date: { label: ['', "Открыт"], input: {
-      tag: ['.pure-u-22-24', "date", 1, true],
-      attrs: {style: "height: 45%",}
-    }
-  },
-  close_date: { label: ['', "Закрыт"], input: {
-      tag: ['.pure-u-22-24', "date", 2, true],
-      attrs: {style: "height: 45%",}
-    }
-  },
-  talon_month: { label: ['.leg_sec.red', "Месяц талона"], input: {
-      tag: ['.pure-u-12-24.tal_month', 'number', 3, true],
-      attrs: {
-        style: "height: 45%", min: 1, max: 12,
-        //fval: v => v ? v : month()
+const flag = text => ({
+  wrap: '.pure-u-3-24',
+  label: [text], 
+  type: 'checkbox',
+  attrs: {style: "margin-right: 0.7em"}
+});
+
+export const talDate = {
+  class: '.pure-g',
+  fields: {
+    open_date: $date("Открыт"),
+    close_date: $date("Закрыт"), 
+    talon_month: { 
+      wrap: '.pure-u-3-24',
+      label: ["Месяц талона", '.leg_sec.red'], 
+      tag: ['.pure-u-12-24.tal_month', 'required'],
+      type: 'number',
+      attrs: { style: "height: 45%", min: 1, max: 12} ,
+    },
+    mek: flag("МЭК"),
+    urgent: flag("Неотложный"),
+    first_vflag: flag("Первичный")
+  }
+};
+/*
+    'fields_group': {
+      wrap: '.pure-u-6-24',
+      attrs: { "padding-top: 2em" },
+      urgent: { 
+        label: [], 
+        type: "checkbox", 
+        attrs: {style: "margin-right: 0.7em" }
+      },
+      
+        label: [], 
+        type: "checkbox",
+        attrs: {style: "margin-right: 0.7em"}
       }
-    }
-  },
-  mek: { label: ['', "МЭК", 'check'], input: {
-      tag: ['', "checkbox", 4,  false],
+      finality: { 
+        label: ['', "Закончен", 'check'], input: {
+      tag: ['', "checkbox", 6,  false],
       attrs: {style: "margin-right: 0.7em"}
     }
-  },
-  urgent: { label: ['', "Неотложный", 'check'], input: {
-      tag: ['', "checkbox", 5, false],
-      attrs: {style: "margin-right: 0.7em" } //, fcheck: v => v == 2 } // type coercion
+      
     }
+    }
+    
+
+  },
+  
+    }
+  },
+  mek: { 
+    }
+  },
+  u
   },
   
   first_vflag: { label: ['', "Первичный", 'check'], input: {
@@ -132,7 +178,10 @@ export const talonField = {
       attrs: {style: "margin-right: 0.7em"}
     }
   },
-  *//*
+  */
+
+
+  /*
   ist_fin: { label: ['', "Оплата"], input: {
       tag: ['.pure-u-18-24', "text", 7, true],
       //attrs: { min: 1, max: 9}

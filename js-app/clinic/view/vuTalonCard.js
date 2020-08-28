@@ -84,7 +84,7 @@ export const talonCard = function() {
           oncreate: nextTagFocus,
           onsubmit
         }, [
-          makeFields(makeTags(fields), Object.keys(fields)),
+          makeFields(makeTags(fields), fields, Object.keys(fields)),
           m('button.pure-button.pure-button-primary[type="submit"]',
             "Сохранить"),
           m(m.route.Link, {

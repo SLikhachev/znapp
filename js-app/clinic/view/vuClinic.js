@@ -56,12 +56,19 @@ export const _notEdit = tal => {
 const _Name = name => name ? name : 'новый';
 const tplName = (tal) => m('legend', `Шаблон ${_Name(tal.crd_num)}`);
 
-export const talNum = function (tal, tpl = '') {
+export const _talNum = function (tal, tpl = '') {
   return tpl ? tplName(tal) :
     m('legend', `Талон № ${_Num(tal.tal_num)}`,
       m('span', { style: "padding: 3em" }, _notEdit(tal) ? 'закрыт' : 'открыт'), `Год ${moTalonsList._year}`
     );
-}
+};
+
+export const talNum = tal => m('legend', 
+  `Талон № `, 
+  m('span', { style: "padding: 3em" }, 'закрыт'), 
+  `Год `
+);
+
 
 String.prototype.transLit = String.prototype.translit || function () {
   const rus = 'ЙЦУКЕНГШЩЗФЫВАПРОЛДЯЧСМИТЬ';

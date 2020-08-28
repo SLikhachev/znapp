@@ -9,7 +9,7 @@ const E = x => '';
 const _text = t => R.isNil(t) ? '' : t.toString();
 
 // String -> String
-const _klass = k => R.isEmpty(_text(k)) ? '' : k[0] !== '.' ? `.${k}` : k;
+export const _klass = k => R.isEmpty(_text(k)) ? '' : k[0] !== '.' ? `.${k}` : k;
 //----------------------------------------------------------
 
 // Object -> null | Array
