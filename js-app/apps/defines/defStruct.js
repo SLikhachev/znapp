@@ -230,8 +230,9 @@ export const $button_attrs = {
 export const $checkbox = text => ({
   label: [text.toString(), '.pure-checkbox'],
   type: "checkbox",
-  view: 'controls'
-})
+  view: 'controls',
+  attrs: {style: 'margin-right: 0.5em;'}
+});
 
 export const $button = text => ({
   label: [text.toString()], type: 'submit',

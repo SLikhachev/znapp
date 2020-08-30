@@ -6,7 +6,11 @@ import { talons_table } from '../../apps/model/moList';
 //import { $upper, linkItem, smoId } from '../../apps/defines/defStruct';
 //import { spravLocal } from '../../sprav/defines/defLocal';
 //import { spravComs } from '../../sprav/defines/defComs';
-import { fetch_form, card, talDate } from '../form/foTalon';
+import { fetch_form, card, 
+  talDate,
+  talTarget,
+  talVizits
+} from '../form/foTalon';
 import { _getFIO } from '../model/moCards';
 import { $path } from './defClinic';
 
@@ -82,9 +86,9 @@ const talon = {
     }
   },
   mainForm: {
-    talDate
-    //insurance,
-    //address
+    talDate,
+    talTarget,
+    talVizits,
   }
 };
 

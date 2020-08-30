@@ -4,8 +4,10 @@ import { _klass, makeTags } from '../../apps/form/makeTags';
 
 
 export const makeFields = (fn, group, flds, ind) => flds.map((f, ix) => {
-    let wrap = _kalss(group[f].wrap) || '.pure-control-group';
-    return m(wrap, fn(f, ind*20+ix+1));
+    let wrap = group[f].wrap || {},
+      box= _klass(wrap.klass) || '.pure-control-group',
+      attrs = wrap.attrs || {}; 
+    return m(box, attrs, fn(f, ind*20+ix+1));
 });
 
 

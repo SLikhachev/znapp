@@ -38,8 +38,8 @@ const label = (fortag, txt = '', kl = '') => m(
 
 const labelcheckbox = (fortag, checkbox = '', txt = '', kl = '') => m('.pure-controls',
   m(`label${_klass(kl)}[for=${_text(fortag)}]`, [
-    checkbox,
-    m('span', { style: "padding: 0px 7px 0px;" }, _text(txt))
+    checkbox, _text(txt)
+    //m('span', { style: "padding: 0px 7px 0px;" }, _text(txt))
   ])
 );
 //-------------------------------------------------
@@ -62,7 +62,7 @@ const _input = obj => { // {klass, type, name, tabindex, aux, value, attrs} => {
     if (k === 'options')
       return;
     if (typeof val === 'function' && !k.startsWith('on')) {
-      // func calls here  
+      // func calls here
       attrs[k] = val();
       return;
     }
@@ -171,6 +171,10 @@ const datalist = (list='', fn=E) => {
 
 // (Object -> String -> Int) -> Array(Vnode)
 const input = (sf, field, idx) => {
+
+  // sprcial field wrapper
+  if (field === 'wrap')
+    return '';
 
   let _label = _labeltag(sf);
 
