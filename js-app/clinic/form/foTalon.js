@@ -65,13 +65,15 @@ export const card = {
         tag: ['', 'readonly']
       },
       dul_serial: {
-        attrs: $none,
+        //attrs: $none,
+        type: 'memo',
         memo: {
           check: check_dul
         }  
       },
       mo_att: {
-        attrs: $none,
+        //attrs: $none,
+        type: 'memo',
         memo: {
           check: check_att
         }  
@@ -170,7 +172,8 @@ export const talTarget = {
           style: 'padding-top: 2em ; font-size: 1.1em; font-weight: 500;'
         }
       },
-      attrs: $none,
+      //attrs: $none,
+      type: 'memo',
       memo: {
         check: $check,
         params: ['Доктор']
@@ -200,7 +203,8 @@ export const talVizits = {
           "padding-top: 2em ; font-size: 1.2em; font-weight: 600" 
         }
       },
-      attrs: $none,
+      //attrs: $none,
+      type:'memo',
       memo: {
         check: $check,
         params: ["Количество посещений"]
@@ -211,44 +215,68 @@ export const talVizits = {
 
 const $dwrap = { klass: '.pure-u-3-24'};
 
-/*
+
 export const talDs1 = {
   class: '.pure-g',
   fields: {
     ds1: {
       wrap: $dwrap,
+      label: ["Осн. диагноз"],
+      tag: ['.input.pure-u-20-24', 'required'], 
+    },
+    char1: {
+      wrap: $dwrap,
+      label: ["Характер"],
+      tag: ['.input.pure-u-16-24', 'required']
+    },
+    ishod: {
+      wrap: $dwrap,
+      label: ["Исход"], 
+      tag: ['.input.pure-u-16-24', 'required']
+    },
+    rslt: {
+      wrap: $dwrap,
+      label: ["Результат"], 
+      tag: ['.input.pure-u-16-24', 'required']
+    },
+    diagnose: {
+      wrap: { 
+        klass: '.pure-u-10-24',
+        attrs: { 
+          style: "padding-top: 2em ; font-size: 1.1em; font-weight: 500" 
+        }
+      },
+      type: 'memo',
+      memo: {
+        check: $check,
+        params: ["Диагноз"]
+      }
     }
   }
-}
+};
 
-m('.pure-u-3-24', [
-            m('label', "Осн. диагноз"),
-            m('input.input.pure-u-20-24[type=text][tabindex=13][required]', {
-              list: 'ds1', value: tal.ds1, oninput: set_ds1
-            }),
-            m('datalist[id="ds1"]',
-              ds1_model.list ? ds1_model.list.map(d=> m('option', {value: `${d.code.trim()}~${d.name}` } )) : []
-            )
-          ]),
-          m('.pure-u-3-24', [ tof('char1', tal, { list:  "char", onblur: set_char1 } ),
-            m('datalist[id="char"]',
-              data.get('char_main').filter(c => c.id < 4).map(c=>
-                m('option', { value: `${c.id}. ${c.name.split(' ')[0]}` })
-              )
-            )
-          ]),
-          m('.pure-u-3-24', [ tof('ishod', tal, { list:  "ishod", onblur: set_ishod} ),
-            data_list('ishod', 'cishod')
-          ]),
-          m('.pure-u-3-24', [ tof('rslt', tal, { list:  "result", onblur: set_result} ),
-            data_list('result', 'cresult')
-          ]),
-          m(".pure-u-10-24", {
-              style: "padding-top: 2em ; font-size: 1.1em; font-weight: 500"
-            }, ds_show(tal.ds1)
-          ),
-        ]),
-*/
+
+export const talDs2 = {
+  class: '.pure-g',
+  fields: {
+    ds2: {
+      wrap: $dwrap,
+      label: ["Доп. диагноз"],
+      tag: ['.input.pure-u-20-24']
+    },
+    char2: {
+      wrap: $dwrap,
+      label: ["Характер"], 
+      tag: ['.input.pure-u-16-24']
+    },
+    travma_type: {
+      wrap: $dwrap,
+      label: ["Травма"], 
+      tag: ['.input.pure-u-14-24']
+    }
+  }
+};
+
 /*
 ist_fin: { label: ['', "Оплата"], input: {
       tag: ['.pure-u-18-24', "text", 7, true],

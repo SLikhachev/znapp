@@ -143,7 +143,7 @@ const labelradio = (fortag='dummy', radio = [], txt = '', kl = '') => [
 const memo = sf => {
   //console.log(sf)
   //memost('');
-  let def = sf || {},
+  let def = sf.memo || sf || {},
     check = def.check || E,
     params = def.params || [],
     tag_cls = _tagarray(def)[0],
@@ -240,7 +240,7 @@ const tag_fn = {
   select,
   button,
   submit: button,
-  //memo
+  memo
 };
 
 export const makeTags = defs => (field, idx) => {

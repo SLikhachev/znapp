@@ -9,7 +9,9 @@ import { talons_table } from '../../apps/model/moList';
 import { fetch_form, card, 
   talDate,
   talTarget,
-  talVizits
+  talVizits,
+  talDs1,
+  talDs2
 } from '../form/foTalon';
 import { _getFIO } from '../model/moCards';
 import { $path } from './defClinic';
@@ -89,6 +91,8 @@ const talon = {
     talDate,
     talTarget,
     talVizits,
+    talDs1,
+    talDs2
   }
 };
 
