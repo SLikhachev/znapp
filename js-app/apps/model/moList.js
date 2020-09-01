@@ -78,9 +78,15 @@ export const getRequest = (set, item, isfetch) => {
   // set:: def Object ref,
   // item:: String current eName 
   // rest { url, method, headers, params, body}
-  const rest = set[item].rest || {},
-    fetch = set[item].fetch || {};
-  let params = {};
+  
+  let def = set[item];
+
+  if (R.isNil(def))
+    return `getRequest: Нет свойства ${item} а определении объета запроса` 
+    
+  let rest = def.rest || {},
+    fetch = def.fetch || {};
+    params = {};
 
   // isfetch - String (may be bool) present is the fetch request 
   // fetch used ONLY for build query from CHANGED ITEM nothing else
@@ -98,7 +104,7 @@ export const getRequest = (set, item, isfetch) => {
     headers = rest.headers || {},
     _sign = (method === 'GET') ? (_url.includes('?') ? '&' : '?') : '',
     _param = rest.params || { order: 'id.asc' },
-    _item = set[item].item || {};
+    _item = def.item || {};
 
   //dynamic _param replaced by proxy
   //Object.keys(_param).forEach( k=> typeof _param[k] === 'function' ? 
@@ -119,16 +125,17 @@ export const getRequest = (set, item, isfetch) => {
   let url = `${_schema('pg_rest')}${_url}${_sign}${qstring}`;
   let r = { url, method, headers };
 
-  if (method === 'GET')
+  if (method === 'GET') {
+    console.log('GET', r);
     return r;
-
+  }  
   //const body = new FormData();
   // simetimes we need body if this is RPC call for option object e.g.
 
   let b = Object.assign(data, makeRestBody(rest));
   //Object.keys(b).forEach(k => body.append(k, b[k]));
   //r.body = body;
-  r.body = b
+  r.body = b;
   console.log('POST', r);
   return r;
 };

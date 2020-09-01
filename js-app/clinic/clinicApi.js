@@ -28,10 +28,11 @@ const Actions = (state, update) => {
     
     suite(d) {
       let [suite, unit] = d;
-      stup({ suite, unit, options: null, count: null, table: false , error: '' });
+      stup({ suite, unit, count: null, table: false , error: '' });
+      
       if (R.isNil(state().year))
         stup({year: _year()});
-      //console.log(suite, unit);
+
       let def = state().suite[state().unit];
       if (!!def.count)
         return this.count(def);
@@ -53,12 +54,33 @@ const Actions = (state, update) => {
         then(res => stup(res)).
         catch(error => stup(error));
     },
-    
+ 
     opts() {
-      stup({ options: null });
-      return getData(state().suite, state().unit).
-        then(res => stup(res)).
-        catch(err => stup(err));
+      let data = state().options; //Map
+      
+      console.log(data);
+
+      if (R.isNil(data))
+        return getData(state().suite, state().unit).
+          catch(err => stup(err)).
+          then(res => stup(res));
+          
+      
+      let unit = state().suite[state().unit];
+      console.log( unit );
+      
+      if (!R.hasPath(['rest', 'options'], unit))
+        return;
+     
+      
+      // these keys were loaded 1st for check; 
+      if ( !data.has( unit.rest.options[0] ) )
+        return getData(state().suite, state().unit).
+          catch(err => stup(err)).
+          then(res => stup({ 
+            options: new Map([...data, ...res.options]) 
+          }));
+      return;    
     },
     
     card(d) {
@@ -69,20 +91,21 @@ const Actions = (state, update) => {
         crd= '';
         [method, word]  = post;
       }
-      // if not set then no POST to data will be send
-      if (R.isNil(state().year))
-        stup({year: _year()});
-      
       stup({
         suite,
         unit: 'card', crd, data: null, method, word,
-        tabs: cardTabs, error: '', errorsList: [],
+        error: '', errorsList: [],
+        tabs: cardTabs,
       });
+
+      if (R.isNil(state().year))
+        stup({year: _year()});
+
+      this.opts();
       
-      if (R.isNil(states().options))
-        this.opts();
-      
+      // get card number from this stream initailly
       changedItem({ crd_num: crd, old_num: crd });
+      
       if (crd === '') {
           //console.log(' crd emp ', crd );
           stup({data: new Map()});
@@ -96,7 +119,7 @@ const Actions = (state, update) => {
           let card = state().data.get('card')[0] || {};
           if (R.isNil(card) || R.isEmpty(card))
             stup({ error: 'Карта не найдена'});
-          listItem(card); // card object from Map
+          listItem(R.assoc('old_num', crd, card)); // card object from Map
           itemId(crd); // just string
         }).
         catch(err => stup(err));
@@ -109,17 +132,21 @@ const Actions = (state, update) => {
         tal= '';
         [method, word]  = post;
       }
-      // if not set then no POST to data will be send
-      if (R.isNil(state().year))
-        stup({year: _year()});
-      
+      //console.log(state());
       stup({
         suite,
-        unit: 'talon', crd, tal, data: new Map(), options: new Map(), 
-        method, word, error: null, errorsList: [],
+        unit: 'talon', crd, tal, data: new Map(), //options: new Map(),
+        method, word, error: '', errorsList: [],
         tabs: talonTabs, 
       });
-      return;
+
+      if (R.isNil(state().year))
+        stup({year: _year()});
+
+      console.log('talon');
+      return this.opts();
+      
+      //return;
     },
 
     // fetch data from rest server defs in fetch, fill with target
