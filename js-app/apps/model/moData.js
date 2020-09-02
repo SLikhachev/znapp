@@ -1,4 +1,6 @@
 
+'use strict';
+
 import { checkArray, errMsg } from './moModel';
 import { getRequest } from './moList';
 
@@ -26,7 +28,7 @@ export const getData = (set, item, list = 'options') => {
   return Promise.all(robj.map(r => m.request(r))).
     then(
       lists => ({ 
-        [list]: opts.reduce(
+        [list]: rlist.reduce(
           (mp, op, ix) => mp.set(op, lists[ix] || []),
             new Map())
       }),

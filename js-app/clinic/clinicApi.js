@@ -1,4 +1,5 @@
 
+//'use strict';
 
 // src/report/reportApi.js
 /**
@@ -58,7 +59,7 @@ const Actions = (state, update) => {
     opts() {
       let data = state().options; //Map
       
-      console.log(data);
+      console.log('opts ', data);
 
       if (R.isNil(data))
         return getData(state().suite, state().unit).
@@ -67,7 +68,7 @@ const Actions = (state, update) => {
           
       
       let unit = state().suite[state().unit];
-      console.log( unit );
+      console.log('opts', unit );
       
       if (!R.hasPath(['rest', 'options'], unit))
         return;
@@ -76,11 +77,11 @@ const Actions = (state, update) => {
       // these keys were loaded 1st for check; 
       if ( !data.has( unit.rest.options[0] ) )
         return getData(state().suite, state().unit).
-          catch(err => stup(err)).
-          then(res => stup({ 
+          then(res => stup({
             options: new Map([...data, ...res.options]) 
-          }));
-      return;    
+          })).
+          catch(err => stup(err)).
+      return;  
     },
     
     card(d) {
@@ -101,7 +102,7 @@ const Actions = (state, update) => {
       if (R.isNil(state().year))
         stup({year: _year()});
 
-      this.opts();
+      (this.opts());
       
       // get card number from this stream initailly
       changedItem({ crd_num: crd, old_num: crd });
@@ -119,7 +120,7 @@ const Actions = (state, update) => {
           let card = state().data.get('card')[0] || {};
           if (R.isNil(card) || R.isEmpty(card))
             stup({ error: 'Карта не найдена'});
-          listItem(R.assoc('old_num', crd, card)); // card object from Map
+          listItem(R.assoc('old_card', crd, card)); // card object from Map
           itemId(crd); // just string
         }).
         catch(err => stup(err));
@@ -143,8 +144,8 @@ const Actions = (state, update) => {
       if (R.isNil(state().year))
         stup({year: _year()});
 
-      console.log('talon');
-      return this.opts();
+      //console.log('talon');
+      return (this.opts());
       
       //return;
     },
@@ -153,6 +154,8 @@ const Actions = (state, update) => {
     fetch_rest(d) { // ufms -> dul_org
       // fetch data with params as fetch (in changedItem[fetch])
       // result write to target 
+      // fetch - string key from defines (what talbe to fetch)
+      // 
       let [fetch, source, target] = d;
       console.log(source);
       return getList(state().suite, fetch, 'fetch').
@@ -173,6 +176,10 @@ const Actions = (state, update) => {
         //finally( memost(target) );
     },
     
+    diags(){
+      return this.fetch_rest('mkb', )
+    },
+
     save(d) {
         let [item, event] = d;
         vuDialog.error = '';

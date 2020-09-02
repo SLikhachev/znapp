@@ -1,4 +1,6 @@
 
+//'use strict';
+
 //import { states } from '../appApi';
 import { _schema, _year, errMsg, checkArray } from './moModel';
 import { changedItem } from './moListItem';
@@ -66,10 +68,10 @@ const makeRestBody = rest => {
   const body = {};
   if (checkArray(rest.body))
     rest.body.forEach(p => {
-      body[p] = changedItem()[p]
+      body[p] = changedItem()[p];
     });
   return body;
-}
+};
 
 // ONLY REST object used for request building, 
 // exclude params from FETCH form, these process separately
@@ -82,16 +84,16 @@ export const getRequest = (set, item, isfetch) => {
   let def = set[item];
 
   if (R.isNil(def))
-    return `getRequest: Нет свойства ${item} а определении объета запроса` 
+    return `getRequest: Нет свойства ${item} а определении объета запроса`;
     
   let rest = def.rest || {},
-    fetch = def.fetch || {};
+    fetch = def.fetch || {},
     params = {};
 
   // isfetch - String (may be bool) present is the fetch request 
   // fetch used ONLY for build query from CHANGED ITEM nothing else
   if (isfetch && R.isEmpty(fetch))
-    return 'Нет объекта FETCH';
+    return `getRequest: Нет объекта FETCH для ${item}`;
   else
     params = fetchParams(fetch);
 
@@ -148,7 +150,7 @@ export const getList = (set, item, isfetch = '') => {
   //return Promise.reject({ error: ' xer xer ' });
   let r = getRequest(set, item, isfetch);
   if (typeof r === 'string')
-    return Promise.reject({ error: r });
+    return Promise.reject({ error: `getList: ${r}` });
   return m.request(r).then(
     // mithril send 2 request for cross-site 
     // 1st with OPTION if request is prefilght 

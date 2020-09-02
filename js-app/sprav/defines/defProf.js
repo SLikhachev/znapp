@@ -72,7 +72,7 @@ export const spravProf = {
   ist_fin: {},
   cishod: {},
   cresult: {},
-}
+};
 
 export const prof = {
   path: '/prof/:item',

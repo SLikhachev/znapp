@@ -70,14 +70,3 @@ export const talNum = tal => m('legend',
 );
 
 
-String.prototype.transLit = String.prototype.translit || function () {
-  const rus = 'ЙЦУКЕНГШЩЗФЫВАПРОЛДЯЧСМИТЬ';
-  const eng = 'QWERTYUIOPASDFGHJKLZXCVBNM';
-  let i = rus.indexOf(this);
-  if (i < 0) return this;
-  return eng[i];
-};
-
-export const dupper = s => s.length > 0 ? s.charAt(0).toUpperCase().transLit() + s.substring(1) : s;
-export const upper = s => s.charAt(0).toUpperCase() + s.substring(1).toLowerCase();
-

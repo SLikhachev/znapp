@@ -79,7 +79,7 @@ const talon = {
     },
     data: ['talon'],
     //options_cards: ['mo_local', 'smo_local', 'dul', 'okato'],
-    options: [ 'ist_fin', 'purp', 'doctor', 'charmain', 'ishod', 'result', 'travma' ],
+    options: [ 'ist_fin', 'purpose', 'doctor', 'char_main', 'cishod', 'cresult', 'travma_type' ],
     body: ['crd_num']
   },
   item: {
@@ -109,12 +109,12 @@ export const clinicTalons = {
   //talon dependensies
   //options: [ 'ist_fin', 'purp', 'doctor', 'char_main', 'ishod', 'result', 'travma' ],
   ist_fin: spravProf.ist_fin,
-  purp: spravLocal.purpose,
+  purpose: spravLocal.purpose,
   doctor: spravLocal.doctor,
   char_main: spravProf.char_main,
-  ishod: spravProf.cishod,
-  result: spravProf.cresult,
-  travma: spravProf.travma_type,
+  cishod: spravProf.cishod,
+  cresult: spravProf.cresult,
+  travma_type: spravProf.travma_type,
 
   card,
   talon

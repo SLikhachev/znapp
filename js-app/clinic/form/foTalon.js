@@ -1,9 +1,15 @@
 
+'use strict';
+
 //import { _month } from '../../apps/model/moModel.js';
 import { $place, $upper, $checkbox } from '../../apps/defines/defStruct';
 import {
   check_dul,
-  check_att
+  check_att,
+  opt_key_value,
+  id_name,
+  _doctor,
+  set_ds
 } from '../model/moModel';
 
 
@@ -141,14 +147,22 @@ export const talTarget = {
     ist_fin: {
       wrap: $twrap,
       label: ["Оплата"],
-      tag: ['.pure-u-18-24', 'required'],
+      tag: ['.pure-u-22-24', 'required'],
       type: "number",
+      attrs: {
+        list: "ist_fin",
+        options: id_name
+      }
     },
     purp: {
       wrap: $twrap,
       label: ["Цель"],
-      tag: ['.pure-u-18-24', 'required'],
+      tag: ['.pure-u-22-24', 'required'],
       type: 'number',
+      attrs:{
+        list: 'purpose',
+        options: id_name
+      }
     },
     doc_spec: {
       wrap: $twrap,
@@ -175,8 +189,7 @@ export const talTarget = {
       //attrs: $none,
       type: 'memo',
       memo: {
-        check: $check,
-        params: ['Доктор']
+        check: _doctor,
       }
     }
   }
@@ -222,7 +235,12 @@ export const talDs1 = {
     ds1: {
       wrap: $dwrap,
       label: ["Осн. диагноз"],
-      tag: ['.input.pure-u-20-24', 'required'], 
+      tag: ['.input.pure-u-20-24', 'required'],
+      attrs: {
+        oninput: set_ds,
+        list: 'ds1_list',
+        options: opt_key_value('code', 'name')
+      }
     },
     char1: {
       wrap: $dwrap,

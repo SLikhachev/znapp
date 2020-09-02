@@ -1,7 +1,21 @@
 
-import { states } from '../../apps/appApi';
+'use strict';
+
+import { states, disp } from '../../apps/appApi';
 import { changedItem, changeValue } from '../../apps/model/moListItem';
 import { _year } from '../../apps/model/moModel';
+
+
+String.prototype.transLit = String.prototype.translit || function () {
+  const rus = 'ЙЦУКЕНГШЩЗФЫВАПРОЛДЯЧСМИТЬ';
+  const eng = 'QWERTYUIOPASDFGHJKLZXCVBNM';
+  let i = rus.indexOf(this);
+  if (i < 0) return this;
+  return eng[i];
+};
+
+export const _tupper = s => s.length ? s.charAt(0).toUpperCase().transLit() + s.substring(1) : s;
+export const _upper = s => s.charAt(0).toUpperCase() + s.substring(1).toLowerCase();
 
 
 export const thisYear = () => _year() == states().year;
@@ -98,12 +112,53 @@ export const check_dul = () => {
     num = changedItem().dul_number || '', 
     dul = ser || num ? `${ser} ${num}` : "Нет";
   return `Документ: ${dul}`;
-
 };
 
 
 export const check_att = () => {
   let att = changedItem().mo_att || "Нет";
   return `Прикреплен: ${att}`;
-}
+};
 
+export const opt_key_value = (key, value) => o => m(
+  `option[value=${o[key]}]`, 
+  `${o[value]}`
+);
+
+export const id_name = opt_key_value('id', 'name');
+
+
+const opt_find = 
+  (opt_key, form_field, item_key) => states().options.
+    get(opt_key).
+    find(o=>changedItem()[form_field] == o[item_key]);
+
+const opt_filter = 
+  (opt_key, form_field, item_key) => states().options.
+    get(opt_key).
+    filter(o=>changedItem()[form_field] == o[item_key]);
+
+
+export const _doctor = () => {
+  let fin = opt_find('ist_fin', 'ist_fin', 'id'),
+    purp = opt_find('purpose', 'purp', 'id'),
+    doc = opt_filter('doctor', 'doc_spec', 'spec').find(
+      d => d.code == changedItem().doc_code
+    );
+    fin = fin ? fin.name : '';
+    purp = purp ? purp.name : '';  
+    doc = doc ? doc.family : '';
+    fin = `${fin} ${purp} ${doc}`;
+    return doc ? fin : 'red&Доктор ?';
+};
+
+const dsp = "^[A-Z][0-9]{2}(\.[0-9]{1,2})?$";
+const diag = new RegExp( dsp );
+
+export const set_ds = e => {
+  changeValue({ target: { [e.target.name]: _tupper(e.target.value)}});
+  //console.log(e.target.value);
+  if ( diag.test(changedItem().ds1) )
+    disp(['diags']);
+  return false;
+};
