@@ -33,9 +33,10 @@ const getItem = itemid => {
 
 const updateItem = (item, changed) => {
   // checkbox value (0, 1);
+  //console.log(changed());
   const target = changed().target;
   let value = target.value;
-  //console.log(target.type, value);
+  //console.log(target.name, value);
 
   if (target.type === 'submit')
     return Object.assign(item(),

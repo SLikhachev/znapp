@@ -152,32 +152,38 @@ const Actions = (state, update) => {
 
     // fetch data from rest server defs in fetch, fill with target
     fetch_rest(d) { // ufms -> dul_org
-      // fetch data with params as fetch (in changedItem[fetch])
-      // result write to target 
-      // fetch - string key from defines (what talbe to fetch)
-      // 
       let [fetch, source, target] = d;
+      // fetch::String key in suite defines model data 
+      //   with params as fetch in changedItem[fetch]
+      //
+      // source::String prop in fetched object to get
+      //  
+      // target::String key in from to set with value got with source
+      // 
+
       console.log(source);
       return getList(state().suite, fetch, 'fetch').
         then(res => {
           let list = checkArray(res.list) ? res.list : [],
-          name= target, 
-          value = list[0] ? list[0][source] : '';
+            name = target || '', 
+            value = list[0] ? list[0][source] : '';
           
-          //if (res.list && res.list.length > 0) {
-            // set field in form
+          state().options.set(target, list);
+          
+          if (name && value) {
+            // set field in form if any
             changeValue({ 'target': { name, value }}); //res.list[0][source] } });
             //console.log('after fetch', changeValue());
-            // set in opts.map
-            state().options.set(target, list);
-          //} 
+            
+          } 
         }).
         catch(err => state().options.set(target, [{ error: `red&${err.error}`}]))
         //finally( memost(target) );
     },
     
     diags(){
-      return this.fetch_rest('mkb', )
+      console.log('diags');
+      //return (this.fetch_rest('mkb', 'ds1', 'code'));
     },
 
     save(d) {

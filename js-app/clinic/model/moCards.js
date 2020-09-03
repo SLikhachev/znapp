@@ -9,9 +9,9 @@ import { _region } from '../../apps/model/moModel.js';
 //import { restClinic } from '../clinicApi.js';
 
 
-const _reg = _region();
+//const _reg = _region();
 
-const Reg = _region();
+//const Reg = _region();
 
 export const _getFIO = row => {
   //console.log(row.fam, row.im);

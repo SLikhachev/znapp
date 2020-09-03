@@ -2,8 +2,12 @@
 'use strict';
 
 import { states, disp } from '../../apps/appApi';
+import { checkArray } from '../../apps/model/moModel';
 import { changedItem, changeValue } from '../../apps/model/moListItem';
 import { _year } from '../../apps/model/moModel';
+
+
+export const _check = a=> checkArray(a) ? a[0]: 'нет значения';
 
 
 String.prototype.transLit = String.prototype.translit || function () {
@@ -15,7 +19,7 @@ String.prototype.transLit = String.prototype.translit || function () {
 };
 
 export const _tupper = s => s.length ? s.charAt(0).toUpperCase().transLit() + s.substring(1) : s;
-export const _upper = s => s.charAt(0).toUpperCase() + s.substring(1).toLowerCase();
+export const _supper = s => s.charAt(0).toUpperCase() + s.substring(1).toLowerCase();
 
 
 export const thisYear = () => _year() == states().year;
@@ -85,7 +89,9 @@ const calc_type = () => {
   return 0;
 };
 
+
 export const set_polis_type = () => change('polis_type', calc_type());
+
 
 export const set_okato_by_smo = () => {
   // there had to be set SMO
@@ -128,37 +134,14 @@ export const opt_key_value = (key, value) => o => m(
 export const id_name = opt_key_value('id', 'name');
 
 
-const opt_find = 
+export const opt_find = 
   (opt_key, form_field, item_key) => states().options.
     get(opt_key).
     find(o=>changedItem()[form_field] == o[item_key]);
 
-const opt_filter = 
+
+export const opt_filter = 
   (opt_key, form_field, item_key) => states().options.
     get(opt_key).
     filter(o=>changedItem()[form_field] == o[item_key]);
 
-
-export const _doctor = () => {
-  let fin = opt_find('ist_fin', 'ist_fin', 'id'),
-    purp = opt_find('purpose', 'purp', 'id'),
-    doc = opt_filter('doctor', 'doc_spec', 'spec').find(
-      d => d.code == changedItem().doc_code
-    );
-    fin = fin ? fin.name : '';
-    purp = purp ? purp.name : '';  
-    doc = doc ? doc.family : '';
-    fin = `${fin} ${purp} ${doc}`;
-    return doc ? fin : 'red&Доктор ?';
-};
-
-const dsp = "^[A-Z][0-9]{2}(\.[0-9]{1,2})?$";
-const diag = new RegExp( dsp );
-
-export const set_ds = e => {
-  changeValue({ target: { [e.target.name]: _tupper(e.target.value)}});
-  //console.log(e.target.value);
-  if ( diag.test(changedItem().ds1) )
-    disp(['diags']);
-  return false;
-};

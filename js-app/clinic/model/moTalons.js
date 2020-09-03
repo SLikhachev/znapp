@@ -1,15 +1,58 @@
+
+'use strict';
+
 // src/apps/model/moTalons.js
-import { moModel, errMsg, _schema, _region, _month } from '../../apps/model/moModel.js';
-import { restSprav } from '../../sprav/spravApi.js';
-import { restClinic } from '../clinicApi.js';
+//import { moModel, errMsg, _schema, _region, _month } from '../../apps/model/moModel.js';
+//import { restSprav } from '../../sprav/spravApi.js';
+//import { restClinic } from '../clinicApi.js';
+import { states, disp } from '../../apps/appApi';
+import { changedItem, changeValue } from '../../apps/model/moListItem';
+import { _year } from '../../apps/model/moModel';
+import {
+  _tupper,
+  opt_find,
+  opt_filter
+} from './moModel';
+
 
 const tmonth = function () {
     let d = new Date();
     return d.getMonth() + 1;
  };
 
-const _reg= _region();
 
+//const _reg= _region();
+
+
+export const _doctor = () => {
+  let fin = opt_find('ist_fin', 'ist_fin', 'id'),
+    purp = opt_find('purpose', 'purp', 'id'),
+    doc = opt_filter('doctor', 'doc_spec', 'spec').find(
+      d => d.code == changedItem().doc_code
+    );
+    fin = fin ? fin.name : '';
+    purp = purp ? purp.name : '';  
+    doc = doc ? doc.family : '';
+    fin = `${fin} ${purp} ${doc}`;
+    return doc ? fin : 'red&Доктор ?';
+};
+
+const dsp = "^[A-Z][0-9]{2}(\.[0-9]{1,2})?$";
+const diag = new RegExp( dsp );
+
+export const set_ds = e => {
+  changeValue(
+    R.assocPath(['target', 'value'], 
+      _tupper(e.target.value), e) 
+  );
+  console.log(changedItem().ds1);
+  if ( diag.test(changedItem().ds1) )
+    disp(['diags']);
+  return false;
+};
+
+
+/*
 export const moTalonsList = {
   // :: Object
   // return model object (POJO)
@@ -197,7 +240,7 @@ export const moTalon = {
       tal_num = to_save.tal_tpl;
     else
       tal_num = to_save.tal_num;
-    */
+    *//*
     let table= moTalonsList.talTable(tpl);
     let url=`${pg_rest}${table}`;
     if ( Boolean(tal_num) ) {
@@ -229,3 +272,4 @@ export const moTalon = {
   },
   
 };
+*/

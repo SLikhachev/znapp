@@ -4,13 +4,16 @@
 //import { _month } from '../../apps/model/moModel.js';
 import { $place, $upper, $checkbox } from '../../apps/defines/defStruct';
 import {
+  _check,
   check_dul,
   check_att,
   opt_key_value,
   id_name,
+} from '../model/moModel';
+import {
   _doctor,
   set_ds
-} from '../model/moModel';
+} from '../model/moTalons';
 
 
 const tag = ['.input-find.pure-u-2-3'];
@@ -88,16 +91,6 @@ export const card = {
   }
 };
 
-// label = [class, text]
-// input = tag = [class, type, required]
-
-/*
-const month = function () {
-    let d = new Date();
-    return d.getMonth() + 1;
- };
-*/
-
 
 const $date = text => ({
   wrap: {klass: '.pure-u-4-24' },
@@ -106,6 +99,7 @@ const $date = text => ({
   type: 'date', 
   attrs: {style: "height: 45%",}
 });
+
 
 const $flag = text => R.assoc(
   'wrap', { klass: '.pure-u-3-24'}, 
@@ -137,7 +131,6 @@ export const talDate = {
   }
 };
 
-const $check = a=> a[0];
 
 const $twrap = { klass: '.pure-u-2-24' }; 
 
@@ -219,7 +212,7 @@ export const talVizits = {
       //attrs: $none,
       type:'memo',
       memo: {
-        check: $check,
+        check: _check,
         params: ["Количество посещений"]
       }
     }
@@ -266,7 +259,7 @@ export const talDs1 = {
       },
       type: 'memo',
       memo: {
-        check: $check,
+        check: _check,
         params: ["Диагноз"]
       }
     }
