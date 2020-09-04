@@ -62,4 +62,4 @@ export const initApp = (initial, menu, actions) => {
     let [event, ...args] = av;
     return actions[event] ? actions[event](args) : stream.SKIP
   });
-}
+};

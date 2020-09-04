@@ -23,7 +23,7 @@ export const _ufms = e => {
   memost('dul_org');
   let ufms = just_int(e.target.value, 6);
   if (!!ufms)
-    disp(['fetch_rest', 'ufms', 'name', 'dul_org']);
+    disp(['fetch_toForm', 'ufms', 'dul_org', 'name', 'dul_org']);
   return false;
 };
 //--------------------------

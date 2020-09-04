@@ -1,7 +1,7 @@
 
 // src/reestr/router.js
 
-import { states } from '../apps/appApi';
+import { states, app } from '../apps/appApi';
 import { pageView, pathRouter, routerFun } from '../apps/appRouter';
 
 // init func
@@ -19,6 +19,7 @@ const addroute = { cards: roCards, talons: roTalons }; //functions
 const Router = routerFun(clinicMenu, addroute, route);
 
 // init application
-initClinic();
+if (!app.inited)
+  initClinic();
 m.route(document.body, "/", Router);
 

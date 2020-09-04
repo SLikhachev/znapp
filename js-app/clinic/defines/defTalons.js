@@ -99,6 +99,22 @@ const talon = {
   }
 };
 
+const mkb10 = {
+  rest: {
+    params: {
+      order: 'code'
+    },
+    headers: {
+      'Range': '0-20'
+    }
+  },
+  fetch: {
+    code: {
+      alias: 'ds1',
+      params: 'like.*'
+    }
+  }
+};
 
 export const clinicTalons = {
 
@@ -115,7 +131,8 @@ export const clinicTalons = {
   cishod: spravProf.cishod,
   cresult: spravProf.cresult,
   travma_type: spravProf.travma_type,
-
+  mkb10,
+  //
   card,
   talon
 };

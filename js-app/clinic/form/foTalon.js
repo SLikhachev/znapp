@@ -12,7 +12,8 @@ import {
 } from '../model/moModel';
 import {
   _doctor,
-  set_ds
+  set_ds, 
+  _memo_ds
 } from '../model/moTalons';
 
 
@@ -231,24 +232,36 @@ export const talDs1 = {
       tag: ['.input.pure-u-20-24', 'required'],
       attrs: {
         oninput: set_ds,
-        list: 'ds1_list',
+        list: 'ds1',
         options: opt_key_value('code', 'name')
       }
     },
     char1: {
       wrap: $dwrap,
       label: ["Характер"],
-      tag: ['.input.pure-u-16-24', 'required']
+      tag: ['.input.pure-u-16-24', 'required'],
+      attrs: {
+        list: 'char_main',
+        options: id_name
+      }
     },
     ishod: {
       wrap: $dwrap,
       label: ["Исход"], 
-      tag: ['.input.pure-u-16-24', 'required']
+      tag: ['.input.pure-u-16-24', 'required'],
+      attrs: {
+        list: 'cishod',
+        options: id_name
+      }
     },
     rslt: {
       wrap: $dwrap,
       label: ["Результат"], 
-      tag: ['.input.pure-u-16-24', 'required']
+      tag: ['.input.pure-u-16-24', 'required'],
+      attrs: {
+        list: 'cresult',
+        options: id_name
+      }
     },
     diagnose: {
       wrap: { 
@@ -259,8 +272,8 @@ export const talDs1 = {
       },
       type: 'memo',
       memo: {
-        check: _check,
-        params: ["Диагноз"]
+        check: _memo_ds,
+        params: ['ds1']
       }
     }
   }
@@ -273,17 +286,30 @@ export const talDs2 = {
     ds2: {
       wrap: $dwrap,
       label: ["Доп. диагноз"],
-      tag: ['.input.pure-u-20-24']
+      tag: ['.input.pure-u-20-24'],
+      attrs: {
+        oninput: set_ds,
+        list: 'ds2',
+        options: opt_key_value('code', 'name')
+      }
     },
     char2: {
       wrap: $dwrap,
       label: ["Характер"], 
-      tag: ['.input.pure-u-16-24']
+      tag: ['.input.pure-u-16-24'],
+      attrs: {
+        list: 'char_main',
+        options: id_name
+      }
     },
     travma_type: {
       wrap: $dwrap,
       label: ["Травма"], 
-      tag: ['.input.pure-u-14-24']
+      tag: ['.input.pure-u-14-24'],
+      attrs: {
+        list: 'travma_type',
+        options: id_name
+      }
     }
   }
 };

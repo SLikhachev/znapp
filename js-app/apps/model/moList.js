@@ -16,6 +16,8 @@ export const sortList = (id, state) => {
   };
 };
 
+// dot param like
+//  params: 'like.*' 
 const _dot_param = (ps, val) => {
   let par, tail, _ps=ps;
   
@@ -43,14 +45,16 @@ export const talons_table = (state, obj) => new Proxy (
 });
 
 // make object from fetch and changedItem
-const fetchParams = fetch => {
+const fetchParams = (fetch, fetch_str) => {
   //console.log(fetch)
   let params = {};
   Object.keys(fetch).reduce((acc, key) => {
     // alias for case where key string not present in changedItem
     // but alias string present
 
-    let ps = fetch[key].params, alias = fetch[key].alias || key,
+    let ps = fetch[key].params, 
+      str_key= fetch_str.split('_')[1], // may be additionsl key in form 'FETCH_ds2' 
+      alias = str_key || fetch[key].alias || key, // order: str_key, alias, key
       // if not provided dynamically get it statically from value prop
       val = changedItem()[alias] || fetch[key].value;
 
@@ -95,7 +99,7 @@ export const getRequest = (set, item, isfetch) => {
   if (isfetch && R.isEmpty(fetch))
     return `getRequest: Нет объекта FETCH для ${item}`;
   else
-    params = fetchParams(fetch);
+    params = fetchParams(fetch, isfetch);
 
   //console.log(params);
   // url priority 1st: fetch, 2nd: rest, 3rd: item name

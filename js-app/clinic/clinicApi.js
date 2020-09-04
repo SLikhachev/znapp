@@ -59,7 +59,7 @@ const Actions = (state, update) => {
     opts() {
       let data = state().options; //Map
       
-      console.log('opts ', data);
+      //console.log('opts ', data);
 
       if (R.isNil(data))
         return getData(state().suite, state().unit).
@@ -68,7 +68,7 @@ const Actions = (state, update) => {
           
       
       let unit = state().suite[state().unit];
-      console.log('opts', unit );
+      //console.log('opts', unit );
       
       if (!R.hasPath(['rest', 'options'], unit))
         return;
@@ -151,39 +151,43 @@ const Actions = (state, update) => {
     },
 
     // fetch data from rest server defs in fetch, fill with target
-    fetch_rest(d) { // ufms -> dul_org
-      let [fetch, source, target] = d;
+    fetch_toOptions(d) { // ufms -> dul_org
+      let [fetch, map_key, str_fetch=''] = d;
       // fetch::String key in suite defines model data 
       //   with params as fetch in changedItem[fetch]
       //
-      // source::String prop in fetched object to get
-      //  
-      // target::String key in from to set with value got with source
+      // map_key::String key in options map to set with fetched data list
       // 
-
-      console.log(source);
-      return getList(state().suite, fetch, 'fetch').
+      // str_fetch::String additional alias key for ds1, ds2 applied firstly
+      //
+      console.log('toOtions',fetch, map_key, str_fetch);
+      return getList(state().suite, fetch, `fetch_${str_fetch}`).
         then(res => {
-          let list = checkArray(res.list) ? res.list : [],
-            name = target || '', 
-            value = list[0] ? list[0][source] : '';
-          
-          state().options.set(target, list);
-          
-          if (name && value) {
-            // set field in form if any
-            changeValue({ 'target': { name, value }}); //res.list[0][source] } });
-            //console.log('after fetch', changeValue());
-            
-          } 
+          state().options.set(map_key, res.list);
+          return res.list[0];
         }).
-        catch(err => state().options.set(target, [{ error: `red&${err.error}`}]))
+        catch(err => state().options.set(map_key, [{ error: `red&${err.error}`}]))
         //finally( memost(target) );
     },
     
-    diags(){
-      console.log('diags');
-      //return (this.fetch_rest('mkb', 'ds1', 'code'));
+    fetch_toForm(d){
+      let [fetch, map_key, get_fromData, set_toForm] = d;
+      // fetch::String key in suite defines model data 
+      //   with params as fetch in changedItem[fetch]
+      //
+      // map_key::String key in options map to set with fetched data list
+      // 
+      // get_fromData::String prop in fetched object to get
+      //  
+      // set_toForm::String key in from to set with value got with get_fromData
+      // 
+      return this.fetch_toOptions([fetch, map_key]).then(item => {
+        let name = set_toForm || '', 
+            value = item ? item[get_fromData] : '';
+        if (name && value)
+            // set field in form if any
+            changeValue({ 'target': { name, value }});
+      });
     },
 
     save(d) {
@@ -229,7 +233,9 @@ const Actions = (state, update) => {
 //const actions = Actions(states, update); //=> obj of func ref
 
 export const initClinic = () => initApp(
-  { suite: { page: "Медстатстика: Поликлиника" } },
+  { suite: { page: "Медстатстика: Поликлиника" },
+    inited: true
+  },
   clinicMenu,
   Actions(states, update)
 );

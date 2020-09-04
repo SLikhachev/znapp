@@ -37,20 +37,30 @@ export const _doctor = () => {
     return doc ? fin : 'red&Доктор ?';
 };
 
-const dsp = "^[A-Z][0-9]{2}(\.[0-9]{1,2})?$";
+const dsp = "^[A-Z][0-9]{2}$"; //(\.[0-9]{1,2})?$";
 const diag = new RegExp( dsp );
 
 export const set_ds = e => {
-  changeValue(
-    R.assocPath(['target', 'value'], 
-      _tupper(e.target.value), e) 
-  );
-  console.log(changedItem().ds1);
-  if ( diag.test(changedItem().ds1) )
-    disp(['diags']);
+  (e.target.value = _tupper(e.target.value));
+  changeValue(e);
+  //console.log(changedItem().ds1);
+  let ds = e.target.name;
+  if ( diag.test(changedItem()[ds]) )
+    disp(['fetch_toOptions', 'mkb10', ds, ds]);
   return false;
 };
 
+export const _memo_ds = d => {
+  let [ds] = d, 
+    ds_list = states().options.get(ds),
+    resp = 'red&Диагноз ?';
+  //console.log('_memo_ds', ds, ds_list);
+  if (ds_list) {
+    let n = ds_list.find(o=>changedItem()[ds] == o.code.trim());
+    resp = (n && n.name) ? n.name : resp; 
+  }
+  return resp;
+};
 
 /*
 export const moTalonsList = {

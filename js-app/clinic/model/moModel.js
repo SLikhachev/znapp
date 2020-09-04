@@ -27,6 +27,7 @@ export const thisYear = () => _year() == states().year;
 
 export const item_attr = attr => item => item[attr];
 
+//params: ['dul_org', 'ufms', 'code', item_attr('name')]
 // Array -> String
 export const check_opts = params => { 
   let [data, field, find, fn] = params;
@@ -127,8 +128,8 @@ export const check_att = () => {
 };
 
 export const opt_key_value = (key, value) => o => m(
-  `option[value=${o[key]}]`, 
-  `${o[value]}`
+  `option[value=${o[key].toString().trim()}]`, 
+  `${o[value].toString().trim()}`
 );
 
 export const id_name = opt_key_value('id', 'name');
