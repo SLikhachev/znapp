@@ -16,6 +16,16 @@ const linkTalon = state => (row, key, pk) => ([
   '.choice.blue',
 ]);
 
+const _addTalon = crd => e => {
+  e.preventDefault();
+  m.route.set(`${$path.talons}/${crd}/add`);
+};
+
+const newTalon = (row, key, pk) => m('i.fa.fa-plus-circle.choice', {
+  style: "color: green; font-size: 1.7em; underline: none",
+  onclick: _addTalon(row.crd_num)
+});
+
 
 const $cards = {
   // count crads in db table
@@ -49,7 +59,8 @@ const $cards = {
       crd_num: ['Карта', '', linkItem],
       fam: ['ФИО', '', _getFIO],
       birth_date: ['Дата рождения'],
-      polis_num: ['Номер полиса']
+      polis_num: ['Номер полиса'],
+      new_talon: ['Новый талон', '', newTalon]
     }
   }
 };
@@ -94,7 +105,7 @@ const ufms = {
   }
 };
   
-const card = {
+export const card = {
   rest: {
     url: "rpc/clin_card_by_num",
     method: "POST",

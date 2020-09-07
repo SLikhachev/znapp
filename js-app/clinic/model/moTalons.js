@@ -15,11 +15,12 @@ import {
 } from './moModel';
 
 
+
+
 const tmonth = function () {
     let d = new Date();
     return d.getMonth() + 1;
  };
-
 
 //const _reg= _region();
 
@@ -53,7 +54,7 @@ export const set_ds = e => {
 export const _memo_ds = d => {
   let [ds] = d, 
     ds_list = states().options.get(ds),
-    resp = 'red&Диагноз ?';
+    resp = d == 'ds1' ? 'red&Диагноз ?' : '';
   //console.log('_memo_ds', ds, ds_list);
   if (ds_list) {
     let n = ds_list.find(o=>changedItem()[ds] == o.code.trim());

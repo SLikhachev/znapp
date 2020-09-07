@@ -27,7 +27,7 @@ export const getData = (set, item, list = 'options') => {
      
   return Promise.all(robj.map(r => m.request(r))).
     then(
-      lists => ({ 
+      lists => ({
         [list]: rlist.reduce(
           (mp, op, ix) => mp.set(op, lists[ix] || []),
             new Map())

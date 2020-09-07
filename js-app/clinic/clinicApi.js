@@ -133,21 +133,38 @@ const Actions = (state, update) => {
         tal= '';
         [method, word]  = post;
       }
-      //console.log(state());
+
+      if (R.isNil(state().year))
+        stup({year: _year()});
+      
+      (this.opts());
+      
+      changedItem({ crd_num: crd, tal_num: tal });
+      
       stup({
         suite,
-        unit: 'talon', crd, tal, data: new Map(), //options: new Map(),
+        unit: 'talon', crd, tal, data: null, //options: new Map(),
         method, word, error: '', errorsList: [],
         tabs: talonTabs, 
       });
 
-      if (R.isNil(state().year))
-        stup({year: _year()});
+      if (!!tal)
+        return;
 
-      //console.log('talon');
-      return (this.opts());
-      
-      //return;
+      return getList(state().suite, 'card').then(
+        res => {
+          console.log(res);
+          if (R.isEmpty(res.list)) {       
+            stup({ error: 'Карта не найдена'});
+          } else {
+            stup({ data: new Map()});
+            listItem(res.list[0]); // card object from Map
+            itemId(crd); // just string
+            state().data.set('card', res.list[0]);
+            console.log(state().data);
+          }
+        }).
+        catch(err => stup(err));
     },
 
     // fetch data from rest server defs in fetch, fill with target
@@ -160,7 +177,7 @@ const Actions = (state, update) => {
       // 
       // str_fetch::String additional alias key for ds1, ds2 applied firstly
       //
-      console.log('toOtions',fetch, map_key, str_fetch);
+      //console.log('toOtions',fetch, map_key, str_fetch);
       return getList(state().suite, fetch, `fetch_${str_fetch}`).
         then(res => {
           state().options.set(map_key, res.list);

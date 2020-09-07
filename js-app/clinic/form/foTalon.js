@@ -3,6 +3,7 @@
 
 //import { _month } from '../../apps/model/moModel.js';
 import { $place, $upper, $checkbox } from '../../apps/defines/defStruct';
+import { card } from '../defines/defCards';
 import {
   _check,
   check_dul,
@@ -46,7 +47,8 @@ export const fetch_form = {
   }
 };
 
-export const card = {
+export const $card = {
+  rest: card.rest,
   form: {
     fields: {
       fam: $name("Фамилия"),
@@ -222,6 +224,20 @@ export const talVizits = {
 
 const $dwrap = { klass: '.pure-u-3-24'};
 
+const $diag = d => ({
+  wrap: {
+    klass: '.pure-u-10-24',
+    attrs: {
+      style: "padding-top: 2em ; font-size: 1.1em; font-weight: 500"
+    }
+  },
+  type: 'memo',
+  memo: {
+    check: _memo_ds,
+    params: [d]
+  }
+});
+
 
 export const talDs1 = {
   class: '.pure-g',
@@ -263,19 +279,7 @@ export const talDs1 = {
         options: id_name
       }
     },
-    diagnose: {
-      wrap: { 
-        klass: '.pure-u-10-24',
-        attrs: { 
-          style: "padding-top: 2em ; font-size: 1.1em; font-weight: 500" 
-        }
-      },
-      type: 'memo',
-      memo: {
-        check: _memo_ds,
-        params: ['ds1']
-      }
-    }
+    diagnose: $diag('ds1') 
   }
 };
 
@@ -310,7 +314,8 @@ export const talDs2 = {
         list: 'travma_type',
         options: id_name
       }
-    }
+    },
+    diagnose: $diag('ds2') 
   }
 };
 

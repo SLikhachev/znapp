@@ -8,7 +8,7 @@ import { spravLocal } from '../../sprav/defines/defLocal';
 import { spravProf } from '../../sprav/defines/defProf';
 
 //import { spravComs } from '../../sprav/defines/defComs';
-import { fetch_form, card, 
+import { fetch_form, $card, 
   talDate,
   talTarget,
   talVizits,
@@ -133,7 +133,7 @@ export const clinicTalons = {
   travma_type: spravProf.travma_type,
   mkb10,
   //
-  card,
+  card: $card,
   talon
 };
 

@@ -41,7 +41,7 @@ export const talons_table = (state, obj) => new Proxy (
         return Reflect.get(target, prop);
       let year = state().year || _year();
       return `talonz_clin_${year.slice(2)}`;
-    }  
+    }
 });
 
 // make object from fetch and changedItem
@@ -171,6 +171,6 @@ export const getList = (set, item, isfetch = '') => {
         return res;
       }
     },
-    err => ({ error: errMsg(err) }))
+    err => ({ error: errMsg(err) }));
 };
 
