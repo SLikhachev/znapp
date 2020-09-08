@@ -27,7 +27,7 @@
  *   rendered by sideBar    rendered by it depends ( vuPageTitle or else)
  */
 
-
+// return first path chunk after slash if any
 const getItemPath = () => {
   //has menu item route chunk ?
   const r = m.route.get().split("/");
@@ -36,18 +36,19 @@ const getItemPath = () => {
 
 const hasChildren = (spaMenu, menuItem) => {
   /** Should be side Bar rendered ?
-    menuItem: String from the route path 2nd segment
+    menuItem: String from the route path 2nd (first after leading slash) segment
     spaMenu: Object from spaApi
     return String: item || ''
   */
+  //console.log('hasChildren',menuItem);
   if (!menuItem)
     return ''; // no menu item selected
 
   const $m = spaMenu[menuItem];
-  if (!$m.hasOwnProperty('items') || !$m.items.length || $m.items.length === 0)
-    return ''; // no items' Array in menu item's definition
+  if ($m.hasOwnProperty('items') && $m.items.length)
+    return menuItem; // no items' Array in menu item's definition
 
-  return menuItem; // string
+  return ''; // string
 };
 
 // sidebar renderer 
@@ -123,7 +124,9 @@ export const vuLayout = vnode => {
 
   // here define render side bar or not
   let item_path = getItemPath();
+  console.log('item_path', item_path);
   let menu_item_children = hasChildren(spaMenu, item_path);
+  console.log('has children', menu_item_children);
   //console.log(spaMenu[menu_item_children].def['doctor'].item.name);
 
   return {
@@ -146,7 +149,8 @@ export const vuLayout = vnode => {
     onbeforeupdate() {
       item_path = getItemPath();
       menu_item_children = hasChildren(spaMenu, item_path);
-      //console.log(subApp);
+      console.log('item', item_path);
+      console.log('has children', menu_item_children);
     },
 
     view(vnode) {
@@ -181,4 +185,4 @@ export const vuPageTitle = {
       m('h1.blue', { style: "font-size: 3em;" }, vnode.attrs.text)
     );
   }
-}
+};

@@ -19,6 +19,7 @@ export const roTalons = () => ({
   [talons.path + '/:crd' + '/:tal']: {
     onmatch(args) {
       const { crd, tal } = args;
+      console.log('talon router', args);
       /*
       if (!Number.isSafeInteger(Number(tal))) {
         console.warn('invalid talon number -- ', crd);
@@ -26,7 +27,7 @@ export const roTalons = () => ({
       }
       */
       disp(['talon', talons.def, crd, tal]);
-      //console.log(args);
+     
       return vuClinicTabs;
     },
     render(vnode) { return vuPage(vnode); }

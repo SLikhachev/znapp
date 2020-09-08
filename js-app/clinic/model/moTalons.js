@@ -15,6 +15,29 @@ import {
 } from './moModel';
 
 
+export const newTalonCard = card => [
+  'polis_ser', 'polis_num', 
+  'smo', 'smo_okato'].
+  reduce(
+    (o, p) => {
+      o[`crd_${p}`] = card[p];
+      return o;
+     }, Object.assign({}, card));
+
+(() => {
+  let card = {
+    polis_ser: 'crd_polis_ser', 
+    polis_num: 'crd_polis_num', 
+    smo: 'crd_smo', 
+    smo_okato: 'crd_smo_okato'
+  },
+    talCard = newTalonCard(card);
+    R.keys(card).map(
+      k => console.assert( 
+        talCard[ card[k] ] === card[k], 
+        { k, c: card[k], t: talCard [card[k] ] } )
+      );
+})();
 
 
 const tmonth = function () {

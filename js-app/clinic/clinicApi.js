@@ -14,6 +14,7 @@ import { listItem, itemId, changedItem,
 import { vuDialog } from '../apps/view/vuDialog';
 import { clinicMenu } from './clinicMenu';
 import { talons } from './defines/defTalons';
+import { newTalonCard } from './model/moTalons';
 import { cardTabs } from './view/vuClinic';
 import { talonTabs } from './view/vuClinic';
 
@@ -57,34 +58,54 @@ const Actions = (state, update) => {
     },
  
     opts() {
-      let data = state().options; //Map
       
-      //console.log('opts ', data);
+      let def = state().suite, unit= state().unit;
 
-      if (R.isNil(data))
-        return getData(state().suite, state().unit).
-          catch(err => stup(err)).
-          then(res => stup(res));
-          
+      console.log('opts unit: ', unit);
+
+
+      let error = R.hasPath(['rest', 'options'], def[unit]) ? 
+        '' : `No options prop for: ${unit} `;
+      error = error + (error ? '' : checkArray(def[unit].rest.options) ? 
+        '' : ` Empty options list: ${unit}`); 
+
+      if (!!check)
+        return Promise.reject({ error });
+
+      let data = state().options || new Map();  //Map
       
-      let unit = state().suite[state().unit];
-      //console.log('opts', unit );
+      console.log('opts data: ', data);
+      // initially get otions
+      if ( data.size === 0)
+        return getData(def, unit).
+          //catch(err => stup(err)).
+          then(res => {
+            stup(res);
+            return 'opts loaded';
+          });
       
-      if (!R.hasPath(['rest', 'options'], unit))
-        return;
-     
-      
-      // these keys were loaded 1st for check; 
-      if ( !data.has( unit.rest.options[0] ) )
-        return getData(state().suite, state().unit).
-          then(res => stup({
-            options: new Map([...data, ...res.options]) 
-          })).
-          catch(err => stup(err)).
-      return;  
+      // get missing options
+      // these keys were loaded ?  1st for check; 
+      if ( !data.has( def[unit].rest.options[0] ) )
+        return getData(def, unit).
+          then(res => {
+            stup({ 
+              options: new Map([...data, ...res.options])
+            });
+            return 'opts added';
+          });
+          //.catch(err => stup(err));
+
+      return Promise.resolve('opts resoved');
     },
     
-    card(d) {
+    card(d){
+      return Promise.all( [this._card(d), this.opts()] ).
+        then(res => console.log(res)).
+        catch(err=> stup(err));
+     },
+
+    _card(d) {
       let [suite, crd] = d, [method, word] = patch;
       //console.log('crd ',crd);
       // new card
@@ -102,7 +123,7 @@ const Actions = (state, update) => {
       if (R.isNil(state().year))
         stup({year: _year()});
 
-      (this.opts());
+      //(this.opts());
       
       // get card number from this stream initailly
       changedItem({ crd_num: crd, old_num: crd });
@@ -112,7 +133,7 @@ const Actions = (state, update) => {
           stup({data: new Map()});
           listItem({});
           itemId(crd);
-          return;
+          return Rromise.resolse('new card');
       }
       return getData(state().suite, 'card', 'data').
         then(res => {
@@ -121,9 +142,10 @@ const Actions = (state, update) => {
           if (R.isNil(card) || R.isEmpty(card))
             stup({ error: 'Карта не найдена'});
           listItem(R.assoc('old_card', crd, card)); // card object from Map
-          itemId(crd); // just string
-        }).
-        catch(err => stup(err));
+          itemId(crd);
+          return 'card loaded'; // just string
+        });
+        //.catch(err => stup(err));
     },
     
     talon(d) {
@@ -137,7 +159,7 @@ const Actions = (state, update) => {
       if (R.isNil(state().year))
         stup({year: _year()});
       
-      (this.opts());
+      this.opts();
       
       changedItem({ crd_num: crd, tal_num: tal });
       
@@ -147,21 +169,21 @@ const Actions = (state, update) => {
         method, word, error: '', errorsList: [],
         tabs: talonTabs, 
       });
-
+      /*
       if (!!tal)
         return;
-
+      */
       return getList(state().suite, 'card').then(
         res => {
-          console.log(res);
+          //console.log(res);
           if (R.isEmpty(res.list)) {       
             stup({ error: 'Карта не найдена'});
           } else {
             stup({ data: new Map()});
-            listItem(res.list[0]); // card object from Map
+            listItem( newTalonCard(res.list[0]) ); // card object from Map
             itemId(crd); // just string
             state().data.set('card', res.list[0]);
-            console.log(state().data);
+            //console.log(state().data);
           }
         }).
         catch(err => stup(err));
