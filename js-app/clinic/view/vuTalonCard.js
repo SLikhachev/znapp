@@ -8,6 +8,7 @@
 
 import { states, disp } from '../../apps/appApi';
 import { makeTags } from '../../apps/form/makeTags';
+import { cardPath } from '../defines/defCards';
 import { makeFields } from '../form/foForm';
 import { nextTagFocus } from './vuTabs.js';
 
@@ -63,21 +64,22 @@ export const talonCard = function() {
       });
     };
   */
-  let form = {}, fields;
+  let form = {}, fields, card;
 
   const onsubmit = e => {
     e.preventDefault();
-    return false;
-    //return disp(['save', 'card', e]);
+    //return false;
+    return disp(['save', 'card', e, 'PATCH']);
   };
 
   return {
     view() {
       form = states().suite.card.form || {};
-      fields = form.fields || {}; 
-      //console.log('tal crd');
+      fields = form.fields || {};
+      card = states().crd;
+
       return [
-        m(".legnd", `Карта № `),
+        m(".legnd", `Карта № ${card}`),
         m('form.tcard.pure-form.pure-form-stacked', {
           style: "font-size: 1.2em;",
           id: "tal_card",
@@ -89,7 +91,7 @@ export const talonCard = function() {
             "Сохранить"),
           m(m.route.Link, {
             selector: 'a.pure-button.',
-            href: `#`,
+            href: cardPath(card),
             style: "margin-left: 2em;"
           }, "Открыть карту")
         ])

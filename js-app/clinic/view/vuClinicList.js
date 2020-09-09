@@ -4,7 +4,7 @@ import { states, disp } from '../../apps/appApi';
 import { vuLoading, vuTheader } from '../../apps/view/vuApp.js';
 import { vuListTable } from '../../apps/view/vuListTable';
 import { makeTags } from '../../apps/form/makeTags';
-import { cards } from '../defines/defCards';
+import { cardPath } from '../defines/defCards';
 
 const makeFields = (fn, flds) => flds.map((f, idx) => m('.pure-u-1-5', fn(f, idx)));
 //const makeButtons = (fn, flds) => flds.map((f, idx) => fn(f, idx));
@@ -26,7 +26,7 @@ export const vuFetchFormChildren = () => {
 
 const newCard = () => m(m.route.Link, {
   selector: 'a.pure-button.pure-button-primary',
-  href: `${cards.path}${cards.add}`,
+  href: cardPath('add'),
   style: "margin-left: 2em; font-size: 1.2em"
 }, "Новая карта");
 
@@ -35,6 +35,7 @@ const changeYear = e => {
   e.preventDefault();
   return disp(['year', e]);
 };
+
 
 const year = () => m(".pure-u-1-5", [ //{style: "float: left"}, [
   m('label[for=_year]', 

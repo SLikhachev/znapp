@@ -2,6 +2,8 @@
 
 import { states, disp } from '../../apps/appApi';
 import { vuListTable } from '../../apps/view/vuListTable';
+//import { linkTalon } from '../defines/defCards';
+
 
 export const crdVizits = function (vnode) {
 

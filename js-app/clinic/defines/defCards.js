@@ -11,8 +11,15 @@ import { _getFIO, cardValidator} from '../model/moCards';
 import { $path } from './defClinic';
 
 
+export const cardPath = crd => `${$path.cards}/${crd}`;
+
+
 const linkTalon = state => (row, key, pk) => ([
-  m(m.route.Link, { href: `${$path.talons}/${state().crd}/${row[key]}` }, row[key]),
+  m(
+    m.route.Link, 
+    { href: `${$path.talons}/${state().crd}/${row[key]}` }, 
+    row[key]
+  ),
   '.choice.blue',
 ]);
 

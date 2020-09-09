@@ -16,7 +16,7 @@ export const vuClinicTabs = () => {
       thisTabs = states().tabs || tabs;
 
       return states().error ? [m(".error", states().error)] :
-        states().options && states().data ?
+        states().optionsReady && states().data ?
           m(tabsView, { thisTabs } ) : m(vuLoading);
     }
   };

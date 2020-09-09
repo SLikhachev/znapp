@@ -4,6 +4,7 @@
 //import { _month } from '../../apps/model/moModel.js';
 import { $place, $upper, $checkbox } from '../../apps/defines/defStruct';
 import { card } from '../defines/defCards';
+import { talonCardValidator } from '../model/moCards';
 import {
   _check,
   check_dul,
@@ -49,6 +50,13 @@ export const fetch_form = {
 
 export const $card = {
   rest: card.rest,
+  item: {
+    validator: talonCardValidator,
+    rest: { 
+      url: 'cardz_clin',  
+      headers: {Prefer: 'return=representation'}
+    }
+  },
   form: {
     fields: {
       fam: $name("Фамилия"),
@@ -56,6 +64,7 @@ export const $card = {
       ot: $name("Отчество"),
       birth_date: {
         label: ["Дата рождения"],
+        tag: ['', 'required'],
         type: 'date',
       },
       crd_polis_ser: {

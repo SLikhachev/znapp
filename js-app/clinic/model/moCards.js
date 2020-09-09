@@ -138,10 +138,15 @@ const checkCard = [
   city_g
 ];
 
-// Stream -> String
-export const cardValidator = card => {
+const checkTalonCard = [
+  dost,
+  birth_date
+];
 
-  let errors = R.flatten( checkCard.map(f => f(card)) ).filter(e => !!e);
+// (Array -> Stream) -> String
+const validator = checks => card => {
+
+  let errors = R.flatten( checks.map(f => f(card)) ).filter(e => !!e);
 
   if (R.isEmpty(errors)) {
     cleanEmpty(ifEmpty, card);
@@ -151,6 +156,9 @@ export const cardValidator = card => {
   return errors;
 };
 
+export const cardValidator = validator(checkCard);
+
+export const talonCardValidator = validator(checkTalonCard);
 
 /*
 

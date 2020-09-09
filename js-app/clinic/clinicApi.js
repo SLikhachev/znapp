@@ -25,7 +25,9 @@ const post = ['POST', "Добавить"];
 const Actions = (state, update) => {
   // stream of states
   const stup = up(update);
-  
+  const _reject = err => Promise.reject(err);
+  const _catch = err => stup(err);
+
   return {
     
     suite(d) {
@@ -46,7 +48,7 @@ const Actions = (state, update) => {
       if (R.isNil(state().count)) // calculate once for menu changed
         return getList(d, 'count').
           then(res => stup({ count: res, error: '', list: [] })).
-          catch(err => stup(err));
+          catch(_catch);
       return;
     },
     
@@ -54,7 +56,7 @@ const Actions = (state, update) => {
       stup({ list: null, error: null, table: true });
       return getList(state().suite, state().unit, 'fetch').
         then(res => stup(res)).
-        catch(error => stup(error));
+        catch(_catch);
     },
  
     opts() {
@@ -65,21 +67,21 @@ const Actions = (state, update) => {
 
 
       let error = R.hasPath(['rest', 'options'], def[unit]) ? 
-        '' : `No options prop for: ${unit} `;
+        '' : `No OPTIONS prop for: ${unit} `;
       error = error + (error ? '' : checkArray(def[unit].rest.options) ? 
-        '' : ` Empty options list: ${unit}`); 
+        '' : ` Empty OPTIONS list: ${unit}`); 
 
-      if (!!check)
+      if (!!error)
         return Promise.reject({ error });
 
       let data = state().options || new Map();  //Map
-      
+      stup({ optionsReady: false });
+
       console.log('opts data: ', data);
       // initially get otions
       if ( data.size === 0)
-        return getData(def, unit).
-          //catch(err => stup(err)).
-          then(res => {
+        return getData(def, unit)
+          .then(res => {
             stup(res);
             return 'opts loaded';
           });
@@ -87,22 +89,22 @@ const Actions = (state, update) => {
       // get missing options
       // these keys were loaded ?  1st for check; 
       if ( !data.has( def[unit].rest.options[0] ) )
-        return getData(def, unit).
-          then(res => {
+        return getData(def, unit)
+          .then(res => {
             stup({ 
               options: new Map([...data, ...res.options])
             });
             return 'opts added';
           });
-          //.catch(err => stup(err));
+          //catch(err => Promise.reject(err));
 
-      return Promise.resolve('opts resoved');
+      return Promise.resolve('opts resolved');
     },
     
-    card(d){
-      return Promise.all( [this._card(d), this.opts()] ).
-        then(res => console.log(res)).
-        catch(err=> stup(err));
+    card(d) {
+      return Promise.all( [this._card(d), this.opts()] )
+        .then(() => stup({ optionsReady: true }))
+        .catch(_catch);
      },
 
     _card(d) {
@@ -133,10 +135,10 @@ const Actions = (state, update) => {
           stup({data: new Map()});
           listItem({});
           itemId(crd);
-          return Rromise.resolse('new card');
+          return Promise.resolve('new card');
       }
-      return getData(state().suite, 'card', 'data').
-        then(res => {
+      return getData(state().suite, 'card', 'data')
+        .then(res => {
           stup(res);// card and list of talons in Map
           let card = state().data.get('card')[0] || {};
           if (R.isNil(card) || R.isEmpty(card))
@@ -145,23 +147,22 @@ const Actions = (state, update) => {
           itemId(crd);
           return 'card loaded'; // just string
         });
-        //.catch(err => stup(err));
+        //.catch(_reject);
     },
     
     talon(d) {
+      return Promise.all( [this._talon(d), this.opts()] )
+        .then(() => stup({ optionsReady: true }))
+        .catch(_catch);
+    },
+
+    _talon(d) {
       let [suite, crd, tal] = d, [method, word] = patch;
 
       if (tal === 'add') {
         tal= '';
         [method, word]  = post;
       }
-
-      if (R.isNil(state().year))
-        stup({year: _year()});
-      
-      this.opts();
-      
-      changedItem({ crd_num: crd, tal_num: tal });
       
       stup({
         suite,
@@ -169,24 +170,27 @@ const Actions = (state, update) => {
         method, word, error: '', errorsList: [],
         tabs: talonTabs, 
       });
-      /*
-      if (!!tal)
-        return;
-      */
-      return getList(state().suite, 'card').then(
-        res => {
-          //console.log(res);
-          if (R.isEmpty(res.list)) {       
-            stup({ error: 'Карта не найдена'});
-          } else {
-            stup({ data: new Map()});
-            listItem( newTalonCard(res.list[0]) ); // card object from Map
-            itemId(crd); // just string
-            state().data.set('card', res.list[0]);
-            //console.log(state().data);
-          }
-        }).
-        catch(err => stup(err));
+
+      if (R.isNil(state().year))
+        stup({year: _year()});
+     
+      changedItem({ crd_num: crd, tal_num: tal });
+
+      return getList(state().suite, 'card')
+        .then(
+          res => {
+            //console.log(res);
+            if (R.isEmpty(res.list)) {       
+              stup({ error: 'Карта не найдена'});
+            } else {
+              stup({ data: new Map()});
+              listItem( newTalonCard(res.list[0]) ); // card object from Map
+              itemId(crd); // just string
+              state().data.set('card', res.list[0]);
+            }
+            return 'talon loaded';
+        });
+        //.catch(err => stup(err));
     },
 
     // fetch data from rest server defs in fetch, fill with target
@@ -230,7 +234,7 @@ const Actions = (state, update) => {
     },
 
     save(d) {
-        let [item, event] = d;
+        let [item, event, method=''] = d;
         vuDialog.error = '';
         stup({
           errorsList: state().suite[item].item.validator(changedItem)
@@ -241,21 +245,26 @@ const Actions = (state, update) => {
           return;
         }
         
+        //return false;
+        
+        // this trap for card save in talon form
+        method = method || state().method;
+
         event.target.classList.add('disable');
-        return saveItem(state().suite[item], 'item', state().method).
-        then(res => {
-          if (checkArray(res)) {
-            listItem(res[0]); 
-            itemId(res[0].crd_num);
-            stup({ crd: itemId()});
-            changeValue(target('crd_old', itemId()));
-          }
-        }).
-        catch(error => {
-          vuDialog.error = error.saverror;
-          vuDialog.open();
-        }).
-        finally(() => event.target.classList.remove('disable'));
+        return saveItem(state().suite[item], 'item', method)
+          .then(res => {
+            if (checkArray(res)) {
+              listItem(res[0]); 
+              itemId(res[0].crd_num);
+              stup({ crd: itemId()});
+              changeValue(target('crd_old', itemId()));
+            }
+          })
+          .catch(error => {
+            vuDialog.error = error.saverror;
+            vuDialog.open();
+          })
+          .finally(() => event.target.classList.remove('disable'));
     },
 
     year(d) {

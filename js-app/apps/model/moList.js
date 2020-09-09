@@ -168,9 +168,10 @@ export const getList = (set, item, isfetch = '') => {
             return { list: [] };
           }
         }
-        return res;
+        return res.toString();
       }
+      return Promise.reject({ error: `getList: Nil response: ${res}`});
     },
-    err => ({ error: errMsg(err) }));
+    err => Promise.reject({ error: `getList: ${errMsg(err)}` }));
 };
 

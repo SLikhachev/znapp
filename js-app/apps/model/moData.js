@@ -1,5 +1,5 @@
 
-'use strict';
+//'use strict';
 
 import { checkArray, errMsg } from './moModel';
 import { getRequest } from './moList';
@@ -23,7 +23,7 @@ export const getData = (set, item, list = 'options') => {
     err = robj.filter( o => typeof o === 'string');
 
   if (err.length)
-    return Promise.reject({ error: `getData: ${err[0]}` });  
+    return Promise.reject({ error: `getData: ${err.join(', ')}` });
      
   return Promise.all(robj.map(r => m.request(r))).
     then(

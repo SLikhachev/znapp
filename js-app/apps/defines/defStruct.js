@@ -225,7 +225,7 @@ export const $month = {
 
 export const $button_attrs = {
   style: 'font-size: 1.2em; margin-top: 0.5em', method: 'POST'
-}
+};
 
 export const $checkbox = text => ({
   label: [text.toString(), '.pure-checkbox'],
