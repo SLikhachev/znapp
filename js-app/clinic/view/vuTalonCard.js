@@ -76,7 +76,7 @@ export const talonCard = function() {
     view() {
       form = states().suite.card.form || {};
       fields = form.fields || {};
-      card = states().crd;
+      card = states().card;
 
       return [
         m(".legnd", `Карта № ${card}`),

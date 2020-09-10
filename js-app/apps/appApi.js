@@ -33,7 +33,7 @@ export const app = {
   menu: {
     root: '/'
   }
-}
+};
 
 
 export const update = stream(); // update states stream
@@ -60,6 +60,6 @@ export const initApp = (initial, menu, actions) => {
   Object.assign(app, { initial, menu });
   disp.map(av => {
     let [event, ...args] = av;
-    return actions[event] ? actions[event](args) : stream.SKIP
+    return actions[event] ? actions[event](args) : stream.SKIP;
   });
 };

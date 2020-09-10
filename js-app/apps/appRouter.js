@@ -18,7 +18,7 @@ export const rootRouter = {
   }
 };
 
-export const pageView = state => vuPage(m(vuPageTitle, { text: state().suite.page }))
+export const pageView = state => vuPage(m(vuPageTitle, { text: state().suite.page }));
 
 export const torender = path => {
   disp(['suite', path.def]);
@@ -46,17 +46,17 @@ export const pathRouter = view => route => ({
   },
 });
 
-export const routerFun = (menu, addroute, route) => {
+export const routerFun = (menu, addroute, router) => {
   // menu:: Object,
   // addroute:: Object { path: routerFunction -> routerObject }
-  // route:: routerFunction -> routerObject
+  // router:: menuItem -> routerObject
   let root = rootRouter, next;
   Object.keys(menu).forEach(m => {
     if (m === 'root') return;
     if (!!menu[m].router)
       next = addroute[m]();
     else
-      next = route(menu[m]);
+      next = router(menu[m]);
     Object.assign(root, next);
   });
   return root;

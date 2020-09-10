@@ -124,9 +124,9 @@ export const vuLayout = vnode => {
 
   // here define render side bar or not
   let item_path = getItemPath();
-  console.log('item_path', item_path);
+  //console.log('item_path', item_path);
   let menu_item_children = hasChildren(spaMenu, item_path);
-  console.log('has children', menu_item_children);
+  //console.log('has children', menu_item_children);
   //console.log(spaMenu[menu_item_children].def['doctor'].item.name);
 
   return {
@@ -149,8 +149,8 @@ export const vuLayout = vnode => {
     onbeforeupdate() {
       item_path = getItemPath();
       menu_item_children = hasChildren(spaMenu, item_path);
-      console.log('item', item_path);
-      console.log('has children', menu_item_children);
+      //console.log('item', item_path);
+      //console.log('has children', menu_item_children);
     },
 
     view(vnode) {

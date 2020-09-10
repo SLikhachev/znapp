@@ -36,7 +36,7 @@ export const vuTaskSheet = function () {
           !rest.url ? '' :
             !states().list ? m(vuLoading) :
               m(vuTable, { itdef, list: states().list }),
-      ]
+      ];
     }
   }; //return this object
-}
+};

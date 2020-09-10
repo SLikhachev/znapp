@@ -288,7 +288,7 @@ export const talDs1 = {
         options: id_name
       }
     },
-    diagnose: $diag('ds1') 
+    diagnose: $diag('ds1')
   }
 };
 
@@ -328,64 +328,8 @@ export const talDs2 = {
   }
 };
 
-/*
-ist_fin: { label: ['', "Оплата"], input: {
-      tag: ['.pure-u-18-24', "text", 7, true],
-      //attrs: { min: 1, max: 9}
-    }
-  },
-  purp: { label: ['', "Цель"], input: {
-      tag: ['.pure-u-18-24', 'number', 8, true],
-      attrs: { min: 0, max: 33}
-    }
-  },
-  doc_spec: { label: ['', "Врач"], input: {
-      tag: ['.pure-u-22-24', "number", 9, true],
-      attrs: { placeholder: "Спец"}
-    }
-  },
-  doc_code: { label: ['', "Код"], input: {
-      tag: ['.pure-u-22-24', "number", 10, true]
-    }
-  },
-  visit_pol: {label: ['', "Амбул"], input: {
-    tag: ['.pure-u-20-24', 'number', 11]
-    }
-  },
-  visit_home: {label: ['', "На дом"], input: {
-      tag: ['.input.pure-u-20-24', "number", 12]
-    }
-  },
-  ds1: {label: ['', "Осн. диагноз"], input: {
-      tag: ['.input.pure-u-20-24', "text", 13, true]
-    }
-  },
-  char1: {label: ['', "Характер"], input: {
-      tag: ['.input.pure-u-16-24', "text", 14, true],
-    }
-  },
-  ishod: {label: ['', "Исход"], input: {
-      tag: ['.input.pure-u-16-24', "text", 15, true]
-    }
-  },
-  rslt: {label: ['', "Результат"], input: {
-      tag: ['.input.pure-u-16-24', "text", 16, true]
-    }
-  },
-  ds2: {label: ['', "Доп. диагноз"], input: {
-      tag: ['.input.pure-u-20-24', "text", 17]
-    }
-  },
-  char2: {label: ['', "Характер"], input: {
-      tag: ['.input.pure-u-16-24', "text", 18]
-    }
-  },
-  travma_type: {label: ['', "Травма"], input: {
-      tag: ['.input.pure-u-14-24', "text", 19]
-    }
-  },
-};
 
+/*
 export const pmuAdd = {
   code_usl: { label: ['', 'Код ПМУ'], input: {
       tag: ['.input-find.pure-u-3-4', "text"],

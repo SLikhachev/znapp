@@ -33,14 +33,14 @@ const tableRow = data => {
     let [k, rep] = el,
       [value, klass = '', attrs = {}] = rval(rd, k, rep, pk);
     return m(`td${klass}`, attrs, value);
-  }
+  };
 
   const columns = Object.entries(struct);
 
   return row => m('tr', { key: row[pk] },
     columns.map(el => $cell(el, row))
   );
-}
+};
 
 // clojure
 export const vuListTable = function (vnode) {
@@ -77,4 +77,4 @@ export const vuListTable = function (vnode) {
       ]);
     }
   };
-}
+};

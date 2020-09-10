@@ -8,7 +8,9 @@ import { spravLocal } from '../../sprav/defines/defLocal';
 import { spravProf } from '../../sprav/defines/defProf';
 
 //import { spravComs } from '../../sprav/defines/defComs';
-import { fetch_form, $card, 
+import { 
+  fetch_form, 
+  $card, 
   talDate,
   talTarget,
   talVizits,
@@ -141,8 +143,7 @@ export const clinicTalons = {
 export const talons = {
   path: $path.talons,
   name: "Визиты",
-  def: clinicTalons,
+  item: '/:card/:talon',
   add: '/add',
-  //items: [],
-  router: 'talons'
+  def: clinicTalons,
 };

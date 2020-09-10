@@ -11,21 +11,21 @@ import { _getFIO, cardValidator} from '../model/moCards';
 import { $path } from './defClinic';
 
 
-export const cardPath = crd => `${$path.cards}/${crd}`;
+export const cardPath = card => `${$path.cards}/${card}`;
 
 
 const linkTalon = state => (row, key, pk) => ([
   m(
     m.route.Link, 
-    { href: `${$path.talons}/${state().crd}/${row[key]}` }, 
+    { href: `${$path.talons}/${state().card}/${row[key]}` }, 
     row[key]
   ),
   '.choice.blue',
 ]);
 
-const _addTalon = crd => e => {
+const _addTalon = card => e => {
   e.preventDefault();
-  m.route.set(`${$path.talons}/${crd}/add`);
+  m.route.set(`${$path.talons}/${card}/add`);
 };
 
 const newTalon = (row, key, pk) => m('i.fa.fa-plus-circle.choice', {
@@ -127,7 +127,7 @@ export const card = {
     header: "Карты",
     validator: cardValidator,
     rest: { 
-      url: 'cardz_clin',  
+      url: 'cardz_clin',
       headers: {Prefer: 'return=representation'} 
     }
   },
@@ -158,8 +158,7 @@ export const clinicCards = {
 export const cards = {
   path: $path.cards,
   name: "Карты",
+  item: '/:card',
   add: '/add',
   def: clinicCards,
-  //items: [],
-  router: 'cards'
 };

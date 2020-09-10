@@ -14,7 +14,7 @@ import {
   opt_filter
 } from './moModel';
 
-
+// Object -> Object
 export const newTalonCard = card => [
   'polis_ser', 'polis_num', 
   'smo', 'smo_okato'].
@@ -24,6 +24,7 @@ export const newTalonCard = card => [
       return o;
      }, Object.assign({}, card));
 
+/* test it
 (() => {
   let card = {
     polis_ser: 'crd_polis_ser', 
@@ -38,7 +39,7 @@ export const newTalonCard = card => [
         { k, c: card[k], t: talCard [card[k] ] } )
       );
 })();
-
+*/
 
 const tmonth = function () {
     let d = new Date();

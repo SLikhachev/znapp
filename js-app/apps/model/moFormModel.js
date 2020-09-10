@@ -16,7 +16,8 @@ export const formItem = (suite, unit) => {
       return f;
     }, form);
   return form;
-}
+};
+
 
 // used by task server
 const formRequest = (api, suite, unit, data) => {
