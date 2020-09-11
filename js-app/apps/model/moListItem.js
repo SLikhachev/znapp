@@ -1,4 +1,7 @@
 
+
+
+import { checkArray } from '../utils';
 import { vuDialog } from '../view/vuDialog';
 import { _schema, errMsg } from './moModel';
 
@@ -80,15 +83,16 @@ export const changedItem = combine((itemid, newvalue, changed) => {
 const saveRequest = (set, item, _method, data) => {
   const rest = set[item].rest || {},
     _item = set[item].item || {},
-    _fields = _item.editable_fields || null, //default all fields editable
+    _fields = checkArray(_item.editable_fields) && 
+      _item.editable_fields, //default all fields editable
     _key = _item.pk || 'id', // primary key may be vary
     _url = rest.url || item,
     _sign = _url.includes('?') ? '&' : '?';
 
   const params = {};
 
-  // data request may be from call params or changedItem stream  
-  const _data = data ? data : changedItem();
+  // data request may be from call args params or changedItem stream  
+  const _data = data || changedItem();
   let body = Object.assign({}, _data);
 
   //let method = changeEvent().method || '';

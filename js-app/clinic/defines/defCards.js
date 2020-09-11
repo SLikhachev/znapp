@@ -127,6 +127,7 @@ export const card = {
     header: "Карты",
     validator: cardValidator,
     rest: { 
+      // saved by id
       url: 'cardz_clin',
       headers: {Prefer: 'return=representation'} 
     }

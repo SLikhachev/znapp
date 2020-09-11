@@ -19,8 +19,13 @@ import {
 } from '../apps/model/moListItem';
 import { vuDialog } from '../apps/view/vuDialog';
 import { clinicMenu } from './clinicMenu';
-import { talons } from './defines/defTalons';
-import { newTalonCard } from './model/moTalons';
+import { cardPath } from './defines/defCards';
+import { talonPath, talons } from './defines/defTalons';
+import { 
+  newTalonCard, 
+  talonCard, 
+  talonTalon
+} from './model/moTalons';
 import { cardTabs } from './view/vuClinic';
 import { talonTabs } from './view/vuClinic';
 
@@ -159,7 +164,7 @@ const Actions = (state, update) => {
             stup({ error: 'Карта не найдена'});
           
           // init changedItem
-          listItem(R.assoc('old_card', card, card_obj)); // card object from Map
+          listItem(R.assoc('old_num', card, card_obj)); // card object from Map
           itemId(card);
           
           return 'card loaded'; // just string
@@ -173,6 +178,8 @@ const Actions = (state, update) => {
       if (talon === 'add') {
         talon= '';
         [method, word]  = post;
+      } else {
+        talon = Number(talon);
       }
       
       stup({
@@ -186,22 +193,41 @@ const Actions = (state, update) => {
         stup({year: _year()});
      
       changedItem({ crd_num: card, tal_num: talon });
+      
+      // get talon and pmus
+      if (!!talon) {
+        return getData(state().suite, 'talon', 'data')
+        .then(res => {
+          stup(res);// talon and list of pmus in Map to state.data
+          
+          let talon_obj = state().data.get('talon')[0] || {};
+          
+          if (R.isNil(talon_obj) || R.isEmpty(talon_obj))
+            stup({ error: 'Талон не найден'});
+          
+          // init changedItem
+          listItem(talon_obj.tal_num); // card object from Map
+          itemId(tal_num);
+          
+          return 'talon and pmus loaded'; // just string
+        });
+      }
 
+
+      //just get card  
       return getList(state().suite, 'card')
         .then(
           res => {
-            //console.log(res);
-            if (R.isEmpty(res.list)) {       
+            if (R.isEmpty(res.list)) {
               stup({ error: 'Карта не найдена'});
             } else {
               stup({ data: new Map()});
               listItem( newTalonCard(res.list[0]) ); // card object from Map
-              itemId(card); // just string
+              itemId('Новый талон'); // just string no talon number
               state().data.set('card', res.list[0]);
             }
-            return 'talon loaded';
+            return 'talon card loaded';
         });
-        //.catch(err => stup(err));
     },
 
     // fetch data from rest server defs in fetch, fill with target
@@ -244,8 +270,49 @@ const Actions = (state, update) => {
       });
     },
 
+    _saved(d) {
+      let [res, item] = d;
+      
+      // card form saved
+      if (state().unit === 'card') {
+        if (state().card === '' || 
+          changedItem().old_num !== res[0].crd_num)
+          // redirect to just added or changed card (number changed)
+          m.route.set(cardPath(res[0].crd_num));
+        
+        // update page current
+        listItem(res[0]); 
+        // update changedItem
+        itemId(res[0].crd_num);
+        //stup({ card: itemId()});
+        //changeValue(target('old_num', itemId()));
+        return false;
+      }
+     
+      // card form in talon saved
+      if (item === 'card') {
+        listItem( 
+          Object.assign(changedItem(), talonCard( res[0] ) )
+        );
+        // update changedItem
+        itemId(state().talon);
+        return false;
+      }
+      
+      // else update talon 
+      if (state().talon === '')
+          // redirect to just added talon
+          m.route.set(talonPath(res[0].crd_num, res[0].tal_num));
+      
+      listItem(res[0]);
+      itemId(res[0].tal_num);
+      // update changedItem
+      //stup({ talon: itemId()});
+      return false;
+    },
+
     save(d) {
-        let [item, event, method=''] = d;
+        let [item, event, method = ''] = d;
         vuDialog.error = '';
         stup({
           errorsList: state().suite[item].item.validator(changedItem)
@@ -253,48 +320,51 @@ const Actions = (state, update) => {
 
         if (!R.isEmpty(state().errorsList)) {
           vuDialog.open();
-          return;
+          return false;
         }
-        
+
+        // test
         //return false;
-        
+
         // this trap for card save in talon form
         method = method || state().method;
-        
-        // save card from changedItem()
+
+        // save card from changedItem() if data is null
+        // else from data object
         let data = null;
+
+        // save talonTalon from data object;
         
-        // save talonCard & talonTalon from data object;
-        if (state().unit === 'talon')
-          if (item === 'card')
-            data = talonCard(); // 
-          data = talonTalon();
+        if (state().unit === 'talon' && item === 'talon')
+          data = talonTalon(); // save talon form
+
+
+        // save all others from cahngedItem, 
+        // fields to save rules by 'editable_fields': array of the item
 
         event.target.classList.add('disable');
         return saveItem(state().suite[item], 'item', method, data)
-          .then(res => {
-            //return representation then change current list item 
-            if (checkArray(res)) {
-              listItem(res[0]); 
-              itemId(res[0].crd_num);
-              stup({ crd: itemId()});
-              changeValue(target('crd_old', itemId()));
-            }
-          })
+          //return representation then change current list item 
+          .then(res => checkArray(res) ?
+            this._saved([res, item]) :
+            false
+          )
           .catch(error => {
             vuDialog.error = error.saverror;
             vuDialog.open();
           })
           .finally(() => event.target.classList.remove('disable'));
-    },
+      },
 
-    year(d) {
-      let [ event ] = d;
-      stup({ year: event.target.value });
-      // redirect to talons
-      if (state().unit === 'talons')
-        m.route.set(talons.path);
-    },
+      year(d) {
+        let [event] = d;
+        stup({
+          year: event.target.value
+        });
+        // redirect to talons
+        if (state().unit === 'talons')
+          m.route.set(talons.path);
+      },
 
   };
 };

@@ -17,14 +17,12 @@ import {
 // Object -> Object
 export const newTalonCard = card => [
   'polis_ser', 'polis_num', 
-  'smo', 'smo_okato'].
-  reduce(
-    (o, p) => {
-      o[`crd_${p}`] = card[p];
-      return o;
-     }, Object.assign({}, card));
+  'smo', 'smo_okato'
+  ].reduce(
+    (o, p) => R.assoc(`crd_${p}`, card[p], o),  
+    Object.assign({}, card)
+  );
 
-/* test it
 (() => {
   let card = {
     polis_ser: 'crd_polis_ser', 
@@ -39,7 +37,27 @@ export const newTalonCard = card => [
         { k, c: card[k], t: talCard [card[k] ] } )
       );
 })();
-*/
+
+
+export const talonCard = card => newTalonCard(
+  [
+  'fam', 'im', 'ot', 'birth_date'
+  ].reduce(
+    (o, p) => R.assoc(p, card[p], o), 
+    {}
+  )
+);
+
+
+export const talonTalon = () => [
+  'id', 'crd_num', 'fam', 'im', 'ot', 'birth_date',
+  'crd_polis_ser', 'crd_polis_num', 'crd_smo', 'crd_smo_okato',
+  'dul_serial', 'dul_number',  'mo_att' 
+  ].reduce(
+    (o, p) => R.dissoc(p, o),  
+    changedItem()
+  );
+
 
 const tmonth = function () {
     let d = new Date();

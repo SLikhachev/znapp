@@ -21,6 +21,8 @@ import { _getFIO } from '../model/moCards';
 import { $path } from './defClinic';
 
 
+export const talonPath = (card, talon) => `${$path.talons}/${card}/${talon}`;
+
 export const linkCard = (row, key, pk) => ([
   m(m.route.Link, { href: `${$path.cards}/${row[key]}` }, row[key]),
   '.choice.blue',
@@ -89,7 +91,11 @@ const talon = {
     validator: null,
     rest: { 
       url: 'cardz_clin',  
-      headers: {Prefer: 'return=representation'} 
+      headers: {Prefer: 'return=representation'},
+      pk: 'tal_num',
+      editable_filds: [
+        
+      ]
     }
   },
   mainForm: {

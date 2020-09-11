@@ -143,12 +143,14 @@ const checkTalonCard = [
   birth_date
 ];
 
-// (Array -> Stream) -> String
-const validator = checks => card => {
-
+// (Array -> String -> Stream) -> String
+const validator = (checks, clean='') => card => {
+  // checks:  Array[Function],
+  // clean: if not empty then clean changedItem
+  
   let errors = R.flatten( checks.map(f => f(card)) ).filter(e => !!e);
 
-  if (R.isEmpty(errors)) {
+  if (R.isEmpty(errors) && clean) {
     cleanEmpty(ifEmpty, card);
     cleanForced(ignoreAny, card);
   }
@@ -156,7 +158,7 @@ const validator = checks => card => {
   return errors;
 };
 
-export const cardValidator = validator(checkCard);
+export const cardValidator = validator(checkCard, 'clean');
 
 export const talonCardValidator = validator(checkTalonCard);
 
