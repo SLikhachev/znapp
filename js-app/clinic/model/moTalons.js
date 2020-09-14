@@ -6,15 +6,19 @@
 //import { restSprav } from '../../sprav/spravApi.js';
 //import { restClinic } from '../clinicApi.js';
 import { states, disp } from '../../apps/appApi';
-import { changedItem, changeValue } from '../../apps/model/moListItem';
+import { changedItem, changeValue, target } from '../../apps/model/moListItem';
 import { _year } from '../../apps/model/moModel';
 import {
   _tupper,
   opt_find,
-  opt_filter
+  opt_filter,
+  cleanEmpty,
+  cleanForced,
+  validator
 } from './moModel';
+//----------------------------------
 
-// Object -> Object
+// Object -> Object // add this fields with new names 
 export const newTalonCard = card => [
   'polis_ser', 'polis_num', 
   'smo', 'smo_okato'
@@ -22,7 +26,7 @@ export const newTalonCard = card => [
     (o, p) => R.assoc(`crd_${p}`, card[p], o),  
     Object.assign({}, card)
   );
-
+//--- test this ------------------------
 (() => {
   let card = {
     polis_ser: 'crd_polis_ser', 
@@ -37,8 +41,9 @@ export const newTalonCard = card => [
         { k, c: card[k], t: talCard [card[k] ] } )
       );
 })();
+//--------------------------------------
 
-
+// Object -> Object // extract this fields from card object 
 export const talonCard = card => newTalonCard(
   [
   'fam', 'im', 'ot', 'birth_date'
@@ -47,8 +52,10 @@ export const talonCard = card => newTalonCard(
     {}
   )
 );
+//---------------------------------------
 
-
+// _ -> Object // delete this fields from talon object 
+// to save talon
 export const talonTalon = () => [
   'id', 'crd_num', 'fam', 'im', 'ot', 'birth_date',
   'crd_polis_ser', 'crd_polis_num', 'crd_smo', 'crd_smo_okato',
@@ -57,15 +64,14 @@ export const talonTalon = () => [
     (o, p) => R.dissoc(p, o),  
     changedItem()
   );
-
+//----------------------------------
 
 const tmonth = function () {
     let d = new Date();
     return d.getMonth() + 1;
  };
-
+//----------------------------------
 //const _reg= _region();
-
 
 export const _doctor = () => {
   let fin = opt_find('ist_fin', 'ist_fin', 'id'),
@@ -79,10 +85,11 @@ export const _doctor = () => {
     fin = `${fin} ${purp} ${doc}`;
     return doc ? fin : 'red&Доктор ?';
 };
+//--------------------------------------
 
 const dsp = "^[A-Z][0-9]{2}$"; //(\.[0-9]{1,2})?$";
 const diag = new RegExp( dsp );
-
+//---------------------------------------
 export const set_ds = e => {
   (e.target.value = _tupper(e.target.value));
   changeValue(e);
@@ -92,6 +99,7 @@ export const set_ds = e => {
     disp(['fetch_toOptions', 'mkb10', ds, ds]);
   return false;
 };
+//--------------------------------------
 
 export const _memo_ds = d => {
   let [ds] = d, 
@@ -104,6 +112,59 @@ export const _memo_ds = d => {
   }
   return resp;
 };
+//-----------------------------------------
+
+// talon date
+const date = talon => {
+  let d1= new Date(talon().open_date),
+    d2= new Date(talon().close_date);
+    return d1 > d2 ? 
+      "Дата закрытия меньше даты открытия талона" :
+      '';
+};
+//------------------------------------------
+
+// forma pomoschi
+const for_pom = talon => { 
+  changeValue(target('for_pom', !!tal.urgent ? 2: 3));
+  return '';
+};
+//----------------------------------------
+
+// Doct Oms
+const findoc = talon => { 
+  const e1= { 
+    fin: 'Укажите способ оплаты ', 
+    purp: 'Укажите цель ',  
+    doct: 'Укажите доктора '
+  };
+  return Object.keys(e1).map( p=> !talon[p] ? e1[p] : '').join('');
+};
+
+//---------------------------------------- 
+const ifEmpty = [];
+const ignoreAny = [];
+
+const checkTalon = [
+  crd_num,
+  dost,
+  birth_date,
+  gender,
+  dul,
+  polis_type,
+  smo,
+  city_g,
+  cleanEmpty(ifEmpty),
+  cleanForced(ignoreAny)
+];
+//-----------------------------------------
+
+export const talonValidator = validator(checkTalon);
+
+//-------------------------------------------
+
+
+
 
 /*
 export const moTalonsList = {

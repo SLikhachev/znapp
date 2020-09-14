@@ -4,7 +4,12 @@ import { trims, just_int } from '../../apps/utils';
 import { states, disp, memost } from '../../apps/appApi';
 //import { vuDialog } from '../../apps/view/vuDialog.js';
 import { changeValue, target } from '../../apps/model/moListItem';
-import { _region } from '../../apps/model/moModel.js';
+import { 
+  //_region,
+  cleanEmpty,
+  cleanForced,
+  validator
+ } from '../../apps/model/moModel.js';
 //import { restSprav } from '../../sprav/spravApi.js';
 //import { restClinic } from '../clinicApi.js';
 
@@ -120,12 +125,8 @@ const cleanEmpty = (list, card) => list.forEach(k => !card()[k] ?
   changeValue(target(k, '')) : void 0
 );
 
-// clean values forced
-const cleanForced = list => list.forEach(k => changeValue(target(k, '')));
-
 const ifEmpty = ['mo_att'];
 const ignoreAny = ['old_num', 'ufms', 'created', 'modified', 'cuser' ];
-
 
 const checkCard = [
   crd_num,
@@ -135,7 +136,9 @@ const checkCard = [
   dul,
   polis_type,
   smo,
-  city_g
+  city_g,
+  cleanEmpty(ifEmpty),
+  cleanForced(ignoreAny)
 ];
 
 const checkTalonCard = [
@@ -143,22 +146,7 @@ const checkTalonCard = [
   birth_date
 ];
 
-// (Array -> String -> Stream) -> String
-const validator = (checks, clean='') => card => {
-  // checks:  Array[Function],
-  // clean: if not empty then clean changedItem
-  
-  let errors = R.flatten( checks.map(f => f(card)) ).filter(e => !!e);
-
-  if (R.isEmpty(errors) && clean) {
-    cleanEmpty(ifEmpty, card);
-    cleanForced(ignoreAny, card);
-  }
-
-  return errors;
-};
-
-export const cardValidator = validator(checkCard, 'clean');
+export const cardValidator = validator(checkCard);
 
 export const talonCardValidator = validator(checkTalonCard);
 

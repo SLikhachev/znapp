@@ -22,7 +22,7 @@ export const clinicRouter = menuItem => ({
   [`${menuItem.path}${menuItem.item}`]: {
     onmatch(args) {
       //const { card } = args;
-      // path = '/cards' -> unit = 'card'
+      // path = '/cards/add' -> unit = 'card'
       let unit = unslash(menuItem.path).slice(0, -1);
       disp(['unit', unit, menuItem.def, args]);
       return vuClinicTabs;

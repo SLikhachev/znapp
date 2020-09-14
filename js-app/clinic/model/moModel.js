@@ -145,4 +145,24 @@ export const opt_filter =
   (opt_key, form_field, item_key) => states().options.
     get(opt_key).
     filter(o=>changedItem()[form_field] == o[item_key]);
+//-----------------------------------------------
 
+// clean empty values 
+const cleanEmpty = list => item => {
+  list.forEach(k => !item()[k] ? 
+    changeValue(target(k, '')) : void 0
+  );
+  return '';
+}
+//-----------------------------------------------
+// clean values forced
+const cleanForced = list => item=> {
+  list.forEach(k => changeValue(target(k, '')));
+  return '';
+}
+//------------------------------------------------
+
+// (Array[Function] -> Stream) -> Array[String]
+const validator = checks => item => R.flatten(
+  // checks:  Array[Function],
+  checks.map( f => f(item)) ).filter(e => !!e);

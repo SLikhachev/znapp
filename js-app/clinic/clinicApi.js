@@ -32,6 +32,9 @@ import { talonTabs } from './view/vuClinic';
 
 const patch = ['PATCH', "Изменить"];
 const post = ['POST', "Добавить"];
+const $crd_num = new RegExp(/\w{1,9}/);
+const $lal_num = new RegExp(/\d{1,6}/);
+
 
 const Actions = (state, update) => {
   // stream of states
@@ -71,17 +74,12 @@ const Actions = (state, update) => {
     },
  
     opts() {
-      
       let def = state().suite, unit= state().unit;
-
-      //console.log('opts unit: ', unit);
-
 
       let error = R.hasPath(['rest', 'options'], def[unit]) ? 
         '' : `No OPTIONS prop for: ${unit} `;
       error = error + (error ? '' : checkArray(def[unit].rest.options) ? 
         '' : ` Empty OPTIONS list: ${unit}`); 
-
       if (!!error)
         return Promise.reject({ error });
         //return Promise.resolve('no options here da i xep c nim');
@@ -89,7 +87,6 @@ const Actions = (state, update) => {
       let data = state().options || new Map();  //Map
       stup({ optionsReady: false });
 
-      //console.log('opts data: ', data);
       // initially get otions
       if ( data.size === 0)
         return getData(def, unit)
@@ -113,13 +110,24 @@ const Actions = (state, update) => {
     },
     
     unit(d) {
-      let [ unit, suite, args] = d;
-      let _unit = { 
-        card: this._card, 
-        talon: this._talon
-      }[unit];
+      let [unit, suite, args] = d, 
+        //[method, word] = patch,
+        { card, talon='' } = args;
       
-      return Promise.all( [_unit([suite, args]), this.opts()] )
+      card = card.match($crd_num); 
+      talon = talon.match($tal_num);
+      card = (card && card[0]) || 'add';
+      talon = Number(talon && talon[0]) || 'add';
+
+      if (R.isNil(state().year))
+        stup({year: _year()});
+
+      _unit = {
+          card: this._card,
+          talon: this._talon
+        }[unit];
+
+      return Promise.all( [_unit([suite, {card, talon}]), this.opts()] )
         .then(() => stup({ optionsReady: true }))
         .catch(_catch);
     },
@@ -133,16 +141,14 @@ const Actions = (state, update) => {
       if (card === 'add') {
         card= '';
         [method, word]  = post;
-      }
+      }  
+
       stup({
         suite,
         unit: 'card', card, data: null, method, word,
         error: '', errorsList: [],
         tabs: cardTabs,
       });
-
-      if (R.isNil(state().year))
-        stup({year: _year()});
 
       // get card number from this stream initailly
       changedItem({ crd_num: card, old_num: card });
@@ -178,23 +184,18 @@ const Actions = (state, update) => {
       if (talon === 'add') {
         talon= '';
         [method, word]  = post;
-      } else {
-        talon = Number(talon);
-      }
-      
+      } 
+
       stup({
         suite,
         unit: 'talon', card, talon, data: null, //options: new Map(),
         method, word, error: '', errorsList: [],
         tabs: talonTabs, 
       });
-
-      if (R.isNil(state().year))
-        stup({year: _year()});
      
       changedItem({ crd_num: card, tal_num: talon });
       
-      // get talon and pmus
+      // get talon and pmus NaN and ZERO Numbers are ignored
       if (!!talon) {
         return getData(state().suite, 'talon', 'data')
         .then(res => {
@@ -213,8 +214,7 @@ const Actions = (state, update) => {
         });
       }
 
-
-      //just get card  
+      //just get card only
       return getList(state().suite, 'card')
         .then(
           res => {
@@ -301,8 +301,8 @@ const Actions = (state, update) => {
       
       // else update talon 
       if (state().talon === '')
-          // redirect to just added talon
-          m.route.set(talonPath(res[0].crd_num, res[0].tal_num));
+        // redirect to just added talon
+        m.route.set(talonPath(res[0].crd_num, res[0].tal_num));
       
       listItem(res[0]);
       itemId(res[0].tal_num);

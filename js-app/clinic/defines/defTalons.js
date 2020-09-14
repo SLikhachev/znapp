@@ -18,6 +18,7 @@ import {
   talDs2
 } from '../form/foTalon';
 import { _getFIO } from '../model/moCards';
+import { talonValidator } from '../model/moTalons';
 import { $path } from './defClinic';
 
 
@@ -88,7 +89,7 @@ const talon = {
   },
   item: {
     header: "Талоны",
-    validator: null,
+    validator: talonValidator,
     rest: { 
       url: 'cardz_clin',  
       headers: {Prefer: 'return=representation'},
