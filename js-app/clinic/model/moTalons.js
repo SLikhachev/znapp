@@ -7,7 +7,7 @@
 //import { restClinic } from '../clinicApi.js';
 import { states, disp } from '../../apps/appApi';
 import { changedItem, changeValue, target } from '../../apps/model/moListItem';
-import { _year } from '../../apps/model/moModel';
+import { _year, _mo } from '../../apps/model/moModel';
 import {
   _tupper,
   opt_find,
@@ -73,17 +73,16 @@ const tmonth = function () {
 //----------------------------------
 //const _reg= _region();
 
+const fin = s => opt_find('ist_fin', 'ist_fin', 'id').name || s;
+const purp = s => opt_find('purpose', 'purp', 'id').name || s;
+const doc = s => opt_filter('doctor', 'doc_spec', 'spec').find(
+    d => d.code == changedItem().doc_code
+  ) || s;
+
 export const _doctor = () => {
-  let fin = opt_find('ist_fin', 'ist_fin', 'id'),
-    purp = opt_find('purpose', 'purp', 'id'),
-    doc = opt_filter('doctor', 'doc_spec', 'spec').find(
-      d => d.code == changedItem().doc_code
-    );
-    fin = fin ? fin.name : '';
-    purp = purp ? purp.name : '';  
-    doc = doc ? doc.family : '';
-    fin = `${fin} ${purp} ${doc}`;
-    return doc ? fin : 'red&Доктор ?';
+  let _doc = doc(''),
+    _fin = `${fin('')} ${purp('')} ${_doc}`;
+  return _doc ? _fin : 'red&Доктор ?';
 };
 //--------------------------------------
 
@@ -115,7 +114,7 @@ export const _memo_ds = d => {
 //-----------------------------------------
 
 // talon date
-const date = talon => {
+const talon_date = talon => {
   let d1= new Date(talon().open_date),
     d2= new Date(talon().close_date);
     return d1 > d2 ? 
@@ -125,35 +124,99 @@ const date = talon => {
 //------------------------------------------
 
 // forma pomoschi
-const for_pom = talon => { 
-  changeValue(target('for_pom', !!tal.urgent ? 2: 3));
-  return '';
-};
+const for_pom = talon => (
+  changeValue(target('for_pom', !!talon().urgent ? 2: 3)), 
+  '');
 //----------------------------------------
 
 // Doct Oms
-const findoc = talon => { 
-  const e1= { 
-    fin: 'Укажите способ оплаты ', 
-    purp: 'Укажите цель ',  
-    doct: 'Укажите доктора '
-  };
-  return Object.keys(e1).map( p=> !talon[p] ? e1[p] : '').join('');
-};
-
+const fin_doc = () => [
+  [ fin, "Укажите способ оплаты"], 
+  [ purp, "Укажите цель"], 
+  [ doc, "Укажите доктора"]
+].map( el => el[0]('') ? '' : el[1]);
 //---------------------------------------- 
+
+const vizits = talon => {
+  let amb= Number(talon().visit_pol) + Number(talon().visit_home), 
+    ds= Number(talon().visit_daystac) + Number(talon().visit_homstac);
+  if ( !( amb || ds ) )
+    return "Укажите количество посещений";
+  if ( amb && ds )
+    return "Амбулвторный прием и ДСтац в одном талоне";
+  if ( amb )
+    changeValue(target('usl_ok', 3)); // ambul
+  else
+    changeValue(target('usl_ok', 2)); // day stac
+  return '';    
+};
+//-------------------------------------------
+
+const $scons = [63];
+const attached = tal => _mo().endsWith(tal.mo_att);
+
+const naprav = talon => {
+  // napr ambul, stac together
+  let cons= talon().naprlech, hosp= talon().nsndhosp;
+  // no napr
+  // here not specific from dcons and not attached and not urgent and no napravl
+  if ( 
+    $scons.find( d=> d == talon().doc_spec) && // this spec need as cons
+    !attached(talon()) && // not attached 
+    !talon().urgent && // not urgent
+    !cons ) // no naprav
+    return 'Укажите направление';
+
+  if ( !!cons && !!hosp )
+    return "Госпитализация и Консультация в одном талоне";
+  
+  // napr MO code
+  // napr spec ambul
+  
+  let mo, spec;
+  if (!!cons || !!hosp) {
+    mo= cons ? Number(talon().npr_mo) : Number(talon().hosp_mo);
+    spec= cons ? Number(tal.npr_spec): 0;
+    const mo_local= restSprav.mo_local.url, doc_spec= restSprav.doc_spec.url;
+    const _mo_url= `${mo_local}?scode=eq.${mo}`;
+    let _spec_url= `${doc_spec}?spec=eq.${spec}`;
+    let opt= [ { url: _mo_url } ];
+    if ( cons ) {
+      if ( !tal.npr_date || ( new Date(tal.npr_date) > new Date(tal.open_date)) )
+        tal.npr_date = tal.open_date;
+      opt.push({url: _spec_url, order_by: 'spec'});
+    //hospital
+    } else {
+      if ( !tal.npr_date || ( new Date(tal.npr_date) > new Date(tal.close_date)) )
+        tal.npr_date = tal.close_date;
+    }
+    const _mdl= { options: opt, data: new Map() };
+    try {
+      let r= '';
+      let t= await moModel.getData(_mdl);
+      //console.log(_mdl);
+      if (_mdl.data.get(mo_local).length === 0)
+        r += 'Неверный код МО направления ';
+      if (cons)
+        if (_mdl.data.get(doc_spec).length === 0)
+          r += 'Неверный код Специалиста направления';
+      //console.log(r);
+      if ( Boolean (r) )
+        return r;
+    } catch (e) {
+      return e;
+    }
+  
+
 const ifEmpty = [];
 const ignoreAny = [];
 
 const checkTalon = [
-  crd_num,
-  dost,
-  birth_date,
-  gender,
-  dul,
-  polis_type,
-  smo,
-  city_g,
+  talon_date,
+  for_pom,
+  fin_doc,
+  //talon_polis,
+  vizits,
   cleanEmpty(ifEmpty),
   cleanForced(ignoreAny)
 ];

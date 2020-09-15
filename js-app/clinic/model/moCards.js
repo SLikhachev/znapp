@@ -120,11 +120,6 @@ const city_g = card => (!card().city_g && card().street_g) ?
     'Укажите город': '';
 //----------------------------------------
 
-// clean empty values 
-const cleanEmpty = (list, card) => list.forEach(k => !card()[k] ? 
-  changeValue(target(k, '')) : void 0
-);
-
 const ifEmpty = ['mo_att'];
 const ignoreAny = ['old_num', 'ufms', 'created', 'modified', 'cuser' ];
 
@@ -137,7 +132,7 @@ const checkCard = [
   polis_type,
   smo,
   city_g,
-  cleanEmpty(ifEmpty),
+  //cleanEmpty(ifEmpty),
   cleanForced(ignoreAny)
 ];
 

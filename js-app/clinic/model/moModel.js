@@ -3,7 +3,7 @@
 
 import { states, disp } from '../../apps/appApi';
 import { checkArray } from '../../apps/model/moModel';
-import { changedItem, changeValue } from '../../apps/model/moListItem';
+import { changedItem, changeValue, target } from '../../apps/model/moListItem';
 import { _year } from '../../apps/model/moModel';
 
 
@@ -134,32 +134,34 @@ export const opt_key_value = (key, value) => o => m(
 
 export const id_name = opt_key_value('id', 'name');
 
-
+// if not options what then ?
 export const opt_find = 
-  (opt_key, form_field, item_key) => states().options.
-    get(opt_key).
-    find(o=>changedItem()[form_field] == o[item_key]);
-
+  (opt_key, form_field, item_key) => (
+    states().options && states().options.get(opt_key) &&
+    states().options.get(opt_key).find(o=>changedItem()[form_field] == o[item_key]) ||
+    {});
 
 export const opt_filter = 
-  (opt_key, form_field, item_key) => states().options.
-    get(opt_key).
-    filter(o=>changedItem()[form_field] == o[item_key]);
+  (opt_key, form_field, item_key) => (
+    states().options && states().options.get(opt_key) &&
+    states().options.get(opt_key).filter(o=>changedItem()[form_field] == o[item_key]) ||
+    []);
 //-----------------------------------------------
 
 // clean empty values 
-const cleanEmpty = list => item => {
-  list.forEach(k => !item()[k] ? 
-    changeValue(target(k, '')) : void 0
-  );
-  return '';
-}
+const cleanEmpty = list => item => list.reduce( 
+  (r, k) => !item()[k] ? 
+    (changeValue(target(k, '')), '') :
+    '',
+  ''
+);
 //-----------------------------------------------
+
 // clean values forced
-const cleanForced = list => item=> {
-  list.forEach(k => changeValue(target(k, '')));
-  return '';
-}
+const cleanForced = list => item=> list.reduce(
+  (r, k) => (changeValue(target(k, '')), ''), 
+  ''
+);
 //------------------------------------------------
 
 // (Array[Function] -> Stream) -> Array[String]
