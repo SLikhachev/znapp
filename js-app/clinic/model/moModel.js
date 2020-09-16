@@ -148,13 +148,17 @@ export const opt_filter =
     []);
 //-----------------------------------------------
 
-// clean empty values 
-const cleanEmpty = list => item => list.reduce( 
-  (r, k) => !item()[k] ? 
-    (changeValue(target(k, '')), '') :
+// fill with value
+const fillFields = value => list => item => list.reduce(
+  (r, k) => !item()[k] ? // null, undef, '', 0
+    (changeValue(target(k, value)), '') :
     '',
-  ''
+  ''  
 );
+//--------------------------------------
+
+// fill with '' 
+const cleanEmpty = fillFields('');
 //-----------------------------------------------
 
 // clean values forced
@@ -162,6 +166,10 @@ const cleanForced = list => item=> list.reduce(
   (r, k) => (changeValue(target(k, '')), ''), 
   ''
 );
+//------------------------------------------------
+
+// fill with zer0
+const zeroNum = fillFields(0);
 //------------------------------------------------
 
 // (Array[Function] -> Stream) -> Array[String]

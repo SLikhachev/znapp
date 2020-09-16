@@ -1,13 +1,9 @@
 
 import { states, disp } from '../../apps/appApi';
+import { changedItem, changeValue, target } from '../../apps/model/moListItem';
 import { makeFormChildren } from '../form/foForm';
 import { nextTagFocus } from './vuTabs.js';
-
-const talNum = tal => m('legend', 
-  `Талон № `, 
-  m('span', { style: "padding: 3em" }, 'закрыт'), 
-  `Год `
-);
+import { _talNum } from './vuClinic';
 
 
 export const talonForm = () => {
@@ -32,7 +28,7 @@ export const talonForm = () => {
           onsubmit
         }, [
         m('fieldset', [
-          talNum(),
+          _talNum(changedItem()),
           makeFormChildren(form, 1)
         ]),
       ]);

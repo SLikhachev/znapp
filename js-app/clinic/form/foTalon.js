@@ -53,6 +53,7 @@ export const $card = {
   item: {
     validator: talonCardValidator,
     editable_fields: ['fam', 'im', 'ot', 'birth_date'],
+    pk: 'crd_num',
     rest: { 
       url: 'cardz_clin',
       headers: {Prefer: 'return=representation'}

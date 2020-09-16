@@ -22,9 +22,8 @@ import { clinicMenu } from './clinicMenu';
 import { cardPath } from './defines/defCards';
 import { talonPath, talons } from './defines/defTalons';
 import { 
-  newTalonCard, 
-  talonCard, 
-  talonTalon
+  initTalon,
+  toSaveTalon
 } from './model/moTalons';
 import { cardTabs } from './view/vuClinic';
 import { talonTabs } from './view/vuClinic';
@@ -207,14 +206,14 @@ const Actions = (state, update) => {
             stup({ error: 'Талон не найден'});
           
           // init changedItem
-          listItem(talon_obj.tal_num); // card object from Map
-          itemId(tal_num);
+          listItem( initTalon(tal_obj) ); // talon object from Map
+          itemId(talon_obj.tal_num);
           
           return 'talon and pmus loaded'; // just string
         });
       }
 
-      //just get card only
+      // else just get card only
       return getList(state().suite, 'card')
         .then(
           res => {
@@ -222,7 +221,7 @@ const Actions = (state, update) => {
               stup({ error: 'Карта не найдена'});
             } else {
               stup({ data: new Map()});
-              listItem( newTalonCard(res.list[0]) ); // card object from Map
+              listItem( initTalon({}, res.list[0]) ); // card object from Map
               itemId('Новый талон'); // just string no talon number
               state().data.set('card', res.list[0]);
             }
@@ -336,10 +335,10 @@ const Actions = (state, update) => {
         // save talonTalon from data object;
         
         if (state().unit === 'talon' && item === 'talon')
-          data = talonTalon(); // save talon form
+          data = toSaveTalon(); // save talon form
 
 
-        // save all others from cahngedItem, 
+        // save all others from changedItem, 
         // fields to save rules by 'editable_fields': array of the item
 
         event.target.classList.add('disable');

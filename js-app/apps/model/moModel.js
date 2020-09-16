@@ -39,7 +39,7 @@ export const _mo = () => window.localStorage.getItem('this_mo');
 
 export const checkArray = a => !!a && Array.isArray(a) && a.length > 0 ? true : false;
 
-
+/*
 export const moModel = {
 
   // :: String -> Array -> String -> Object
@@ -56,7 +56,7 @@ export const moModel = {
       editable - array defines is model could changed
       change - array editable fields names
       key - primary key for sql model table dafault id
-    */
+    *//*
     let model = {
       url: url,
       method: method,
@@ -243,7 +243,7 @@ export const moModel = {
 
   /** getFormData
     return item's data object 
-  */
+  *//*
 
   getFormData(form, isSetOnly = false) {
     // form - dom form
@@ -260,7 +260,7 @@ export const moModel = {
 
   /** formSubmit
     return false    
-  */
+  *//*
 
   formSubmit(event, model, method) {
     //console.log(model);
@@ -309,5 +309,5 @@ export const moModel = {
     });
   }
 };
-
+*/
 

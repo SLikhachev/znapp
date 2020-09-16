@@ -14,36 +14,61 @@ import {
   opt_filter,
   cleanEmpty,
   cleanForced,
+  zeroNum,
   validator
 } from './moModel';
 //----------------------------------
 
-// Object -> Object // add this fields with new names 
-export const newTalonCard = card => [
+const tmonth = () => new Date().getMonth() + 1;
+
+
+// --------CARDS DATA for NEW TALON
+
+const person_fileds = [
+  'fam', 'im', 'ot', 'birth_date', 'dost',
+  'dul_serial', 'dul_number'
+];
+
+const smo_fields = [
   'polis_ser', 'polis_num', 
   'smo', 'smo_okato'
-  ].reduce(
-    (o, p) => R.assoc(`crd_${p}`, card[p], o),  
-    Object.assign({}, card)
-  );
-//--- test this ------------------------
-(() => {
-  let card = {
-    polis_ser: 'crd_polis_ser', 
-    polis_num: 'crd_polis_num', 
-    smo: 'crd_smo', 
-    smo_okato: 'crd_smo_okato'
-  },
-    talCard = newTalonCard(card);
-    R.keys(card).map(
-      k => console.assert( 
-        talCard[ card[k] ] === card[k], 
-        { k, c: card[k], t: talCard [card[k] ] } )
-      );
-})();
-//--------------------------------------
+];
 
-// Object -> Object // extract this fields from card object 
+const _withTalon = t => { 
+  if ( !t.talon_month ) 
+    t.talon_month = tmonth();
+  
+  if (!t.tal_num) { // brand new
+    t.first_vflag = 1; // new talon with first visit always
+    t.talon_type = 1; // open/ready talon
+    t.urgent= 0; // not urgent
+    // initially set default smo, smo_okato from card
+    //t.smo = data.crd_smo;
+    //t.smo_okato = data.crd_smo_okato;
+  }
+  
+  if( !!t.for_pom )
+    t.urgent = t.for_pom == 2 ? 1: 0;
+  return t;
+};
+
+
+const _withCard = card => smo_fields.
+  reduce(
+    (o, p) => R.assoc(`crd_${p}`, card[p], o),  
+    [...person_fileds, ...smo_fields].
+      reduce(
+        (o, p) => R.assoc(p, card[p], o),  
+        _withTalon({})
+      )
+);
+
+const initTalon = (talon, card={}) => 
+  R.isEmpty(talon) ? 
+    _withCard(card) :
+    talon;
+
+/* Object -> Object // extract this fields from card object 
 export const talonCard = card => newTalonCard(
   [
   'fam', 'im', 'ot', 'birth_date'
@@ -52,12 +77,17 @@ export const talonCard = card => newTalonCard(
     {}
   )
 );
+*/
 //---------------------------------------
+
+//------- TALON DATA for TALON
+
+//-----------------------------
 
 // _ -> Object // delete this fields from talon object 
 // to save talon
-export const talonTalon = () => [
-  'id', 'crd_num', 'fam', 'im', 'ot', 'birth_date',
+export const toSaveTalon = () => [
+  'crd_num', 'fam', 'im', 'ot', 'birth_date',
   'crd_polis_ser', 'crd_polis_num', 'crd_smo', 'crd_smo_okato',
   'dul_serial', 'dul_number',  'mo_att' 
   ].reduce(
@@ -66,12 +96,8 @@ export const talonTalon = () => [
   );
 //----------------------------------
 
-const tmonth = function () {
-    let d = new Date();
-    return d.getMonth() + 1;
- };
-//----------------------------------
-//const _reg= _region();
+
+// ------------ VALIDATE TALON funcs
 
 const fin = s => opt_find('ist_fin', 'ist_fin', 'id').name || s;
 const purp = s => opt_find('purpose', 'purp', 'id').name || s;
@@ -89,6 +115,7 @@ export const _doctor = () => {
 const dsp = "^[A-Z][0-9]{2}$"; //(\.[0-9]{1,2})?$";
 const diag = new RegExp( dsp );
 //---------------------------------------
+
 export const set_ds = e => {
   (e.target.value = _tupper(e.target.value));
   changeValue(e);
@@ -154,7 +181,7 @@ const vizits = talon => {
 
 const $scons = [63];
 const attached = tal => _mo().endsWith(tal.mo_att);
-
+/*
 const naprav = talon => {
   // napr ambul, stac together
   let cons= talon().naprlech, hosp= talon().nsndhosp;
@@ -206,8 +233,16 @@ const naprav = talon => {
     } catch (e) {
       return e;
     }
-  
+*/  
 
+const toZero= [
+  'mek','visit_pol', 'pol_days', 'visit_home', 'home_days',
+  'visit_homstac', 'visit_daystac', 'days_at_homstac', 'days_at_daystac',
+  //'npr_mo', 'npr_spec', 'hosp_mo',
+  'extr', 'prof_k',
+  'char1', 'char2', 
+  'travma_type', 'patient_age',
+];
 const ifEmpty = [];
 const ignoreAny = [];
 
@@ -216,9 +251,11 @@ const checkTalon = [
   for_pom,
   fin_doc,
   //talon_polis,
+  //naprav,
   vizits,
   cleanEmpty(ifEmpty),
-  cleanForced(ignoreAny)
+  cleanForced(ignoreAny),
+  zeroNum(toZero)
 ];
 //-----------------------------------------
 
