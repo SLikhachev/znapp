@@ -5,11 +5,10 @@ import { states, disp, memost } from '../../apps/appApi';
 //import { vuDialog } from '../../apps/view/vuDialog.js';
 import { changeValue, target } from '../../apps/model/moListItem';
 import { 
-  //_region,
   cleanEmpty,
   cleanForced,
   validator
- } from '../../apps/model/moModel.js';
+ } from '../model/moModel.js';
 //import { restSprav } from '../../sprav/spravApi.js';
 //import { restClinic } from '../clinicApi.js';
 

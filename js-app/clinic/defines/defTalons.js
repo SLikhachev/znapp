@@ -128,7 +128,8 @@ const mkb10 = {
 export const clinicTalons = {
 
   page: "Клиника: Талоны",
-
+  name: 'Talons',
+  
   talons: $talons,
   
   //talon dependensies

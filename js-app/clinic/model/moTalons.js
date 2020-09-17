@@ -63,7 +63,7 @@ const _withCard = card => smo_fields.
       )
 );
 
-const initTalon = (talon, card={}) => 
+export const initTalon = (talon, card={}) => 
   R.isEmpty(talon) ? 
     _withCard(card) :
     talon;

@@ -1,5 +1,5 @@
 
-//'use strict';
+'use strict';
 
 // src/report/reportApi.js
 /**
@@ -32,7 +32,7 @@ import { talonTabs } from './view/vuClinic';
 const patch = ['PATCH', "Изменить"];
 const post = ['POST', "Добавить"];
 const $crd_num = new RegExp(/\w{1,9}/);
-const $lal_num = new RegExp(/\d{1,6}/);
+const $tal_num = new RegExp(/\d{1,6}/);
 
 
 const Actions = (state, update) => {
@@ -40,7 +40,7 @@ const Actions = (state, update) => {
   const stup = up(update);
   const _reject = err => Promise.reject(err);
   const _catch = err => stup(err);
-
+    
   return {
     
     suite(d) {
@@ -108,25 +108,34 @@ const Actions = (state, update) => {
       return Promise.resolve('opts resolved');
     },
     
+    _unit(unit) { return { 
+      card: this._card,
+      talon: this._talon
+      }[unit] || this._card;
+    },
+
     unit(d) {
       let [unit, suite, args] = d, 
         //[method, word] = patch,
         { card, talon='' } = args;
       
-      card = card.match($crd_num); 
-      talon = talon.match($tal_num);
-      card = (card && card[0]) || 'add';
-      talon = Number(talon && talon[0]) || 'add';
+      console.assert( unit === 'card' || unit === 'talon' ); 
+      console.assert(['Cards', 'Talons'].indexOf(suite.name) >= 0 );
 
+      card = card.match($crd_num); 
+      card = (card && card[0]) || 'add';
+      
+      talon = talon.match($tal_num);
+      talon = Number(talon && talon[0]) || 'add';
+      
       if (R.isNil(state().year))
         stup({year: _year()});
 
-      _unit = {
-          card: this._card,
-          talon: this._talon
-        }[unit];
-
-      return Promise.all( [_unit([suite, {card, talon}]), this.opts()] )
+      console.assert( !!card && !!talon );
+      
+      return Promise.all([
+          this._unit(unit)([suite, {card, talon}]), 
+          this.opts()])
         .then(() => stup({ optionsReady: true }))
         .catch(_catch);
     },
@@ -135,7 +144,7 @@ const Actions = (state, update) => {
       let [suite, args] = d, 
         { card } = args, 
         [method, word] = patch;
-      
+      console.log('_card ', card);
       // new card
       if (card === 'add') {
         card= '';
@@ -271,16 +280,18 @@ const Actions = (state, update) => {
 
     _saved(d) {
       let [res, item] = d;
-      
+      console.log('saved unit, card', item, state().unit, state().card);
       // card form saved
       if (state().unit === 'card') {
+        console.log(' _saved card', changedItem())
         if (state().card === '' || 
-          changedItem().old_num !== res[0].crd_num)
+          changedItem().old_num !== res[0].crd_num) {
           // redirect to just added or changed card (number changed)
           m.route.set(cardPath(res[0].crd_num));
-        
+        }
+        console.log('just redraw');
         // update page current
-        listItem(res[0]); 
+        listItem(R.assoc('old_num', state().card, res[0]));
         // update changedItem
         itemId(res[0].crd_num);
         //stup({ card: itemId()});

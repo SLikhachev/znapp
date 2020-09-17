@@ -143,7 +143,8 @@ export const card = {
 export const clinicCards = {
 
   page: "Клиника: Карты",
-
+  name: 'Cards',
+  
   cards: $cards,
   talons,
   //card dependensies

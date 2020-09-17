@@ -158,21 +158,21 @@ const fillFields = value => list => item => list.reduce(
 //--------------------------------------
 
 // fill with '' 
-const cleanEmpty = fillFields('');
+export const cleanEmpty = fillFields('');
 //-----------------------------------------------
 
+// fill with zer0
+export const zeroNum = fillFields(0);
+//------------------------------------------------
+
 // clean values forced
-const cleanForced = list => item=> list.reduce(
+export const cleanForced = list => item=> list.reduce(
   (r, k) => (changeValue(target(k, '')), ''), 
   ''
 );
 //------------------------------------------------
 
-// fill with zer0
-const zeroNum = fillFields(0);
-//------------------------------------------------
-
 // (Array[Function] -> Stream) -> Array[String]
-const validator = checks => item => R.flatten(
+export const validator = checks => item => R.flatten(
   // checks:  Array[Function],
   checks.map( f => f(item)) ).filter(e => !!e);
