@@ -138,13 +138,15 @@ export const id_name = opt_key_value('id', 'name');
 export const opt_find = 
   (opt_key, form_field, item_key) => (
     states().options && states().options.get(opt_key) &&
-    states().options.get(opt_key).find(o=>changedItem()[form_field] == o[item_key]) ||
+    states().options.get(opt_key).
+      find(o=>changedItem()[form_field] == o[item_key]) ||
     {});
 
 export const opt_filter = 
   (opt_key, form_field, item_key) => (
     states().options && states().options.get(opt_key) &&
-    states().options.get(opt_key).filter(o=>changedItem()[form_field] == o[item_key]) ||
+    states().options.get(opt_key).
+      filter(o=>changedItem()[form_field] == o[item_key]) ||
     []);
 //-----------------------------------------------
 

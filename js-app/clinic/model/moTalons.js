@@ -25,7 +25,8 @@ const tmonth = () => new Date().getMonth() + 1;
 // --------CARDS DATA for NEW TALON
 
 const person_fileds = [
-  'fam', 'im', 'ot', 'birth_date', 'dost',
+  'crd_num', 'fam', 'im', 'ot', 
+  'birth_date', 'dost',
   'dul_serial', 'dul_number'
 ];
 
@@ -106,8 +107,12 @@ const doc = s => opt_filter('doctor', 'doc_spec', 'spec').find(
   ) || s;
 
 export const _doctor = () => {
-  let _doc = doc(''),
-    _fin = `${fin('')} ${purp('')} ${_doc}`;
+  let _doc = doc('');
+  if (!R.isEmpty(_doc))
+    _doc = _doc.family;
+ 
+  let _fin = `${fin('')} ${purp('')} ${_doc}`;
+    
   return _doc ? _fin : 'red&Доктор ?';
 };
 //--------------------------------------
@@ -165,8 +170,10 @@ const fin_doc = () => [
 //---------------------------------------- 
 
 const vizits = talon => {
-  let amb= Number(talon().visit_pol) + Number(talon().visit_home), 
-    ds= Number(talon().visit_daystac) + Number(talon().visit_homstac);
+  console.log( 'ambu=%d, ds=%d', talon().vizit_pol, '' );
+  let amb= Number(talon().vizit_pol) + Number(talon().vizit_home), 
+    ds= Number(talon().vizit_daystac) + Number(talon().vizit_homstac);
+  
   if ( !( amb || ds ) )
     return "Укажите количество посещений";
   if ( amb && ds )

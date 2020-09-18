@@ -2,7 +2,7 @@
 
 import { states, disp } from '../../apps/appApi';
 import { vuListTable } from '../../apps/view/vuListTable';
-//import { linkTalon } from '../defines/defCards';
+import { talonPath } from '../defines/defTalons';
 
 
 export const crdVizits = function (vnode) {
@@ -50,7 +50,7 @@ export const crdVizits = function (vnode) {
         m('.pure-g', m('.pure-u-1-3',
           m(m.route.Link, {
             selector: 'a.pure-button.pure-button-primary',
-            href: '#', //`${[clinicApi.talon_add]}${crd}`,
+            href: talonPath(states().card, 'add'),
             style: "float: right; margin-top: 2em; font-size: 1.3 em"
           }, "Добавить талон")
         ))

@@ -6,6 +6,7 @@ import { talons_table } from '../../apps/model/moList';
 //import { $upper, linkItem, smoId } from '../../apps/defines/defStruct';
 import { spravLocal } from '../../sprav/defines/defLocal';
 import { spravProf } from '../../sprav/defines/defProf';
+import { spravComs } from '../../sprav/defines/defComs';
 
 //import { spravComs } from '../../sprav/defines/defComs';
 import { 
@@ -84,7 +85,11 @@ const talon = {
     },
     data: ['talon'],
     //options_cards: ['mo_local', 'smo_local', 'dul', 'okato'],
-    options: [ 'ist_fin', 'purpose', 'doctor', 'char_main', 'cishod', 'cresult', 'travma_type' ],
+    options: [ 
+      'mo_local', 'smo_local', 'okato',
+      'ist_fin', 'purpose', 'doctor', 
+      'char_main', 'cishod', 'cresult', 'travma_type' 
+    ],
     body: ['crd_num']
   },
   item: {
@@ -134,6 +139,9 @@ export const clinicTalons = {
   
   //talon dependensies
   //options: [ 'ist_fin', 'purp', 'doctor', 'char_main', 'ishod', 'result', 'travma' ],
+  smo_local: spravLocal.smo_local,
+  mo_local: spravLocal.mo_local,
+  okato: spravComs.okato,
   ist_fin: spravProf.ist_fin,
   purpose: spravLocal.purpose,
   doctor: spravLocal.doctor,

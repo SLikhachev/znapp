@@ -95,17 +95,13 @@ const Actions = (state, update) => {
           });
       
       // get missing options
-      // those keys were loaded ?  1st for check; 
-      if ( !data.has( def[unit].rest.options[0] ) )
-        return getData(def, unit)
-          .then(res => {
-            stup({ 
-              options: new Map([...data, ...res.options])
-            });
-            return 'opts added';
+      return getData(def, unit, 'options', [...data.keys()])
+        .then(res => {
+          stup({ 
+            options: new Map([...data, ...res.options])
           });
-
-      return Promise.resolve('opts resolved');
+          return 'opts added';
+        });
     },
     
     _unit(unit) { return { 
@@ -144,7 +140,7 @@ const Actions = (state, update) => {
       let [suite, args] = d, 
         { card } = args, 
         [method, word] = patch;
-      console.log('_card ', card);
+      
       // new card
       if (card === 'add') {
         card= '';
@@ -157,9 +153,6 @@ const Actions = (state, update) => {
         error: '', errorsList: [],
         tabs: cardTabs,
       });
-
-      // get card number from this stream initailly
-      changedItem({ crd_num: card, old_num: card });
       
       if (card === '') {
           //console.log(' crd emp ', crd );
@@ -168,6 +161,9 @@ const Actions = (state, update) => {
           itemId(card);
           return Promise.resolve('new card');
       }
+      
+      // get card number from this stream initailly
+      changedItem({ crd_num: card });
       return getData(state().suite, 'card', 'data')
         .then(res => {
           stup(res);// card and list of talons in Map to state.data
@@ -178,7 +174,7 @@ const Actions = (state, update) => {
             stup({ error: 'Карта не найдена'});
           
           // init changedItem
-          listItem(R.assoc('old_num', card, card_obj)); // card object from Map
+          listItem(card_obj); // card object from Map
           itemId(card);
           
           return 'card loaded'; // just string
@@ -280,32 +276,37 @@ const Actions = (state, update) => {
 
     _saved(d) {
       let [res, item] = d;
-      console.log('saved unit, card', item, state().unit, state().card);
+      
+      console.log('saved_item=%s, state_unit=%s', item, state().unit);
       // card form saved
       if (state().unit === 'card') {
+        /*
         console.log(' _saved card', changedItem())
         if (state().card === '' || 
           changedItem().old_num !== res[0].crd_num) {
           // redirect to just added or changed card (number changed)
           m.route.set(cardPath(res[0].crd_num));
-        }
-        console.log('just redraw');
+        }*/
+        //console.log('just redraw');
         // update page current
-        listItem(R.assoc('old_num', state().card, res[0]));
+        let card = res[0].crd_num;
+        stup({ card });
+        listItem(res[0]);
         // update changedItem
-        itemId(res[0].crd_num);
-        //stup({ card: itemId()});
-        //changeValue(target('old_num', itemId()));
+        itemId(card);
         return false;
       }
      
       // card form in talon saved
       if (item === 'card') {
+        // not change the current state
+        /*
         listItem( 
           Object.assign(changedItem(), talonCard( res[0] ) )
         );
         // update changedItem
         itemId(state().talon);
+        */
         return false;
       }
       
@@ -314,6 +315,7 @@ const Actions = (state, update) => {
         // redirect to just added talon
         m.route.set(talonPath(res[0].crd_num, res[0].tal_num));
       
+      // update current state with response
       listItem(res[0]);
       itemId(res[0].tal_num);
       // update changedItem
@@ -323,6 +325,9 @@ const Actions = (state, update) => {
 
     save(d) {
         let [item, event, method = ''] = d;
+        
+        console.log('save item=%s', item);
+
         vuDialog.error = '';
         stup({
           errorsList: state().suite[item].item.validator(changedItem)

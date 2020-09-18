@@ -32,6 +32,8 @@ export const _ufms = e => {
 };
 //--------------------------
 
+// CARD form VALIDATORS -----------
+
 // Stream -> String
 const crd_num = card => {
   let value = trims(card().crd_num);
@@ -39,12 +41,13 @@ const crd_num = card => {
   if (value === '')
     return 'Пустой номер карты';
   
+  // questionable check 
   if(parseInt(value) === 0)
      return 'Недопустимый номер карты';
   
-  if ( states().method === 'PATCH' && (value == card().old_num) )
+  if ( states().method === 'PATCH' && (value == states().card) )
     // same card number must be cleaned
-    value = '';  
+    value = '';
   changeValue(target('crd_num', value));
   return '';
 };
@@ -120,7 +123,7 @@ const city_g = card => (!card().city_g && card().street_g) ?
 //----------------------------------------
 
 const ifEmpty = ['mo_att'];
-const ignoreAny = ['old_num', 'ufms', 'created', 'modified', 'cuser' ];
+const ignoreAny = ['ufms', 'created', 'modified', 'cuser' ];
 
 const checkCard = [
   crd_num,
