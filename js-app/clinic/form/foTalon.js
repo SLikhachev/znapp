@@ -57,7 +57,7 @@ export const $card = {
       //headers: {Prefer: 'return=representation'}
     },
     item: {
-      editable_fields: ['fam', 'im', 'ot', 'birth_date'],
+      editable_fields: ['fam', 'im', 'ot', 'birth_date', 'dost'],
       pk: 'crd_num',
     }
   },
@@ -205,7 +205,7 @@ export const talTarget = {
 };
 
 
-const $vizd = text => ({
+const $visd = text => ({
    wrap: $twrap,
    label: [text],
    tag: ['.pure-u-20-24'],
@@ -216,9 +216,9 @@ const $vizd = text => ({
 export const talVizits = {
   class: '.pure-g',
   fields: {
-    vizit_pol: $vizd("Амбул"),
-    vizit_home: $vizd("На дом"),
-    vizits:{
+    visit_pol: $visd("Амбул"),
+    visit_home: $visd("На дом"),
+    visits:{
       wrap: {
         klass: '.pure-u-6-24',
         attrs: { style: 

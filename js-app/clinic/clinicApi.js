@@ -132,7 +132,7 @@ const Actions = (state, update) => {
       return Promise.all([
           this._unit(unit)([suite, {card, talon}]), 
           this.opts()])
-        .then(() => stup({ optionsReady: true }))
+        .then(res => { console.log(res); stup({ optionsReady: true }); })
         .catch(_catch);
     },
     
@@ -197,7 +197,7 @@ const Actions = (state, update) => {
         tabs: talonTabs, 
       });
      
-      changedItem({ crd_num: card, tal_num: talon });
+      changedItem({ crd_num: card, _tal: talon });
       
       // get talon and pmus NaN and ZERO Numbers are ignored
       if (!!talon) {
@@ -205,14 +205,14 @@ const Actions = (state, update) => {
         .then(res => {
           stup(res);// talon and list of pmus in Map to state.data
           
-          let talon_obj = state().data.get('talon')[0] || {};
+          let _talon = state().data.get('talon')[0] || {};
           
-          if (R.isNil(talon_obj) || R.isEmpty(talon_obj))
+          if (R.isNil(_talon) || R.isEmpty(_talon))
             stup({ error: 'Талон не найден'});
           
           // init changedItem
-          listItem( initTalon(tal_obj) ); // talon object from Map
-          itemId(talon_obj.tal_num);
+          listItem( initTalon(_talon) ); // talon object from Map
+          itemId(_talon.tal_num);
           
           return 'talon and pmus loaded'; // just string
         });

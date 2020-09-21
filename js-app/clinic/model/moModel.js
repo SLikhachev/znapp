@@ -152,7 +152,7 @@ export const opt_filter =
 
 // fill with value
 const fillFields = value => list => item => list.reduce(
-  (r, k) => !item()[k] ? // null, undef, '', 0
+  (r, k) => !item[k] ? // null, undef, '', 0
     (changeValue(target(k, value)), '') :
     '',
   ''  
@@ -176,5 +176,6 @@ export const cleanForced = list => item=> list.reduce(
 
 // (Array[Function] -> Stream) -> Array[String]
 export const validator = checks => item => R.flatten(
-  // checks:  Array[Function],
-  checks.map( f => f(item)) ).filter(e => !!e);
+  // checks:  Array[Function], 
+  // item: Stream here stream value passed to func call
+  checks.map( f => f(item())) ).filter(e => !!e);

@@ -1,5 +1,5 @@
 
-'use strict';
+//'use strict';
 
 // src/apps/model/moTalons.js
 //import { moModel, errMsg, _schema, _region, _month } from '../../apps/model/moModel.js';
@@ -88,11 +88,11 @@ export const talonCard = card => newTalonCard(
 // _ -> Object // delete this fields from talon object 
 // to save talon
 export const toSaveTalon = () => [
-  'crd_num', 'fam', 'im', 'ot', 'birth_date',
+  'fam', 'im', 'ot', 'birth_date', 'dost',
   'crd_polis_ser', 'crd_polis_num', 'crd_smo', 'crd_smo_okato',
-  'dul_serial', 'dul_number',  'mo_att' 
+  'dul_serial', 'dul_number',  'mo_att', 
   ].reduce(
-    (o, p) => R.dissoc(p, o),  
+    (o, p) => R.dissoc(p, o),
     changedItem()
   );
 //----------------------------------
@@ -147,17 +147,17 @@ export const _memo_ds = d => {
 
 // talon date
 const talon_date = talon => {
-  let d1= new Date(talon().open_date),
-    d2= new Date(talon().close_date);
+  let d1= new Date(talon.open_date),
+    d2= new Date(talon.close_date);
     return d1 > d2 ? 
       "Дата закрытия меньше даты открытия талона" :
       '';
 };
 //------------------------------------------
 
-// forma pomoschi
+// forma pomoschi (urgent field is aux for for_pom only)
 const for_pom = talon => (
-  changeValue(target('for_pom', !!talon().urgent ? 2: 3)), 
+  changeValue(target('for_pom', !!talon.urgent ? 2: 3)), 
   '');
 //----------------------------------------
 
@@ -170,10 +170,14 @@ const fin_doc = () => [
 //---------------------------------------- 
 
 const vizits = talon => {
-  console.log( 'ambu=%d, ds=%d', talon().vizit_pol, '' );
-  let amb= Number(talon().vizit_pol) + Number(talon().vizit_home), 
-    ds= Number(talon().vizit_daystac) + Number(talon().vizit_homstac);
+ 
+  let pol= Number(talon.visit_pol) || 0, 
+    home= Number(talon.visit_home) || 0, 
+    ds_days= Number(talon.visit_daystac) || 0, 
+    hs_days= Number(talon.visit_homstac) || 0,
+    amb = pol + home, ds = ds_days + hs_days;
   
+  console.log( 'ambu=%d, ds=%d', pol, home );
   if ( !( amb || ds ) )
     return "Укажите количество посещений";
   if ( amb && ds )
@@ -251,7 +255,7 @@ const toZero= [
   'travma_type', 'patient_age',
 ];
 const ifEmpty = [];
-const ignoreAny = [];
+const ignoreAny = ['created', 'modified', 'cuser', 'urgent'];
 
 const checkTalon = [
   talon_date,

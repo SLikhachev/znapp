@@ -36,7 +36,7 @@ export const _ufms = e => {
 
 // Stream -> String
 const crd_num = card => {
-  let value = trims(card().crd_num);
+  let value = trims(card.crd_num);
   
   if (value === '')
     return 'Пустой номер карты';
@@ -56,16 +56,16 @@ const crd_num = card => {
 export const dost = card => {
 
   ['fam', 'im', 'ot'].map(
-    k => card()[k] ? changeValue(
-      target(k, card()[k].trim().toUpperCase()) 
+    k => card[k] ? changeValue(
+      target(k, card[k].trim().toUpperCase()) 
     ) : void 0
   );
 
   let dost = '';
-  if (!card().fam) dost += '2_';
-  if (!card().im) dost += '3_';
-  if (!card().ot) dost += '1_';
-  if (!card().fam && !card().im)
+  if (!card.fam) dost += '2_';
+  if (!card.im) dost += '3_';
+  if (!card.ot) dost += '1_';
+  if (!card.fam && !card().im)
     return 'Укажите Фамилию или Имя';
   if (!!dost)
     changeValue(target('dost', dost));
@@ -78,14 +78,14 @@ const birth_date = card => {
   let d1 = new Date(Date.now());
   //d1= new Date( d1.getFullYear() - 18, 1, 1); // 18 years or older
   d1 = new Date(d1.getFullYear() - 3, 1, 1); // 3 years or older 
-  let d = new Date(card().birth_date);
+  let d = new Date(card.birth_date);
   if (d < d0 || d > d1)
     return 'Возраст пациента должен быть в диапазоне от 3 до 120 лет';
   return '';
 };
 //-------------------------------
 
-const gender  = card => !!card().gender ? 
+const gender  = card => !!card.gender ? 
   '' : 'Не указан пол';
 //-------------------------------
 
@@ -97,28 +97,28 @@ const dul_err = {
 };
 
 const dul = card => { 
-  if (!card().dul_serial && !card().dul_number)
+  if (!card.dul_serial && !card.dul_number)
     changeValue(target('dul_type', null));
   
-  if (card().polis_type && card().polis_type < 3 && !card().dul_type)
+  if (card.polis_type && card.polis_type < 3 && !card().dul_type)
     return 'Для этого типа полиса заполните ДУЛ';
   
-  if (card().dul_type)
-    return Object.keys(dul_err).map(d=> card()[d] ? '' : dul_err[d]);
+  if (card.dul_type)
+    return Object.keys(dul_err).map(d=> card[d] ? '' : dul_err[d]);
   
   return '';
 };
 //-------------------------------------
 
-const polis_type = card => card().polis_type ? 
+const polis_type = card => card.polis_type ? 
   '' : 'Неизвестный тип полиса';
 //-------------------------------------
 
-const smo = card => (card().smo || card().smo_okato) ? 
+const smo = card => (card.smo || card.smo_okato) ? 
   '' : 'Укажите либо СМО либо СМО ОКАТО';
 //---------------------------------------
 
-const city_g = card => (!card().city_g && card().street_g) ?
+const city_g = card => (!card.city_g && card.street_g) ?
     'Укажите город': '';
 //----------------------------------------
 

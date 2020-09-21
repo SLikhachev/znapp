@@ -80,9 +80,7 @@ const talon = {
   rest: {
     url: "rpc/get_talon_by_num",
     method: "POST",
-    params: {
-      _tbl: 'cardz_clin'
-    },
+    params: talons_table(states, {tbl: ''}),
     data: ['talon'],
     //options_cards: ['mo_local', 'smo_local', 'dul', 'okato'],
     options: [ 
@@ -90,19 +88,16 @@ const talon = {
       'ist_fin', 'purpose', 'doctor', 
       'char_main', 'cishod', 'cresult', 'travma_type' 
     ],
-    body: ['crd_num']
+    body: ['_tal']
   },
   item: {
     header: "Талоны",
     validator: talonValidator,
-    rest: { 
-      url: 'cardz_clin',  
-      headers: {Prefer: 'return=representation'},
-      pk: 'tal_num',
-      editable_filds: [
-        
-      ]
-    }
+    pk: 'tal_num',
+    rest: talons_table(states, {
+      url: '',
+      headers: {Prefer: 'return=representation'}
+    })
   },
   mainForm: {
     talDate,
