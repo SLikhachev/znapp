@@ -18,6 +18,8 @@ import {
   talDs1,
   talDs2
 } from '../form/foTalon';
+import { naprForm } from '../form/foTalonNaprav';
+
 import { _getFIO } from '../model/moCards';
 import { talonValidator } from '../model/moTalons';
 import { $path } from './defClinic';
@@ -93,11 +95,11 @@ const talon = {
   item: {
     header: "Талоны",
     validator: talonValidator,
-    pk: 'tal_num',
     rest: talons_table(states, {
       url: '',
       headers: {Prefer: 'return=representation'}
-    })
+    }),
+    item: { pk: 'tal_num' }
   },
   mainForm: {
     talDate,
@@ -105,7 +107,8 @@ const talon = {
     talVizits,
     talDs1,
     talDs2
-  }
+  },
+  naprForm
 };
 
 const mkb10 = {

@@ -72,9 +72,12 @@ const updateItem = (item, changed) => {
 export const changedItem = combine((itemid, newvalue, changed) => {
   if (changed.length > 1)
     return {}; // stream initialization 
+  
   let c = changed[0]();
-  if (typeof c === 'string') // id is a string mapped to item from list
+  if (typeof c === 'string' || typeof c === 'number') 
+    // id is a string (number) mapped to item from list
     return listItem();
+  
   // changed some value on blur 
   return updateItem(changedItem, newvalue);
 }, [itemId, changeValue]);

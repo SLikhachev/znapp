@@ -76,9 +76,9 @@ const Actions = (state, update) => {
       let def = state().suite, unit= state().unit;
 
       let error = R.hasPath(['rest', 'options'], def[unit]) ? 
-        '' : `No OPTIONS prop for: ${unit} `;
+        '' : `Actions OPTS: No OPTIONS prop for: ${unit} `;
       error = error + (error ? '' : checkArray(def[unit].rest.options) ? 
-        '' : ` Empty OPTIONS list: ${unit}`); 
+        '' : `Actions OPTS: Empty OPTIONS list: ${unit}`); 
       if (!!error)
         return Promise.reject({ error });
         //return Promise.resolve('no options here da i xep c nim');
@@ -111,8 +111,7 @@ const Actions = (state, update) => {
     },
 
     unit(d) {
-      let [unit, suite, args] = d, 
-        //[method, word] = patch,
+      let [suite, unit, args] = d, 
         { card, talon='' } = args;
       
       console.assert( unit === 'card' || unit === 'talon' ); 
@@ -129,11 +128,14 @@ const Actions = (state, update) => {
 
       console.assert( !!card && !!talon );
       
+      stup({ suite, unit });
+
       return Promise.all([
-          this._unit(unit)([suite, {card, talon}]), 
-          this.opts()])
-        .then(res => { console.log(res); stup({ optionsReady: true }); })
-        .catch(_catch);
+        this.opts(),
+        this._unit(unit)([suite, {card, talon}])
+      ])
+      .then(res => { stup({ optionsReady: true }); })
+      .catch(_catch);
     },
     
     _card(d) {
@@ -158,7 +160,7 @@ const Actions = (state, update) => {
           //console.log(' crd emp ', crd );
           stup({data: new Map()});
           listItem({});
-          itemId(card);
+          itemId(card.toString());
           return Promise.resolve('new card');
       }
       
@@ -168,14 +170,14 @@ const Actions = (state, update) => {
         .then(res => {
           stup(res);// card and list of talons in Map to state.data
           
-          let card_obj = state().data.get('card')[0] || {};
+          let _card = state().data.get('card')[0] || {};
           
-          if (R.isNil(card_obj) || R.isEmpty(card_obj))
+          if (R.isNil(_card) || R.isEmpty(_card))
             stup({ error: 'Карта не найдена'});
           
           // init changedItem
-          listItem(card_obj); // card object from Map
-          itemId(card);
+          listItem(_card); // card object from Map
+          itemId(card.toString());
           
           return 'card loaded'; // just string
         });
@@ -198,13 +200,13 @@ const Actions = (state, update) => {
       });
      
       changedItem({ crd_num: card, _tal: talon });
-      
+
       // get talon and pmus NaN and ZERO Numbers are ignored
       if (!!talon) {
         return getData(state().suite, 'talon', 'data')
         .then(res => {
           stup(res);// talon and list of pmus in Map to state.data
-          
+
           let _talon = state().data.get('talon')[0] || {};
           
           if (R.isNil(_talon) || R.isEmpty(_talon))
@@ -212,7 +214,7 @@ const Actions = (state, update) => {
           
           // init changedItem
           listItem( initTalon(_talon) ); // talon object from Map
-          itemId(_talon.tal_num);
+          itemId(talon.toString());
           
           return 'talon and pmus loaded'; // just string
         });
@@ -277,7 +279,7 @@ const Actions = (state, update) => {
     _saved(d) {
       let [res, item] = d;
       
-      console.log('saved_item=%s, state_unit=%s', item, state().unit);
+      //console.log('saved_item=%s, state_unit=%s', item, state().unit);
       // card form saved
       if (state().unit === 'card') {
         /*
@@ -316,8 +318,8 @@ const Actions = (state, update) => {
         m.route.set(talonPath(res[0].crd_num, res[0].tal_num));
       
       // update current state with response
-      listItem(res[0]);
-      itemId(res[0].tal_num);
+      //listItem(res[0]);
+      //itemId(res[0].tal_num);
       // update changedItem
       //stup({ talon: itemId()});
       return false;

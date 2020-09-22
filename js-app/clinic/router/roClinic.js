@@ -24,7 +24,7 @@ export const clinicRouter = menuItem => ({
       //const { card } = args;
       // path = '/cards/add' -> unit = 'card'
       let unit = unslash(menuItem.path).slice(0, -1);
-      disp(['unit', unit, menuItem.def, args]);
+      disp(['unit', menuItem.def, unit, args]);
       return vuClinicTabs;
     },
     render(vnode) { return vuPage(vnode); }

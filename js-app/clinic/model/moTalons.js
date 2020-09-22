@@ -88,7 +88,7 @@ export const talonCard = card => newTalonCard(
 // _ -> Object // delete this fields from talon object 
 // to save talon
 export const toSaveTalon = () => [
-  'fam', 'im', 'ot', 'birth_date', 'dost',
+  'id', 'fam', 'im', 'ot', 'birth_date', 'dost',
   'crd_polis_ser', 'crd_polis_num', 'crd_smo', 'crd_smo_okato',
   'dul_serial', 'dul_number',  'mo_att', 
   ].reduce(
@@ -169,15 +169,13 @@ const fin_doc = () => [
 ].map( el => el[0]('') ? '' : el[1]);
 //---------------------------------------- 
 
+const _Num = n => Number(n) || 0; 
+
 const vizits = talon => {
  
-  let pol= Number(talon.visit_pol) || 0, 
-    home= Number(talon.visit_home) || 0, 
-    ds_days= Number(talon.visit_daystac) || 0, 
-    hs_days= Number(talon.visit_homstac) || 0,
-    amb = pol + home, ds = ds_days + hs_days;
+  let amb = _Num(talon.visit_pol) + _Num(talon.visit_home), 
+    ds = _Num(talon.visit_daystac) + _Num(talon.visit_homstac);
   
-  console.log( 'ambu=%d, ds=%d', pol, home );
   if ( !( amb || ds ) )
     return "Укажите количество посещений";
   if ( amb && ds )

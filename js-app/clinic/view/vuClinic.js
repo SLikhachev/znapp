@@ -4,7 +4,7 @@
 import { crdMain } from './vuCardMain';
 import { crdVizits } from './vuCardVizits';
 import { vuTalon } from './vuTalon';
-
+import { talonAuxForm } from './vuTalonAux';
 
 export const tabEmpty = (name, header) => ({
   name,
@@ -32,7 +32,10 @@ export const talonTabs = [
     name: "Талон",
     content() { return m(vuTalon); }
   },
-
+  {
+    name: "Направление",
+    content() { return m(talonAuxForm, { auxform: 'naprForm' }); }
+  },
   tabEmpty("ПМУ", "ПМУ"),
   tabEmpty("Удалить", "Удалить"),
 ];

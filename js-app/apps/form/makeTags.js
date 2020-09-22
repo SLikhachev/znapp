@@ -76,7 +76,7 @@ const _input = obj => { // {klass, type, name, tabindex, aux, value, attrs} => {
 //------------------------------------------
 
 // String -> Vnode
-const legend = t => m('legend', _text(t));
+const legend = t => m('legend', t.text ? _text(t.text) : _text(t) );
 //-------------------------------------------
 
 // Object -> Vnode
