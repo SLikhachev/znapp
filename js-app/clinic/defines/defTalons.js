@@ -2,11 +2,12 @@
 // prof sprav definition
 
 import { states, memost } from '../../apps/appApi';
-import { talons_table } from '../../apps/model/moList';
+import { talons_table } from '../model/moModel';
 //import { $upper, linkItem, smoId } from '../../apps/defines/defStruct';
 import { spravLocal } from '../../sprav/defines/defLocal';
 import { spravProf } from '../../sprav/defines/defProf';
 import { spravComs } from '../../sprav/defines/defComs';
+import { spravPmus } from '../../sprav/defines/defPmus';
 
 //import { spravComs } from '../../sprav/defines/defComs';
 import { 
@@ -19,7 +20,7 @@ import {
   talDs2
 } from '../form/foTalon';
 import { naprForm } from '../form/foTalonNaprav';
-
+import { tal_pmu } from '../form/foTalonPmu';
 import { _getFIO } from '../model/moCards';
 import { talonValidator } from '../model/moTalons';
 import { $path } from './defClinic';
@@ -83,7 +84,7 @@ const talon = {
     url: "rpc/get_talon_by_num",
     method: "POST",
     params: talons_table(states, {tbl: ''}),
-    data: ['talon'],
+    data: ['talon','tal_pmu'],
     //options_cards: ['mo_local', 'smo_local', 'dul', 'okato'],
     options: [ 
       'mo_local', 'smo_local', 'okato',
@@ -108,7 +109,7 @@ const talon = {
     talDs1,
     talDs2
   },
-  naprForm
+  naprForm,
 };
 
 const mkb10 = {
@@ -149,7 +150,9 @@ export const clinicTalons = {
   travma_type: spravProf.travma_type,
   mkb10,
   //
+  pmus: spravPmus.pmus,
   card: $card,
+  tal_pmu,
   talon
 };
 

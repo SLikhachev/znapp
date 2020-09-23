@@ -33,20 +33,6 @@ const _dot_param = (ps, val) => {
   return val;
 };
 
-export const talons_table_name = state => {
-  let year = state().year || _year();
-  return `talonz_clin_${year.slice(2)}`;
-};
-
-// vitrual object 
-export const talons_table = (state, obj) => new Proxy ( 
-  obj, {
-    get(target, prop) {
-      if (['_tbl', 'tbl', 'tal_tbl', 'url'].indexOf(prop) < 0)
-        return Reflect.get(target, prop);
-      return talons_table_name(state);
-    }
-});
 
 // make object from fetch and changedItem
 const fetchParams = (fetch, fetch_str) => {

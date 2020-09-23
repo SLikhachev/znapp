@@ -48,6 +48,7 @@ export const vuListTable = function (vnode) {
   const {
     table_class = '.pure-table.pure-table-bordered',
     table_id = 'list_table',
+    //table_caption = ''
   } = vnode; // call as func not as component
 
   let itdef = {}, struct = {}, list = [];
@@ -71,7 +72,7 @@ export const vuListTable = function (vnode) {
 
       return m(table, { style: 'margin-top: 2em;' }, [
         m('thead', m('tr',
-          Object.entries(struct).map(el => column(el)),
+          Object.entries(struct).map(el => column(el))
         )),
         m('tbody', [list.map(listMap)])
       ]);

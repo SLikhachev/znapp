@@ -24,6 +24,31 @@ export const _supper = s => s.charAt(0).toUpperCase() + s.substring(1).toLowerCa
 
 export const thisYear = () => _year() == states().year;
 
+export const _table_name = (name, state) => {
+  let year = state().year || _year();
+  return `${name}_${year.slice(2)}`;
+};
+
+// vitrual object 
+export const talons_table = (state, obj) => new Proxy ( 
+  obj, {
+    get(target, prop) {
+      if (['_tbl', 'tbl', 'tal_tbl', 'url'].indexOf(prop) < 0)
+        return Reflect.get(target, prop);
+      return _table_name('talonz_clin', state);
+    }
+});
+
+// vitrual object 
+export const pmu_table = (state, obj) => new Proxy ( 
+  obj, {
+    get(target, prop) {
+      if (['tbl', 'url'].indexOf(prop) < 0)
+        return Reflect.get(target, prop);
+      return _table_name('para_clin', state);
+    }
+});
+
 
 export const item_attr = attr => item => item[attr];
 
@@ -127,10 +152,13 @@ export const check_att = () => {
   return `Прикреплен: ${att}`;
 };
 
-export const opt_key_value = (key, value) => o => m(
-  `option[value=${o[key].toString().trim()}]`, 
-  `${o[value].toString().trim()}`
-);
+export const opt_key_value = (key, value) => o => {
+  let _key = o[key] || '', _value = o[value] || '';
+  return m(
+    `option[value=${_key.toString().trim()}]`, 
+    `${_value.toString().trim()}`
+  );
+};
 
 export const id_name = opt_key_value('id', 'name');
 

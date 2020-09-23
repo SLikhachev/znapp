@@ -169,7 +169,7 @@ const fin_doc = () => [
 ].map( el => el[0]('') ? '' : el[1]);
 //---------------------------------------- 
 
-const _Num = n => Number(n) || 0; 
+export const _Num = n => Number(n) || 0;
 
 const vizits = talon => {
  

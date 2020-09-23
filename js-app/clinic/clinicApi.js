@@ -246,7 +246,7 @@ const Actions = (state, update) => {
       // 
       // str_fetch::String additional alias key for ds1, ds2 applied firstly
       //
-      //console.log('toOtions',fetch, map_key, str_fetch);
+      console.log('toOtions',fetch, map_key, str_fetch);
       return getList(state().suite, fetch, `fetch_${str_fetch}`).
         then(res => {
           state().options.set(map_key, res.list);

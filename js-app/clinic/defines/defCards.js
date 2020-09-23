@@ -2,7 +2,7 @@
 // prof sprav definition
 
 import { states, memost } from '../../apps/appApi';
-import { talons_table } from '../../apps/model/moList';
+import { talons_table } from '../model/moModel';
 import { $upper, linkItem, smoId } from '../../apps/defines/defStruct';
 import { spravLocal } from '../../sprav/defines/defLocal';
 import { spravComs } from '../../sprav/defines/defComs';
