@@ -1,24 +1,29 @@
 
-import { states } from '../../apps/appApi';
+import { states, disp } from '../../apps/appApi';
 import { vuListTable } from '../../apps/view/vuListTable';
 import { makeGroup } from '../form/foForm';
-
+import { get_pmu_attr } from '../model/moPmu'; 
 
 const talonPmuForm = () => {
   
-  let _pmu = {}, form;
+  let form, pmu, error;
 
   const onsubmit = e => {
     e.preventDefault();
-    console.log('pmu');
+    let _pmu = get_pmu_attr();
+    if (!!_pmu)
+      return disp(['pmu', _pmu]);
     return false;
   };
 
   return {
     view(vnode) {
       ({ form = {} } = vnode.attrs);
+      pmu = states().options.get('pmu');
+      error = (pmu && pmu[0] && pmu[0].error || '').
+        split('&')[1] || '';
       console.assert(Reflect.has(form, 'fields'));
-      
+
       return [ m(".pure-g",
         m(".pure-u-1-2",
           m("form.pure-form", { onsubmit },
@@ -27,7 +32,7 @@ const talonPmuForm = () => {
         )), // u-1-2, g
         m('.pure-g', 
           m(".pure-u-1-2 ", 
-            m('span#card_message', _pmu.error ? m('span.red', _pmu.error) : '')
+            m('span#card_message', m('span.red', error))
           )
         )
       ];

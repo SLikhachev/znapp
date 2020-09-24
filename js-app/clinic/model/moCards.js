@@ -77,7 +77,7 @@ const birth_date = card => {
   let d0 = new Date('1900-01-01');
   let d1 = new Date(Date.now());
   //d1= new Date( d1.getFullYear() - 18, 1, 1); // 18 years or older
-  d1 = new Date(d1.getFullYear() - 3, 1, 1); // 3 years or older 
+  d1 = new Date(d1.getFullYear() - 3, 11, 31); // 3 years or older 
   let d = new Date(card.birth_date);
   if (d < d0 || d > d1)
     return 'Возраст пациента должен быть в диапазоне от 3 до 120 лет';

@@ -50,7 +50,8 @@ export const pmu_table = (state, obj) => new Proxy (
 });
 
 
-export const item_attr = attr => item => item[attr];
+export const item_attr = attr => item => Reflect.has(item, attr) &&
+  Reflect.get(item, attr) || '';
 
 //params: ['dul_org', 'ufms', 'code', item_attr('name')]
 // Array -> String

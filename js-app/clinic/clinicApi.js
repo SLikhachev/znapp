@@ -238,7 +238,7 @@ const Actions = (state, update) => {
 
     // fetch data from rest server defs in fetch, fill with target
     fetch_toOptions(d) { // ufms -> dul_org
-      let [fetch, map_key, str_fetch=''] = d;
+      let [fetch, map_key, str_fetch='', callback=null] = d;
       // fetch::String key in suite defines model data 
       //   with params as fetch in changedItem[fetch]
       //
@@ -246,13 +246,17 @@ const Actions = (state, update) => {
       // 
       // str_fetch::String additional alias key for ds1, ds2 applied firstly
       //
+      // callback if any, call in then and may return reject to catch the error
+      //
       console.log('toOtions',fetch, map_key, str_fetch);
       return getList(state().suite, fetch, `fetch_${str_fetch}`).
         then(res => {
           state().options.set(map_key, res.list);
+          if (!!callback && typeof callback === 'function')
+            return callback(res);
           return res.list[0];
         }).
-        catch(err => state().options.set(map_key, [{ error: `red&${err.error}`}]))
+        catch(err => state().options.set(map_key, [{ error: `red&${err.error}`}]));
         //finally( memost(target) );
     },
     
@@ -276,55 +280,39 @@ const Actions = (state, update) => {
       });
     },
 
-    _saved(d) {
-      let [res, item] = d;
-      
-      //console.log('saved_item=%s, state_unit=%s', item, state().unit);
-      // card form saved
+    _saved_card(d) {
+      let [res] = d;
       if (state().unit === 'card') {
-        /*
-        console.log(' _saved card', changedItem())
-        if (state().card === '' || 
-          changedItem().old_num !== res[0].crd_num) {
-          // redirect to just added or changed card (number changed)
-          m.route.set(cardPath(res[0].crd_num));
-        }*/
-        //console.log('just redraw');
-        // update page current
+        // update from response
         let card = res[0].crd_num;
         stup({ card });
         listItem(res[0]);
         // update changedItem
         itemId(card);
-        return false;
       }
-     
-      // card form in talon saved
-      if (item === 'card') {
-        // not change the current state
-        /*
-        listItem( 
-          Object.assign(changedItem(), talonCard( res[0] ) )
-        );
-        // update changedItem
-        itemId(state().talon);
-        */
-        return false;
-      }
-      
-      // else update talon 
-      if (state().talon === '')
-        // redirect to just added talon
-        m.route.set(talonPath(res[0].crd_num, res[0].tal_num));
-      
-      // update current state with response
-      //listItem(res[0]);
-      //itemId(res[0].tal_num);
-      // update changedItem
-      //stup({ talon: itemId()});
       return false;
     },
 
+    _saved_talon(d) {
+      let [res] = d;
+      if (state().talon === '')
+        // redirect to just added talon
+        m.route.set(talonPath(res[0].crd_num, res[0].tal_num));
+      // else nothing todo  
+      return false;
+    },
+
+    _saved_pmu(d) {
+      return false;
+    },
+    
+    _saved(item) { return  {
+      card: this._saved_card,
+      talon: this._saved_talon,
+      pmu: this._saved_pmu
+      }[item] || false;
+    },
+    
     save(d) {
         let [item, event, method = ''] = d;
         
@@ -339,22 +327,14 @@ const Actions = (state, update) => {
           vuDialog.open();
           return false;
         }
-
-        // test
-        //return false;
-
-        // this trap for card save in talon form
         method = method || state().method;
-
         // save card from changedItem() if data is null
         // else from data object
         let data = null;
 
         // save talonTalon from data object;
-        
         if (state().unit === 'talon' && item === 'talon')
           data = toSaveTalon(); // save talon form
-
 
         // save all others from changedItem, 
         // fields to save rules by 'editable_fields': array of the item
@@ -363,7 +343,7 @@ const Actions = (state, update) => {
         return saveItem(state().suite[item], 'item', method, data)
           //return representation then change current list item 
           .then(res => checkArray(res) ?
-            this._saved([res, item]) :
+            this._saved(item)([res]) :
             false
           )
           .catch(error => {
@@ -371,6 +351,30 @@ const Actions = (state, update) => {
             vuDialog.open();
           })
           .finally(() => event.target.classList.remove('disable'));
+      },
+
+      pmu_grup(){
+        return this.fetch_toOptions(['pmu_grup', 'pmu', ])
+      },
+
+      pmu_ccode(){
+        console.log('pmu ccode');
+        return false;
+      },
+
+      pmu_code_usl(){
+        console.log('pmu code usl');
+        return false;
+      },
+
+      pmu(d) {
+        let [attr] = d;
+        state().options.set('pmu', []);
+        return {
+          grup: this.pmu_grup,
+          ccode: this.pmu_ccode,
+          code_usl: this.pmu_code_usl
+        }[attr]();
       },
 
       year(d) {
