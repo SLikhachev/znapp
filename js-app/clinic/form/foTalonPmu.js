@@ -13,7 +13,7 @@ export const set_usl = e => {
   changeValue(e);
   let code = e.target.name;
   if ( usl_code.test(changedItem()[code]) )
-    disp(['fetch_toOptions', 'pmus', code]);
+    disp(['fetch_toOptions', 'prefetch_pmus', code]);
   return false;
 };
 
@@ -78,3 +78,27 @@ export const tal_pmu = {
   },
   form: pmuForm
 };
+
+export const pmu = {
+  fetch: {
+    code_usl: {
+      params: 'eq.'
+    },
+    ccode: {
+      params: 'eq.'
+    }
+  }
+};
+
+export const pmu_grup = {
+  rest: {
+    url: 'rpc/get_grc',
+    method: 'POST',
+    params: {}
+  },
+  fetch: {
+    id: {
+      alias: 'grup'
+    }
+  }
+}

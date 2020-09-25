@@ -20,7 +20,7 @@ import {
   talDs2
 } from '../form/foTalon';
 import { naprForm } from '../form/foTalonNaprav';
-import { tal_pmu } from '../form/foTalonPmu';
+import { tal_pmu, pmu, pmu_grup } from '../form/foTalonPmu';
 import { _getFIO } from '../model/moCards';
 import { talonValidator } from '../model/moTalons';
 import { $path } from './defClinic';
@@ -150,7 +150,10 @@ export const clinicTalons = {
   travma_type: spravProf.travma_type,
   mkb10,
   //
-  pmus: spravPmus.pmus,
+  prefetch_pmus: spravPmus.pmus,
+  pmu,
+  pmu_grup,
+  //
   card: $card,
   tal_pmu,
   talon

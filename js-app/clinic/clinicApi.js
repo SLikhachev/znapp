@@ -25,6 +25,7 @@ import {
   initTalon,
   toSaveTalon
 } from './model/moTalons';
+import { add_pmus } from './model/moPmu';
 import { cardTabs } from './view/vuClinic';
 import { talonTabs } from './view/vuClinic';
 
@@ -253,7 +254,7 @@ const Actions = (state, update) => {
         then(res => {
           state().options.set(map_key, res.list);
           if (!!callback && typeof callback === 'function')
-            return callback(res);
+            return callback(res.list);
           return res.list[0];
         }).
         catch(err => state().options.set(map_key, [{ error: `red&${err.error}`}]));
@@ -353,28 +354,13 @@ const Actions = (state, update) => {
           .finally(() => event.target.classList.remove('disable'));
       },
 
-      pmu_grup(){
-        return this.fetch_toOptions(['pmu_grup', 'pmu', ])
-      },
-
-      pmu_ccode(){
-        console.log('pmu ccode');
-        return false;
-      },
-
-      pmu_code_usl(){
-        console.log('pmu code usl');
-        return false;
-      },
-
       pmu(d) {
         let [attr] = d;
-        state().options.set('pmu', []);
-        return {
-          grup: this.pmu_grup,
-          ccode: this.pmu_ccode,
-          code_usl: this.pmu_code_usl
-        }[attr]();
+        state().options.set('pmu', []); // ?? or stup
+        let opt = { code_usl: 'pmu', ccode: 'pmu', grup: 'pmu_grup' };
+        return this.fetch_toOptions(
+          [opt[attr], 'pmu', '', add_pmus(attr)]
+        );
       },
 
       year(d) {

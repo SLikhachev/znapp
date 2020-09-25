@@ -1,4 +1,5 @@
 
+import { states } from '../../apps/appApi';
 import { checkArray } from '../../apps/model/moModel';
 import { changedItem, changeValue, target } from '../../apps/model/moListItem';
 
@@ -41,7 +42,8 @@ const proc_pmu= pmu=> {
   //
   // return the first error if any
   //
-  let exec_spec= Number( item.code_spec ) || 0;
+  //console.log(pmu);
+  let exec_spec= Number( pmu.code_spec ) || 0;
   if ( !exec_spec )
     return { error: `Код специалиста ПМУ не число: ${pmu.code_usl}`}; //error 
   
@@ -58,19 +60,59 @@ const proc_pmu= pmu=> {
     exec_podr, exec_spec, exec_doc
    };
 };
- 
 
-export const add_pmu_grup = pmu => {
+const tal_pmu = (pmu, idx) => Object.assign(
+  pmu, { 
+    name: states().options.get('pmu')[idx].name || '',
+    ccode: states().options.get('pmu')[idx].ccode || '',
+  }
+);
+/*
+const _update_pmus = pmus => pmus.reduce(
+  (result, pmu, idx) => 
+    result.find( _p => _p.code_usl == pmu.code_usl) ? 
+    // if find this code then return as is, else push absent pmu 
+    [...result] : [...result, tal_pmu(pmu, idx)],
+    states().data.get('tal_pmu')
+);
+*/
+const update_pmus = pmus => {
+  let $tal_pmu = states().data.get('tal_pmu') || [];
+  return pmus.reduce(
+    (result, pmu, idx) => 
+      $tal_pmu.find( _p => _p.code_usl == pmu.code_usl) ? 
+      // if find this code then return as is, else push absent pmu 
+      [...result] : [...result, tal_pmu(pmu, idx)],
+      new Array()
+  );
+};
+
+const empty_error = {
+   grup: 'Нет такой группы услуг',
+   ccode: 'Нет такого номера услуги',
+   code_usl: 'Нет ткого кода услуги'
+};
+
+export const add_pmus = attr => pmu => {
   if(!checkArray(pmu))
-    return Promise.reject('Нет такой группы');
+    return Promise.reject({ 
+      error: empty_error[attr]
+    });
 
-  let _pmu = pmu.map( p => proc_pmu ), 
-    error = _pmu.find( p => !!p.error ) || {};   
-  
+  let pmu_ = pmu.map( p => proc_pmu(p) ),
+    error = pmu_.find( p => !!p.error ) || {};
+
   if (!R.isEmpty(error))
-    return Promise.reject(`Ошибка элемента группы: ${error.error.toString()}`);
+    return Promise.reject({ 
+      error: `Ошибка элемента группы: ${error.error.toString()}`
+    });
 
   //return disp(['save', 'pmu', _pmu]);
-  states.data.set('tal_pmu', [...states.data.get('tal_pmu'), ..._pmu]);
-  return false;
+  // only new pmu to save and tal_pmu update
+  let new_pmus = update_pmus(pmu_);
+  states().options.set('pmu', new_pmus);
+
+  let old_pmus = states().data.get('tal_pmu');
+  states().data.set('tal_pmu', [...old_pmus, ...new_pmus]);
+  return 'pmu updated';
 };

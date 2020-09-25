@@ -88,9 +88,12 @@ export const talonCard = card => newTalonCard(
 // _ -> Object // delete this fields from talon object 
 // to save talon
 export const toSaveTalon = () => [
+  // from card form
   'id', 'fam', 'im', 'ot', 'birth_date', 'dost',
   'crd_polis_ser', 'crd_polis_num', 'crd_smo', 'crd_smo_okato',
   'dul_serial', 'dul_number',  'mo_att', 
+  // from pmus form
+  'code_usl', 'ccode', 'grup', 'method'
   ].reduce(
     (o, p) => R.dissoc(p, o),
     changedItem()
