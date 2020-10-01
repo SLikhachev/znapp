@@ -87,6 +87,12 @@ export const pmu = {
     ccode: {
       params: 'eq.'
     }
+  }, 
+  item: {
+    rest: pmu_table(states, {
+      url: '',
+      headers: {Prefer: 'return=representation'}
+    }),
   }
 };
 

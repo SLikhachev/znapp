@@ -12,7 +12,7 @@ const talonPmuForm = () => {
     e.preventDefault();
     let _pmu = get_pmu_attr();
     if (!!_pmu)
-      return disp(['pmu', _pmu]);
+      return disp(['pmu', _pmu, e]);
     return false;
   };
 

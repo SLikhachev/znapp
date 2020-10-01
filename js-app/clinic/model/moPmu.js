@@ -1,5 +1,5 @@
 
-import { states } from '../../apps/appApi';
+import { states, disp } from '../../apps/appApi';
 import { checkArray } from '../../apps/model/moModel';
 import { changedItem, changeValue, target } from '../../apps/model/moListItem';
 
@@ -76,14 +76,14 @@ const _update_pmus = pmus => pmus.reduce(
     states().data.get('tal_pmu')
 );
 */
-const update_pmus = pmus => {
+export const update_pmus = pmus => {
   let $tal_pmu = states().data.get('tal_pmu') || [];
   return pmus.reduce(
     (result, pmu, idx) => 
       $tal_pmu.find( _p => _p.code_usl == pmu.code_usl) ? 
       // if find this code then return as is, else push absent pmu 
       [...result] : [...result, tal_pmu(pmu, idx)],
-      new Array()
+      []
   );
 };
 
@@ -93,7 +93,7 @@ const empty_error = {
    code_usl: 'Нет ткого кода услуги'
 };
 
-export const add_pmus = attr => pmu => {
+export const add_pmus = (attr, event) => pmu => {
   if(!checkArray(pmu))
     return Promise.reject({ 
       error: empty_error[attr]
@@ -103,16 +103,18 @@ export const add_pmus = attr => pmu => {
     error = pmu_.find( p => !!p.error ) || {};
 
   if (!R.isEmpty(error))
-    return Promise.reject({ 
+    return Promise.reject({
       error: `Ошибка элемента группы: ${error.error.toString()}`
     });
-
-  //return disp(['save', 'pmu', _pmu]);
+  
+  states().options.set('pmu', pmu); // for talon pmu presentation
   // only new pmu to save and tal_pmu update
-  let new_pmus = update_pmus(pmu_);
-  states().options.set('pmu', new_pmus);
-
-  let old_pmus = states().data.get('tal_pmu');
-  states().data.set('tal_pmu', [...old_pmus, ...new_pmus]);
-  return 'pmu updated';
+  return disp(['save_items', 'pmu', event, 'POST', [...pmu_]]);
+   
+ 
+  //let old_pmus = states().data.get('tal_pmu');
+  //states().data.set('tal_pmu', [...old_pmus, ...new_pmus]);
+  //return '';
+ 
 };
+

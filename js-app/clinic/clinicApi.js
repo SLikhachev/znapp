@@ -25,7 +25,7 @@ import {
   initTalon,
   toSaveTalon
 } from './model/moTalons';
-import { add_pmus } from './model/moPmu';
+import { add_pmus, update_pmus } from './model/moPmu';
 import { cardTabs } from './view/vuClinic';
 import { talonTabs } from './view/vuClinic';
 
@@ -73,7 +73,7 @@ const Actions = (state, update) => {
         catch(_catch);
     },
  
-    opts() {
+    _opts() {
       let def = state().suite, unit= state().unit;
 
       let error = R.hasPath(['rest', 'options'], def[unit]) ? 
@@ -132,7 +132,7 @@ const Actions = (state, update) => {
       stup({ suite, unit });
 
       return Promise.all([
-        this.opts(),
+        this._opts(),
         this._unit(unit)([suite, {card, talon}])
       ])
       .then(res => { stup({ optionsReady: true }); })
@@ -230,12 +230,14 @@ const Actions = (state, update) => {
             } else {
               stup({ data: new Map()});
               listItem( initTalon({}, res.list[0]) ); // card object from Map
-              itemId('Новый талон'); // just string no talon number
+              itemId('add'); // just string no talon number
               state().data.set('card', res.list[0]);
             }
             return 'talon card loaded';
         });
     },
+
+    //_to_options(list) { return list[0]; },
 
     // fetch data from rest server defs in fetch, fill with target
     fetch_toOptions(d) { // ufms -> dul_org
@@ -304,6 +306,10 @@ const Actions = (state, update) => {
     },
 
     _saved_pmu(d) {
+      let [res] = d,
+        old_pmus = state().data.get('tal_pmu'),
+        new_pmus = update_pmus(state.data.get('pmu'));
+      state().data.set('tal_pmu', [...old_pmus, ...new_pmus]);
       return false;
     },
     
@@ -314,6 +320,22 @@ const Actions = (state, update) => {
       }[item] || false;
     },
     
+    save_items(d) {
+      let [item, event, method, data] = d;
+      event.target.classList.add('disable');
+      return saveItem(state().suite[item], 'item', method, data)
+        //return representation then change current list item 
+        .then(res => checkArray(res) ?
+          this._saved(item)([res]) :
+          false
+        )
+        .catch(error => {
+          vuDialog.error = error.saverror;
+          vuDialog.open();
+        })
+        .finally(() => event.target.classList.remove('disable'));
+    },
+
     save(d) {
         let [item, event, method = ''] = d;
         
@@ -339,7 +361,8 @@ const Actions = (state, update) => {
 
         // save all others from changedItem, 
         // fields to save rules by 'editable_fields': array of the item
-
+        return this.save_items([item, event, method, data]);
+        /*
         event.target.classList.add('disable');
         return saveItem(state().suite[item], 'item', method, data)
           //return representation then change current list item 
@@ -352,14 +375,15 @@ const Actions = (state, update) => {
             vuDialog.open();
           })
           .finally(() => event.target.classList.remove('disable'));
+        */
       },
 
       pmu(d) {
-        let [attr] = d;
+        let [attr, event] = d;
         state().options.set('pmu', []); // ?? or stup
         let opt = { code_usl: 'pmu', ccode: 'pmu', grup: 'pmu_grup' };
         return this.fetch_toOptions(
-          [opt[attr], 'pmu', '', add_pmus(attr)]
+          [opt[attr], 'pmu', '', add_pmus(attr, event)]
         );
       },
 
