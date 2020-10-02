@@ -140,15 +140,22 @@ const saveRequest = (set, item, _method, data) => {
 
 
 export const saveItem = (set, item, method, data = null) => {
-  let reqwest = saveRequest(set, item, method, data);
-  if ( typeof reqwest === 'string')
-    return Promise.reject({ saverror: reqwest});
-  return m.request(reqwest)
+  let _data = data;
+  if (!Array.isArray(data))
+    _data= [data];
+  let reqs = _data.map( d => saveRequest(set, item, method, d));
+  let errs = reqs.filter( r => typeof r === 'string' );
+  
+  if ( checkArray(errs) )
+    return Promise.reject({ saverror: errs[0]});
+  
+  return Promise.all( reqs.map( r => m.request(r)))
     .then(
       res => {
+        console.log('then in saveItem', res);
         if (vuDialog.dialog && vuDialog.dialog.open)
           vuDialog.close();
-        return res; // return=representation
+        return R.flatten(res); // return=representation // list
       },
       err => Promise.reject({ saverror: errMsg(err) })
     );

@@ -2,7 +2,7 @@
 import { states, disp } from '../../apps/appApi';
 import { vuListTable } from '../../apps/view/vuListTable';
 import { makeGroup } from '../form/foForm';
-import { get_pmu_attr } from '../model/moPmu'; 
+import { get_pmu_field } from '../model/moPmu'; 
 
 const talonPmuForm = () => {
   
@@ -10,9 +10,9 @@ const talonPmuForm = () => {
 
   const onsubmit = e => {
     e.preventDefault();
-    let _pmu = get_pmu_attr();
-    if (!!_pmu)
-      return disp(['pmu', _pmu, e]);
+    let field = get_pmu_field();
+    if (!!field)
+      return disp(['save_pmu', field, e]);
     return false;
   };
 

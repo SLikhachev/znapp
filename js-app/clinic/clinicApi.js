@@ -25,7 +25,7 @@ import {
   initTalon,
   toSaveTalon
 } from './model/moTalons';
-import { add_pmus, update_pmus } from './model/moPmu';
+import { find_in, add_pmus, update_pmus } from './model/moPmu';
 import { cardTabs } from './view/vuClinic';
 import { talonTabs } from './view/vuClinic';
 
@@ -41,6 +41,7 @@ const Actions = (state, update) => {
   const stup = up(update);
   const _reject = err => Promise.reject(err);
   const _catch = err => stup(err);
+  const F = () => false;
     
   return {
     
@@ -257,7 +258,7 @@ const Actions = (state, update) => {
           state().options.set(map_key, res.list);
           if (!!callback && typeof callback === 'function')
             return callback(res.list);
-          return res.list[0];
+          return res.list;//[0];
         }).
         catch(err => state().options.set(map_key, [{ error: `red&${err.error}`}]));
         //finally( memost(target) );
@@ -274,9 +275,9 @@ const Actions = (state, update) => {
       //  
       // set_toForm::String key in from to set with value got with get_fromData
       // 
-      return this.fetch_toOptions([fetch, map_key]).then(item => {
+      return this.fetch_toOptions([fetch, map_key]).then(items => {
         let name = set_toForm || '', 
-            value = item ? item[get_fromData] : '';
+            value = (items && items[0]) ? items[0][get_fromData] : '';
         if (name && value)
             // set field in form if any
             changeValue({ 'target': { name, value }});
@@ -308,7 +309,8 @@ const Actions = (state, update) => {
     _saved_pmu(d) {
       let [res] = d,
         old_pmus = state().data.get('tal_pmu'),
-        new_pmus = update_pmus(state.data.get('pmu'));
+        new_pmus = state().options.get('pmu');
+        //update_pmus(state.data.get('pmu'));
       state().data.set('tal_pmu', [...old_pmus, ...new_pmus]);
       return false;
     },
@@ -317,7 +319,7 @@ const Actions = (state, update) => {
       card: this._saved_card,
       talon: this._saved_talon,
       pmu: this._saved_pmu
-      }[item] || false;
+      }[item] || F;
     },
     
     save_items(d) {
@@ -330,8 +332,11 @@ const Actions = (state, update) => {
           false
         )
         .catch(error => {
-          vuDialog.error = error.saverror;
-          vuDialog.open();
+          if (!!error && !!error.saverror) {
+            vuDialog.error = error.saverror;
+            vuDialog.open();
+          }
+          console.error('catch in save_items', error);
         })
         .finally(() => event.target.classList.remove('disable'));
     },
@@ -378,13 +383,26 @@ const Actions = (state, update) => {
         */
       },
 
-      pmu(d) {
-        let [attr, event] = d;
+      save_pmu(d) {
+        let [field, event] = d;
+        // pmu present 
+        if ( 
+          ['code_usl', 'ccode'].indexOf(field) >= 0 &&
+          !R.isEmpty( find_in(state, 'data')('tal_pmu', field, changedItem()[field]) )
+        ) return false;
+        // get to options
         state().options.set('pmu', []); // ?? or stup
-        let opt = { code_usl: 'pmu', ccode: 'pmu', grup: 'pmu_grup' };
+        vuDialog.error = '';
+        stup({ errorsList: [] });
+        let option = { code_usl: 'pmu', ccode: 'pmu', grup: 'pmu_grup' };
         return this.fetch_toOptions(
-          [opt[attr], 'pmu', '', add_pmus(attr, event)]
+          [option[field], 'pmu', '', add_pmus(field, event)]
         );
+      },
+
+      set_pmu(d) {
+        let [pmu] = d;
+        state().options.set('pmu', pmu);
       },
 
       year(d) {
