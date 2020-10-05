@@ -25,7 +25,11 @@ import {
   initTalon,
   toSaveTalon
 } from './model/moTalons';
-import { find_in, add_pmus, update_pmus } from './model/moPmu';
+import { 
+  find_in, 
+  prep_to_save_pmus,
+  add_pmus,
+  update_pmus } from './model/moPmu';
 import { cardTabs } from './view/vuClinic';
 import { talonTabs } from './view/vuClinic';
 
@@ -238,8 +242,6 @@ const Actions = (state, update) => {
         });
     },
 
-    //_to_options(list) { return list[0]; },
-
     // fetch data from rest server defs in fetch, fill with target
     fetch_toOptions(d) { // ufms -> dul_org
       let [fetch, map_key, str_fetch='', callback=null] = d;
@@ -309,8 +311,10 @@ const Actions = (state, update) => {
     _saved_pmu(d) {
       let [res] = d,
         old_pmus = state().data.get('tal_pmu'),
-        new_pmus = state().options.get('pmu');
-        //update_pmus(state.data.get('pmu'));
+        new_pmus = res.map( r => Object.assign(
+          r, find_in(state, 'options')('pmu', 'code_usl', r.code_usl)
+        ));
+      //update_pmus(state.data.get('pmu'));
       state().data.set('tal_pmu', [...old_pmus, ...new_pmus]);
       return false;
     },
@@ -367,31 +371,38 @@ const Actions = (state, update) => {
         // save all others from changedItem, 
         // fields to save rules by 'editable_fields': array of the item
         return this.save_items([item, event, method, data]);
-        /*
-        event.target.classList.add('disable');
-        return saveItem(state().suite[item], 'item', method, data)
-          //return representation then change current list item 
-          .then(res => checkArray(res) ?
-            this._saved(item)([res]) :
-            false
-          )
-          .catch(error => {
-            vuDialog.error = error.saverror;
-            vuDialog.open();
-          })
-          .finally(() => event.target.classList.remove('disable'));
-        */
       },
 
       save_pmu(d) {
         let [field, event] = d;
-        // pmu present 
-        if ( 
-          ['code_usl', 'ccode'].indexOf(field) >= 0 &&
-          !R.isEmpty( find_in(state, 'data')('tal_pmu', field, changedItem()[field]) )
-        ) return false;
-        // get to options
-        state().options.set('pmu', []); // ?? or stup
+        
+        // pmu present im memory
+        if ( ['code_usl', 'ccode'].indexOf(field) >= 0 ) {
+          
+          // this pmu is already in talon
+          if (!R.isEmpty( find_in(state, 'data')
+            ('tal_pmu', field, changedItem()[field]) ) )
+            return false;
+          
+          // get it from prefetch if any
+          let pmus =  [find_in(state, 'options')
+              ('code_usl', field, changedItem()[field])
+            ], 
+            pmu$ = prep_to_save_pmus(pmus);
+          
+          if (!R.isEmpty( pmu$ )) {
+            let error = pmu$[0].error;
+            if (error) {
+              state().options.set('pmu', [{ error: `red&${error}`}]);
+              return false;
+            }
+            state().options.set('pmu', [...pmus]);
+            return this.save_items(['pmu', event, 'POST', [...pmu$]]);
+          }
+        }
+        
+        // else get it from api call
+        //state().options.set('pmu', []); // ?? or stup
         vuDialog.error = '';
         stup({ errorsList: [] });
         let option = { code_usl: 'pmu', ccode: 'pmu', grup: 'pmu_grup' };
@@ -402,6 +413,7 @@ const Actions = (state, update) => {
 
       set_pmu(d) {
         let [pmu] = d;
+        console.log('set_pmu', pmu);
         state().options.set('pmu', pmu);
       },
 

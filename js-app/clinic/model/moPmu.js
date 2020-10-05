@@ -77,15 +77,7 @@ const tal_pmu = (pmu, idx) => Object.assign(
     ccode: states().options.get('pmu')[idx].ccode || '',
   }
 );
-/*
-const _update_pmus = pmus => pmus.reduce(
-  (result, pmu, idx) => 
-    result.find( _p => _p.code_usl == pmu.code_usl) ? 
-    // if find this code then return as is, else push absent pmu 
-    [...result] : [...result, tal_pmu(pmu, idx)],
-    states().data.get('tal_pmu')
-);
-*/
+
 export const update_pmus = pmus => {
   let $tal_pmu = states().data.get('tal_pmu') || [];
   return pmus.reduce(
@@ -103,13 +95,17 @@ const empty_error = {
    code_usl: 'Нет ткого кода услуги'
 };
 
-export const add_pmus = (field, event) => pmu => {
-  if(!checkArray(pmu))
+export const prep_to_save_pmus = pmus => pmus.
+  map( p => proc_pmu(p) ).filter( p => !R.isEmpty(p) );
+
+
+export const add_pmus = (field, event) => pmus => {
+  if(!checkArray(pmus))
     return Promise.reject({
       error: empty_error[field]
     });
 
-  let pmu$ = pmu.map( p => proc_pmu(p) ).filter( p => !R.isEmpty(p) );
+  let pmu$ = prep_to_save_pmu(pmus);
   if (R.isEmpty( pmu$ ))
     return false;
   
@@ -120,12 +116,15 @@ export const add_pmus = (field, event) => pmu => {
     });
   
   //states().options.set('pmu', pmu); // for talon pmu presentation
+  
   disp([
     'set_pmu', 
-    pmu.filter( 
+    pmus.filter( 
       p => !R.isEmpty( (pmu$.find( p$ => p$.code_usl == p.code_usl) || {} ) ) 
     )
   ]);
+  
+
   // only new pmu to save and tal_pmu update
   return disp(['save_items', 'pmu', event, 'POST', [...pmu$]]);
   
