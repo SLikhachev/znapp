@@ -17,6 +17,27 @@ export const set_usl = e => {
   return false;
 };
 
+// ------- CHANGE KOL_USL IN TABLE
+const change_kol_usl = act => e => disp(
+  ['pmu_kol_usl', act, e]
+);
+
+const _dec = change_kol_usl('dec');
+const _inc = change_kol_usl('inc');
+
+const change_usl = (vnode, color, action) => (row, key, pk) => m(
+  vnode, { 
+    style: `color: ${color};`, 
+    'data-id': row[pk], 
+    'data-kol': row.kol_usl, 
+    onclick: action 
+  }
+);
+const dec_usl = change_usl('i.fa.fa-minus-circle.choice.red', 'red', _dec);
+const inc_usl = change_usl('i.fa.fa-plus-circle.choice', 'green', _inc);
+//------------------------------------
+
+
 const wrap = { klass: '.pure-u-1-4'};
 const tag= ['.input-find.pure-u-3-4'];
 
@@ -66,14 +87,16 @@ export const tal_pmu = {
     //validator: talonCardValidator,
     header: "Поиск талонов по номеру талона, карты или дате",
     struct: {
-      ccode: ['Номер'],
-      code_usl: ['Код услуги'],
-      kol_usl: ['Кол-во'],
-      name: ['Наименование'],
-      exec_spec: ['Спец'],
-      exec_doc: ['Спец код'],
-      exec_podr: ['Подр'],
-      tarif: ['Тариф 5/2']
+      ccode: ["Номер"],
+      code_usl: ["Код услуги"],
+      kol_usl: ["Кол-во"],
+      name: ["Наименование"],
+      exec_spec: ["Спец"],
+      exec_doc: ["Спец код"],
+      exec_podr: ["Подр"],
+      tarif: ["Тариф"],
+      inc: ["Добавить", '', inc_usl],
+      dec: ["Удалить", '', dec_usl]
     }
   },
   form: pmuForm

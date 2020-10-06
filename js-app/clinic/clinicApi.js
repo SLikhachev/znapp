@@ -26,10 +26,14 @@ import {
   toSaveTalon
 } from './model/moTalons';
 import { 
-  find_in, 
+  is_code_field,
+  find_in_opts,
+  find_in_data,
   prep_to_save_pmus,
   add_pmus,
-  update_pmus } from './model/moPmu';
+  incr_usl, 
+  decr_usl
+} from './model/moPmu';
 import { cardTabs } from './view/vuClinic';
 import { talonTabs } from './view/vuClinic';
 
@@ -163,7 +167,6 @@ const Actions = (state, update) => {
       });
       
       if (card === '') {
-          //console.log(' crd emp ', crd );
           stup({data: new Map()});
           listItem({});
           itemId(card.toString());
@@ -254,7 +257,7 @@ const Actions = (state, update) => {
       //
       // callback if any, call in then and may return reject to catch the error
       //
-      console.log('toOtions',fetch, map_key, str_fetch);
+      //console.log('toOtions',fetch, map_key, str_fetch);
       return getList(state().suite, fetch, `fetch_${str_fetch}`).
         then(res => {
           state().options.set(map_key, res.list);
@@ -304,7 +307,7 @@ const Actions = (state, update) => {
       if (state().talon === '')
         // redirect to just added talon
         m.route.set(talonPath(res[0].crd_num, res[0].tal_num));
-      // else nothing todo  
+      // else nothing todo
       return false;
     },
 
@@ -312,9 +315,9 @@ const Actions = (state, update) => {
       let [res] = d,
         old_pmus = state().data.get('tal_pmu'),
         new_pmus = res.map( r => Object.assign(
-          r, find_in(state, 'options')('pmu', 'code_usl', r.code_usl)
+          r, find_in_opts('pmu', 'code_usl', r.code_usl)
         ));
-      //update_pmus(state.data.get('pmu'));
+      // update_pmus
       state().data.set('tal_pmu', [...old_pmus, ...new_pmus]);
       return false;
     },
@@ -327,14 +330,18 @@ const Actions = (state, update) => {
     },
     
     save_items(d) {
-      let [item, event, method, data] = d;
+      let [item, event, method, data, after_save=null] = d;
       event.target.classList.add('disable');
       return saveItem(state().suite[item], 'item', method, data)
         //return representation then change current list item 
-        .then(res => checkArray(res) ?
-          this._saved(item)([res]) :
-          false
-        )
+        .then(resp => {
+            let res = checkArray(resp) ? resp : [];
+            if (!!after_save && typeof after_save === 'function')
+              return after_save([res]);
+            if (!R.isEmpty(res))
+              return this._saved(item)([res]);
+            return false;
+        })
         .catch(error => {
           if (!!error && !!error.saverror) {
             vuDialog.error = error.saverror;
@@ -348,8 +355,6 @@ const Actions = (state, update) => {
     save(d) {
         let [item, event, method = ''] = d;
         
-        console.log('save item=%s', item);
-
         vuDialog.error = '';
         stup({
           errorsList: state().suite[item].item.validator(changedItem)
@@ -377,17 +382,17 @@ const Actions = (state, update) => {
         let [field, event] = d;
         
         // pmu present im memory
-        if ( ['code_usl', 'ccode'].indexOf(field) >= 0 ) {
+        if ( is_code_field(field) ) {
           
           // this pmu is already in talon
-          if (!R.isEmpty( find_in(state, 'data')
-            ('tal_pmu', field, changedItem()[field]) ) )
-            return false;
+          if (!R.isEmpty( find_in_data(
+              'tal_pmu', field, changedItem()[field]
+             ) ) ) return false;
           
           // get it from prefetch if any
-          let pmus =  [find_in(state, 'options')
-              ('code_usl', field, changedItem()[field])
-            ], 
+          let pmus =  [find_in_opts(
+              'code_usl', field, changedItem()[field]
+            )], 
             pmu$ = prep_to_save_pmus(pmus);
           
           if (!R.isEmpty( pmu$ )) {
@@ -400,7 +405,6 @@ const Actions = (state, update) => {
             return this.save_items(['pmu', event, 'POST', [...pmu$]]);
           }
         }
-        
         // else get it from api call
         //state().options.set('pmu', []); // ?? or stup
         vuDialog.error = '';
@@ -413,8 +417,32 @@ const Actions = (state, update) => {
 
       set_pmu(d) {
         let [pmu] = d;
-        console.log('set_pmu', pmu);
         state().options.set('pmu', pmu);
+      },
+
+      _tal_pmu(d) {
+        let [action, id, kol_usl] = d, 
+          pmu = action === 'inc' ? incr_usl(id, kol_usl) : decr_usl(id, kol_usl);
+        console.log('_tal_pmu', action, id, kol_usl, pmu );
+        state().data.set('tal_pmu', [...pmu]);
+      },
+
+      pmu_kol_usl(d) {
+        let [action, event] = d,
+          id = event.target.getAttribute('data-id'),
+          kol = Number(event.target.getAttribute('data-kol')),
+          kol_usl = action === 'dec' ? kol - 1 : kol + 1,
+          method = kol_usl === 0 ? 'DELETE' : 'PATCH',
+          data = { id };
+        if (method === 'PATCH')
+          data = Object.assign(data, { kol_usl });
+        else 
+          data = Object.assign(data, { method });
+        
+        return this.save_items([
+          'pmu', event, method, data,
+          () => this._tal_pmu([action, id, kol_usl])
+        ]);
       },
 
       year(d) {

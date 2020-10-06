@@ -1,4 +1,6 @@
 
+'use strict';
+
 import { states, disp } from '../../apps/appApi';
 import { checkArray } from '../../apps/model/moModel';
 import { changedItem, changeValue, target } from '../../apps/model/moListItem';
@@ -10,15 +12,19 @@ const form_filds = ['code_usl', 'ccode', 'grup'];
 export const get_pmu_field = () => form_filds.
   filter( f => !!changedItem()[f] )[0] || '';
 
+
+export const is_code_field = field => form_filds.slice(0,2).indexOf(field) >= 0;
+
+
 export const find_in = (state, hash_map) => (hash_key, field_to_find, value) => (
   state()[hash_map] && state()[hash_map].get(hash_key) &&
   state()[hash_map].get(hash_key).
   find(o=> o[field_to_find] == value) || {}
 );
 
-const find_in_data = find_in(states, 'data');
+export const find_in_data = find_in(states, 'data');
 
-const find_in_opts = find_in(states, 'options');
+export const find_in_opts = find_in(states, 'options');
 
 // return doctor code for input spec
 const get_doc_code= spec=> {
@@ -71,6 +77,7 @@ const proc_pmu= pmu=> {
    };
 };
 
+/*
 const tal_pmu = (pmu, idx) => Object.assign(
   pmu, { 
     name: states().options.get('pmu')[idx].name || '',
@@ -88,6 +95,7 @@ export const update_pmus = pmus => {
       []
   );
 };
+*/
 
 const empty_error = {
    grup: 'Нет такой группы услуг',
@@ -105,8 +113,9 @@ export const add_pmus = (field, event) => pmus => {
       error: empty_error[field]
     });
 
-  let pmu$ = prep_to_save_pmu(pmus);
+  let pmu$ = prep_to_save_pmus ( pmus );
   if (R.isEmpty( pmu$ ))
+    // all pmus in tal_pmy already
     return false;
   
   let error = pmu$.find( p => !!p.error ) || {};
@@ -114,24 +123,28 @@ export const add_pmus = (field, event) => pmus => {
     return Promise.reject({
       error: `Ошибка элемента группы: ${error.error.toString()}`
     });
-  
-  //states().options.set('pmu', pmu); // for talon pmu presentation
-  
+
   disp([
     'set_pmu', 
     pmus.filter( 
       p => !R.isEmpty( (pmu$.find( p$ => p$.code_usl == p.code_usl) || {} ) ) 
     )
   ]);
-  
 
   // only new pmu to save and tal_pmu update
   return disp(['save_items', 'pmu', event, 'POST', [...pmu$]]);
-  
- 
-  //let old_pmus = states().data.get('tal_pmu');
-  //states().data.set('tal_pmu', [...old_pmus, ...new_pmus]);
-  //return '';
- 
 };
 
+// type coersion kol, id == p.kol_usl, p.id 
+export const decr_usl = (id, kol_usl) => kol_usl == 0 ? 
+  states().data.get('tal_pmu').filter( p => p.id != id ) :
+  states().data.get('tal_pmu').map( p =>  p.id == id ? 
+    Object.assign(p, { kol_usl }) :
+    p  
+  );
+
+export const incr_usl = (id, kol_usl) => states().data.get('tal_pmu').
+  map( p =>  p.id == id ? 
+    Object.assign(p, { kol_usl }) :
+    p  
+  );
