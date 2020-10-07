@@ -247,7 +247,7 @@ const Actions = (state, update) => {
 
     // fetch data from rest server defs in fetch, fill with target
     fetch_toOptions(d) { // ufms -> dul_org
-      let [fetch, map_key, str_fetch='', callback=null] = d;
+      let [fetch, map_key, str_fetch='', callback=F ] = d;
       // fetch::String key in suite defines model data 
       //   with params as fetch in changedItem[fetch]
       //
@@ -315,7 +315,7 @@ const Actions = (state, update) => {
       let [res] = d,
         old_pmus = state().data.get('tal_pmu'),
         new_pmus = res.map( r => Object.assign(
-          r, find_in_opts('pmu', 'code_usl', r.code_usl)
+          find_in_opts('pmu', 'code_usl', r.code_usl), r
         ));
       // update_pmus
       state().data.set('tal_pmu', [...old_pmus, ...new_pmus]);

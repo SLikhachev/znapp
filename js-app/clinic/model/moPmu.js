@@ -55,10 +55,15 @@ const proc_pmu= pmu=> {
   //
   //console.log(pmu);
   
-  // 1st ignore if present in lal_pmu 
+ 
+  // 1st ignore empty
+  if (R.isEmpty(pmu) || !pmu.code_usl)
+     return {};
+  
+  // 2nd ignore if present in lal_pmu 
   if ( !R.isEmpty( find_in_data('tal_pmu', 'code_usl', pmu.code_usl) ) )
     return {};
-
+  
   let exec_spec= Number( pmu.code_spec ) || 0;
   if ( !exec_spec )
     return { error: `Код специалиста ПМУ не число: ${pmu.code_usl}`}; //error 
@@ -115,7 +120,7 @@ export const add_pmus = (field, event) => pmus => {
 
   let pmu$ = prep_to_save_pmus ( pmus );
   if (R.isEmpty( pmu$ ))
-    // all pmus in tal_pmy already
+    // all pmus in tal_pmu already
     return false;
   
   let error = pmu$.find( p => !!p.error ) || {};
