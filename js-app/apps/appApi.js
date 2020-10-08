@@ -61,5 +61,6 @@ export const initApp = (initial, menu, actions) => {
   disp.map(av => {
     let [event, ...args] = av;
     return actions[event] ? actions[event](args) : stream.SKIP;
+    //return Reflect.has(actions, event) ? actions[event](args) : stream.SKIP;
   });
 };
