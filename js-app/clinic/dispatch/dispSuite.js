@@ -20,8 +20,13 @@ export const dispSuite = function () {
         this.stup({year: _year()});
 
     let def = this.state().suite[this.state().unit];
+    
     if (!!def.count)
       return this.count(def);
+    
+    if(!!def.list)
+      return this.fetch([]);
+    
     };
 
     this.count= d => {
@@ -34,9 +39,11 @@ export const dispSuite = function () {
       return;
     };
     
-    this.fetch = () => {
+    this.fetch = d => {
+      let [fetch=''] = d;
       this.stup({ list: null, error: null, table: true });
-      return getList(this.state().suite, this.state().unit, 'fetch').
+      //console.log('fetch', fetch);
+      return getList(this.state().suite, this.state().unit, fetch).
         then(res => this.stup(res)).
         catch(this._catch);
     };

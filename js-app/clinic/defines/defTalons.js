@@ -112,7 +112,7 @@ const talon = {
   naprForm,
 };
 
-const mkb10 = {
+export const mkb10 = {
   rest: {
     params: {
       order: 'code'

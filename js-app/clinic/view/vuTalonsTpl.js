@@ -88,7 +88,7 @@ export const vuTalonsTplList = function (vnode) {
 
   const model = {
     url: `${restClinic.talon_tpls_list.url}&select=tal_num,${select()}`,
-    order_by: restClinic.talon_tpls_list.order_by
+    order: restClinic.talon_tpls_list.order_by
   };
   moModel.getList(model).then( (t)=>{
     //if ( ! t || model.list.length === 0 ) {
