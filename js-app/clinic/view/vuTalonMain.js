@@ -28,7 +28,7 @@ export const _talNum = (talon, tpl = '') => tpl ?
   m('legend', `Талон № ${_name(talon.tal_num)}`,
     m('span', 
       { style: "padding: 3em" }, 
-      _editable(talon.talon_type) ? 'открыт': 'закрыт',
+      _editable(talon.talon_type) ? 'открыт': m('span.red', 'закрыт'),
        m('span', {style: 'padding-left: 2em' }, `Год ${states().year}`)
     )
   );
@@ -52,11 +52,11 @@ export const talonForm = () => {
   const onsubmit = e => {
     e.preventDefault();
     //console.log('talon submit');
-    return disp(['save', 'talon', e]);
+    return disp(['save', states().unit, e]);
   };
   
   return {
-    view() {
+    view(vnode) {
       form = states().suite.talon.mainForm || {};
 
       return m("form.pure-form.pure-form-stacked.tcard", 
@@ -67,7 +67,7 @@ export const talonForm = () => {
           onsubmit
         }, [
         m('fieldset', [
-          _talNum(changedItem()),
+          _talNum(changedItem(), vnode.attrs.tpl),
           makeFormChildren(form, 1)
         ]),
         _editable(changedItem().talon_type) ? talonButton() : ''

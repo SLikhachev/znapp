@@ -3,7 +3,7 @@
 import { states } from '../../apps/appApi';
 import { vuLoading } from '../../apps/view/vuApp';
 import { tabsView } from './vuTabs.js';
-import { tabEmpty } from './vuClinic';
+import { tabEmpty, unitTabs } from './vuClinic';
 
 
 export const vuClinicTabs = () => {
@@ -13,7 +13,7 @@ export const vuClinicTabs = () => {
 
   return {
     view() {
-      thisTabs = states().tabs || tabs;
+      thisTabs = unitTabs[states().unit] || tabs;
 
       return states().error ? [m(".error", states().error)] :
         states().optionsReady && states().data ?

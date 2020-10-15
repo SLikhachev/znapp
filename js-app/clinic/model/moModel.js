@@ -2,7 +2,7 @@
 'use strict';
 
 import { states, disp } from '../../apps/appApi';
-import { checkArray } from '../../apps/model/moModel';
+import { checkArray } from '../../apps/utils';
 import { changedItem, changeValue, target } from '../../apps/model/moListItem';
 import { _year } from '../../apps/model/moModel';
 

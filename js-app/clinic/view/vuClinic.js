@@ -45,5 +45,18 @@ export const talonTabs = [
   tabEmpty("Удалить", "Удалить"),
 ];
 
+export const templTabs = [
+  {
+    name: "Шаблон талона",
+    content() { return m(vuTalon); }
+  },
+  tabEmpty("Удалить", "Удалить"),
+];
 
+
+export const unitTabs = {
+  card: cardTabs,
+  talon: talonTabs,
+  templ: templTabs
+};
 

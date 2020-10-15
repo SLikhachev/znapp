@@ -1,6 +1,6 @@
 
 import { states, memost } from '../appApi';
-import { checkArray } from '../model/moModel';
+import { checkArray } from '../utils';
 import { changeValue, changedItem } from '../model/moListItem';
 
 const E = x => '';

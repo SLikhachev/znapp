@@ -1,8 +1,8 @@
 
 //'use strict';
 
-//import { states } from '../appApi';
-import { _schema, _year, errMsg, checkArray } from './moModel';
+import { checkArray } from '../utils';
+import { _schema, _year, errMsg } from './moModel';
 import { changedItem } from './moListItem';
 
 

@@ -1,7 +1,8 @@
 
-//'use strict';
+'use strict';
 
-import { checkArray, errMsg } from './moModel';
+import { checkArray } from '../utils';
+import { errMsg } from './moModel';
 import { getRequest } from './moList';
 
 

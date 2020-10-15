@@ -4,7 +4,7 @@
 
 import { states } from '../../apps/appApi';
 import { $place } from '../../apps/defines/defStruct';
-import { talons_table } from '../model/moModel';
+import { changedItem } from '../../apps/model/moListItem';
 import { spravLocal } from '../../sprav/defines/defLocal';
 import { spravProf } from '../../sprav/defines/defProf';
 import { spravComs } from '../../sprav/defines/defComs';
@@ -16,14 +16,15 @@ import {
   talDs1,
   talDs2
 } from '../form/foTalon';
+import { tplValidator } from '../model/moTalons';
 import { $path } from './defClinic';
 import { mkb10 } from './defTalons';
 
 
-export const tplPath = tpl => `${$path.tal_tpls}/${tpl}`;
+export const tplPath = tpl => `${$path.templs}/${tpl}`;
 
 const linkTpl = (row, key, pk) => ([
-  m(m.route.Link, { href: `${$path.tal_tpls}/${row[pk]}`}, row.crd_num),
+  m(m.route.Link, { href: `${$path.templs}/${row[pk]}`}, row.crd_num),
   '.choice.blue',
 ]);
 
@@ -61,7 +62,7 @@ const $rest= {
   }
 };
 
-const $tal_tpls = {
+const $talons = {
   // fetch list of talons tpl by fetch form params
   rest: $rest,
   list: $rest,
@@ -74,28 +75,30 @@ const $tal_tpls = {
   }
 };
 
-/*
-const talonTpl = {
+
+const talon = {
   rest: {
-    url: "",
-    method: "POST",
-    params: talons_table(states, {tbl: ''}),
-    data: ['talon','tal_pmu'],
+    url: "talonz_clin_tpl",
+    params: {
+      get tal_num() {
+        return `eq.${changedItem().tal_num}`;
+      }
+    },
+    data: ['templ'],
     //options_cards: ['mo_local', 'smo_local', 'dul', 'okato'],
     options: [
       'mo_local', 'smo_local', 'okato',
       'ist_fin', 'purpose', 'doctor', 
       'char_main', 'cishod', 'cresult', 'travma_type' 
     ],
-    body: ['_tal']
   },
   item: {
-    header: "Талоны",
-    validator: talonValidator,
-    rest: talons_table(states, {
-      url: '',
+    header: "Шаблоны Талонов",
+    validator: tplValidator,
+    rest: {
+      url: 'talonz_clin_tpl',
       headers: {Prefer: 'return=representation'}
-    }),
+    },
     item: { pk: 'tal_num' }
   },
   mainForm: {
@@ -107,13 +110,13 @@ const talonTpl = {
   },
 };
 
-*/
-export const clinicTalonsTpl = {
 
-  page: "Клиника: Шаблоны Талонов",
-  name: 'tal_tpls',
+export const talonTempls = {
+
+  page: "Клиника: Шаблоны талонов",
+  name: 'Templates',
   
-  tal_tpls: $tal_tpls,
+  templs: $talons,
   
   //talon dependensies
   //options: [ 'ist_fin', 'purp', 'doctor', 'char_main', 'ishod', 'result', 'travma' ],
@@ -128,14 +131,14 @@ export const clinicTalonsTpl = {
   cresult: spravProf.cresult,
   travma_type: spravProf.travma_type,
   mkb10,
-  //tal_tpl
+  templ: talon
 };
 
 
-export const tal_tpls = {
-  path: $path.tal_tpls,
+export const templs = {
+  path: $path.templs,
   name: "Шаблоны",
-  item: '/:tpl',
+  item: '/:talon', 
   add: '/add',
-  def: clinicTalonsTpl,
+  def: talonTempls,
 };

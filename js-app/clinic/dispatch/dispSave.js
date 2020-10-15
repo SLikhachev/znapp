@@ -13,9 +13,10 @@ import { toSaveTalon } from '../model/moTalons';
 export const dispSave = function () {
 
   this._saved = item => ({
-    card: this._saved_card,
+    card: this._saved_item,
+    templ: this._saved_item,
     talon: this._saved_talon,
-    pmu: this._saved_pmu
+    pmu: this._saved_pmu,
     }[item] || this.F
   );
     

@@ -1,10 +1,9 @@
 
-
+'use strict';
 
 import { checkArray } from '../utils';
 import { vuDialog } from '../view/vuDialog';
 import { _schema, errMsg } from './moModel';
-
 
 const [stream, combine] = [m.stream, m.stream.combine];
 

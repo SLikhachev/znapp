@@ -275,9 +275,23 @@ export const talonValidator = validator(checkTalon);
 
 //-------------------------------------------
 
+const checkTalonTpl = [
+  //talon_date,
+  for_pom,
+  fin_doc,
+  //talon_polis,
+  //naprav,
+  //vizits,
+  cleanEmpty(ifEmpty),
+  cleanForced(ignoreAny),
+  zeroNum(toZero)
+];
 
+//-----------------------------------------
 
+export const tplValidator = validator(checkTalonTpl);
 
+//------------------------------------------
 /*
 export const moTalonsList = {
   // :: Object

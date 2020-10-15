@@ -4,8 +4,9 @@
 export const $path = { 
   cards: '/cards', 
   talons: '/talons', 
-  tal_tpls: '/tal_tpls' 
+  templs: '/templs' 
 };
+
 
 // consult spec
 export const $scons = [63];

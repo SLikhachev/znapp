@@ -100,7 +100,7 @@ const dul = card => {
   if (!card.dul_serial && !card.dul_number)
     changeValue(target('dul_type', null));
   
-  if (card.polis_type && card.polis_type < 3 && !card().dul_type)
+  if (card.polis_type && card.polis_type < 3 && !card.dul_type)
     return 'Для этого типа полиса заполните ДУЛ';
   
   if (card.dul_type)

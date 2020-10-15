@@ -16,29 +16,17 @@ import { initTalon } from '../model/moTalons';
 import { talonTabs } from '../view/vuClinic';
 
 
-const patch = ['PATCH', "Изменить"];
-const post = ['POST', "Добавить"];
-
-
 export const dispTalon = function () {
 
-  this._talon = d => {
-    let [suite, args] = d, 
-      [method, word] = patch,
-      { card, talon } = args;
-
-    if (talon === 'add') {
-      talon= '';
-      [method, word]  = post;
-    } 
-
-    this.stup({
-      suite,
-      unit: 'talon', card, talon, data: null, //options: new Map(),
-      method, word, error: '', errorsList: [],
-      tabs: talonTabs, 
-    });
-   
+  this._talon = () => {
+    let card = this.state().card, 
+      talon = this.state().talon;
+    
+    if (!card)
+      return Promise.reject(
+        { error: `Для талона "${talon}" не указана карта`}
+      );
+    
     changedItem({ crd_num: card, _tal: talon });
 
     // get talon and pmus NaN and ZERO Numbers are ignored
@@ -50,7 +38,7 @@ export const dispTalon = function () {
         let _talon = this.state().data.get('talon')[0] || {};
         
         if (R.isNil(_talon) || R.isEmpty(_talon))
-          this.stup({ error: 'Талон не найден'});
+          return Promise.reject({ error: `Талон "${talon}" не найден`});
         
         // init changedItem
         listItem( initTalon(_talon) ); // talon object from Map
@@ -64,15 +52,16 @@ export const dispTalon = function () {
     return getList(this.state().suite, 'card')
       .then(
         res => {
-          if (R.isEmpty(res.list)) {
-            this.stup({ error: 'Карта не найдена'});
-          } else {
-            this.stup({ data: new Map()});
-            listItem( initTalon({}, res.list[0]) ); // card object from Map
-            itemId('add'); // just string no talon number
-            this.state().data.set('card', res.list[0]);
-          }
-          return 'talon card loaded';
+          if (R.isEmpty(res.list))
+            return Promise.reject({ 
+              error: `Карта "${card}" для нового талона не найдена`}
+            );
+          
+          this.stup({ data: new Map()});
+          listItem( initTalon({}, res.list[0]) ); // card object from Map
+          itemId('add'); // just string no talon number
+          this.state().data.set('card', res.list[0]);
+          return 'card for new talon loaded';
       });
   };
 

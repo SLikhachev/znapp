@@ -3,7 +3,7 @@
 
 import { cards } from './defines/defCards';
 import { talons } from './defines/defTalons';
-import { tal_tpls } from './defines/defTalonsTpl';
+import { templs } from './defines/defTempls';
 
 const root = '/';
 
@@ -11,5 +11,5 @@ export const clinicMenu = {
     root,
     cards,
     talons,
-    tal_tpls
+    templs
 };
