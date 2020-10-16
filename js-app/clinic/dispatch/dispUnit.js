@@ -12,8 +12,8 @@ import { getData } from '../../apps/model/moData';
 const $crd_num = new RegExp(/\w{1,9}/);
 const $tal_num = new RegExp(/\d{1,6}/);
 
-const patch = ['PATCH', "Изменить"];
-const post = ['POST', "Добавить"];
+//const patch = ['PATCH', "Изменить"];
+//const post = ['POST', "Добавить"];
 
 const $card = card => {
   let c = card.match($crd_num);
@@ -74,8 +74,8 @@ export const dispUnit = function () {
 
     this.unit= d => {
       let [suite, unit, args] = d,
-        { card='', talon='' } = args,
-        [method, word] = patch;
+        { card='', talon='' } = args;
+        //[method, word] = patch;
       
       //console.log('unit', unit, card );
       //console.assert( unit === 'card' || unit === 'talon' );
@@ -86,14 +86,16 @@ export const dispUnit = function () {
 
       card = $card(card);
       talon = $talon(talon);
-
-      if (!card || !talon)
-        [method, word]  = post;
-
+      /*
+      if (
+        (unit === 'card' && !card) || 
+        ((unit === 'talon' || unit === 'templ') && !talon)
+      ) [method, word]  = post;
+      */
       this.stup({
         suite, unit,
         card, talon, data: null,
-        method, word,
+        //method, word,
         error: '', errorsList: []
       });
 

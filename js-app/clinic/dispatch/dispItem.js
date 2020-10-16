@@ -54,14 +54,23 @@ export const dispItem = function () {
   };
     
   this._saved_item = d => {
-    let [res] = d,
-      { crd_num='', tal_num=''} = res[0], //.crd_num;
-      item = crd_num || tal_num;
+    let [res] = d, item = res && res[0] ? res[0] : {}; 
     
-    this.stup({ card: crd_num, talon: tal_num });
+    if (R.isEmpty(item))
+      return false;
+
+    let { crd_num='', tal_num=''} = item, 
+      pk = crd_num || tal_num;
+    
+
+    if (!!crd_num) 
+      this.stup({ card: crd_num});
+    if (!!tal_num) 
+      this.stup({ talon: tal_num});
+
     listItem(res[0]);
     // update changedItem
-    itemId(item);
+    itemId(pk);
     return false;
   };
 

@@ -10,7 +10,24 @@ import { vuDialog } from '../../apps/view/vuDialog';
 import { toSaveTalon } from '../model/moTalons';
 
 
+const patch = ['PATCH', "Изменить"];
+const post = ['POST', "Добавить"];
+
+
 export const dispSave = function () {
+
+  this.method = () => {
+    let { unit, card, talon } = this.state(), 
+      [method, word] = patch; 
+    
+    if (
+      (unit === 'card' && !card) || 
+      ((unit === 'talon' || unit === 'templ') && !talon)
+    ) [method, word] = post;
+    
+    this.stup({ method, word });
+    return method;
+  };
 
   this._saved = item => ({
     card: this._saved_item,
@@ -28,10 +45,10 @@ export const dispSave = function () {
     return saveItem(this.state().suite[item], 'item', method, data)
       //return representation then change current list item 
       .then(resp => {
-          let res = checkArray(resp) ? resp : [];
+          let res = checkArray(resp) ? resp : []; 
           if (!!after_save && typeof after_save === 'function')
             return after_save([res]);
-          if (!R.isEmpty(res))
+          if (!R.isEmpty(res) && res[0])
             return this._saved(item)([res]);
           return false;
       })
@@ -48,6 +65,8 @@ export const dispSave = function () {
   this.save = d => {
     let [item, event, method = ''] = d;
 
+    method = method || this.method();
+    
     vuDialog.error = '';
     this.stup({
       errorsList: this.state().suite[item].item.validator(changedItem)
@@ -57,7 +76,7 @@ export const dispSave = function () {
       vuDialog.open();
       return false;
     }
-    method = method || this.state().method;
+
     // save card from changedItem() if data is null
     // else from data object
     let data = null;

@@ -151,7 +151,7 @@ export const saveItem = (set, item, method, data = null) => {
   return Promise.all( reqs.map( r => m.request(r)))
     .then(
       res => {
-        console.log('then in saveItem', res);
+        console.log('then in saveItem of moListItem', res);
         if (vuDialog.dialog && vuDialog.dialog.open)
           vuDialog.close();
         return R.flatten(res); // return=representation // list

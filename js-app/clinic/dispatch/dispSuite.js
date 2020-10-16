@@ -8,6 +8,7 @@
 import { _year } from '../../apps/model/moModel';
 import { getList } from '../../apps/model/moList';
 import { talons } from '../defines/defTalons';
+import { changedItem } from '../../apps/model/moListItem';
 
 
 export const dispSuite = function () {
@@ -15,7 +16,7 @@ export const dispSuite = function () {
   this.suite = d => {
     let [suite, unit] = d;
     this.stup({ suite, unit, count: null, table: false , error: '' });
-    
+    changedItem({});
     if (R.isNil(this.state().year))
         this.stup({year: _year()});
 

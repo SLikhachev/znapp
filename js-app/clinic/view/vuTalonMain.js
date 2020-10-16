@@ -3,7 +3,7 @@
 
 import { states, disp } from '../../apps/appApi';
 import { changedItem, changeValue, target } from '../../apps/model/moListItem';
-import { thisYear } from '../model/moModel';
+import { _editable } from '../model/moTalons';
 import { makeFormChildren } from '../form/foForm';
 import { nextTagFocus } from './vuTabs.js';
 
@@ -12,16 +12,7 @@ const _value = value => item => !!item ? item : value;
 const _number = _value('');
 const _name = _value('новый');
 
-//talon editable
-export const _editable = type => thisYear() && (type == 1);
-  // talon_type: 
-  // 0- deleted 1- open (may edit) 2- closed
-  // talon of the same year may edit
-  // case of 1. mek else we can not send it twice in same year
-
-
 const _tplName = talon => m('legend', `Шаблон ${_name(talon.crd_num)}`);
-
 
 export const _talNum = (talon, tpl = '') => tpl ? 
   _tplName(talon) :
@@ -47,7 +38,7 @@ const talonButton= () => m('fieldset', { style: "padding-left: 0%;" },
 
 export const talonForm = () => {
 
-  let form = {};
+  let form = {}, open;
 
   const onsubmit = e => {
     e.preventDefault();
@@ -57,10 +48,12 @@ export const talonForm = () => {
   
   return {
     view(vnode) {
-      form = states().suite.talon.mainForm || {};
-
-      return m("form.pure-form.pure-form-stacked.tcard", 
+      form = states().suite[states().unit].mainForm || {};
+      open = _editable(changedItem().talon_type);
+      
+      return m("form.pure-form.pure-form-stacked.tcard",
         { 
+          //class: open ? 'tcard' : 'disable',
           style: "font-size: 1.2em;", 
           id: "talon", 
           oncreate: nextTagFocus,
@@ -70,7 +63,7 @@ export const talonForm = () => {
           _talNum(changedItem(), vnode.attrs.tpl),
           makeFormChildren(form, 1)
         ]),
-        _editable(changedItem().talon_type) ? talonButton() : ''
+        open ? talonButton() : ''
       ]);
     }
   };

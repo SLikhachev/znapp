@@ -1,7 +1,9 @@
 
 import { states, disp } from '../../apps/appApi';
+import { changedItem } from '../../apps/model/moListItem';
 import { vuListTable } from '../../apps/view/vuListTable';
 import { makeGroup } from '../form/foForm';
+import { _editable } from '../model/moTalons';
 import { get_pmu_field } from '../model/moPmu'; 
 
 const talonPmuForm = () => {
@@ -26,8 +28,10 @@ const talonPmuForm = () => {
 
       return [ m(".pure-g",
         m(".pure-u-1-2",
-          m("form.pure-form", { onsubmit },
-            m("fieldset", makeGroup(form, 1) )
+          m("form.pure-form", { 
+            onsubmit, class: _editable(changedItem().talon_type) ? 
+            'tcard' : 'disable' }, 
+            m("fieldset", makeGroup(form, 1)),
           ) //form
         )), // u-1-2, g
         m('.pure-g', 

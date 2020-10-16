@@ -9,6 +9,7 @@ import { states, disp } from '../../apps/appApi';
 import { changedItem, changeValue, target } from '../../apps/model/moListItem';
 import { _year, _mo } from '../../apps/model/moModel';
 import {
+  thisYear,
   _tupper,
   opt_find,
   opt_filter,
@@ -18,6 +19,13 @@ import {
   validator
 } from './moModel';
 //----------------------------------
+
+//talon editable
+export const _editable = type => thisYear() && (type == 1);
+  // talon_type: 
+  // 0- deleted 1- open (may edit) 2- closed
+  // talon of the same year may edit
+  // case of 1. mek else we can not send it twice in same year
 
 const tmonth = () => new Date().getMonth() + 1;
 
