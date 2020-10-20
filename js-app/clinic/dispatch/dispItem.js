@@ -10,6 +10,7 @@ import {
   itemId, 
   changedItem, 
 } from '../../apps/model/moListItem';
+import { initTempl } from '../model/moTalons';
 
 
 const error = (unit, item) => {
@@ -18,6 +19,15 @@ const error = (unit, item) => {
     templ: `Шаблон ${item} не найден`
   }[unit];
 };
+
+const E = () => {};
+
+const initItem = item => {
+  return {
+    templ: initTempl
+  }[item] || E;
+};
+
 
 export const dispItem = function () {
 
@@ -29,7 +39,7 @@ export const dispItem = function () {
     
     if (item === '') {
       this.stup({data: new Map()});
-      listItem({});
+      listItem(initItem(unit)());
       itemId('');
       return `new ${unit}`;
     }

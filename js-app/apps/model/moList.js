@@ -70,7 +70,7 @@ const makeRestBody = rest => {
 // ONLY REST object used for request building, 
 // exclude params from FETCH form, these process separately
 // ALLOWED methods GET POST
-export const getRequest = (set, item, isfetch) => {
+export const getRequest = (set, item, isfetch='') => {
   // set:: def Object ref,
   // item:: String current eName 
   // rest { url, method, headers, params, body}

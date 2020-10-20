@@ -7,7 +7,7 @@ import { vuLoading, vuTheader } from '../../apps/view/vuApp.js';
 import { vuListTable } from '../../apps/view/vuListTable';
 import { makeTags } from '../../apps/form/makeTags';
 import { cardPath } from '../defines/defCards';
-
+import { tplPath } from '../defines/defTempls';
 
 const makeFields = (fn, flds) => flds.map((f, idx) => m('.pure-u-1-5', fn(f, idx)));
 //const makeButtons = (fn, flds) => flds.map((f, idx) => fn(f, idx));
@@ -26,19 +26,17 @@ export const vuFetchFormChildren = () => {
   };
 };
 
-
-const newCard = () => m(m.route.Link, {
+const itemButton = (path, text) =>  m(m.route.Link, {
   selector: 'a.pure-button.pure-button-primary',
-  href: cardPath('add'),
+  href: path('add'),
   style: "margin-left: 2em; font-size: 1.2em"
-}, "Новая карта");
+}, text);
 
 
 const changeYear = e => {
   e.preventDefault();
   return disp(['year', e]);
 };
-
 
 const year = () => m(".pure-u-1-5", [ //{style: "float: left"}, [
   m('label[for=_year]', 
@@ -51,11 +49,14 @@ const year = () => m(".pure-u-1-5", [ //{style: "float: left"}, [
 ]);
 
 const empty = () => '';
+const newCard = () => itemButton(cardPath, "Новая карта");
+const newTempl = () => itemButton(tplPath, "Новый");
 
 const newItem = unit => {
   return {
     cards: newCard,
     talons: newCard,
+    templs: newTempl
   }[unit] || empty;
 };
 

@@ -17,8 +17,7 @@ import {
   talDs2
 } from '../form/foTalon';
 import { tplValidator } from '../model/moTalons';
-import { $path } from './defClinic';
-import { mkb10 } from './defTalons';
+import { $path, mkb10 } from './defClinic';
 
 
 export const tplPath = tpl => `${$path.templs}/${tpl}`;
@@ -28,6 +27,12 @@ const linkTpl = (row, key, pk) => ([
   '.choice.blue',
 ]);
 
+export const tpl_to_save= [
+  'tal_num', 'crd_num', 'talon_type',
+  'ist_fin', 'first_vflag', 'finality', 'doc_spec', 'doc_code', 'purp',
+  'usl_ok', 'for_pom', 'rslt', 'ishod', 'visit_pol', 'visit_daystac', 'prof_k',
+  'ksk', 'ksg', 'sh', 'ds1', 'char1'
+];
 
 const fetch_form = {
   crd_num: {
@@ -37,7 +42,7 @@ const fetch_form = {
   }
 };
 
-const $struct = {
+const struct = {
   crd_num: ['Шаблон', '', linkTpl],
   ist_fin: ['Ист. фин.'],
   doc_spec: ['Специальность'],
@@ -49,34 +54,34 @@ const $struct = {
   sh: ['Схема лечения']
 };
 
-const tplFilds = `tal_num,${Object.keys($struct).join(",")}`;
+//const tplFilds = `tal_num,${Object.keys($struct).join(",")}`;
 
-const $rest= {
+const rest= {
   url: "talonz_clin_tpl",
   params: {
     talon_type: 'gt.0',
-    select: tplFilds,
+    //select: tplFilds,
     order: 'tal_num.asc',
     limit: 50,
     offset: 0
   }
 };
 
-const $talons = {
+const _templs = {
   // fetch list of talons tpl by fetch form params
-  rest: $rest,
-  list: $rest,
+  rest,
+  list: true,
   // form definition
   fetch: fetch_form,
   item: {
     header: "Шаблоны талонов",
     pk: 'tal_num',
-    struct: $struct
+    struct
   }
 };
 
 
-const talon = {
+const templ = {
   rest: {
     url: "talonz_clin_tpl",
     params: {
@@ -116,7 +121,7 @@ export const talonTempls = {
   page: "Клиника: Шаблоны талонов",
   name: 'Templates',
   
-  templs: $talons,
+  templs: _templs,
   
   //talon dependensies
   //options: [ 'ist_fin', 'purp', 'doctor', 'char_main', 'ishod', 'result', 'travma' ],
@@ -131,7 +136,7 @@ export const talonTempls = {
   cresult: spravProf.cresult,
   travma_type: spravProf.travma_type,
   mkb10,
-  templ: talon
+  templ
 };
 
 

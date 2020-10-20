@@ -1,10 +1,7 @@
 
-//'use strict';
+'use strict';
 
-// src/apps/model/moTalons.js
-//import { moModel, errMsg, _schema, _region, _month } from '../../apps/model/moModel.js';
-//import { restSprav } from '../../sprav/spravApi.js';
-//import { restClinic } from '../clinicApi.js';
+import { trims  } from '../../apps/utils';
 import { states, disp } from '../../apps/appApi';
 import { changedItem, changeValue, target } from '../../apps/model/moListItem';
 import { _year, _mo } from '../../apps/model/moModel';
@@ -28,6 +25,11 @@ export const _editable = type => thisYear() && (type == 1);
   // case of 1. mek else we can not send it twice in same year
 
 const tmonth = () => new Date().getMonth() + 1;
+
+const _date = new Date().toISOString().slice(0,10);
+//tal_num: null, crd_num: "",
+//talon_type: 1, talon_month: 1,
+//open_date: _d, close_date: _d,
 
 
 // --------CARDS DATA for NEW TALON
@@ -76,6 +78,8 @@ export const initTalon = (talon, card={}) =>
   R.isEmpty(talon) ? 
     _withCard(card) :
     talon;
+
+export const initTempl = () => _withTalon({});
 
 /* Object -> Object // extract this fields from card object 
 export const talonCard = card => newTalonCard(
@@ -281,10 +285,18 @@ const checkTalon = [
 
 export const talonValidator = validator(checkTalon);
 
-//-------------------------------------------
+//-------TEMPLATE VALIDATOR------__---------
+
+const tpl_name = talon => {
+  let name = trims(talon.crd_num);
+  if ( name.length < 4 )
+    return "Имя шаблона не менее 4 символов без пробелов";
+  changeValue(target('crd_num', name));
+  return '';
+};
 
 const checkTalonTpl = [
-  //talon_date,
+  tpl_name,
   for_pom,
   fin_doc,
   //talon_polis,

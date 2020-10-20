@@ -6,6 +6,8 @@ import { changedItem, changeValue, target } from '../../apps/model/moListItem';
 import { _editable } from '../model/moTalons';
 import { makeFormChildren } from '../form/foForm';
 import { nextTagFocus } from './vuTabs.js';
+import { applyTempl } from './vuTemplApply';
+
 
 const _value = value => item => !!item ? item : value;
 
@@ -35,6 +37,28 @@ const talonButton= () => m('fieldset', { style: "padding-left: 0%;" },
   ) // --pure-g
 );// -- fieldset
 
+const templateButton= template => [
+  m('.pure-u-6-24', {style: "margin-top: 0px;"},
+    m('input.fname[name="crd_num"][placeholder="Имя шаблона"][required]',
+      {
+        value: template().crd_num, 
+        oninput: changeValue, 
+        style: "font-size: 1.1em"
+      }
+    )
+  ),
+  m('.pure-u-12-24', {style: "margin-top: 5px;"},
+    m('button.pure-button.pure-button-primary[type="submit"]',
+      {style: "font-size: 1.1em"},
+      "Сохранить шаблон"
+    )
+  )
+];
+
+const button = (tpl, template) => tpl ? 
+  templateButton(template) :
+  talonButton();
+
 
 export const talonForm = () => {
 
@@ -42,7 +66,6 @@ export const talonForm = () => {
 
   const onsubmit = e => {
     e.preventDefault();
-    //console.log('talon submit');
     return disp(['save', states().unit, e]);
   };
   
@@ -61,9 +84,10 @@ export const talonForm = () => {
         }, [
         m('fieldset', [
           _talNum(changedItem(), vnode.attrs.tpl),
+          m(applyTempl),
           makeFormChildren(form, 1)
         ]),
-        open ? talonButton() : ''
+        open ? button(vnode.attrs.tpl, changedItem) : ''
       ]);
     }
   };

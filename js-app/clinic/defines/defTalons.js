@@ -8,8 +8,6 @@ import { spravLocal } from '../../sprav/defines/defLocal';
 import { spravProf } from '../../sprav/defines/defProf';
 import { spravComs } from '../../sprav/defines/defComs';
 import { spravPmus } from '../../sprav/defines/defPmus';
-
-//import { spravComs } from '../../sprav/defines/defComs';
 import { 
   fetch_form, 
   $card, 
@@ -23,7 +21,8 @@ import { naprForm } from '../form/foTalonNaprav';
 import { tal_pmu, pmu, pmu_grup } from '../form/foTalonPmu';
 import { _getFIO } from '../model/moCards';
 import { talonValidator } from '../model/moTalons';
-import { $path } from './defClinic';
+import { $path, mkb10 } from './defClinic';
+import { talonTempls } from './defTempls';
 
 
 export const talonPath = (card, talon) => `${$path.talons}/${card}/${talon}`;
@@ -89,7 +88,8 @@ const talon = {
     options: [ 
       'mo_local', 'smo_local', 'okato',
       'ist_fin', 'purpose', 'doctor', 
-      'char_main', 'cishod', 'cresult', 'travma_type' 
+      'char_main', 'cishod', 'cresult', 'travma_type',
+      'templs'
     ],
     body: ['_tal']
   },
@@ -112,22 +112,6 @@ const talon = {
   naprForm,
 };
 
-export const mkb10 = {
-  rest: {
-    params: {
-      order: 'code'
-    },
-    headers: {
-      'Range': '0-20'
-    }
-  },
-  fetch: {
-    code: {
-      alias: 'ds1',
-      params: 'like.*'
-    }
-  }
-};
 
 export const clinicTalons = {
 
@@ -149,6 +133,7 @@ export const clinicTalons = {
   cresult: spravProf.cresult,
   travma_type: spravProf.travma_type,
   mkb10,
+  templs: talonTempls.templs,
   //
   prefetch_pmus: spravPmus.pmus,
   pmu,

@@ -11,7 +11,9 @@ import {
   itemId, 
   changedItem, 
 } from '../../apps/model/moListItem';
+import { vuDialog } from '../../apps/view/vuDialog';
 import { talonPath, talons } from '../defines/defTalons';
+import { tpl_to_save } from '../defines/defTempls';
 import { initTalon } from '../model/moTalons';
 import { talonTabs } from '../view/vuClinic';
 
@@ -71,6 +73,28 @@ export const dispTalon = function () {
       // redirect to just added talon
       m.route.set(talonPath(res[0].crd_num, res[0].tal_num));
     // else nothing todo
+    return false;
+
+  };
+  
+  this.apply_tpl = d => {
+    let [ tal_num ] = d;
+    
+    if (!tal_num)
+      return false;
+    
+    let tpl = this.state().options.get('templs').find(
+        t => t.tal_num == tal_num
+      );
+    
+    if (!tpl) {
+      this.stup({ errorsList: [`Нет шаблона №${tal_num}`] });
+      vuDialog.open();
+      return false;
+    }
+    changedItem(
+      tpl_to_save.slice(2).reduce( (o, f) => R.assoc(f, tpl[f], o), changedItem())
+    );
     return false;
   };
 };
