@@ -18,6 +18,7 @@ import {
   talDs2
 } from '../form/foTalon';
 import { naprForm } from '../form/foTalonNaprav';
+import { polisForm } from '../form/foTalonPolis';
 import { tal_pmu, pmu, pmu_grup } from '../form/foTalonPmu';
 import { _getFIO } from '../model/moCards';
 import { talonValidator } from '../model/moTalons';
@@ -87,7 +88,7 @@ const talon = {
     //options_cards: ['mo_local', 'smo_local', 'dul', 'okato'],
     options: [ 
       'mo_local', 'smo_local', 'okato',
-      'ist_fin', 'purpose', 'doctor', 
+      'ist_fin', 'purpose', 'doctor', 'doc_spec',
       'char_main', 'cishod', 'cresult', 'travma_type',
       'templs'
     ],
@@ -110,6 +111,7 @@ const talon = {
     talDs2
   },
   naprForm,
+  polisForm
 };
 
 
@@ -128,6 +130,7 @@ export const clinicTalons = {
   ist_fin: spravProf.ist_fin,
   purpose: spravLocal.purpose,
   doctor: spravLocal.doctor,
+  doc_spec: spravProf.doc_spec,
   char_main: spravProf.char_main,
   cishod: spravProf.cishod,
   cresult: spravProf.cresult,

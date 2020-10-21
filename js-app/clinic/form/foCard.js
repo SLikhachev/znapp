@@ -180,7 +180,7 @@ export const insurance = {
         }
       },
       attrs: {
-        min: 1,
+        min: 1, 
         onblur: set_polis_type
       }
     },

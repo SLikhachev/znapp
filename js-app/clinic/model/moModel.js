@@ -85,7 +85,7 @@ export const check_opts = params => {
 };
 
 const change = (name, value) => changeValue( { target: { name, value }} );
-
+/*
 const _ptype = type => ({
     3: "ЕНП 16 цифр",
     2: `Временное свидетельсто 9 цифр`,
@@ -93,8 +93,16 @@ const _ptype = type => ({
     0: `red&Тип полиса неизвестен`
   }[type]
 );
+*/
+const _ptype = polis => ({
+    16: "ЕНП 16 цифр",
+    9: "Временное свидетельсто 9 цифр",
+    0: "red&Тип полиса неизвестен"
+  }[polis.length] || "red&Возможно старый полис"
+);
 
-export const polis_type = () => _ptype( changedItem().polis_type );
+//export const polis_type = () => _ptype( changedItem().polis_type );
+export const polis_type = () => _ptype( changedItem().polis_num );
 
 const calc_type = () => {
   let s = 0, n = 0 ;

@@ -1,7 +1,17 @@
 
 import { $checkbox } from '../../apps/defines/defStruct';
+import {
+  item_attr,
+  check_opts,
+  polis_type,
+  set_polis_type,
+  set_okato_by_smo,
+  _okato,
+} from '../model/moModel';
+import { _naprav1 } from '../model/moTalons';
 
-const $legend = text =>({
+
+export const $legend = text =>({
   class: 'legend',
   fields: {
     lend: {
@@ -48,8 +58,27 @@ const naprLech = {
       label: ["Номер направления"],
       tag: ['.pure-u-22-24'],
       type: 'number'
-    }
+    },
+    
   },
+};
+
+const naprav1 = {
+  class: '.pure-g',
+  fields: {
+    naprav1: {
+      wrap: {
+        klass: '.pure-u-10-24',
+        attrs: {
+          style: 'padding-bottom: 2em; font-size: 1.1em; font-weight: 500;'
+        }
+      },
+      type: 'memo',
+      memo: {
+        check: _naprav1,
+      }
+    }
+  }
 };
 
 const naprHosp = {
@@ -81,6 +110,7 @@ export const naprForm = {
   naprDate,
   leg_lech: $legend("Направление: лечение. диагностика, консультация"),
   naprLech,
+  naprav1,
   leg_hosp: $legend("Госпитализация"),
   naprHosp
 };

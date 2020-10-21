@@ -76,9 +76,8 @@ export const talonForm = () => {
       
       return m("form.pure-form.pure-form-stacked.tcard",
         { 
-          //class: open ? 'tcard' : 'disable',
           style: "font-size: 1.2em;", 
-          id: "talon", 
+          id: "talon",
           oncreate: nextTagFocus,
           onsubmit
         }, [

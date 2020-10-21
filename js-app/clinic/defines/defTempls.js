@@ -94,7 +94,7 @@ const templ = {
     options: [
       'mo_local', 'smo_local', 'okato',
       'ist_fin', 'purpose', 'doctor', 
-      'char_main', 'cishod', 'cresult', 'travma_type' 
+      'char_main', 'cishod', 'cresult', 'travma_type'
     ],
   },
   item: {

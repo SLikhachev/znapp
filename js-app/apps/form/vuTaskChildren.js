@@ -20,7 +20,7 @@ export const vuTaskFormChildren = () => {
           makeFields(makeTags(form), Object.keys(form)) : '',
         !R.isEmpty(checkAttrs(buttons)) ? m('.pure-controls',
           makeButtons(makeTags(buttons), Object.keys(buttons))) : ''
-      ]
+      ];
     }
-  }
+  };
 }; 

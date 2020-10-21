@@ -5,9 +5,12 @@ import { trims  } from '../../apps/utils';
 import { states, disp } from '../../apps/appApi';
 import { changedItem, changeValue, target } from '../../apps/model/moListItem';
 import { _year, _mo } from '../../apps/model/moModel';
+import { $scons } from '../defines/defClinic';
 import {
   thisYear,
   _tupper,
+  check_opts,
+  item_attr,
   opt_find,
   opt_filter,
   cleanEmpty,
@@ -132,6 +135,12 @@ export const _doctor = () => {
 };
 //--------------------------------------
 
+export const _naprav1 = () => {
+  return check_opts(['mo_local', 'npr_mo', 'scode', item_attr('sname')]);
+};
+
+//--------------------------------------
+
 const dsp = "^[A-Z][0-9]{2}$"; //(\.[0-9]{1,2})?$";
 const diag = new RegExp( dsp );
 //---------------------------------------
@@ -203,66 +212,59 @@ const vizits = talon => {
 };
 //-------------------------------------------
 
-const $scons = [63];
 const attached = tal => _mo().endsWith(tal.mo_att);
-/*
+
 const naprav = talon => {
   // napr ambul, stac together
-  let cons= talon().naprlech, hosp= talon().nsndhosp;
+  let cons= talon.naprlech, hosp= talon.nsndhosp;
   // no napr
+  // here $scons is Array(of int) as doc_spec who needs naprav to get the doc help   
   // here not specific from dcons and not attached and not urgent and no napravl
   if ( 
-    $scons.find( d=> d == talon().doc_spec) && // this spec need as cons
-    !attached(talon()) && // not attached 
-    !talon().urgent && // not urgent
+    $scons.find( d => d == talon.doc_spec) && // this spec need as cons
+    !attached(talon) && // not attached 
+    !talon.urgent && // not urgent
     !cons ) // no naprav
-    return 'Укажите направление';
+    return `Укажите направление на консультацию специалиста ${talon.doc_spec}`;
 
   if ( !!cons && !!hosp )
     return "Госпитализация и Консультация в одном талоне";
+
+  if (!cons && !hosp)
+    return '';
+
+  // opt_find (opt_key, form_field, item_key) => Object
+  let [_mo, _spec] = cons ? ['npr_mo', 'npr_spec'] : ['hosp_mo', ''],
+    mo = opt_find('mo_local', _mo, 'scode'),
+    spec = _spec ? opt_find('doc_spec', _spec, 'spec') : _spec;
+
+  if (R.isEmpty(mo))
+    return "Неверный код МО направления ";
   
-  // napr MO code
-  // napr spec ambul
+  if (!!_spec && R.isEmpty(spec))
+    return  "Неверный код Специалиста направления";      
+
+  //consult date
+  if ( !!cons )
+    if ( !talon.npr_date || 
+        ( new Date(talon.npr_date) > new Date(talon.open_date))
+       ) {
+        changeValue(target('npr_date', talon.open_date));
+        return '';    
+      }      
   
-  let mo, spec;
-  if (!!cons || !!hosp) {
-    mo= cons ? Number(talon().npr_mo) : Number(talon().hosp_mo);
-    spec= cons ? Number(tal.npr_spec): 0;
-    const mo_local= restSprav.mo_local.url, doc_spec= restSprav.doc_spec.url;
-    const _mo_url= `${mo_local}?scode=eq.${mo}`;
-    let _spec_url= `${doc_spec}?spec=eq.${spec}`;
-    let opt= [ { url: _mo_url } ];
-    if ( cons ) {
-      if ( !tal.npr_date || ( new Date(tal.npr_date) > new Date(tal.open_date)) )
-        tal.npr_date = tal.open_date;
-      opt.push({url: _spec_url, order_by: 'spec'});
-    //hospital
-    } else {
-      if ( !tal.npr_date || ( new Date(tal.npr_date) > new Date(tal.close_date)) )
-        tal.npr_date = tal.close_date;
-    }
-    const _mdl= { options: opt, data: new Map() };
-    try {
-      let r= '';
-      let t= await moModel.getData(_mdl);
-      //console.log(_mdl);
-      if (_mdl.data.get(mo_local).length === 0)
-        r += 'Неверный код МО направления ';
-      if (cons)
-        if (_mdl.data.get(doc_spec).length === 0)
-          r += 'Неверный код Специалиста направления';
-      //console.log(r);
-      if ( Boolean (r) )
-        return r;
-    } catch (e) {
-      return e;
-    }
-*/  
+  //hospital date
+  if ( !talon.npr_date || 
+      ( new Date(talon.npr_date) > new Date(talon.close_date)) 
+     ) changeValue(target('npr_date', talon.close_date));
+
+  return '';  
+};
 
 const toZero= [
   'mek','visit_pol', 'pol_days', 'visit_home', 'home_days',
   'visit_homstac', 'visit_daystac', 'days_at_homstac', 'days_at_daystac',
-  //'npr_mo', 'npr_spec', 'hosp_mo',
+  'npr_mo', 'npr_spec', 'hosp_mo',
   'extr', 'prof_k',
   'char1', 'char2', 
   'travma_type', 'patient_age',
@@ -275,7 +277,7 @@ const checkTalon = [
   for_pom,
   fin_doc,
   //talon_polis,
-  //naprav,
+  naprav,
   vizits,
   cleanEmpty(ifEmpty),
   cleanForced(ignoreAny),

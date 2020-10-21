@@ -42,6 +42,10 @@ export const talonTabs = [
     name: "ПМУ",
     content() { return m(talonPmu); }
   },
+  {
+    name: "Полис на дату",
+    content() { return m(talonAuxForm, { auxform: 'polisForm' }); }
+  },
   tabEmpty("Удалить", "Удалить"),
 ];
 
