@@ -6,7 +6,7 @@ import { crdVizits } from './vuCardVizits';
 import { vuTalon } from './vuTalon';
 import { talonAuxForm } from './vuTalonAux';
 import { talonPmu } from './vuTalonPmu';
-
+import { deleteTalon } from './vuTalonDelete';
 
 export const tabEmpty = (name, header) => ({
   name,
@@ -50,7 +50,10 @@ export const talonTabs = [
     name: "ДС",
     content() { return m(talonAuxForm, { auxform: 'dstacForm' }); }
   },
-  tabEmpty("Удалить", "Удалить"),
+  {
+    name: "Открыть/Удалить",
+    content() { return m(deleteTalon); }
+  },
 ];
 
 export const templTabs = [

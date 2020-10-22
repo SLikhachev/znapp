@@ -97,5 +97,17 @@ export const dispTalon = function () {
     );
     return false;
   };
+
+  this.change_talon_type = d => {
+    let [talon_type, event] = d, 
+      { tal_num } = changedItem();
+    
+    if (!tal_num)
+      return false;
+    //let [item, event, method, data, after_save=null] = d;
+    return this.save_items([
+      'talon', event, 'PATCH', { tal_num, talon_type }
+    ]);
+  };
 };
 

@@ -79,10 +79,16 @@ const _withCard = card => smo_fields.
       )
 );
 
+const _withCardInsurer = talon => smo_fields.
+  reduce(
+    (o, p) => o[p] ? o : R.assoc(p, o[`crd_${p}`], o),
+    talon
+);
+
 export const initTalon = (talon, card={}) => 
   R.isEmpty(talon) ? 
     _withCard(card) :
-    talon;
+    _withCardInsurer(talon);
 
 export const initTempl = () => _withTalon({});
 
