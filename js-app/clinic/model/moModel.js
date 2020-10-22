@@ -102,7 +102,7 @@ const _ptype = polis => ({
 );
 
 //export const polis_type = () => _ptype( changedItem().polis_type );
-export const polis_type = () => _ptype( changedItem().polis_num );
+export const polis_type_prompt = () => _ptype( changedItem().polis_num );
 
 const calc_type = () => {
   let s = 0, n = 0 ;
@@ -146,7 +146,21 @@ export const set_okato_by_smo = () => {
 export const _okato = o => m(`option[value=${o.okato}]`,
   `${o.region}. ${o.name.split(' ')[0]}`
 );
+//-------------------------------------
 
+export const check_polis_type = item => {
+  set_polis_type();
+  return item.polis_type ? 
+    '' : 'Неизвестный тип полиса';
+};
+//-------------------------------------
+
+export const check_smo = item => {
+  set_okato_by_smo();
+  return (item.smo || item.smo_okato) ? 
+  '' : 'Укажите либо СМО либо СМО ОКАТО';
+};
+//---------------------------------------
 
 export const check_dul = () => {
   let ser = changedItem().dul_serial  || '',
@@ -154,7 +168,7 @@ export const check_dul = () => {
     dul = ser || num ? `${ser} ${num}` : "Нет";
   return `Документ: ${dul}`;
 };
-
+//----------------------------------------
 
 export const check_att = () => {
   let att = changedItem().mo_att || "Нет";

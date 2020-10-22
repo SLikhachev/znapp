@@ -1,25 +1,8 @@
 
 import { $checkbox } from '../../apps/defines/defStruct';
-import {
-  item_attr,
-  check_opts,
-  polis_type,
-  set_polis_type,
-  set_okato_by_smo,
-  _okato,
-} from '../model/moModel';
 import { _naprav1 } from '../model/moTalons';
+import { $legend } from './foForm';
 
-
-export const $legend = text =>({
-  class: 'legend',
-  fields: {
-    lend: {
-      type: 'memo',
-      memo: { check: () => text }
-    }  
-  }
-});
 
 const naprDate = {
   class: '.pure-g',

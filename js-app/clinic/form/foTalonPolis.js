@@ -1,12 +1,12 @@
 
 import { smoId } from '../../apps/defines/defStruct';
 import {
-  polis_type,
+  polis_type_prompt,
   set_polis_type,
   set_okato_by_smo,
   _okato,
 } from '../model/moModel';
-import { $legend } from './foTalonNaprav';
+import { $legend } from './foForm';
 
 const polis = {
   class: 'div',
@@ -19,7 +19,7 @@ const polis = {
       label: ["Номер"],
       type: 'number',
       memo: {
-        check: polis_type,
+        check: polis_type_prompt,
       },
       attrs: {
         min: 1, 

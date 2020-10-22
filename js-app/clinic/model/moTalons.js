@@ -9,6 +9,8 @@ import { $scons } from '../defines/defClinic';
 import {
   thisYear,
   _tupper,
+  check_polis_type,
+  check_smo,
   check_opts,
   item_attr,
   opt_find,
@@ -215,11 +217,10 @@ const vizits = talon => {
 const attached = tal => _mo().endsWith(tal.mo_att);
 
 const naprav = talon => {
-  // napr ambul, stac together
   let cons= talon.naprlech, hosp= talon.nsndhosp;
   // no napr
   // here $scons is Array(of int) as doc_spec who needs naprav to get the doc help   
-  // here not specific from dcons and not attached and not urgent and no napravl
+  // here not specific from scons and not attached and not urgent and no napravl
   if ( 
     $scons.find( d => d == talon.doc_spec) && // this spec need as cons
     !attached(talon) && // not attached 
@@ -244,19 +245,16 @@ const naprav = talon => {
   if (!!_spec && R.isEmpty(spec))
     return  "Неверный код Специалиста направления";      
 
-  //consult date
-  if ( !!cons )
-    if ( !talon.npr_date || 
-        ( new Date(talon.npr_date) > new Date(talon.open_date))
-       ) {
-        changeValue(target('npr_date', talon.open_date));
-        return '';    
-      }      
+  //naprav date
+  let ndate = new Date(talon.npr_date || '2040-01-01');
+  if ( !!cons && (ndate > new Date(talon.open_date))) {
+    changeValue(target('npr_date', talon.open_date));
+    return '';    
+  }      
   
   //hospital date
-  if ( !talon.npr_date || 
-      ( new Date(talon.npr_date) > new Date(talon.close_date)) 
-     ) changeValue(target('npr_date', talon.close_date));
+  if ( ndate > new Date(talon.close_date)) 
+    changeValue(target('npr_date', talon.close_date));
 
   return '';  
 };
@@ -276,7 +274,8 @@ const checkTalon = [
   talon_date,
   for_pom,
   fin_doc,
-  //talon_polis,
+  check_polis_type,
+  check_smo,
   naprav,
   vizits,
   cleanEmpty(ifEmpty),
@@ -301,9 +300,6 @@ const checkTalonTpl = [
   tpl_name,
   for_pom,
   fin_doc,
-  //talon_polis,
-  //naprav,
-  //vizits,
   cleanEmpty(ifEmpty),
   cleanForced(ignoreAny),
   zeroNum(toZero)

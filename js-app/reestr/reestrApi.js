@@ -62,7 +62,7 @@ const Actions = (state, update) => {
         state().suite,
         state().unit,
         changedItem()).
-        then(res => { stup(res); return res.done }).
+        then(res => { stup(res); return res.done; }).
         then(done => done ? void false : this.list()).
         catch(err => stup(err)).
         finally(() => {

@@ -9,6 +9,7 @@ import { makeTags } from '../../apps/form/makeTags';
 import { cardPath } from '../defines/defCards';
 import { tplPath } from '../defines/defTempls';
 
+
 const makeFields = (fn, flds) => flds.map((f, idx) => m('.pure-u-1-5', fn(f, idx)));
 //const makeButtons = (fn, flds) => flds.map((f, idx) => fn(f, idx));
 

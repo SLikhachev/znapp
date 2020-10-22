@@ -7,7 +7,7 @@ import { _ufms } from '../model/moCards';
 import {
   item_attr,
   check_opts,
-  polis_type,
+  polis_type_prompt,
   set_polis_type,
   set_okato_by_smo,
   _okato,
@@ -174,7 +174,7 @@ export const insurance = {
       tag: ['', 'required'],
       type: 'number',
       memo: {
-        check: polis_type,
+        check: polis_type_prompt,
         attrs: {
           style: "margin-left: 11em;"
         }

@@ -66,8 +66,8 @@ export const tabsView = () => {
         ])
       )];
     }
-  }
-}
+  };
+};
 
 // oncreate FORM callback used for move from tag to tag with enter key
 // based on tabindex value of tag 
@@ -85,5 +85,5 @@ export const nextTagFocus = vnode => Array.from(
       nextTag[0].focus();
     }
   })
-  )
+  );
 

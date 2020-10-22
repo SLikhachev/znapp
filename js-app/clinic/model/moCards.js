@@ -5,6 +5,8 @@ import { states, disp, memost } from '../../apps/appApi';
 //import { vuDialog } from '../../apps/view/vuDialog.js';
 import { changeValue, target } from '../../apps/model/moListItem';
 import { 
+  check_polis_type,
+  check_smo,
   cleanEmpty,
   cleanForced,
   validator
@@ -110,14 +112,6 @@ const dul = card => {
 };
 //-------------------------------------
 
-const polis_type = card => card.polis_type ? 
-  '' : 'Неизвестный тип полиса';
-//-------------------------------------
-
-const smo = card => (card.smo || card.smo_okato) ? 
-  '' : 'Укажите либо СМО либо СМО ОКАТО';
-//---------------------------------------
-
 const city_g = card => (!card.city_g && card.street_g) ?
     'Укажите город': '';
 //----------------------------------------
@@ -131,8 +125,8 @@ const checkCard = [
   birth_date,
   gender,
   dul,
-  polis_type,
-  smo,
+  check_polis_type,
+  check_smo,
   city_g,
   //cleanEmpty(ifEmpty),
   cleanForced(ignoreAny)

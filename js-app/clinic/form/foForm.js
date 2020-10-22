@@ -20,3 +20,13 @@ export const makeFormChildren = (form, idx=0) =>
   Object.keys(form).map(
     (group, ind) => makeGroup(form[group], ind + idx)
 );
+
+export const $legend = text =>({
+  class: 'legend',
+  fields: {
+    lend: {
+      type: 'memo',
+      memo: { check: () => text }
+    }  
+  }
+});

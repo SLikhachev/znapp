@@ -19,6 +19,7 @@ import {
 } from '../form/foTalon';
 import { naprForm } from '../form/foTalonNaprav';
 import { polisForm } from '../form/foTalonPolis';
+import { dstacForm } from '../form/foTalonDstac';
 import { tal_pmu, pmu, pmu_grup } from '../form/foTalonPmu';
 import { _getFIO } from '../model/moCards';
 import { talonValidator } from '../model/moTalons';
@@ -111,7 +112,8 @@ const talon = {
     talDs2
   },
   naprForm,
-  polisForm
+  polisForm,
+  dstacForm
 };
 
 
