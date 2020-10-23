@@ -102,14 +102,12 @@ const _ptype = polis => ({
 );
 
 //export const polis_type = () => _ptype( changedItem().polis_type );
-export const polis_type_prompt = () => _ptype( changedItem().polis_num );
+export const polis_type_prompt = () => _ptype( changedItem().polis_num || '' );
 
 const calc_type = () => {
-  let s = 0, n = 0 ;
-  if (!!changedItem().polis_ser)
-    s = changedItem().polis_ser.toString().length;
-  if (!!changedItem().polis_num)
-    n = changedItem().polis_num.toString().length;
+  let 
+    s = (changedItem().polis_ser || '').length,
+    n=  (changedItem().polis_num || '').length;
   
   if (s === 0 && n === 16)
     return 3;

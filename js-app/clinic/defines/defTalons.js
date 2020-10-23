@@ -2,6 +2,7 @@
 // prof sprav definition
 
 import { states, memost } from '../../apps/appApi';
+import { _mo } from '../../apps/model/moModel';
 import { talons_table } from '../model/moModel';
 //import { $upper, linkItem, smoId } from '../../apps/defines/defStruct';
 import { spravLocal } from '../../sprav/defines/defLocal';
@@ -102,7 +103,8 @@ const talon = {
       url: '',
       headers: {Prefer: 'return=representation'}
     }),
-    item: { pk: 'tal_num' }
+    item: { pk: 'tal_num' },
+    confirm: _mo
   },
   mainForm: {
     talDate,

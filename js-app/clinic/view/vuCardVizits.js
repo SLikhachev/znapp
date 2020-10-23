@@ -6,38 +6,15 @@ import { talonPath } from '../defines/defTalons';
 
 
 export const crdVizits = function (vnode) {
-
-  //let crd;
-  //if (vnode.attrs.model.card.length > 0)
-  //  crd = vnode.attrs.model.card[0].crd_num;
-  //else
-  //  crd = '';
-  //console.log(crd);
-  //let tal = vnode.attrs.model.talons ? vnode.attrs.model.talons : [];
-  // tal_num int, open_date date, close_date date, purp smallint,
-  //doc_spec int , doc_code int, family varchar,  ds1 varchar
   
-  let itdef, list = [];
+  let itdef, list = [], card;
 
   const vuTable = vuListTable({ itdef, list });
 
   return {
-    /*
-    listMap(s) {
-      return m('tr', [
-        Object.keys(tal_hdr).map(column => {
-          let td = tal_hdr[column].length === 2 ?
-            m('td.choice.blue', m(m.route.Link, {
-              href: `${clinicApi.talons}/${s[column]}/${crd}`,
-            }, s[column])) : m('td', s[column]);
-          return td;
-        })
-      ]);
-    },
-    */  
     view(vnode) {
-      
-      itdef = states().suite.talons.item;
+      ({ card } = states());  
+      itdef = states().suite.talons.item || {};
       list = states().data.get('talons') || [];
 
       //console.log('talPara view');
@@ -47,10 +24,10 @@ export const crdVizits = function (vnode) {
             m('h2', 'Визиты в текущем году'),
             m(vuTable, { itdef, list })
         )),
-        m('.pure-g', m('.pure-u-1-3',
+        m('.pure-g', !card ? '' : m('.pure-u-1-3',
           m(m.route.Link, {
             selector: 'a.pure-button.pure-button-primary',
-            href: talonPath(states().card, 'add'),
+            href: talonPath(card, 'add'),
             style: "float: right; margin-top: 2em; font-size: 1.3 em"
           }, "Добавить талон")
         ))

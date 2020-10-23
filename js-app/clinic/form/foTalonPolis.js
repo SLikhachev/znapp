@@ -47,7 +47,10 @@ const polis = {
 };
 
 export const polisForm = {
-  legend: $legend("Полис на дату визита"),
+  legend: $legend("Полис на дату визита"), 
+  legend1: $legend(`
+    (если заполнен используется в реестре вместо полиса карты)`
+  ),
   polis
 };
 

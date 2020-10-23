@@ -20,7 +20,7 @@ const error = (unit, item) => {
   }[unit];
 };
 
-const E = () => {};
+const E = () => ({});
 
 const initItem = item => {
   return {

@@ -4,14 +4,18 @@
 // src/report/reportApi.js
 /**
   */
+import { genId } from '../../apps/utils';
 import { getData } from '../../apps/model/moData';
 import { getList } from '../../apps/model/moList';
 import { 
   listItem, 
   itemId, 
-  changedItem, 
+  changedItem,
+  changeValue,
+  target
 } from '../../apps/model/moListItem';
 import { vuDialog } from '../../apps/view/vuDialog';
+import { $path } from '../defines/defClinic';
 import { talonPath, talons } from '../defines/defTalons';
 import { tpl_to_save } from '../defines/defTempls';
 import { initTalon } from '../model/moTalons';
@@ -39,7 +43,7 @@ export const dispTalon = function () {
 
         let _talon = this.state().data.get('talon')[0] || {};
         
-        if (R.isNil(_talon) || R.isEmpty(_talon))
+        if (R.isNil(_talon) || R.isEmpty(_talon) || !_talon.talon_type)
           return Promise.reject({ error: `Талон "${talon}" не найден`});
         
         // init changedItem
@@ -73,8 +77,7 @@ export const dispTalon = function () {
       // redirect to just added talon
       m.route.set(talonPath(res[0].crd_num, res[0].tal_num));
     // else nothing todo
-    return false;
-
+    return res[0];
   };
   
   this.apply_tpl = d => {
@@ -98,16 +101,40 @@ export const dispTalon = function () {
     return false;
   };
 
+  this.confirm_code = prompt => {
+    let conf = this.state().suite[this.state().unit].item || {}, 
+      _prompt = conf.prompt || prompt, 
+     code = conf.confirm && 
+      typeof conf.confirm === 'function' && 
+      conf.confirm() || genId(10); 
+    console.log(code)
+    return  window.prompt(_prompt) == code ?
+      true :
+      false;
+  };
+
+  this.confirm = text => window.confirm(text) ? true : false;
+
   this.change_talon_type = d => {
     let [talon_type, event] = d, 
       { tal_num } = changedItem();
     
     if (!tal_num)
       return false;
-    //let [item, event, method, data, after_save=null] = d;
-    return this.save_items([
-      'talon', event, 'PATCH', { tal_num, talon_type }
-    ]);
+    
+    return talon_type > 0 && this.confirm("Ихменить тип талона") || 
+      this.confirm_code('Ведите код подтверждения') ? 
+      //let [item, event, method, data, after_save=null] = d;
+      this.save_items([
+        'talon', event, 'PATCH', { tal_num, talon_type }
+      ]).
+      then(talon => {
+        if (!!talon.talon_type)
+          changeValue(target('talon_type', talon.talon_type))
+        else
+          m.route.set($path.talons);
+      }) :
+      false;
   };
 };
 

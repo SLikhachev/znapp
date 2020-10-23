@@ -72,13 +72,14 @@ const _withTalon = t => {
 const _withCard = card => smo_fields.
   reduce(
     (o, p) => R.assoc(`crd_${p}`, card[p], o),  
-    [...person_fileds, ...smo_fields].
-      reduce(
-        (o, p) => R.assoc(p, card[p], o),  
-        _withTalon({})
-      )
+    //[...person_fileds, ...smo_fields].
+    // dont copy cards smo to talon
+    [...person_fileds].reduce( 
+      (o, p) => R.assoc(p, card[p], o),  
+      _withTalon({})
+    )
 );
-
+// dont copy cards smo to talon
 const _withCardInsurer = talon => smo_fields.
   reduce(
     (o, p) => o[p] ? o : R.assoc(p, o[`crd_${p}`], o),
@@ -88,7 +89,8 @@ const _withCardInsurer = talon => smo_fields.
 export const initTalon = (talon, card={}) => 
   R.isEmpty(talon) ? 
     _withCard(card) :
-    _withCardInsurer(talon);
+    //_withCardInsurer(talon);
+    talon;
 
 export const initTempl = () => _withTalon({});
 

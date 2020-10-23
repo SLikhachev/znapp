@@ -2,7 +2,7 @@
 'use strict';
 
 import { disp } from '../../apps/appApi';
-import { changedItem } from '../../apps/model/moListItem';
+import { changedItem, changeValue, target } from '../../apps/model/moListItem';
 import { thisYear } from '../model/moModel';
 
 
@@ -23,6 +23,7 @@ export const deleteTalon = function() {
   const _click = type => e => {
     e.preventDefault();
     return disp(['change_talon_type', type, e]);
+    //.then(res => changeValue(target('talon_type', res.talon_type)));
   };
 
   return { view() {
