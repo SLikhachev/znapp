@@ -83,7 +83,7 @@ export const talonForm = () => {
         }, [
         m('fieldset', [
           _talNum(changedItem(), vnode.attrs.tpl),
-          m(applyTempl),
+          open && !vnode.attrs.tpl ? m(applyTempl) : '',
           makeFormChildren(form, 1)
         ]),
         open ? button(vnode.attrs.tpl, changedItem) : ''

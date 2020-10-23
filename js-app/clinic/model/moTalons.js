@@ -169,7 +169,7 @@ export const set_ds = e => {
 export const _memo_ds = d => {
   let [ds] = d, 
     ds_list = states().options.get(ds),
-    resp = d == 'ds1' ? 'red&Диагноз ?' : '';
+    resp = '';//d == 'ds1' ? 'red&Диагноз ?' : '';
   //console.log('_memo_ds', ds, ds_list);
   if (ds_list) {
     let n = ds_list.find(o=>changedItem()[ds] == o.code.trim());
@@ -221,6 +221,15 @@ const vizits = talon => {
   return '';    
 };
 //-------------------------------------------
+
+const check_polis = talon => {
+  if (!talon.polis_num)
+    return '';
+  return check_polis_type(talon) || check_smo(talon) || '';
+}
+
+//------------------------------------------
+
 
 const attached = tal => _mo().endsWith(tal.mo_att);
 
@@ -275,15 +284,16 @@ const toZero= [
   'char1', 'char2', 
   'travma_type', 'patient_age',
 ];
-const ifEmpty = [];
+const ifEmpty = [
+  'polis_type', 'polis_ser', 'polis_num', 'smo', 'smo_okato'
+];
 const ignoreAny = ['created', 'modified', 'cuser', 'urgent'];
 
 const checkTalon = [
   talon_date,
   for_pom,
   fin_doc,
-  check_polis_type,
-  check_smo,
+  check_polis,
   naprav,
   vizits,
   cleanEmpty(ifEmpty),

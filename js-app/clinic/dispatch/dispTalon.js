@@ -117,13 +117,17 @@ export const dispTalon = function () {
 
   this.change_talon_type = d => {
     let [talon_type, event] = d, 
-      { tal_num } = changedItem();
+      { tal_num } = changedItem(), change = false;
     
     if (!tal_num)
       return false;
     
-    return talon_type > 0 && this.confirm("Ихменить тип талона") || 
-      this.confirm_code('Ведите код подтверждения') ? 
+    if (talon_type > 0)
+      change = this.confirm("Ихменить тип талона");
+    else 
+      change = this.confirm_code('Ведите код подтверждения');
+    
+    return change ?  
       //let [item, event, method, data, after_save=null] = d;
       this.save_items([
         'talon', event, 'PATCH', { tal_num, talon_type }

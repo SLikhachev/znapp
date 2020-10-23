@@ -2,12 +2,12 @@
 'use strict';
 
 import { states, disp } from '../../apps/appApi';
-
+//import { changedItem } from '../../apps/model/moListItem';
 
 // apply template view
 export const applyTempl = function() {
 
-  let templs, tpl = m.stream('');
+  let templs, tpl = m.stream(''), talon;
 
   const apply = e => {
     e.preventDefault();

@@ -62,7 +62,7 @@ export const talonPmu = () => {
       list = states().data.get('tal_pmu') || [];
 
       return [ 
-        _hdr("И вот заголовок"),
+        _hdr("ПМУ текущего талона"),
         m(talonPmuForm, { form }),
         m(vuTable, {itdef, list})
       ];
