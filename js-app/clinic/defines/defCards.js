@@ -1,13 +1,15 @@
-// src/sparv/defines/spravPmus.js
-// prof sprav definition
 
-import { states, memost } from '../../apps/appApi';
+// src/clinic/defines/defCards.js
+
+'use strict';
+
+import { states } from '../../apps/appApi';
 import { talons_table } from '../model/moModel';
-import { $upper, linkItem, smoId } from '../../apps/defines/defStruct';
+import { linkItem } from '../../apps/defines/defStruct';
 import { spravLocal } from '../../sprav/defines/defLocal';
 import { spravComs } from '../../sprav/defines/defComs';
 import { fetch_form, person, insurance, address } from '../form/foCard';
-import { _getFIO, cardValidator} from '../model/moCards';
+import { _getFIO, cardValidator } from '../model/moCards';
 import { $path } from './defClinic';
 
 
@@ -16,8 +18,8 @@ export const cardPath = card => `${$path.cards}/${card}`;
 
 const linkTalon = state => (row, key, pk) => ([
   m(
-    m.route.Link, 
-    { href: `${$path.talons}/${state().card}/${row[key]}` }, 
+    m.route.Link,
+    { href: `${$path.talons}/${state().card}/${row[key]}` },
     row[key]
   ),
   '.choice.blue',
@@ -77,12 +79,12 @@ const talons = {
   rest: {
     url: 'rpc/crd_talons',
     method: 'POST',
-    params: talons_table(states, {tal_tbl: ''}),
+    params: talons_table(states, { tal_tbl: '' }),
     body: ['crd_num']
   },
   item: {
     struct: {
-      tal_num: ['Номер талона', '',  linkTalon(states)],
+      tal_num: ['Номер талона', '', linkTalon(states)],
       open_date: ['Открыт'],
       close_date: ['Закрыт'],
       purp: ['Цель визита'],
@@ -111,7 +113,7 @@ const ufms = {
     }
   }
 };
-  
+
 export const card = {
   rest: {
     url: "rpc/clin_card_by_num",
@@ -126,10 +128,10 @@ export const card = {
   item: {
     header: "Карты",
     validator: cardValidator,
-    rest: { 
+    rest: {
       // saved by id
       url: 'cardz_clin',
-      headers: {Prefer: 'return=representation'} 
+      headers: { Prefer: 'return=representation' }
     }
   },
   mainForm: {
@@ -144,7 +146,7 @@ export const clinicCards = {
 
   page: "Клиника: Карты",
   name: 'Cards',
-  
+
   cards: $cards,
   talons,
   //card dependensies

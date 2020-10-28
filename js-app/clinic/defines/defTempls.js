@@ -2,14 +2,12 @@
 
 'use strict';
 
-import { states } from '../../apps/appApi';
 import { $place } from '../../apps/defines/defStruct';
 import { changedItem } from '../../apps/model/moListItem';
 import { spravLocal } from '../../sprav/defines/defLocal';
 import { spravProf } from '../../sprav/defines/defProf';
 import { spravComs } from '../../sprav/defines/defComs';
-import { spravPmus } from '../../sprav/defines/defPmus';
-import { 
+import {
   talDate,
   talTarget,
   talVizits,
@@ -23,11 +21,11 @@ import { $path, mkb10 } from './defClinic';
 export const tplPath = tpl => `${$path.templs}/${tpl}`;
 
 const linkTpl = (row, key, pk) => ([
-  m(m.route.Link, { href: `${$path.templs}/${row[pk]}`}, row.crd_num),
+  m(m.route.Link, { href: `${$path.templs}/${row[pk]}` }, row.crd_num),
   '.choice.blue',
 ]);
 
-export const tpl_to_save= [
+export const tpl_to_save = [
   'tal_num', 'crd_num', 'talon_type',
   'ist_fin', 'first_vflag', 'finality', 'doc_spec', 'doc_code', 'purp',
   'usl_ok', 'for_pom', 'rslt', 'ishod', 'visit_pol', 'visit_daystac', 'prof_k',
@@ -56,7 +54,7 @@ const struct = {
 
 //const tplFilds = `tal_num,${Object.keys($struct).join(",")}`;
 
-const rest= {
+const rest = {
   url: "talonz_clin_tpl",
   params: {
     talon_type: 'gt.0',
@@ -93,7 +91,7 @@ const templ = {
     //options_cards: ['mo_local', 'smo_local', 'dul', 'okato'],
     options: [
       'mo_local', 'smo_local', 'okato',
-      'ist_fin', 'purpose', 'doctor', 
+      'ist_fin', 'purpose', 'doctor',
       'char_main', 'cishod', 'cresult', 'travma_type'
     ],
   },
@@ -102,7 +100,7 @@ const templ = {
     validator: tplValidator,
     rest: {
       url: 'talonz_clin_tpl',
-      headers: {Prefer: 'return=representation'}
+      headers: { Prefer: 'return=representation' }
     },
     item: { pk: 'tal_num' }
   },
@@ -120,9 +118,9 @@ export const talonTempls = {
 
   page: "Клиника: Шаблоны талонов",
   name: 'Templates',
-  
+
   templs: _templs,
-  
+
   //talon dependensies
   //options: [ 'ist_fin', 'purp', 'doctor', 'char_main', 'ishod', 'result', 'travma' ],
   smo_local: spravLocal.smo_local,
@@ -143,7 +141,7 @@ export const talonTempls = {
 export const templs = {
   path: $path.templs,
   name: "Шаблоны",
-  item: '/:talon', 
+  item: '/:talon',
   add: '/add',
   def: talonTempls,
 };

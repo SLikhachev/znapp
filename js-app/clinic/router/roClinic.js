@@ -1,5 +1,5 @@
 
-// src/sprav/router/roProf.js
+
 
 import { disp } from '../../apps/appApi';
 import { vuPage } from '../../apps/appRouter';
@@ -12,7 +12,7 @@ export const clinicRouter = menuItem => ({
   [menuItem.path]: {
     onmatch() {
       // path = '/cards' -> unit = 'cards' ;
-      let unit = unslash( menuItem.path );
+      let unit = unslash(menuItem.path);
       disp(['suite', menuItem.def, unit]);
       return vuClinicList;
     },

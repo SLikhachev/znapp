@@ -1,5 +1,7 @@
 // src/apps/view/vuTaskSheet.js
 
+// USED BY reestr app
+
 import { states } from '../appApi'; //stream
 import { vuTaskForm } from '../form/taskForm';
 import { vuTaskFormChildren } from '../form/vuTaskChildren';
@@ -8,9 +10,7 @@ import { vuListTable } from './vuListTable';
 
 // clojure
 export const vuTaskSheet = function () {
-  /**
-  */
-  //closure
+
   let item = '', defs = {}, def = {}, itdef = {}, task = {};
   const vuTable = vuListTable({ itdef, list: states().list });
   const subHdr = text => text && text.file_name ?

@@ -4,6 +4,8 @@
 
 import { $button } from '../../apps/defines/defStruct';
 //import { _mo } from '../../apps/model/moModel';
+import { linkCard, linkTalon } from './defLinks';
+
 
 const packType = {
   1: "Амбулаторный",
@@ -11,8 +13,8 @@ const packType = {
 }
 
 const tableStruct = {
-  tal_num: ['Талон'],
-  crd_num: ['Карта'],
+  tal_num: ['Талон', '', linkTalon],
+  crd_num: ['Карта', '', linkCard],
   fam: ['Фамилия'],
   open_date: ['Открыт'],
   close_date: ['Закрыт'],

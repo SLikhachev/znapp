@@ -14,14 +14,14 @@ import {
 } from '../model/moModel';
 import {
   _doctor,
-  set_ds, 
+  set_ds,
   _memo_ds
 } from '../model/moTalons';
 
 
 const tag = ['.input-find.pure-u-2-3'];
 
-const $none = { style: 'display: none' };
+//const $none = { style: 'display: none' };
 
 const $name = text => ({
   label: [''],
@@ -52,7 +52,7 @@ export const $card = {
   rest: card.rest,
   item: {
     validator: talonCardValidator,
-    rest: { 
+    rest: {
       url: 'cardz_clin',
       //headers: {Prefer: 'return=representation'}
     },
@@ -94,14 +94,14 @@ export const $card = {
         type: 'memo',
         memo: {
           check: check_dul
-        }  
+        }
       },
       mo_att: {
         //attrs: $none,
         type: 'memo',
         memo: {
           check: check_att
-        }  
+        }
       },
     }
   }
@@ -109,16 +109,16 @@ export const $card = {
 
 
 const $date = text => ({
-  wrap: {klass: '.pure-u-4-24' },
+  wrap: { klass: '.pure-u-4-24' },
   label: [text],
   tag: ['.pure-u-22-24', 'required'],
-  type: 'date', 
-  attrs: {style: "height: 45%",}
+  type: 'date',
+  attrs: { style: "height: 45%", }
 });
 
 
 const $flag = text => R.assoc(
-  'wrap', { klass: '.pure-u-3-24'}, 
+  'wrap', { klass: '.pure-u-3-24' },
   $checkbox(text)
 );
 
@@ -127,20 +127,21 @@ export const talDate = {
   class: '.pure-g',
   fields: {
     open_date: $date("Открыт"),
-    close_date: $date("Закрыт"), 
-    talon_month: { 
-      wrap: { klass: '.pure-u-3-24'},
-      label: ["Месяц талона", '.leg_sec.red'], 
+    close_date: $date("Закрыт"),
+    talon_month: {
+      wrap: { klass: '.pure-u-3-24' },
+      label: ["Месяц талона", '.leg_sec.red'],
       tag: ['.pure-u-12-24.tal_month', 'required'],
       type: 'number',
-      attrs: { style: "height: 45%", min: 1, max: 12} ,
+      attrs: { style: "height: 45%", min: 1, max: 12 },
     },
-    mek: R.assocPath(['wrap', 'attrs', 'style'], 
+    mek: R.assocPath(['wrap', 'attrs', 'style'],
       'padding-top: 2em;', $flag("МЭК")),
     'fields_group': {
-      wrap: { 
-        klass: '.pure-u-6-24', 
-        attrs: { style:  'padding-top: 2em;' } },
+      wrap: {
+        klass: '.pure-u-6-24',
+        attrs: { style: 'padding-top: 2em;' }
+      },
       urgent: $checkbox("Неотложный"),
       first_vflag: $checkbox("Первичный")
     }
@@ -148,7 +149,7 @@ export const talDate = {
 };
 
 
-const $twrap = { klass: '.pure-u-2-24' }; 
+const $twrap = { klass: '.pure-u-2-24' };
 
 export const talTarget = {
   class: '.pure-g',
@@ -168,7 +169,7 @@ export const talTarget = {
       label: ["Цель"],
       tag: ['.pure-u-22-24', 'required'],
       type: 'number',
-      attrs:{
+      attrs: {
         list: 'purpose',
         options: id_name
       }
@@ -206,10 +207,10 @@ export const talTarget = {
 
 
 const $visd = text => ({
-   wrap: $twrap,
-   label: [text],
-   tag: ['.pure-u-20-24'],
-   type:'number'
+  wrap: $twrap,
+  label: [text],
+  tag: ['.pure-u-20-24'],
+  type: 'number'
 });
 
 
@@ -218,15 +219,16 @@ export const talVizits = {
   fields: {
     visit_pol: $visd("Амбул"),
     visit_home: $visd("На дом"),
-    visits:{
+    visits: {
       wrap: {
         klass: '.pure-u-6-24',
-        attrs: { style: 
-          "padding-top: 2em ; font-size: 1.2em; font-weight: 600" 
+        attrs: {
+          style:
+            "padding-top: 2em ; font-size: 1.2em; font-weight: 600"
         }
       },
       //attrs: $none,
-      type:'memo',
+      type: 'memo',
       memo: {
         check: _check,
         params: ["Количество посещений"]
@@ -235,7 +237,7 @@ export const talVizits = {
   }
 };
 
-const $dwrap = { klass: '.pure-u-3-24'};
+const $dwrap = { klass: '.pure-u-3-24' };
 
 const $diag = d => ({
   wrap: {
@@ -276,7 +278,7 @@ export const talDs1 = {
     },
     ishod: {
       wrap: $dwrap,
-      label: ["Исход"], 
+      label: ["Исход"],
       tag: ['.input.pure-u-16-24', 'required'],
       attrs: {
         list: 'cishod',
@@ -285,7 +287,7 @@ export const talDs1 = {
     },
     rslt: {
       wrap: $dwrap,
-      label: ["Результат"], 
+      label: ["Результат"],
       tag: ['.input.pure-u-16-24', 'required'],
       attrs: {
         list: 'cresult',
@@ -312,7 +314,7 @@ export const talDs2 = {
     },
     char2: {
       wrap: $dwrap,
-      label: ["Характер"], 
+      label: ["Характер"],
       tag: ['.input.pure-u-16-24'],
       attrs: {
         list: 'char_main',
@@ -321,13 +323,13 @@ export const talDs2 = {
     },
     travma_type: {
       wrap: $dwrap,
-      label: ["Травма"], 
+      label: ["Травма"],
       tag: ['.input.pure-u-14-24'],
       attrs: {
         list: 'travma_type',
         options: id_name
       }
     },
-    diagnose: $diag('ds2') 
+    diagnose: $diag('ds2')
   }
 };

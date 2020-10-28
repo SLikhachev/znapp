@@ -1,21 +1,16 @@
 
 'use strict';
 
-// src/report/reportApi.js
-/**
-  */
 import { getList } from '../../apps/model/moList';
-import { 
-  changedItem, changeValue 
-} from '../../apps/model/moListItem';
+import { changeValue } from '../../apps/model/moListItem';
 
 
 export const dispOptions = function () {
-  
+
   // fetch data from rest server defs in fetch, fill with target
   // ufms -> dul_org
-  this.fetch_toOptions = d => { 
-    let [fetch, map_key, str_fetch='', callback=null ] = d;
+  this.fetch_toOptions = d => {
+    let [fetch, map_key, str_fetch = '', callback = null] = d;
     // fetch::String key in suite defines model data 
     //   with params as fetch in changedItem[fetch]
     //
@@ -33,10 +28,12 @@ export const dispOptions = function () {
           return callback(res.list);
         return res.list;//[0];
       }).
-      catch(err => this.state().options.set(map_key, [{ error: `red&${err.error}`}]));
-      //finally( memost(target) );
+      catch(err => this.state().options.set(
+        map_key, [{ error: `red&${err.error}` }]
+      ));
+    //finally( memost(target) );
   };
-  
+
   this.fetch_toForm = d => {
     let [fetch, map_key, get_fromData, set_toForm] = d;
     // fetch::String key in suite defines model data 
@@ -49,11 +46,11 @@ export const dispOptions = function () {
     // set_toForm::String key in from to set with value got with get_fromData
     // 
     return this.fetch_toOptions([fetch, map_key]).then(items => {
-      let name = set_toForm || '', 
-          value = (items && items[0]) ? items[0][get_fromData] : '';
+      let name = set_toForm || '',
+        value = (items && items[0]) ? items[0][get_fromData] : '';
       if (name && value)
-          // set field in form if any
-          changeValue({ 'target': { name, value }});
+        // set field in form if any
+        changeValue({ 'target': { name, value } });
     });
   };
 

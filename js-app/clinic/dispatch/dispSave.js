@@ -1,9 +1,7 @@
 
 'use strict';
 
-// src/report/reportApi.js
-/**
-  */
+
 import { checkArray } from '../../apps/utils';
 import { changedItem, saveItem } from '../../apps/model/moListItem';
 import { vuDialog } from '../../apps/view/vuDialog';
@@ -17,14 +15,16 @@ const post = ['POST', "Добавить"];
 export const dispSave = function () {
 
   this.method = () => {
-    let { unit, card, talon } = this.state(), 
-      [method, word] = patch; 
-    
-    if (
-      (unit === 'card' && !card) || 
-      ((unit === 'talon' || unit === 'templ') && !talon)
-    ) [method, word] = post;
-    
+    let { unit, card, talon } = this.state(),
+      [method, word] = patch;
+
+    let _newcard = unit === 'card' && !card;
+    let _newtalon_templ = (unit === 'talon' || unit === 'templ') &&
+      !talon
+
+    if (_newcard || _newtalon_templ)
+      [method, word] = post;
+
     this.stup({ method, word });
     return method;
   };
@@ -34,23 +34,23 @@ export const dispSave = function () {
     templ: this._saved_item,
     talon: this._saved_talon,
     pmu: this._saved_pmu,
-    }[item] || this.F
+  }[item] || this.F
   );
-    
+
   this.save_items = d => {
-    let [item, event, method, data, after_save=null] = d;
-    
+    let [item, event, method, data, after_save = null] = d;
+
     event.target.classList.add('disable');
-    
+
     return saveItem(this.state().suite[item], 'item', method, data)
       //return representation then change current list item 
       .then(resp => {
-          let res = checkArray(resp) ? resp : []; 
-          if (!!after_save && typeof after_save === 'function')
-            return after_save([res]);
-          if (!R.isEmpty(res) && res[0])
-            return this._saved(item)([res]);
-          return false;
+        let res = checkArray(resp) ? resp : [];
+        if (!!after_save && typeof after_save === 'function')
+          return after_save([res]);
+        if (!R.isEmpty(res) && res[0])
+          return this._saved(item)([res]);
+        return false;
       })
       .catch(error => {
         if (!!error && !!error.saverror) {
@@ -66,7 +66,7 @@ export const dispSave = function () {
     let [item, event, method = ''] = d;
 
     method = method || this.method();
-    
+
     vuDialog.error = '';
     this.stup({
       errorsList: this.state().suite[item].item.validator(changedItem)

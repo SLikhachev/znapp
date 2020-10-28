@@ -1,5 +1,7 @@
 
-// src/sprav/router/roProf.js
+
+
+// NOT USED REPLACED BY roClinic 
 
 import { disp } from '../../apps/appApi';
 import { vuPage } from '../../apps/appRouter';

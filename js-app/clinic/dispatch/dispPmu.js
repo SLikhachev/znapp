@@ -1,19 +1,15 @@
 
 'use strict';
 
-// src/report/reportApi.js
-/**
-  */
-
 import { changedItem } from '../../apps/model/moListItem';
 import { vuDialog } from '../../apps/view/vuDialog';
-import { 
+import {
   is_code_field,
   find_in_opts,
   find_in_data,
   prep_to_save_pmus,
   add_pmus,
-  incr_usl, 
+  incr_usl,
   decr_usl
 } from '../model/moPmu';
 
@@ -22,25 +18,25 @@ export const dispPmu = function () {
 
   this.save_pmu = d => {
     let [field, event] = d;
-    
+
     // pmu present im memory
-    if ( is_code_field(field) ) {
-      
+    if (is_code_field(field)) {
+
       // this pmu is already in talon
-      if (!R.isEmpty( find_in_data(
-          'tal_pmu', field, changedItem()[field]
-         ) ) ) return false;
-      
+      if (!R.isEmpty(find_in_data(
+        'tal_pmu', field, changedItem()[field]
+      ))) return false;
+
       // get it from prefetch if any
-      let pmus =  [find_in_opts(
-          'code_usl', field, changedItem()[field]
-        )], 
+      let pmus = [find_in_opts(
+        'code_usl', field, changedItem()[field]
+      )],
         pmu$ = prep_to_save_pmus(pmus);
-      
-      if (!R.isEmpty( pmu$ )) {
+
+      if (!R.isEmpty(pmu$)) {
         let error = pmu$[0].error;
         if (error) {
-          this.state().options.set('pmu', [{ error: `red&${error}`}]);
+          this.state().options.set('pmu', [{ error: `red&${error}` }]);
           return false;
         }
         this.state().options.set('pmu', [...pmus]);
@@ -63,9 +59,9 @@ export const dispPmu = function () {
   };
 
   this._tal_pmu = d => {
-    let [action, id, kol_usl] = d, 
+    let [action, id, kol_usl] = d,
       pmu = action === 'inc' ? incr_usl(id, kol_usl) : decr_usl(id, kol_usl);
-    console.log('_tal_pmu', action, id, kol_usl, pmu );
+    console.log('_tal_pmu', action, id, kol_usl, pmu);
     this.state().data.set('tal_pmu', [...pmu]);
   };
 
@@ -78,9 +74,9 @@ export const dispPmu = function () {
       data = { id };
     if (method === 'PATCH')
       data = Object.assign(data, { kol_usl });
-    else 
+    else
       data = Object.assign(data, { method });
-    
+
     return this.save_items([
       'pmu', event, method, data,
       () => this._tal_pmu([action, id, kol_usl])
@@ -90,7 +86,7 @@ export const dispPmu = function () {
   this._saved_pmu = d => {
     let [res] = d,
       old_pmus = this.state().data.get('tal_pmu'),
-      new_pmus = res.map( r => Object.assign(
+      new_pmus = res.map(r => Object.assign(
         find_in_opts('pmu', 'code_usl', r.code_usl), r
       ));
     // update_pmus

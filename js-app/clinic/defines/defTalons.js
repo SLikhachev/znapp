@@ -1,7 +1,10 @@
-// src/sparv/defines/spravPmus.js
-// prof sprav definition
 
-import { states, memost } from '../../apps/appApi';
+
+// src/clinic/defines/defTalons.js
+
+'use strict';
+
+import { states } from '../../apps/appApi';
 import { _mo } from '../../apps/model/moModel';
 import { talons_table } from '../model/moModel';
 //import { $upper, linkItem, smoId } from '../../apps/defines/defStruct';
@@ -9,9 +12,9 @@ import { spravLocal } from '../../sprav/defines/defLocal';
 import { spravProf } from '../../sprav/defines/defProf';
 import { spravComs } from '../../sprav/defines/defComs';
 import { spravPmus } from '../../sprav/defines/defPmus';
-import { 
-  fetch_form, 
-  $card, 
+import {
+  fetch_form,
+  $card,
   talDate,
   talTarget,
   talVizits,
@@ -45,9 +48,9 @@ const $talons = {
   // count talons in db table
   count: {
     rest: {
-      url: 'rpc/get_tal_count', 
+      url: 'rpc/get_tal_count',
       method: "POST",
-      params: talons_table(states, {'_tbl': ''})
+      params: talons_table(states, { '_tbl': '' })
     }
   },
   // fetch list of talons by fetch form params
@@ -85,10 +88,10 @@ const talon = {
   rest: {
     url: "rpc/get_talon_by_num",
     method: "POST",
-    params: talons_table(states, {tbl: ''}),
-    data: ['talon','tal_pmu'],
+    params: talons_table(states, { tbl: '' }),
+    data: ['talon', 'tal_pmu'],
     //options_cards: ['mo_local', 'smo_local', 'dul', 'okato'],
-    options: [ 
+    options: [
       'mo_local', 'smo_local', 'okato',
       'ist_fin', 'purpose', 'doctor', 'doc_spec',
       'char_main', 'cishod', 'cresult', 'travma_type',
@@ -101,7 +104,7 @@ const talon = {
     validator: talonValidator,
     rest: talons_table(states, {
       url: '',
-      headers: {Prefer: 'return=representation'}
+      headers: { Prefer: 'return=representation' }
     }),
     item: { pk: 'tal_num' },
     confirm: _mo
@@ -123,9 +126,9 @@ export const clinicTalons = {
 
   page: "Клиника: Талоны",
   name: 'Talons',
-  
+
   talons: $talons,
-  
+
   //talon dependensies
   //options: [ 'ist_fin', 'purp', 'doctor', 'char_main', 'ishod', 'result', 'travma' ],
   smo_local: spravLocal.smo_local,

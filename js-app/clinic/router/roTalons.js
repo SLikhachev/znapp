@@ -1,5 +1,6 @@
 
-// src/sprav/router/roProf.js
+
+// NOT USED REPLACED BY roClinic 
 
 import { disp } from '../../apps/appApi';
 import { vuPage } from '../../apps/appRouter';
@@ -15,7 +16,7 @@ export const roTalons = () => ({
     },
     render(vnode) { return vuPage(vnode); },
   },
-  
+
   [talons.path + '/:crd' + '/:tal']: {
     onmatch(args) {
       const { crd, tal } = args;
@@ -27,7 +28,7 @@ export const roTalons = () => ({
       }
       */
       disp(['talon', talons.def, crd, tal]);
-     
+
       return vuClinicTabs;
     },
     render(vnode) { return vuPage(vnode); }

@@ -15,7 +15,7 @@ import { reestrMenu } from './reestrMenu';
 //import { ro } from './router/ro';
 
 const route = pathRouter(vuTaskSheet);
-const addroute = {}; //{ pmus: roPmus }; //functions
+const addroute = {};
 const Router = routerFun(reestrMenu, addroute, route);
 
 // init application

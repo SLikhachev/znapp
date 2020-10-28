@@ -1,8 +1,10 @@
 
-// src/reestr/router.js
+// src/clinic/router.js
 
-import { states, app } from '../apps/appApi';
-import { pageView, pathRouter, routerFun } from '../apps/appRouter';
+'use strict';
+
+import { app } from '../apps/appApi';
+import { routerFun } from '../apps/appRouter';
 
 // init func
 import { initClinic } from './clinicApi';
@@ -11,8 +13,6 @@ import { initClinic } from './clinicApi';
 import { clinicMenu } from './clinicMenu';
 
 // routers
-//import { roCards } from './router/roCards';
-//import { roTalons } from './router/roTalons';
 import { clinicRouter } from './router/roClinic';
 
 //const router = pathRouter(pageView(states));

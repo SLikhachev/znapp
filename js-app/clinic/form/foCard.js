@@ -1,8 +1,8 @@
+
 // card pages forms definition
 
 import { states, memost } from '../../apps/appApi';
 import { $upper, $place, smoId } from '../../apps/defines/defStruct';
-import { makeTags } from '../../apps/form/makeTags';
 import { _ufms } from '../model/moCards';
 import {
   item_attr,
@@ -15,7 +15,7 @@ import {
 
 const blurst = e => memost(e.target.name);
 
-const $talons = () => Boolean(states().data && 
+const $talons = () => Boolean(states().data &&
   states().data.get('talons') &&
   states().data.get('talons').length);
 
@@ -24,9 +24,9 @@ const $name = text => ({
   attrs: $upper(text)
 });
 
-const $city = text =>({attrs: $upper(text)});
+const $city = text => ({ attrs: $upper(text) });
 
-const $home_tag = text => ({ 
+const $home_tag = text => ({
   tag: ['.pure-u-1-8'],
   attrs: {
     placeholder: text
@@ -39,7 +39,7 @@ const $home = () => ({
   flat_g: $home_tag("Кв")
 });
 
-const $phone = text => ({ attrs: {  placeholder: text }});
+const $phone = text => ({ attrs: { placeholder: text } });
 
 
 // FETCH CARD form
@@ -180,7 +180,7 @@ export const insurance = {
         }
       },
       attrs: {
-        min: 1, 
+        min: 1,
         onblur: set_polis_type
       }
     },

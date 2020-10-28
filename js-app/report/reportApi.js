@@ -31,7 +31,9 @@ const Actions = (state, update) => {
     list() {
       state().suite[state().unit].rest ?
         getList(state().suite, state().unit).
-          then(res => stup(res)) :
+          then(res => stup(res)).
+          catch(err => stup(err)) :
+
         stup({ list: [], error: '' });
     },
     task(d) {

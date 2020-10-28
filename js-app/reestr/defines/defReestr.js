@@ -4,6 +4,7 @@
 
 import { $month, $checkbox, $button } from '../../apps/defines/defStruct';
 import { _mo } from '../../apps/model/moModel';
+import { linkCard, linkTalon } from './defLinks';
 
 export const reestrPack = {
 
@@ -28,8 +29,8 @@ export const reestrPack = {
       name: "Проверить",
       header: "Проверяем талоны",
       struct: {
-        tal_num: ['Талон'],
-        crd_num: ['Карта'],
+        tal_num: ['Талон', '', linkTalon],
+        crd_num: ['Карта', '', linkCard],
         error: ['Ошибка']
       }
     },
