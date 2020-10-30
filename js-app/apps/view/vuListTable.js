@@ -6,12 +6,12 @@ import { disp } from '../appApi';
 import { idName } from '../defines/defStruct';
 
 
-// object with th or just list
+// object with th attr or just list
 // th prop of object || array ref || dummy
 const _rep = el => el.th || el || ['unknown'];
 
 // 3rd elem may be function if any
-const _fn = el => checkArray(_rep(el)) ? _rep(el)[2] : null;
+const _fn = el => checkArray(_rep(el)) ? _rep(el)[2] : '';
 
 // func must return array [value, class, attrs]
 const rval = (row, key, rep, pk) => {
@@ -43,13 +43,13 @@ const tableRow = data => {
 };
 
 // clojure
-export const vuListTable = function (vnode) {
+export const vuListTable = attrs => {
 
   const {
     table_class = '.pure-table.pure-table-bordered',
     table_id = 'list_table',
     //table_caption = ''
-  } = vnode; // call as func not as component
+  } = attrs; // call as func not as component
 
   let itdef = {}, struct = {}, list = [];
 

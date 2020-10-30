@@ -19,12 +19,12 @@ export const sortList = (id, state) => {
 // dot param like
 //  params: 'like.*' 
 const _dot_param = (ps, val) => {
-  let par, tail, _ps=ps;
-  
+  let par, tail, _ps = ps;
+
   if (typeof ps === 'function')
     _ps = ps();
-  
-  if (!R.isNil(_ps) && (typeof _ps === 'string') && 
+
+  if (!R.isNil(_ps) && (typeof _ps === 'string') &&
     _ps.includes('.')) {
     par = _ps.split('.'); // array[String, String]
     tail = par[1] || '';
@@ -42,9 +42,14 @@ const fetchParams = (fetch, fetch_str) => {
     // alias for case where key string not present in changedItem
     // but alias string present
 
-    let ps = fetch[key].params, 
-      str_key= fetch_str.split('_')[1], // may be additionsl key in form 'FETCH_ds2' 
-      alias = str_key || fetch[key].alias || key, // order: str_key, alias, key
+    let ps = fetch[key].params,
+
+      // may be additionsl key in form 'FETCH_ds2' 
+      str_key = fetch_str.split('_')[1],
+
+      // order: str_key, alias, key
+      alias = str_key || fetch[key].alias || key,
+
       // if not provided dynamically get it statically from value prop
       val = changedItem()[alias] || fetch[key].value;
 
@@ -68,18 +73,18 @@ const makeRestBody = rest => {
 };
 
 // ONLY REST object used for request building, 
-// exclude params from FETCH form, these process separately
+// exclude params from FETCH form, these are processed separately
 // ALLOWED methods GET POST
-export const getRequest = (set, item, isfetch='') => {
+export const getRequest = (set, item, isfetch = '') => {
   // set:: def Object ref,
   // item:: String current eName 
   // rest { url, method, headers, params, body}
-  
+
   let def = set[item];
 
   if (R.isNil(def))
     return `getRequest: Нет свойства ${item} а определении объета запроса`;
-    
+
   let rest = def.rest || {},
     fetch = def.fetch || {},
     params = {};
@@ -105,7 +110,7 @@ export const getRequest = (set, item, isfetch='') => {
   //dynamic _param replaced by proxy
   //Object.keys(_param).forEach( k=> typeof _param[k] === 'function' ? 
   //  _param[k] = _param[k]() : void 0 );
-    
+
   // assume every deletable entity table have ddel column  
   if (_item.editable && _item.editable.indexOf('del') >= 0)
     params.ddel = 'eq.0';
@@ -124,7 +129,7 @@ export const getRequest = (set, item, isfetch='') => {
   if (method === 'GET') {
     console.log('GET', r);
     return r;
-  }  
+  }
   //const body = new FormData();
   // simetimes we need body if this is RPC call for option object e.g.
 
@@ -160,7 +165,7 @@ export const getList = (set, item, isfetch = '') => {
         }
         return res.toString();
       }
-      return Promise.reject({ error: `getList: Nil response: ${res}`});
+      return Promise.reject({ error: `getList: Nil response: ${res}` });
     },
     err => Promise.reject({ error: `getList: ${errMsg(err)}` }));
 };

@@ -6,7 +6,7 @@ import { disp, states } from '../../apps/appApi';
 
 const onadd = (e) => {
   e.preventDefault();
-  disp(['add'])
+  disp(['add']);
   vuDialog.open();
 };
 

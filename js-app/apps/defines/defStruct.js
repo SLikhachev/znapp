@@ -169,6 +169,8 @@ const structNav = {
 };
 */
 
+//'use strict';
+
 import { disp } from '../appApi';
 import { _month } from '../model/moModel';
 import { vuDialog } from '../view/vuDialog';
@@ -231,7 +233,7 @@ export const $checkbox = text => ({
   label: [text.toString(), '.pure-checkbox'],
   type: "checkbox",
   view: 'controls',
-  attrs: {style: 'margin-right: 0.5em;'}
+  attrs: { style: 'margin-right: 0.5em;' }
 });
 
 export const $button = text => ({
@@ -247,13 +249,13 @@ const packType = {
   4: "Профосмотр",
   5: "Инокраевые",
   6: "Тарифы ПМУ"
-}
+};
 
 export const smoId = {
   '': "ФОМС",
   '25016': "СВ Прим",
   '25011': "ВС Альянс"
-}
+};
 
 export const $pack = {
   label: ["Тип счета"],
@@ -261,7 +263,7 @@ export const $pack = {
   type: 'select',
   options: packType,
   attrs: { 'data-initial': 1 }
-}
+};
 
 export const $smo = {
   label: ["СМО"],
@@ -269,7 +271,7 @@ export const $smo = {
   type: 'select',
   options: smoId,
   attrs: { 'data-initial': '' }
-}
+};
 
 
 
@@ -278,5 +280,5 @@ export const $smo = {
 export const idName = {
   id: { th: ["Код", 'sort'], type: 'number', tag: ['.lcode', 'readonly'] },
   name: { th: ["Описаение", 'sort'], tag: ['', 'required'] }
-}
+};
 

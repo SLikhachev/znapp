@@ -15,5 +15,5 @@ export const vuItemFormChildren = () => {
       flds = itdef.form || Object.keys(struct);
       return m('fieldset', makeFields(makeTags(struct), flds));
     }
-  }
-}
+  };
+};

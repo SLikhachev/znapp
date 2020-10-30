@@ -1,6 +1,6 @@
 
 
-export const file_field = (data) => {
+export const file_field = data => {
   return [
     m('input.inputfile[type="file"][name="file"][id="file"]',
       {
@@ -10,7 +10,7 @@ export const file_field = (data) => {
     ),
     m('label[for="file"]', m('strong', "Выбрать файл"))
   ];
-}
+};
 
 //export const form_file_dom= vnode=>  {
 export const form_file_node = vnode => {

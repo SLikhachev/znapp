@@ -11,7 +11,7 @@ export const listItem = stream({});
 export const itemId = stream('');
 export const changeValue = stream({});
 
-export const target = (name, value) => ({ target: {name, value}});
+export const target = (name, value) => ({ target: { name, value } });
 
 export const getItem = (id, pk, list) => {
   if (!id) return {};
@@ -22,17 +22,7 @@ export const getItem = (id, pk, list) => {
   return {}
 };
 
-/*
-const getItem = itemid => {
-  let id = itemid();
-  if (!id) return {};
-  for (let item of moList().list) {
-    if (item[itemPk()] == id)
-      return Object.assign({}, item);
-  }
-};
-*/
-
+// callback for stream's states update 
 const updateItem = (item, changed) => {
   // checkbox value (0, 1);
   //console.log(changed());
@@ -40,6 +30,7 @@ const updateItem = (item, changed) => {
   let value = target.value;
   //console.log(target.name, value);
 
+  // input type=submit may has a method attr 
   if (target.type === 'submit')
     return Object.assign(item(),
       { method: target.getAttribute('method') || 'POST' });
@@ -71,12 +62,12 @@ const updateItem = (item, changed) => {
 export const changedItem = combine((itemid, newvalue, changed) => {
   if (changed.length > 1)
     return {}; // stream initialization 
-  
+
   let c = changed[0]();
-  if (typeof c === 'string' || typeof c === 'number') 
+  if (typeof c === 'string' || typeof c === 'number')
     // id is a string (number) mapped to item from list
     return listItem();
-  
+
   // changed some value on blur 
   return updateItem(changedItem, newvalue);
 }, [itemId, changeValue]);
@@ -85,7 +76,7 @@ export const changedItem = combine((itemid, newvalue, changed) => {
 const saveRequest = (set, item, _method, data) => {
   const rest = set[item].rest || {},
     _item = set[item].item || {},
-    _fields = checkArray(_item.editable_fields) && 
+    _fields = checkArray(_item.editable_fields) &&
       _item.editable_fields, //default all fields editable
     _key = _item.pk || 'id', // primary key may be vary
     _url = rest.url || item,
@@ -99,8 +90,8 @@ const saveRequest = (set, item, _method, data) => {
 
   //let method = changeEvent().method || '';
   let method = _method;
-  if (!method) 
-    return 'No METHOD provided to save Item';
+  if (!method)
+    return 'moListItem.saveRequest --  No METHOD provided to save Item';
 
   if (method === 'PATCH' || method === 'DELETE') {
     params[_key] = `eq.${body[_key]}`;
@@ -133,7 +124,7 @@ const saveRequest = (set, item, _method, data) => {
   const qstring = m.buildQueryString(params),
     url = `${_schema('pg_rest')}${_url}${_sign}${qstring}`,
     headers = rest.headers || {};
-  console.log(url, method, body);  
+  console.log(url, method, body);
   return { url, method, body, headers };
 };
 
@@ -141,17 +132,17 @@ const saveRequest = (set, item, _method, data) => {
 export const saveItem = (set, item, method, data = null) => {
   let _data = data;
   if (!Array.isArray(data))
-    _data= [data];
-  let reqs = _data.map( d => saveRequest(set, item, method, d));
-  let errs = reqs.filter( r => typeof r === 'string' );
-  
-  if ( checkArray(errs) )
-    return Promise.reject({ saverror: errs[0]});
-  
-  return Promise.all( reqs.map( r => m.request(r)))
+    _data = [data];
+  let reqs = _data.map(d => saveRequest(set, item, method, d));
+  let errs = reqs.filter(r => typeof r === 'string');
+
+  if (checkArray(errs))
+    return Promise.reject({ saverror: errs[0] });
+
+  return Promise.all(reqs.map(r => m.request(r)))
     .then(
       res => {
-        console.log('then in saveItem of moListItem', res);
+        //console.log('then in saveItem of moListItem', res);
         if (vuDialog.dialog && vuDialog.dialog.open)
           vuDialog.close();
         return R.flatten(res); // return=representation // list

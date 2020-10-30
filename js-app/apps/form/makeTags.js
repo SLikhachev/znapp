@@ -1,9 +1,9 @@
 
-import { states, memost } from '../appApi';
+import { states } from '../appApi';
 import { checkArray } from '../utils';
 import { changeValue, changedItem } from '../model/moListItem';
 
-const E = x => '';
+const E = () => '';
 
 // Any -> String
 const _text = t => R.isNil(t) ? '' : t.toString();
@@ -76,7 +76,7 @@ const _input = obj => { // {klass, type, name, tabindex, aux, value, attrs} => {
 //------------------------------------------
 
 // String -> Vnode
-const legend = t => m('legend', t.text ? _text(t.text) : _text(t) );
+const legend = t => m('legend', t.text ? _text(t.text) : _text(t));
 //-------------------------------------------
 
 // Object -> Vnode
@@ -107,9 +107,9 @@ const file = sf => {
 
 // (Object -> String) -> Vnode
 const select = (sf, field) => {
-  let _label = _labeltag(sf), _tag = _tagarray(sf), 
-    _attrs= sf.attrs || {}, 
-    attrs = Object.assign(_attrs, 
+  let _label = _labeltag(sf), _tag = _tagarray(sf),
+    _attrs = sf.attrs || {},
+    attrs = Object.assign(_attrs,
       { value: changedItem()[field], onchange: changeValue }
     );
   return [
@@ -125,7 +125,7 @@ const select = (sf, field) => {
 //-------------------------------------------
 
 // (String -> Array -> String -> String) -> Array(Vnode)
-const labelradio = (fortag='dummy', radio = [], txt = '', kl = '') => [
+const labelradio = (fortag = 'dummy', radio = [], txt = '', kl = '') => [
   m(`label${_klass(kl)}[for=${fortag}]`, _text(txt)),
   radio.map(tag => [
     m('span', { style: "line-height: 1em;" }, _text(tag.text)),
@@ -149,8 +149,8 @@ const memo = sf => {
     tag_cls = _tagarray(def)[0],
     attrs = def.attrs || {},
     resp = check(params),
-    [cls= '', txt=''] = typeof resp === 'string' ? resp.split('&') : [];
-  
+    [cls = '', txt = ''] = typeof resp === 'string' ? resp.split('&') : [];
+
   if (!txt)
     ([txt, cls] = [cls, txt]); //swap it
   //console.log('txt', txt)
@@ -162,7 +162,7 @@ const memo = sf => {
 // (String -> Func) -> Vnode
 // list - string of list id
 // fn - array morphism 
-const datalist = (list='', fn=E) => {
+const datalist = (list = '', fn = E) => {
   let opts = states().options.get(list) || [];
   return m(`datalist[id="${list}"]`, opts.map(fn));
 };
@@ -222,14 +222,14 @@ const input = (sf, field, idx) => {
     let _memo = memo(sf.memo, field);
     if (_memo) tags.push(_memo);
   }
-    
+
   return tags;
 };
 //----------------------------------------
 
 // group of input tags
 // (Object -> int) -> Array(Vnode)
-const inputs_group = (sf, idx) => Object.keys(sf).map( k => input(sf[k], k, idx) );
+const inputs_group = (sf, idx) => Object.keys(sf).map(k => input(sf[k], k, idx));
 
 //----------------------------------------
 

@@ -1,9 +1,5 @@
 
 
-// src/sparv/spravApi.js
-/**
-  */
-
 import { app, states, disp } from './appApi';
 import { vuView, vuPageTitle } from './view/vuMain';
 
@@ -22,7 +18,6 @@ export const pageView = state => vuPage(m(vuPageTitle, { text: state().suite.pag
 
 export const torender = path => {
   disp(['suite', path.def]);
-  //return vuPage(m(vuPageTitle, { text: states().suite.page }));
   return pageView(states);
 }
 

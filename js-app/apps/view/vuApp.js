@@ -6,9 +6,9 @@
 //import { vuMain } from './vuMain';
 import { _schema } from '../model/moModel';
 
+// common aux funcs for apps
 
 const href = state => state.suite[state.unit].task.get || '';
-
 
 export const _get_href = state => {
   return m('a.pure-button', {

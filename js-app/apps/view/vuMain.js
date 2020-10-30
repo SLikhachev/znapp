@@ -27,6 +27,9 @@
  *   rendered by sideBar    rendered by it depends ( vuPageTitle or else)
  */
 
+import { toggle_bup, vuBup } from './vuScrollButt';
+
+
 // return first path chunk after slash if any
 const getItemPath = () => {
   //has menu item route chunk ?
@@ -129,10 +132,19 @@ export const vuLayout = vnode => {
   //console.log('has children', menu_item_children);
   //console.log(spaMenu[menu_item_children].def['doctor'].item.name);
 
+  let up_butt = false;
+
   return {
     // jQuery used 
     // up arrow
     oncreate() {
+      window.addEventListener('scroll',
+        () => {
+          up_butt = window.pageYOffset > 350 ?
+            true : false;
+          m.redraw();
+        });
+      /*
       $(window).scroll(() => {
         if ($(window).scrollTop() > 300) {
           $('.but__up').fadeIn();
@@ -144,6 +156,7 @@ export const vuLayout = vnode => {
         $("html, body").animate({ scrollTop: 0 }, 600);
         return false;
       });
+      */
     },
     // check for sub menu render
     onbeforeupdate() {
@@ -168,11 +181,12 @@ export const vuLayout = vnode => {
           m('#page',
             { class: menu_item_children ? 'pure-u-7-8' : 'pure-u-1-1' }, vnode.children)
         ]),
-        m('#bup.but__up. hvr')
+        //m('#bup.but__up.hvr')
+        up_butt ? m(vuBup) : ''
       ];
     }
   };
-}
+};
 
 // Just wrapper for Layout
 //export const vuView = view=> m(vuMain, spravMenu, view);

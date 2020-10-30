@@ -1,27 +1,11 @@
 
 
-// src/sparv/spravApi.js
-/**
-  */
-
-
-import { vuDialog } from './view/vuDialog';
-
-
 const [stream, scan] = [m.stream, m.stream.scan];
 
 
 export const app = {
   initial: {
     suite: { page: "Медстатстика" },
-    //unit: null,
-    //pk: null,
-    //list: null,
-    //error: null,
-    //method,
-    //word,
-    //id,
-
   },
 
   Actions: (state, update) => {
@@ -37,6 +21,7 @@ export const app = {
 
 
 export const update = stream(); // update states stream
+
 const acc = (state, patch) => patch(state);
 //const init = app => app.initial;
 export const states = scan(acc, app.initial, update);
@@ -61,6 +46,5 @@ export const initApp = (initial, menu, actions) => {
   disp.map(av => {
     let [event, ...args] = av;
     return actions[event] ? actions[event](args) : stream.SKIP;
-    //return Reflect.has(actions, event) ? actions[event](args) : stream.SKIP;
   });
 };

@@ -41,9 +41,7 @@ th.sortable {cursor: pointer; }
  * -- PURE FORM STYLES --
  * Style the form inputs and labels
  */
-.input-error{
-    
-}
+
 .error-msg {
     color: red;
     font-size: 0.7em;
@@ -148,8 +146,6 @@ th.sortable {cursor: pointer; }
 .apps-menu .pure-menu-selected a.pure-menu-link {
     color: red;
 }
-.application-menu .pure-menu-selected a.pure-menu-link {
-}
 
 .pure-menu-list { line-height: 1.8em;}
 
@@ -206,7 +202,8 @@ a.side-menu:hover {
     background: url(../../img/common/up.png) center no-repeat #1f8dd6;
     box-shadow: 0 0 0 2px #fff;
     border-radius: 20px;
-    display: none;
+    /*display: none;*/
+    /*opacity: 0;*/
     z-index: 1200;
     cursor: pointer;
 }
@@ -428,4 +425,22 @@ inputfile:focus + label {
 
 .inputfile + label * {
 	pointer-events: none;
+}
+
+.bup_show {
+  /*display: block;*/
+  animation: bup_show 0.5s;
+} 
+@keyframes bup_show {
+    from {opacity:0;}
+    to {opacity:1;}
+}
+
+.bup_hide {
+  /*display: none;*/
+  animation: bup_hide 0.5s;
+}
+@keyframes bup_hide {
+    from {opacity:1;}
+    to {opacity:0;}
 }
