@@ -14,9 +14,10 @@ export const vuFetchForm = () => {
 
   let def = {};
 
-  const display = (def) => def.fetch ? 'display: block' : 'display: none;';
-  const addButton = (def) => (def.item && def.item.editable
-    && def.item.editable.indexOf('add') >= 0) ?
+  const display = def => def.fetch ? 'display: block' : 'display: none;';
+  const addButton = def => def.item &&
+    def.item.editable &&
+    def.item.editable.indexOf('add') >= 0 ?
     'display: inline-block; margin-left: 1.0em' :
     'display: none;';
 
@@ -42,9 +43,9 @@ export const vuFetchForm = () => {
             ])
           )
         )
-      )
+      );
     }
-  }
+  };
 };
 
 
@@ -89,7 +90,7 @@ export const vuForm = (vnode) => {
       ];
     }
   };
-}
+};
 
 
 const vmFind = cols => {
@@ -97,6 +98,7 @@ const vmFind = cols => {
   //str: "", // string to find
   //if (fstr.length < 3) return true;
   return str => {
+    /*
     $.each($('table#list_table tbody tr'), (_, tr) => {
       let subtr = $(tr).children().slice(0, cols);
       //console.log(subtr);
@@ -105,9 +107,31 @@ const vmFind = cols => {
       } else {
         $(tr).hide();
       }
-      m.redraw();
-    }); return false;
-  }
+      */
+    let table = document.getElementById('list_table');
+    if (!table) return false;
+    let rows = Array.from(
+      table.getElementsByTagName('tbody')[0].
+        getElementsByTagName('tr')
+    );
+    rows.forEach(
+      tr => {
+        let text = Array.from(tr.getElementsByTagName('td')).
+          slice(0, cols).reduce(
+            (s, td) => (s + td.textContent),
+            ''
+          );
+        if (text.toLowerCase().includes(str.toLowerCase())) {
+          tr.classList.remove('hide');
+          tr.classList.add('show');
+        } else {
+          tr.classList.remove('show')
+          tr.classList.add('hide');
+        }
+      }
+    );
+    m.redraw();
+  };
 };
 
 

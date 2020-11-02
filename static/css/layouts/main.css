@@ -328,12 +328,18 @@ dialog::backdrop {
     padding: 10px;
 }
 
-#tabs .hide {
+#tabs .hide,
+#list_table .hide
+{
     display: none;
 }
 #tabs .show {
     display: block;
 }    
+#list_table .show {
+    display: table-row;
+}
+
 
 /* talon,  card form */
 form.tcard input,
