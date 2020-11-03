@@ -74,10 +74,10 @@ export const formSubmit = (api, suite, unit, data) => {
   return m.request(reqBody).then(
     res => ({
       done: res.done || false,
-      message: res.message || '',
-      detail: res.detail || '',
+      message: res.message || "Task server's empty response",
+      detail: res.detail || 'No details provided',
       file: res.file || ''
     }),
-    err => ({ error: errMsg(err) })
+    err => Promise.reject({ error: errMsg(err) })
   );
 };

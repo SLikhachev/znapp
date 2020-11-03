@@ -42,13 +42,17 @@ const Actions = (state, update) => {
       resp.open = false;
       event.target.classList.add('disable');
       stup({ error: null, message: '' });
-      formSubmit('task',
+      return formSubmit('task',
         state().suite,
         state().unit,
         changedItem()).
-        then(res => { stup(res); return res.done }).
+
+        then(res => { stup(res); return res.done; }).
+
         then(done => done ? undefined : this.list()).
+
         catch(err => stup(err)).
+
         finally(() => {
           resp.open = true;
           event.target.classList.remove('disable');
