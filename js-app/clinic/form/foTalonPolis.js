@@ -1,4 +1,6 @@
 
+'use strict';
+
 import { smoId } from '../../apps/defines/defStruct';
 import {
   polis_type_prompt,
@@ -22,7 +24,7 @@ const polis = {
         check: polis_type_prompt,
       },
       attrs: {
-        min: 1, 
+        min: 1,
         onblur: set_polis_type
       }
     },
@@ -47,7 +49,7 @@ const polis = {
 };
 
 export const polisForm = {
-  legend: $legend("Полис на дату визита"), 
+  legend: $legend("Полис на дату визита"),
   legend1: $legend(`
     (если заполнен используется в реестре вместо полиса карты)`
   ),

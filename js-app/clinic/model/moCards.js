@@ -2,9 +2,10 @@
 
 // src/clinic/model/moCards.js
 
+'use strict';
+
 import { trims, just_int } from '../../apps/utils';
 import { states, disp, memost } from '../../apps/appApi';
-//import { vuDialog } from '../../apps/view/vuDialog.js';
 import { changeValue, target } from '../../apps/model/moListItem';
 import {
   check_polis_type,
@@ -13,11 +14,7 @@ import {
   cleanForced,
   validator
 } from '../model/moModel.js';
-//import { restSprav } from '../../sprav/spravApi.js';
-//import { restClinic } from '../clinicApi.js';
 
-
-//const Reg = _region();
 
 export const _getFIO = row => {
   //console.log(row.fam, row.im);

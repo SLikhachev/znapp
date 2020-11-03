@@ -1,6 +1,8 @@
 
 // card pages forms definition
 
+'use strict';
+
 import { states, memost } from '../../apps/appApi';
 import { $upper, $place, smoId } from '../../apps/defines/defStruct';
 import { _ufms } from '../model/moCards';

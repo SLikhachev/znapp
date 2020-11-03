@@ -66,7 +66,7 @@ const _withTalon = t => {
   if (!!t.for_pom)
     t.urgent = t.for_pom == 2 ? 1 : 0;
 
-  if (!data.ot) t.d_type = '5'; // d_type only one case here NET OTCHESYVA
+  if (!t.ot) t.d_type = '5'; // d_type only one case here NET OTCHESYVA
   return t;
 };
 
@@ -184,7 +184,9 @@ export const _memo_ds = d => {
     resp = '';//d == 'ds1' ? 'red&Диагноз ?' : '';
   //console.log('_memo_ds', ds, ds_list);
   if (ds_list) {
-    let n = ds_list.find(o => changedItem()[ds] == o.code.trim());
+    let n = ds_list.find(
+      o => changedItem()[ds] == o.code.trim()
+    );
     resp = (n && n.name) ? n.name : resp;
   }
   return resp;
@@ -238,7 +240,7 @@ const check_polis = talon => {
   if (!talon.polis_num)
     return '';
   return check_polis_type(talon) || check_smo(talon) || '';
-}
+};
 
 //------------------------------------------
 
@@ -246,7 +248,7 @@ const check_dost = talon => {
   if (!talon.ot)
     changeValue(target('d_type', '5')); // net ot
   return '';
-}
+};
 
 //------------------------------------------
 

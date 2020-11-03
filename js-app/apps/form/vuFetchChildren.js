@@ -1,4 +1,7 @@
 
+
+'use struct';
+
 import { makeTags } from './makeTags';
 
 
@@ -16,5 +19,5 @@ export const vuFetchFormChildren = () => {
       //console.log(def.fetch);
       return fetch ? makeFields(makeTags(fetch), Object.keys(fetch)) : '';
     }
-  }
+  };
 }; 

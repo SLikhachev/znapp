@@ -1,19 +1,19 @@
 // src/sprav/view/vuTaskSheet.js
 
+'use strict';
+
 import { vuLoading, vuTheader } from '../../apps/view/vuApp';
 import { states } from '../../apps/appApi'; //stream
 import { vuListTable } from '../../apps/view/vuListTable';
 import { vuTaskForm } from '../form/taskForm';
 import { vuTaskFormChildren } from '../form/vuTaskChildren';
 
-
-
 // clojure
 export const vuTaskSheet = function () {
   /**
   */
   //closure
-  let item = '', defs = {}, def = {}, itdef = {}, task = {};
+  let item = '', defs = {}, def = {}, itdef = {}, task = {}, rest;
   const vuTable = vuListTable({ itdef, list: states().list });
 
   return {
@@ -35,7 +35,7 @@ export const vuTaskSheet = function () {
           !rest.url ? '' :
             !states().list ? m(vuLoading) :
               m(vuTable, { itdef, list: states().list }),
-      ]
-    }
+      ];
+    };
   }; //return this object
 }

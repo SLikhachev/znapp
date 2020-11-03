@@ -1,13 +1,15 @@
 
 
+'use strict';
+
 import { _klass, makeTags } from '../../apps/form/makeTags';
 
 
 export const makeFields = (fn, group, flds, ind) => flds.map((f, ix) => {
-    let wrap = group[f].wrap || {},
-      box= _klass(wrap.klass) || '.pure-control-group',
-      attrs = wrap.attrs || {}; 
-    return m(box, attrs, fn(f, ind*20+ix+1));
+  let wrap = group[f].wrap || {},
+    box = _klass(wrap.klass) || '.pure-control-group',
+    attrs = wrap.attrs || {};
+  return m(box, attrs, fn(f, ind * 20 + ix + 1));
 });
 
 
@@ -16,17 +18,17 @@ export const makeGroup = (group, ind) => m(group.class,
 );
 
 
-export const makeFormChildren = (form, idx=0) => 
+export const makeFormChildren = (form, idx = 0) =>
   Object.keys(form).map(
     (group, ind) => makeGroup(form[group], ind + idx)
-);
+  );
 
-export const $legend = text =>({
+export const $legend = text => ({
   class: 'legend',
   fields: {
     lend: {
       type: 'memo',
       memo: { check: () => text }
-    }  
+    }
   }
 });

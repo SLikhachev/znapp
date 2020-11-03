@@ -1,29 +1,29 @@
 
+'use strict';
 
-import { states, disp } from '../../apps/appApi';
+import { states } from '../../apps/appApi';
 import { vuListTable } from '../../apps/view/vuListTable';
 import { talonPath } from '../defines/defTalons';
 
 
-export const crdVizits = function (vnode) {
-  
+export const crdVizits = function () {
+
   let itdef, list = [], card;
 
   const vuTable = vuListTable({ itdef, list });
 
   return {
-    view(vnode) {
-      ({ card } = states());  
+    view() {
+      ({ card } = states());
       itdef = states().suite.talons.item || {};
       list = states().data.get('talons') || [];
 
-      //console.log('talPara view');
       return [
-        m('.pure-g', 
-          m('.pure-u-1-1', 
+        m('.pure-g',
+          m('.pure-u-1-1',
             m('h2', 'Визиты в текущем году'),
             m(vuTable, { itdef, list })
-        )),
+          )),
         m('.pure-g', !card ? '' : m('.pure-u-1-3',
           m(m.route.Link, {
             selector: 'a.pure-button.pure-button-primary',

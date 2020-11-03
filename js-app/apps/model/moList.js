@@ -1,5 +1,5 @@
 
-//'use strict';
+'use strict';
 
 import { checkArray } from '../utils';
 import { _schema, _year, errMsg } from './moModel';

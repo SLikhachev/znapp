@@ -1,13 +1,15 @@
 
+'use strict';
+
 import { states, disp } from '../../apps/appApi';
 import { changedItem } from '../../apps/model/moListItem';
 import { vuListTable } from '../../apps/view/vuListTable';
 import { makeGroup } from '../form/foForm';
 import { _editable } from '../model/moTalons';
-import { get_pmu_field } from '../model/moPmu'; 
+import { get_pmu_field } from '../model/moPmu';
 
 const talonPmuForm = () => {
-  
+
   let form, pmu, error;
 
   const onsubmit = e => {
@@ -26,19 +28,20 @@ const talonPmuForm = () => {
         split('&')[1] || '';
       console.assert(Reflect.has(form, 'fields'));
 
-      return [ m(".pure-g",
+      return [m(".pure-g",
         m(".pure-u-1-2",
-          m("form.pure-form", { 
-            onsubmit, class: _editable(changedItem().talon_type) ? 
-            'tcard' : 'disable' }, 
-            m("fieldset", makeGroup(form, 1)),
+          m("form.pure-form", {
+            onsubmit, class: _editable(changedItem().talon_type) ?
+              'tcard' : 'disable'
+          },
+            m("fieldset", makeGroup(form, 1))
           ) //form
         )), // u-1-2, g
-        m('.pure-g', 
-          m(".pure-u-1-2 ", 
-            m('span#card_message', m('span.red', error))
-          )
+      m('.pure-g',
+        m(".pure-u-1-2 ",
+          m('span#card_message', m('span.red', error))
         )
+      )
       ];
     }// view
   }; //this object
@@ -47,10 +50,10 @@ const talonPmuForm = () => {
 export const talonPmu = () => {
 
   let def, itdef, list, form;
-  
+
   const _hdr = text => R.isNil(text) ? '' :
     m('h3', { style: "font-size: 1.2em;" }, text);
-  
+
   const vuTable = vuListTable({});
 
 
@@ -61,10 +64,10 @@ export const talonPmu = () => {
       itdef = def.item || {};
       list = states().data.get('tal_pmu') || [];
 
-      return [ 
+      return [
         _hdr("ПМУ текущего талона"),
         m(talonPmuForm, { form }),
-        m(vuTable, {itdef, list})
+        m(vuTable, { itdef, list })
       ];
     }
   };

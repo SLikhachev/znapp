@@ -1,4 +1,6 @@
 
+'use strict';
+
 import { $checkbox } from '../../apps/defines/defStruct';
 import { _naprav1 } from '../model/moTalons';
 import { $legend } from './foForm';
@@ -8,7 +10,7 @@ const naprDate = {
   class: '.pure-g',
   fields: {
     npr_date: {
-      wrap: { klass: '.pure-u-22-24'},
+      wrap: { klass: '.pure-u-22-24' },
       label: ["Дата направления"],
       type: 'date'
     },
@@ -42,7 +44,7 @@ const naprLech = {
       tag: ['.pure-u-22-24'],
       type: 'number'
     },
-    
+
   },
 };
 
@@ -65,30 +67,30 @@ const naprav1 = {
 };
 
 const naprHosp = {
-  class:  '.pure-g',
+  class: '.pure-g',
   fields: {
-    hosp_mo: { 
-      wrap : { klass: '.pure-u-2-24'},
-      label: ["Код МО"], 
-      tag: ['.pure-u-22-24'], 
+    hosp_mo: {
+      wrap: { klass: '.pure-u-2-24' },
+      label: ["Код МО"],
+      tag: ['.pure-u-22-24'],
       type: 'number'
     },
-    nsndhosp: { 
-      wrap : { klass: '.pure-u-5-24' },
-      label: ["Номер направления"], 
-      tag: ['.pure-u-22-24'], 
+    nsndhosp: {
+      wrap: { klass: '.pure-u-5-24' },
+      label: ["Номер направления"],
+      tag: ['.pure-u-22-24'],
       type: 'number'
     },
-    extr: R.assoc(
-      'wrap', { 
-        klass: '.pure-u-8-24', 
+    extr: R.assoc('wrap',
+      {
+        klass: '.pure-u-8-24',
         attrs: { style: 'margin-top: 2.2em;' }
-      }, 
+      },
       $checkbox('Экстренно')
     )
-  } 
+  }
 };
- 
+
 export const naprForm = {
   naprDate,
   leg_lech: $legend("Направление: лечение. диагностика, консультация"),

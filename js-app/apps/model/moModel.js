@@ -2,6 +2,8 @@
 
 // this module is used by SPRAV CLINIC apps
 
+'use strict';
+
 export const errMsg = function (error) {
   if (!error)
     return 'Ошибка сервера (детали в журнале)';

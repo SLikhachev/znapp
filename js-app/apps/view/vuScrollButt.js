@@ -2,6 +2,7 @@
 //const $show = 'animation: bup_show 0.5s';
 //const $hide = 'animation: bup_hide 0.5s';
 
+'use strict';
 
 export const toggle_bup = () => {
   let b = document.getElementById('bup');
@@ -17,13 +18,14 @@ export const toggle_bup = () => {
   return false;
 };
 
+// POJO
 export const vuBup = {
 
   onbeforeremove(vnode) {
-    vnode.dom.classList.add('bup_hide')
+    vnode.dom.classList.add('bup_hide');
     return new Promise(resolve => {
       vnode.dom.addEventListener('animationend', resolve);
-    })
+    });
   },
 
   onclick() {
@@ -34,6 +36,7 @@ export const vuBup = {
     });
     return false;
   },
+
   view() {
     return m('#bup.but__up.hvr.bup_show', {
       onclick: this.onclick,

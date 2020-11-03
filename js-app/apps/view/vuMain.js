@@ -27,7 +27,9 @@
  *   rendered by sideBar    rendered by it depends ( vuPageTitle or else)
  */
 
-import { toggle_bup, vuBup } from './vuScrollButt';
+'use strict';
+
+import { vuBup } from './vuScrollButt';
 
 
 // return first path chunk after slash if any
@@ -55,12 +57,16 @@ const hasChildren = (spaMenu, menuItem) => {
 };
 
 // sidebar renderer 
-const sideBar = menuItem => [m('span.dheader.blue', menuItem.name),
-menuItem.items.map(it => m(m.route.Link, {
-  selector: 'a.side-menu.blue',
-  href: `${menuItem.path.split(':')[0]}${it}`,
-}, menuItem.def[it].item.name)
-)];
+const sideBar = menuItem => [
+  m('span.dheader.blue', menuItem.name),
+  menuItem.items.map(it => m(m.route.Link,
+    {
+      selector: 'a.side-menu.blue',
+      href: `${menuItem.path.split(':')[0]}${it}`,
+    },
+    menuItem.def[it].item.name)
+  )
+];
 
 // top spa menu from server data
 const spaOptionBar = (moName, currentSpa, spaLinks) =>
@@ -135,8 +141,6 @@ export const vuLayout = vnode => {
   let up_butt = false;
 
   return {
-    // jQuery used 
-    // up arrow
     oncreate() {
       window.addEventListener('scroll',
         () => {
@@ -144,19 +148,6 @@ export const vuLayout = vnode => {
             true : false;
           m.redraw();
         });
-      /*
-      $(window).scroll(() => {
-        if ($(window).scrollTop() > 300) {
-          $('.but__up').fadeIn();
-        } else {
-          $('.but__up').fadeOut();
-        }
-      });
-      $('.but__up').click(() => {
-        $("html, body").animate({ scrollTop: 0 }, 600);
-        return false;
-      });
-      */
     },
     // check for sub menu render
     onbeforeupdate() {
@@ -179,9 +170,13 @@ export const vuLayout = vnode => {
           menu_item_children ?
             m('#side-bar.pure-u-1-8', sideBar(spaMenu[menu_item_children])) : '',
           m('#page',
-            { class: menu_item_children ? 'pure-u-7-8' : 'pure-u-1-1' }, vnode.children)
+            {
+              class: menu_item_children ?
+                'pure-u-7-8' : 'pure-u-1-1'
+            },
+            vnode.children
+          )
         ]),
-        //m('#bup.but__up.hvr')
         up_butt ? m(vuBup) : ''
       ];
     }

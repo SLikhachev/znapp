@@ -1,4 +1,6 @@
 
+'use strict';
+
 import { states } from '../appApi';
 import { checkArray } from '../utils';
 import { changeValue, changedItem } from '../model/moListItem';

@@ -61,7 +61,7 @@ export const dispPmu = function () {
   this._tal_pmu = d => {
     let [action, id, kol_usl] = d,
       pmu = action === 'inc' ? incr_usl(id, kol_usl) : decr_usl(id, kol_usl);
-    console.log('_tal_pmu', action, id, kol_usl, pmu);
+    //console.log('_tal_pmu', action, id, kol_usl, pmu);
     this.state().data.set('tal_pmu', [...pmu]);
   };
 

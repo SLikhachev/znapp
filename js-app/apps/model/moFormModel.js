@@ -3,6 +3,8 @@
 
 // this module is used by TASK server wiith REESTR, REPORT apps 
 
+'use strict';
+
 import { _month, _schema, errMsg } from './moModel.js';
 import { changedItem } from './moListItem';
 
@@ -65,12 +67,12 @@ const formRequest = (api, suite, unit, data) => {
     }, body);
   }
   return { url, method, body, headers };
-}
+};
 
 // // used by TASK server
 export const formSubmit = (api, suite, unit, data) => {
   const reqBody = formRequest(api, suite, unit, data);
-  reqBody.timeout = 0
+  reqBody.timeout = 0;
   return m.request(reqBody).then(
     res => ({
       done: res.done || false,

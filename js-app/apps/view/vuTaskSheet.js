@@ -1,5 +1,7 @@
 // src/apps/view/vuTaskSheet.js
 
+'use strict';
+
 // USED BY reestr app
 
 import { states } from '../appApi'; //stream
@@ -11,7 +13,7 @@ import { vuListTable } from './vuListTable';
 // clojure
 export const vuTaskSheet = function () {
 
-  let item = '', defs = {}, def = {}, itdef = {}, task = {};
+  let item = '', defs = {}, def = {}, itdef = {}, task = {}, rest;
   const vuTable = vuListTable({ itdef, list: states().list });
   const subHdr = text => text && text.file_name ?
     m('h4', `Последний файл ${text.file_name}`) : '';

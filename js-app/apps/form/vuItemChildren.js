@@ -1,4 +1,6 @@
 
+'use strict';
+
 import { idName } from '../defines/defStruct';
 import { makeTags } from './makeTags';
 

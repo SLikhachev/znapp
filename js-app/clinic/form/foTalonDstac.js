@@ -1,5 +1,6 @@
 
-import { $checkbox } from '../../apps/defines/defStruct';
+'use strict';
+
 import { $legend } from './foForm';
 
 
@@ -26,27 +27,27 @@ const dsVizits = {
 };
 
 const dsKsg = {
-  class:  '.pure-g',
+  class: '.pure-g',
   fields: {
-    ksg: { 
-      wrap : { klass: '.pure-u-2-24'},
-      label: ["КСГ"], 
-      tag: ['.pure-u-20-24'], 
+    ksg: {
+      wrap: { klass: '.pure-u-2-24' },
+      label: ["КСГ"],
+      tag: ['.pure-u-20-24'],
     },
-    prof_k: { 
-      wrap : { klass: '.pure-u-2-24' },
-      label: ["Проф. койки"], 
-      tag: ['.pure-u-20-24'], 
+    prof_k: {
+      wrap: { klass: '.pure-u-2-24' },
+      label: ["Проф. койки"],
+      tag: ['.pure-u-20-24'],
       type: 'number'
     },
     sh: {
-      wrap : { klass: '.pure-u-2-24' },
-      label: ["Схема"], 
-      tag: ['.pure-u-20-24'], 
+      wrap: { klass: '.pure-u-2-24' },
+      label: ["Схема"],
+      tag: ['.pure-u-20-24'],
     }
-  } 
+  }
 };
- 
+
 export const dstacForm = {
   leg_dstac: $legend("Дневной стационар"),
   dsVizits,

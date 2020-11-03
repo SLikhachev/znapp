@@ -1,4 +1,5 @@
 
+'use strict';
 
 const [stream, scan] = [m.stream, m.stream.scan];
 

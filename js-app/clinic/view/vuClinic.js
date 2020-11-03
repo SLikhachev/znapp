@@ -1,6 +1,10 @@
 
 // src/clinic/view/vuClinic.js
 
+'use strict';
+
+// module difines tabs views for app menu
+
 import { crdMain } from './vuCardMain';
 import { crdVizits } from './vuCardVizits';
 import { vuTalon } from './vuTalon';
@@ -19,8 +23,8 @@ export const cardTabs = [
     name: "Карта",
     content() { return m(crdMain); }
   },
-  {  
-    name: "Визиты", 
+  {
+    name: "Визиты",
     content() { return m(crdVizits); }
   },
   tabEmpty("Дополнительно", "Дополнительно"),

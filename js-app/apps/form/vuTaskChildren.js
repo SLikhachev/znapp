@@ -1,4 +1,6 @@
 
+'use strict';
+
 import { makeTags } from './makeTags';
 
 const makeFields = (fn, flds) => flds.map((f, idx) => m('.pure-control-group', fn(f, idx)));

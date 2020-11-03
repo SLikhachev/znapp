@@ -1,10 +1,6 @@
 
-//import { vuDialog } from '../../apps/view/vuDialog.js';
-//import { clinicApi } from '../clinicApi.js';
-//import { moCard } from '../model/moCards.js';
-//import { moTalonsList, talonOpt } from '../model/moTalons.js';
-//import { checkDost } from './vuCard.js';
-//import { ctf } from '../form/foForm.js';
+
+'use strict';
 
 import { states, disp } from '../../apps/appApi';
 import { changedItem } from '../../apps/model/moListItem';
@@ -15,62 +11,12 @@ import { _editable } from '../model/moTalons';
 import { nextTagFocus } from './vuTabs.js';
 
 
-export const talonCard = function() {
-  /*
-    let { model }= vnode.attrs;
-    let { card }= model; // ref to talon model.card
-    const data= talonOpt.data;
-    //const model= {}; //local model
-    const method= 'PATCH';
-    //console.log(card);
-    let ff = [
-      'fam', 'im', 'ot', 'birth_date',
-      'crd_polis_ser', 'crd_polis_num'];  //, 'smo'];
-    
-    const toSave= card=> {
-      let dost= checkDost(card);
-      if ( Boolean(dost) )
-        return dost;
-      if ( !card.crd_smo && !card.crd_smo_okato)
-        return 'Укажите либо СМО либо СМО ОКАТО';
-      // to save card 
-      return '';
-    };
-    
-    const _set_smo = e=> {
-      if ( Boolean( e.target.value) ) {
-        card.crd_smo= e.target.value;
-        card.crd_smo_okato= data.get('smo_local')[0].okato;
-      } else {
-        card.crd_smo= null;
-        card.crd_smo_okato= null;
-      }
-    };
+export const talonCard = function () {
 
-    const cardSave = function(e) {
-      e.preventDefault();
-      //saveCard(event, card, model, method) {
-      
-      model.save= toSave(card);
-      if ( Boolean( model.save ) ) {
-        vuDialog.open();
-        return false;
-      }
-      let _card= Object.assign( {}, card );
-      ['crd_polis_num', 'crd_polis_ser', 'crd_smo', 'crd_smo_okato'].map( f=> delete _card[f] );
-      _card.smo= card.crd_smo;
-      _card.smo_okato= card.crd_smo_okato;
-      return moCard.saveCard(e, _card, model, method).catch(err=> {
-        model.save = err;
-        vuDialog.open();
-      });
-    };
-  */
   let form = {}, fields, card;
 
   const onsubmit = e => {
     e.preventDefault();
-    //return false;
     return disp(['save', 'card', e, 'PATCH']);
   };
 
@@ -89,9 +35,9 @@ export const talonCard = function() {
           onsubmit
         }, [
           makeFields(makeTags(fields), fields, Object.keys(fields)),
-          _editable(changedItem().talon_type) ? 
-          m('button.pure-button.pure-button-primary[type="submit"]',
-            "Сохранить") : '',
+          _editable(changedItem().talon_type) ?
+            m('button.pure-button.pure-button-primary[type="submit"]',
+              "Сохранить") : '',
           m(m.route.Link, {
             selector: 'a.pure-button.',
             href: cardPath(card),

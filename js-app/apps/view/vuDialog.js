@@ -5,6 +5,7 @@
 // Fifix since 53 about:config
 // dom.dialog_element.enabled
 
+'use strict';
 
 export const vuDialog = {
 
@@ -51,4 +52,4 @@ export const vuDialog = {
     if (reload) m.redraw();
     return false;
   },
-}
+};

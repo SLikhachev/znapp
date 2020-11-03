@@ -1,6 +1,7 @@
 // src/report/router.js
 
 import { pathRouter, routerFun } from '../apps/appRouter';
+import { vuTaskSheet } from '../apps/view/vuTaskSheet';
 
 //  init func
 import { initReport } from './reportApi';
@@ -10,9 +11,7 @@ import { reportMenu } from './reportMenu';
 
 // adds routers
 //import { ro } from './router/ro';
-
 // views
-import { vuTaskSheet } from './view/vuTaskSheet';
 
 const route = pathRouter(vuTaskSheet);
 const addroute = {}; //{ pmus: roPmus }; //functions

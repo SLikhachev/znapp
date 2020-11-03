@@ -20,7 +20,7 @@ export const dispSave = function () {
 
     let _newcard = unit === 'card' && !card;
     let _newtalon_templ = (unit === 'talon' || unit === 'templ') &&
-      !talon
+      !talon;
 
     if (_newcard || _newtalon_templ)
       [method, word] = post;
@@ -57,7 +57,7 @@ export const dispSave = function () {
           vuDialog.error = error.saverror;
           vuDialog.open();
         }
-        console.error('catch in save_items', error);
+        //console.error('catch in save_items', error);
       })
       .finally(() => event.target.classList.remove('disable'));
   };

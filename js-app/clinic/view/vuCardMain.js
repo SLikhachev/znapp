@@ -1,4 +1,6 @@
 
+'use strict';
+
 import { states, disp } from '../../apps/appApi';
 import { makeFormChildren } from '../form/foForm';
 import { nextTagFocus } from './vuTabs.js';

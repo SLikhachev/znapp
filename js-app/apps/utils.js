@@ -37,7 +37,7 @@ const dec2hex = d => d < 10 ? `0${String(d)}` : (d).toString(16);
 
 // generateId :: Integer -> String
 export const genId = len => {
-  let buff = new Uint8Array((len || 40) / 2)
-  window.crypto.getRandomValues(buff)
-  return Array.from(buff, dec2hex).join('')
-}
+  let buff = new Uint8Array((len || 40) / 2);
+  window.crypto.getRandomValues(buff);
+  return Array.from(buff, dec2hex).join('');
+};

@@ -1,5 +1,5 @@
 
-// src/sparv/struct/spravStruct.js
+
 /**
     defStruct object defines the set of the representation of some entities
     used by app for states, models and views generation.
@@ -169,7 +169,7 @@ const structNav = {
 };
 */
 
-//'use strict';
+'use strict';
 
 import { disp } from '../appApi';
 import { _month } from '../model/moModel';

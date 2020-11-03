@@ -1,10 +1,12 @@
 
 
+'use strict';
+
 import { app, states, disp } from './appApi';
 import { vuView, vuPageTitle } from './view/vuMain';
 
 
-export const vuPage = view => vuView({ spaMenu: app.menu }, view)
+export const vuPage = view => vuView({ spaMenu: app.menu }, view);
 // 
 export const rootRouter = {
   [app.menu.root]: {
@@ -19,7 +21,7 @@ export const pageView = state => vuPage(m(vuPageTitle, { text: state().suite.pag
 export const torender = path => {
   disp(['suite', path.def]);
   return pageView(states);
-}
+};
 
 // route on match helper
 export const tomatch = (path, view) => args => {
@@ -33,7 +35,7 @@ export const tomatch = (path, view) => args => {
 
 export const pathRouter = view => route => ({
   [route.path.split(':')[0]]: {
-    render() { return torender(route) }
+    render() { return torender(route); }
   },
   [route.path]: {
     onmatch: tomatch(route, view),

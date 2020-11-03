@@ -1,5 +1,7 @@
 // src/apps/form/taskForm.js
 
+'use strict';
+
 import { disp, states } from '../appApi';
 import { taskResp } from '../view/vuApp';
 import { form_file_node } from './customFields';
@@ -27,11 +29,11 @@ export const vuTaskForm = () => {
                     m("form.pure-form.pure-form-stacked",
                         { oncreate, onupdate, onsubmit },
                         m('fieldset', [vnode.children])
-                    ),
+                    )
                 ),
                 m('.pure-u-2-3', [taskResp(states())])
-            ])
+            ]);
         }
-    }
+    };
 };
 

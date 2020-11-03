@@ -14,7 +14,7 @@ import {
 } from '../../apps/model/moListItem';
 import { vuDialog } from '../../apps/view/vuDialog';
 import { $path } from '../defines/defClinic';
-import { talonPath, talons } from '../defines/defTalons';
+import { talonPath } from '../defines/defTalons';
 import { tpl_to_save } from '../defines/defTempls';
 import { initTalon } from '../model/moTalons';
 
@@ -58,8 +58,7 @@ export const dispTalon = function () {
           if (R.isEmpty(res.list))
             return Promise.reject({
               error: `Карта "${card}" для нового талона не найдена`
-            }
-            );
+            });
 
           this.stup({ data: new Map() });
           listItem(initTalon({}, res.list[0])); // card object from Map
@@ -105,7 +104,7 @@ export const dispTalon = function () {
       code = conf.confirm &&
         typeof conf.confirm === 'function' &&
         conf.confirm() || genId(10);
-    console.log(code)
+    //console.log(code);
     return window.prompt(_prompt) == code ?
       true :
       false;
@@ -121,7 +120,7 @@ export const dispTalon = function () {
       return false;
 
     if (talon_type > 0)
-      change = this.confirm("Ихменить тип талона");
+      change = this.confirm("Изменить тип талона");
     else
       change = this.confirm_code('Ведите код подтверждения');
 
@@ -132,7 +131,7 @@ export const dispTalon = function () {
       ]).
         then(talon => {
           if (!!talon.talon_type)
-            changeValue(target('talon_type', talon.talon_type))
+            changeValue(target('talon_type', talon.talon_type));
           else
             m.route.set($path.talons);
         }) :

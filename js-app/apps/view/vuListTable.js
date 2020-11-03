@@ -1,6 +1,8 @@
 
 // src/sprav/view/vuListTable.js
 
+'use strict';
+
 import { checkArray } from '../utils';
 import { disp } from '../appApi';
 import { idName } from '../defines/defStruct';
@@ -19,7 +21,7 @@ const rval = (row, key, rep, pk) => {
   if (fn && (typeof fn === 'function'))
     rv = fn(row, key, pk);
   return checkArray(rv) ? rv : [rv];
-}
+};
 
 const tableRow = data => {
   // data Object { itdef } object for row presentation 
@@ -51,7 +53,7 @@ export const vuListTable = attrs => {
     //table_caption = ''
   } = attrs; // call as func not as component
 
-  let itdef = {}, struct = {}, list = [];
+  let itdef = {}, struct = {}, list = [], listMap;
 
   // we need sort here only  
   const sort = e => disp(['sort', e.target.getAttribute('data')]);
@@ -66,7 +68,7 @@ export const vuListTable = attrs => {
 
   return {
     view(vnode) {
-      ({ itdef, list } = vnode.attrs);
+      ({ itdef={}, list=[] } = vnode.attrs);
       struct = itdef.struct || idName;
       listMap = tableRow({ itdef });
 

@@ -19,7 +19,7 @@ export const getItem = (id, pk, list) => {
     if (item[pk] == id)
       return Object.assign({}, item);
   }
-  return {}
+  return {};
 };
 
 // callback for stream's states update 
