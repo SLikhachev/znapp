@@ -1,5 +1,7 @@
 // src/sprav/form/spravForm.js
 
+'use strict';
+
 import { vuDialog } from '../../apps/view/vuDialog';
 import { disp, states } from '../../apps/appApi';
 
@@ -125,7 +127,7 @@ const vmFind = cols => {
           tr.classList.remove('hide');
           tr.classList.add('show');
         } else {
-          tr.classList.remove('show')
+          tr.classList.remove('show');
           tr.classList.add('hide');
         }
       }
@@ -174,6 +176,6 @@ export const vuFindForm = vnode => {
       );
     }
   };
-}
+};
 
 

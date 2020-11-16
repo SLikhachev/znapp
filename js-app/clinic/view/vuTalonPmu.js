@@ -31,7 +31,9 @@ const talonPmuForm = () => {
       return [m(".pure-g",
         m(".pure-u-1-2",
           m("form.pure-form", {
-            onsubmit, class: _editable(changedItem().talon_type) ?
+            onsubmit,
+            class: _editable(changedItem().talon_type) &&
+              !!changedItem().tal_num ?
               'tcard' : 'disable'
           },
             m("fieldset", makeGroup(form, 1))

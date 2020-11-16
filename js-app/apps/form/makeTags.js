@@ -87,7 +87,9 @@ const button = sf => {
   let text = _text(_labeltag(sf)[0]) || 'Выполнить';
   let attrs = sf.attrs || {};
   attrs.type = _text(sf.type) || 'submit';
-  attrs.onclick = changeValue;
+  attrs.onclick = attrs.onclick &&
+    typeof attrs.onclick === 'function' ?
+    attrs.onclick : changeValue;
   return m(`button${klass}`, attrs, text);
 };
 //--------------------------------------------

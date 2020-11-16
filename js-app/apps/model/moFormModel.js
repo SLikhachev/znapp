@@ -23,7 +23,7 @@ export const formItem = (suite, unit) => {
 
 // used by task server
 const formRequest = (api, suite, unit, data) => {
-  const def = suite[unit] || {},
+  let def = suite[unit] || {},
     _api = def[api] || {},
     _data = data ? data : changedItem(),
     headers = _api.headers || {},
@@ -36,6 +36,14 @@ const formRequest = (api, suite, unit, data) => {
 
   let url = `${_schema(api)}${_url}`;
 
+  _data = Object.keys(_data).reduce(
+    (o, k) => {
+      if (!R.isNil(_data[k]) && !R.isEmpty(_data[k])) o[k] = _data[k];
+      return o;
+    }, {}
+  );
+  console.log(_data);
+
   // request is SIMPLE if we send to serever Form Data not JSON object
   // with GET HEAD POST methods. 
   // WITH Any other methods preflight request is used
@@ -43,6 +51,7 @@ const formRequest = (api, suite, unit, data) => {
   // application/x-www-form-urlencoded
   // multipart/form-data
   // text/plain
+
 
   if (method === 'GET') {
     url = `${url}?${m.buildQueryString(_data)}`;

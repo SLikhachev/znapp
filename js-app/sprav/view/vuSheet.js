@@ -1,5 +1,7 @@
 // src/sprav/view/vuSheet.js
 
+'use strict';
+
 import { states } from '../../apps/appApi'; //stream
 import { vuLoading, vuTheader } from '../../apps/view/vuApp';
 import { vuDialog } from '../../apps/view/vuDialog';
@@ -10,7 +12,7 @@ import { vuFindForm, vuForm, vuFetchForm } from '../form/spravForm';
 
 
 // clojure
-export const vuSheet = function (vnode) {
+export const vuSheet = function () {
   /**
    * item sprav - definition item name from struct
    * def_obj - object of all items definition (currentSet)
@@ -48,7 +50,7 @@ export const vuSheet = function (vnode) {
                 m(vuItemFormChildren, { itdef }))
             )
           ]
-      ]
+      ];
     }
   }; //return this object
-}
+};

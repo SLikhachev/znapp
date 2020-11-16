@@ -1,12 +1,37 @@
 
-// src/reestr/defines/defXmlerrr.js
-// packages definition
 
+'use strict';
+
+import { disp } from '../../apps/appApi';
+import { changedItem } from '../../apps/model/moListItem';
 import {
   $checkbox, $button, $month,
   $pack, $smo
 } from '../../apps/defines/defStruct';
+import { linkTalon } from './defLinks';
 
+
+const extract_mek = resp => ({
+  list: JSON.parse(resp.response),
+  count: {
+    mek: resp.getResponseHeader('Content-Range').split('/')[1]
+  }
+});
+
+const mek_year = () => changedItem().month.split('-')[0].slice(2);
+const mek_month = () => changedItem().month.split('-')[1];
+const get_mek = e => {
+  e.stopPropagation();
+  e.preventDefault();
+  return disp(['list']);
+}
+
+const mekTable = {
+  tal_num: ['Талон', '', linkTalon],
+  crd_num: ['Карта'],
+  open_date: ['Открыт'],
+  close_date: ['Закрыт'],
+}
 
 export const calcInvoice = {
 
@@ -56,29 +81,60 @@ export const calcInvoice = {
       header: "Собственные расчеты",
     },
   },
+
   mek: {
+    rest: {
+      get url() {
+        return `talonz_clin_${mek_year()}`;
+      },
+      params: {
+        mek: 'eq.1',
+        talon_type: 'eq.1',
+        get talon_month() {
+          return `eq.${mek_month()}`
+        }
+      },
+      headers: {
+        Prefer: 'count=exact',
+        Range: '0-50',
+        'Range-Unit': 'tal_num',
+      },
+      extract: extract_mek
+    },
     task: {
       url: "/reestr/inv/mek",
       get: "/utils/file/reestr/mek/", //GET mek file
       form: {
         legend: "Выгрузить отказанных по МЭК в CSV файл",
         month: $month,
+        target: R.assoc('label', ["Перененсти на"], $month),
+        but0: R.compose(
+          R.assocPath(['attrs', 'type'], 'button'),
+          R.assocPath(['attrs', 'onclick'], get_mek)
+        )($button("Показать МЭКи")),
       },
       buttons: {
-        but1: R.assocPath(['attrs', 'method'], 'GET', $button("Выгрузить")),
-        but2: R.compose(
-          R.assocPath(['attrs', 'style'], 'font-size: 1.2em; margin: 0.5em 0 0 2em;'),
+        but1: R.compose(
+          R.assocPath(['attrs', 'method'], 'GET'),
+          R.assocPath(['attrs', 'style'], 'font-size: 1.2em; margin: 1em 0 0 0;'),
           R.assocPath(['tag'], ['.pure-button']))
-          ($button("Перенести МЭКи на месяц вперед"))
+          ($button("Выгрузить в CSV")),
+        but2: R.compose(
+          R.assocPath(['attrs', 'style'], 'font-size: 1.2em; margin: 1em 0 0 2em;'),
+          R.assocPath(['tag'], ['.pure-button']))
+          ($button("Перенести МЭКи"))
       }
     },
     item: {
       name: "Перенести МЭК",
       header: "Переносим случаи отказа по МЭК",
+      list: true, // show table anyway at beginning
+      struct: mekTable,
+      count_field: 'mek',
+      count_text: "Всего МЭК по месяцу "
     },
   }
 }
-
 
 export const invce = {
   path: '/invce/:item',

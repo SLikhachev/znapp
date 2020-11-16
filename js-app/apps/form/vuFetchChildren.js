@@ -1,6 +1,6 @@
 
 
-'use struct';
+'use strict';
 
 import { makeTags } from './makeTags';
 

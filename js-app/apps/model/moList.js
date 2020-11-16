@@ -103,6 +103,7 @@ export const getRequest = (set, item, isfetch = '') => {
   const _url = rest.url || item,
     method = rest.method || 'GET',
     headers = rest.headers || {},
+    extract = rest.extract || null,
     _sign = (method === 'GET') ? (_url.includes('?') ? '&' : '?') : '',
     _param = rest.params || { order: 'id.asc' },
     _item = def.item || {};
@@ -125,6 +126,9 @@ export const getRequest = (set, item, isfetch = '') => {
 
   let url = `${_schema('pg_rest')}${_url}${_sign}${qstring}`;
   let r = { url, method, headers };
+
+  if (extract && typeof extract === 'function')
+    r.extract = extract;
 
   if (method === 'GET') {
     console.log('GET', r);
@@ -160,7 +164,8 @@ export const getList = (set, item, isfetch = '') => {
           if (res.length && res.length > 0) {
             return { list: Array.from(res), order: true }; // list of objects
           } else {
-            return { list: [] };
+            //console.log(res);
+            return Object.assign({ list: [] }, res);
           }
         }
         return res.toString();
